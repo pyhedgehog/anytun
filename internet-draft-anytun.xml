@@ -1,0 +1,52 @@
+<?xml version='1.0'?>
+    <!DOCTYPE rfc SYSTEM 'rfcXXXX.dtd'>
+    <rfc ipr='full3978' docName='draft-gsenger-anycast-relay-00'>
+    <front>
+        <title>Anycast stream relaying</title>
+
+        <author initials='O.G.' surname='Gsenger'
+                fullname='Othmar Gsenger'>
+            <organization></organization>
+
+            <address>
+                <postal>
+                    <street>Sporgasse 6</street>
+                    <city>Graz</city>
+                    <code>8010</code>
+                    <country>AT</country>
+                </postal>
+
+                <phone></phone>
+                <email>otti@wirdorange.org</email>
+                <uri>http://anytun.org/</uri>
+            </address>
+        </author>
+
+        <date month='March' year='2007' />
+
+        <area>General</area>
+        <workgroup></workgroup>
+<!--        <keyword>RFC</keyword>
+        <keyword>Request for Comments</keyword>
+        <keyword>I-D</keyword>
+        <keyword>Internet-Draft</keyword>
+        <keyword>XML</keyword>
+        <keyword>Extensible Markup Language</keyword>-->
+        <abstract>
+            <t>Anycast tunneling
+            </t>
+        </abstract>
+    </front>
+    <middle>
+    <section title='The Middle'>
+        ...
+      <section title='The section'>
+            ...
+            <section title='inner section'>...</section>
+        </section>
+        <appendix title='The appan'></appendix>
+      </section>
+    </middle>
+    <back>
+    </back>
+    </rfc>
