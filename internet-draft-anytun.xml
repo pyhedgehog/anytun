@@ -40,14 +40,18 @@
     </front>
     <middle>
     <section title='Introduction'>
-        ...
-      <section title='The section'>
+        <t>anytun defines a Host Anycast Service rfc1546. It can be used to build high scalable and redundant tunnel services. It also supports an IPv4 relay mode, make it possible, that only one of the connection endpoints has to use the anytun protocol. This can be used to make connections through Firewalls or behind a NAT Router</t>
          <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
 ...
-            <section title='inner section'>...</section>
+            <section title='Tunneling Mode'>
+	      <t>In tunneling mode the payload of the anytun packet is transmitted from one unicast host to the anycast server. This server makes a routing descision based on the underlying protocol and transmits a new anytun package to one or more clients depending on the routing descition.</t> 
+	    </section>
+
+	    <section title='Relay Mode'>
+               In relay mode a client using the anytun protocol builds a connection
+	    </section>
         </section>
         <appendix title='The appan'></appendix>
-      </section>
     </middle>
     <back>
     <references>
