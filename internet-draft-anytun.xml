@@ -30,12 +30,12 @@
         <keyword>Internet-Draft</keyword>
         <keyword>Anycast tunneling / relaying</keyword>
         <abstract>
-            <t>The anycast tunneling (anytun) protocol defines a protocol used for communication between unicast clients and anycast servers. It can be usesd for tunneling information between 2 clients or in relay mode to trasmit data form the client over the servers to a third party not using the protocol and vice versa.
+            <t>The anycast tunneling (anytun) protocol defines a protocol used for communication between unicast clients and anycast servers. It can be used for tunneling information between 2 clients or in relay mode to transmit data form the client over the servers to a third party not using the protocol and vice versa.
             </t>
         </abstract>
     </front>
     <middle>
-    <section title='The Middle'>
+    <section title='Introduction'>
         ...
       <section title='The section'>
             ...
@@ -45,5 +45,8 @@
       </section>
     </middle>
     <back>
+    <references title='Normative References'>
+        &rfc3068;
+    </references>
     </back>
     </rfc>
