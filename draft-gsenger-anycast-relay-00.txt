@@ -117,11 +117,11 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 1.1.  The section
 
+   This document was constructed using the [1] DTD.
+
 1.1.1.  inner section
 
 Appendix A.  The appan
-
-
 
 
 
@@ -169,10 +169,10 @@ Gsenger                 Expires September 8, 2007               [Page 3]
 Internet-Draft           Anycast stream relaying              March 2007
 
 
-2.  Normative References
+2.  References
 
-
-
+   [1]  Huitema, C., "An Anycast Prefix for 6to4 Relay Routers",
+        RFC 3068, June 2001.
 
 
 
