@@ -42,7 +42,7 @@
     <section title='Introduction'>
         ...
       <section title='The section'>
-         <t>This document was constructed using the <xref target="RFC3068" /> DTD.</t>
+         <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
 ...
             <section title='inner section'>...</section>
         </section>
