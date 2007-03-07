@@ -26,14 +26,11 @@
 
         <area>General</area>
         <workgroup></workgroup>
-<!--        <keyword>RFC</keyword>
-        <keyword>Request for Comments</keyword>
-        <keyword>I-D</keyword>
+        <keyword>anytun</keyword>
         <keyword>Internet-Draft</keyword>
-        <keyword>XML</keyword>
-        <keyword>Extensible Markup Language</keyword>-->
+        <keyword>Anycast tunneling / relaying</keyword>
         <abstract>
-            <t>Anycast tunneling
+            <t>The anycast tunneling (anytun) protocol defines a protocol used for communication between unicast clients and anycast servers. It can be usesd for tunneling information between 2 clients or in relay mode to trasmit data form the client over the servers to a third party not using the protocol and vice versa.
             </t>
         </abstract>
     </front>

@@ -2,8 +2,8 @@
 
 
 Network Working Group                                         O. Gsenger
-Internet-Draft                                             March 2, 2007
-Expires: September 3, 2007
+Internet-Draft                                             March 7, 2007
+Expires: September 8, 2007
 
 
                         Anycast stream relaying
@@ -32,7 +32,7 @@ Status of this Memo
    The list of Internet-Draft Shadow Directories can be accessed at
    http://www.ietf.org/shadow.html.
 
-   This Internet-Draft will expire on September 3, 2007.
+   This Internet-Draft will expire on September 8, 2007.
 
 Copyright Notice
 
@@ -52,14 +52,18 @@ Copyright Notice
 
 
 
-Gsenger                 Expires September 3, 2007               [Page 1]
+Gsenger                 Expires September 8, 2007               [Page 1]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
 
 Abstract
 
-   Anycast tunneling
+   The anycast tunneling (anytun) protocol defines a protocol used for
+   communication between unicast clients and anycast servers.  It can be
+   usesd for tunneling information between 2 clients or in relay mode to
+   trasmit data form the client over the servers to a third party not
+   using the protocol and vice versa.
 
 
 
@@ -104,11 +108,7 @@ Abstract
 
 
 
-
-
-
-
-Gsenger                 Expires September 3, 2007               [Page 2]
+Gsenger                 Expires September 8, 2007               [Page 2]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -164,7 +164,7 @@ Appendix A.  The appan
 
 
 
-Gsenger                 Expires September 3, 2007               [Page 3]
+Gsenger                 Expires September 8, 2007               [Page 3]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -220,7 +220,7 @@ Author's Address
 
 
 
-Gsenger                 Expires September 3, 2007               [Page 4]
+Gsenger                 Expires September 8, 2007               [Page 4]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -276,5 +276,5 @@ Acknowledgment
 
 
 
-Gsenger                 Expires September 3, 2007               [Page 5]
+Gsenger                 Expires September 8, 2007               [Page 5]
 
