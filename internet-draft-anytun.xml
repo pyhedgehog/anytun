@@ -40,7 +40,7 @@
     </front>
     <middle>
     <section title='Introduction'>
-        <t>anytun defines a Host Anycast Service rfc1546. It can be used to build high scalable and redundant tunnel services. It also supports an IPv4 relay mode, make it possible, that only one of the connection endpoints has to use the anytun protocol. This can be used to make connections through Firewalls or behind a NAT Router</t>
+        <t>anytun defines a Host Anycast Service as defined in rfc1546. It can be used to build high scalable and redundant tunnel services. It supports both UDP and TCP connections. Additionally to the possibility of establashing an unicast TCP connection over an anycast address as suggested in rfc1546, it supports real anycast TCP connections with state syncronisation and heuristic state forecast. It also has a relay mode, that makes it possible, that only one of the connection endpoints has to use the anytun protocol. This can be used to make connections through Firewalls or behind a NAT Router</t>
          <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
 ...
             <section title='Tunneling Mode'>

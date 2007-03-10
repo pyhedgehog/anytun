@@ -2,8 +2,8 @@
 
 
 Network Working Group                                         O. Gsenger
-Internet-Draft                                             March 7, 2007
-Expires: September 8, 2007
+Internet-Draft                                            March 10, 2007
+Expires: September 11, 2007
 
 
                         Anycast stream relaying
@@ -32,7 +32,7 @@ Status of this Memo
    The list of Internet-Draft Shadow Directories can be accessed at
    http://www.ietf.org/shadow.html.
 
-   This Internet-Draft will expire on September 8, 2007.
+   This Internet-Draft will expire on September 11, 2007.
 
 Copyright Notice
 
@@ -52,7 +52,7 @@ Copyright Notice
 
 
 
-Gsenger                 Expires September 8, 2007               [Page 1]
+Gsenger                Expires September 11, 2007               [Page 1]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -108,18 +108,22 @@ Abstract
 
 
 
-Gsenger                 Expires September 8, 2007               [Page 2]
+Gsenger                Expires September 11, 2007               [Page 2]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
 
 1.  Introduction
 
-   anytun defines a Host Anycast Service rfc1546.  It can be used to
-   build high scalable and redundant tunnel services.  It also supports
-   an IPv4 relay mode, make it possible, that only one of the connection
-   endpoints has to use the anytun protocol.  This can be used to make
-   connections through Firewalls or behind a NAT Router
+   anytun defines a Host Anycast Service as defined in rfc1546.  It can
+   be used to build high scalable and redundant tunnel services.  It
+   supports both UDP and TCP connections.  Additionally to the
+   possibility of establashing an unicast TCP connection over an anycast
+   address as suggested in rfc1546, it supports real anycast TCP
+   connections with state syncronisation and heuristic state forecast.
+   It also has a relay mode, that makes it possible, that only one of
+   the connection endpoints has to use the anytun protocol.  This can be
+   used to make connections through Firewalls or behind a NAT Router
 
    RFC3068 [1] DTD.
 
@@ -160,11 +164,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-
-
-
-
-Gsenger                 Expires September 8, 2007               [Page 3]
+Gsenger                Expires September 11, 2007               [Page 3]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -220,7 +220,7 @@ Appendix A.  The appan
 
 
 
-Gsenger                 Expires September 8, 2007               [Page 4]
+Gsenger                Expires September 11, 2007               [Page 4]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -276,7 +276,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 8, 2007               [Page 5]
+Gsenger                Expires September 11, 2007               [Page 5]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -332,7 +332,7 @@ Author's Address
 
 
 
-Gsenger                 Expires September 8, 2007               [Page 6]
+Gsenger                Expires September 11, 2007               [Page 6]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -388,5 +388,5 @@ Acknowledgment
 
 
 
-Gsenger                 Expires September 8, 2007               [Page 7]
+Gsenger                Expires September 11, 2007               [Page 7]
 
