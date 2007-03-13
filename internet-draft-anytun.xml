@@ -34,7 +34,7 @@
         <keyword>Internet-Draft</keyword>
         <keyword>Anycast tunneling / relaying</keyword>
         <abstract>
-            <t>The anycast tunneling (anytun) protocol defines a protocol used for communication between unicast clients and anycast servers. It can be used for tunneling information between 2 clients or in relay mode to transmit data form the client over the servers to a third party not using the protocol and vice versa.
+            <t>The anycast tunneling (anytun) protocol defines a protocol used for communication between unicast clients and anycast servers. It can be used for tunneling information between 2 clients over the servers or in relay mode to transmit data form the client over the servers to a third party not using the protocol and vice versa.
             </t>
         </abstract>
     </front>
@@ -42,15 +42,33 @@
     <section title='Introduction'>
         <t>anytun defines a Host Anycast Service as defined in rfc1546. It can be used to build high scalable and redundant tunnel services. It supports both UDP and TCP connections. Additionally to the possibility of establashing an unicast TCP connection over an anycast address as suggested in rfc1546, it supports real anycast TCP connections with state syncronisation and heuristic state forecast. It also has a relay mode, that makes it possible, that only one of the connection endpoints has to use the anytun protocol. This can be used to make connections through Firewalls or behind a NAT Router</t>
          <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
-...
+    <section>
+    <section title="Operation modes">
+       <section title="Tunnel modes">
+    
             <section title='Tunneling Mode'>
 	      <t>In tunneling mode the payload of the anytun packet is transmitted from one unicast host to the anycast server. This server makes a routing descision based on the underlying protocol and transmits a new anytun package to one or more clients depending on the routing descition.</t> 
 	    </section>
 
-	    <section title='Relay Mode'>
-               In relay mode a client using the anytun protocol builds a connection
+	    <section title='Open tunnel mode'>
+               <t>In open tunnel mode only one of two clients talking to each other over the server MUST use the anytun protocol. mode a client using the anytun protocol, that wants to tunnel data, is building a connection to the anycast servers using the anytun protocol. The anycast servers relay the encapsulated packages directly to the destination without using the anytun protocol. Therefor for the destination it saems that it is talking to the client directly.</t>
 	    </section>
-        </section>
+	    <section title='relay mode'>
+	      
+	    </section>
+	</section>
+	<section title="Transport modes">
+	  <section title="anycast udp mode">
+	  </section>
+	  <section title="unicast tcp with anycast initialisation">
+	  </section>
+	  <section title="full anycast tcp">
+	  </section>
+     </section>
+     <section title="Protocol specification">
+       <section title="Header format">
+       </section>
+     </section>
         <appendix title='The appan'></appendix>
     </middle>
     <back>
