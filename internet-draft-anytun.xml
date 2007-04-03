@@ -80,13 +80,14 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
 -----     |   IPv6  |      ----------      -----------     -----
 |   |  -> -----------  ->  |server 2|  ->  |   UDP*  |  -> |   |
 -----     |  anytun |      ----------      -----------     -----
-#####     -----------                      |  IPv6*  |     #####
+#####     -----------                      |   IPv6* |     #####
           |   UDP   |      ----------      -----------
-client 1  -----------  ->  |server 3|  ->  |   ...   |     client 2
-          |   IPv4  |      ----------                 
-          -----------                                 
-          |   ...   |       anycast        * changed source address
-                                             or port   
+client 1  -----------  ->  |server 3|  ->  |   ...   |    host
+          |   IPv4  |      ----------                     not using
+          -----------                                     anytun
+          |   ...   |       anycast        
+                                           *changed source address
+                                            or port   
                  </artwork>
        </figure>
 
