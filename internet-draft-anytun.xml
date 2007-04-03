@@ -47,8 +47,8 @@
     
             <section title='Tunneling Mode'>
               <figure anchor="tunnel_mode">
+                 <preamble>An example of anytun used in tunnel mode</preamble>
                  <artwork>
-                   <preamble>An example of anytun used in tunnel mode</preamble>
           -----------                      ----------- 
           |   RTP   |      ----------      |   RTP   |
           -----------  ->  |server 1|  ->  -----------
