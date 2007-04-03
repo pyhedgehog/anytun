@@ -42,6 +42,7 @@
     <section title='Introduction'>
         <t>anytun defines a Host Anycast Service as defined in rfc1546. It can be used to build high scalable and redundant tunnel services. It supports both UDP and TCP connections. Additionally to the possibility of establashing an unicast TCP connection over an anycast address as suggested in rfc1546, it supports real anycast TCP connections with state syncronisation and heuristic state forecast. It also has a relay mode, that makes it possible, that only one of the connection endpoints has to use the anytun protocol. This can be used to make connections through Firewalls or behind a NAT Router</t>
          <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
+    </section> 
     <section title="Operation modes">
        <section title="Tunnel modes">
     
@@ -132,7 +133,6 @@ controller
 	     <t>Most NAT routers need a tcp connection to transmit some packets once in while to stay open. In full anycast tcp mode anytun hast to predict the tcp state including the sequence number. Synconisation of the sequence number would be to much overhead, so a keep alive intervall is agreed. This interval is used to calculate the sequemce number.</t>
 	     </section>
 	  </section>
-	</section>
 	</section>
      </section>
      <section title="Protocol specification">

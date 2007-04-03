@@ -127,11 +127,53 @@ Internet-Draft           Anycast stream relaying              March 2007
 
    RFC3068 [1] DTD.
 
-1.1.  Operation modes
 
-1.1.1.  Tunnel modes
 
-1.1.1.1.  Tunneling Mode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gsenger                 Expires September 2, 2007               [Page 3]
+
+Internet-Draft           Anycast stream relaying              March 2007
+
+
+2.  Operation modes
+
+2.1.  Tunnel modes
+
+2.1.1.  Tunneling Mode
 
    An example of anytun used in tunnel mode
 
@@ -164,12 +206,26 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 3]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gsenger                 Expires September 2, 2007               [Page 4]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
 
-1.1.1.2.  Open tunnel mode
+2.1.2.  Open tunnel mode
 
    An example of anytun used in open tunnel mode
 
@@ -220,12 +276,12 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 4]
+Gsenger                 Expires September 2, 2007               [Page 5]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
 
-1.1.1.3.  relay mode
+2.1.3.  relay mode
 
    An example of anytun used in relay mode
 
@@ -257,15 +313,15 @@ Internet-Draft           Anycast stream relaying              March 2007
    anytun protocol is only used for controll messages, but not fr
    encapsulation.
 
-1.1.2.  Transport modes
+2.2.  Transport modes
 
-1.1.2.1.  anycast udp mode
+2.2.1.  anycast udp mode
 
-1.1.2.2.  unicast tcp with anycast initialisation
+2.2.2.  unicast tcp with anycast initialisation
 
-1.1.2.3.  full anycast tcp
+2.2.3.  full anycast tcp
 
-1.1.2.3.1.  keep alive message request
+2.2.3.1.  keep alive message request
 
    Most NAT routers need a tcp connection to transmit some packets once
    in while to stay open.  In full anycast tcp mode anytun hast to
@@ -276,16 +332,14 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 5]
+Gsenger                 Expires September 2, 2007               [Page 6]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
 
-2.  Protocol specification
+3.  Protocol specification
 
-2.1.  Header format
-
-
+3.1.  Header format
 
 
 
@@ -332,7 +386,9 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 6]
+
+
+Gsenger                 Expires September 2, 2007               [Page 7]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -388,12 +444,12 @@ Appendix A.  The appan
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 7]
+Gsenger                 Expires September 2, 2007               [Page 8]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
 
-3.  References
+4.  References
 
    [1]  Huitema, C., "An Anycast Prefix for 6to4 Relay Routers",
         RFC 3068, June 2001.
@@ -444,7 +500,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 8]
+Gsenger                 Expires September 2, 2007               [Page 9]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -500,7 +556,7 @@ Author's Address
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 9]
+Gsenger                 Expires September 2, 2007              [Page 10]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -556,5 +612,5 @@ Acknowledgment
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 10]
+Gsenger                 Expires September 2, 2007              [Page 11]
 
