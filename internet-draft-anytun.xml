@@ -94,6 +94,31 @@ client 1  -----------  ->  |server 3|  ->  |   ...   |    host
                <t>In open tunnel mode only one of two clients talking to each other over the servers MUST use the anytun protocol. When a client using the anytun protocol wants to tunnel data, it is building a connection to the anycast servers using the anytun protocol. The anycast servers relay the encapsulated packages directly to the destination without using the anytun protocol. The source address of the datagramm HAS TO be changed to the anycast address of the server. The anytun servers act like a source NAT router, therefor for the destination it saems that it is talking to the client directly.</t>
 	    </section>
 	    <section title='relay mode'>
+              <figure anchor="relay_mode">
+                 <preamble>An example of anytun used in relay mode</preamble>
+                 <artwork>
+          -----------
+-----     |   RTP   |      ----------
+|   |     -----------  ->  |server 1|  ->
+-----     |   UDP** |      ----------      -----------
+#####     -----------                      |   RTP   |
+          |   IPv6**|      ----------      -----------     -----
+host   -> -----------  ->  |server 2|  ->  |   UDP*  |  -> |   |
+not using |   ...   |      ----------      -----------     -----
+anytun                                     |   IPv6* |     #####
+                           ----------      -----------
+          -----------  ->  |server 3|      |   ...   |    host
+-----     |  anytun |      ----------                     not using
+|   |     -----------                                     anytun
+-----     |   IPv4  |       anycast
+#####     -----------
+connection|   ...   |
+controller
+
+ *changed source address or port
+ **changed destination address or port
+                 </artwork>
+       </figure>
 	       <t>In relay mode the anycast serveres directly repaet the packetes of clients, only the source and destination addresses are changed. The anytun protocol is only used for controll messages, but not fr encapsulation.</t> 
 	    </section>
 	</section>
