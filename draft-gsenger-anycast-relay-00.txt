@@ -133,22 +133,9 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 1.1.1.1.  Tunneling Mode
 
-        -----------------
-        |     RTP       |
-        -----------------
-        |     UDP       |
-        -----------------
-        |     IPv6      |
-        -----------------
-        |    anytun     |
-        -----------------
-        |     UDP       |
-        -----------------
-        |     IPv4      |
-        -----------------
-        |     ...       |
 
    An example of anytun used in tunnel mode
+
 
                                  Figure 1
 
@@ -156,10 +143,23 @@ Internet-Draft           Anycast stream relaying              March 2007
    from one unicast host to the anycast server.  This server makes a
    routing descision based on the underlying protocol and transmits a
    new anytun package to one or more clients depending on the routing
-   descition.
+   descition.  The server MAY also route the packet to a directly
+   connected network or a service running on the server, but please
+   note, that this is only usefull for anycast host services like DNS
+   and that the services HAVE TO be running on all servers in order to
+   work.
 
+1.1.1.2.  Open tunnel mode
 
-
+   In open tunnel mode only one of two clients talking to each other
+   over the servers MUST use the anytun protocol.  When a client using
+   the anytun protocol wants to tunnel data, it is building a connection
+   to the anycast servers using the anytun protocol.  The anycast
+   servers relay the encapsulated packages directly to the destination
+   without using the anytun protocol.  The source address of the
+   datagramm HAS TO be changed to the anycast address of the server.
+   The anytun servers act like a source NAT router, therefor for the
+   destination it saems that it is talking to the client directly.
 
 
 
@@ -168,16 +168,6 @@ Gsenger                 Expires September 2, 2007               [Page 3]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
-
-1.1.1.2.  Open tunnel mode
-
-   In open tunnel mode only one of two clients talking to each other
-   over the server MUST use the anytun protocol. mode a client using the
-   anytun protocol, that wants to tunnel data, is building a connection
-   to the anycast servers using the anytun protocol.  The anycast
-   servers relay the encapsulated packages directly to the destination
-   without using the anytun protocol.  Therefor for the destination it
-   saems that it is talking to the client directly.
 
 1.1.1.3.  relay mode
 
@@ -202,6 +192,16 @@ Internet-Draft           Anycast stream relaying              March 2007
    of the sequence number would be to much overhead, so a keep alive
    intervall is agreed.  This interval is used to calculate the sequemce
    number.
+
+
+
+
+
+
+
+
+
+
 
 
 

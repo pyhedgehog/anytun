@@ -48,28 +48,28 @@
             <section title='Tunneling Mode'>
               <figure anchor="tunnel_mode">
                  <artwork>
-     -----------------
-     |     RTP       |
-     -----------------
-     |     UDP       |
-     -----------------
-     |     IPv6      |
-     -----------------
-     |    anytun     |
-     -----------------
-     |     UDP       |
-     -----------------
-     |     IPv4      |
-     -----------------
-     |     ...       |
+                   <preamble>An example of anytun used in tunnel mode</preamble>
+          -----------                      ----------- 
+          |   RTP   |      ----------      |   RTP   |
+          -----------  ->  |server 1|  ->  -----------
+          |   UDP   |      ----------      |   UDP   |
+          -----------                      -----------
+-----     |   IPv6  |      ----------      |   IPv6  |     -----
+|   |  -> -----------  ->  |server 2|  ->  -----------  -> |   |
+-----     |  anytun |      ----------      |  anytun |     -----
+#####     -----------                      -----------     #####
+          |   UDP   |      ----------      |   UDP   |
+client 1  -----------  ->  |server 3|  ->  -----------     client 2
+          |   IPv4  |      ----------      |   IPv4  |
+          -----------                      -----------
+          |   ...   |       anycast        |   ...   |
                  </artwork>
-               <postamble>An example of anytun used in tunnel mode</postamble>
        </figure>
-	      <t>In tunneling mode the payload of the anytun packet is transmitted from one unicast host to the anycast server. This server makes a routing descision based on the underlying protocol and transmits a new anytun package to one or more clients depending on the routing descition.</t> 
+	      <t>In tunneling mode the payload of the anytun packet is transmitted from one unicast host to the anycast server. This server makes a routing descision based on the underlying protocol and transmits a new anytun package to one or more clients depending on the routing descition. The server MAY also route the packet to a directly connected network or a service running on the server, but please note, that this is only usefull for anycast host services like DNS and that the services HAVE TO be running on all servers in order to work.</t> 
 	    </section>
 
 	    <section title='Open tunnel mode'>
-               <t>In open tunnel mode only one of two clients talking to each other over the server MUST use the anytun protocol. mode a client using the anytun protocol, that wants to tunnel data, is building a connection to the anycast servers using the anytun protocol. The anycast servers relay the encapsulated packages directly to the destination without using the anytun protocol. Therefor for the destination it saems that it is talking to the client directly.</t>
+               <t>In open tunnel mode only one of two clients talking to each other over the servers MUST use the anytun protocol. When a client using the anytun protocol wants to tunnel data, it is building a connection to the anycast servers using the anytun protocol. The anycast servers relay the encapsulated packages directly to the destination without using the anytun protocol. The source address of the datagramm HAS TO be changed to the anycast address of the server. The anytun servers act like a source NAT router, therefor for the destination it saems that it is talking to the client directly.</t>
 	    </section>
 	    <section title='relay mode'>
 	       <t>In relay mode the anycast serveres directly repaet the packetes of clients, only the source and destination addresses are changed. The anytun protocol is only used for controll messages, but not fr encapsulation.</t> 
