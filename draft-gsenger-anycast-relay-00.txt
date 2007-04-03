@@ -171,6 +171,15 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 2.  Operation modes
 
+   This section gives an overview of possible operation modes und usage
+   scenarios.  Please note, that the protocols used in the figures are
+   only examples and that anytun itself does not care about either
+   transport protocols or encapsulated protocols.  Routing and network
+   address translation is not done by anytun.  Each implemetation MAY
+   choose it's own way of doing this task (e.g. using functions provided
+   by the operating system).  Anytun is used to establish and controll
+   tunnnels, to encapsulate and encrypt data.
+
 2.1.  Tunnel modes
 
 2.1.1.  Tunneling Mode
@@ -203,15 +212,6 @@ Internet-Draft           Anycast stream relaying              March 2007
    note, that this is only usefull for anycast host services like DNS
    and that the services HAVE TO be running on all servers in order to
    work.
-
-
-
-
-
-
-
-
-
 
 
 
