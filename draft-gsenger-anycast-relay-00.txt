@@ -171,6 +171,26 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 1.1.1.2.  Open tunnel mode
 
+   An example of anytun used in open tunnel mode
+
+             -----------
+             |   RTP   |      ----------
+             -----------  ->  |server 1|  ->
+             |   UDP   |      ----------      -----------
+             -----------                      |   RTP   |
+   -----     |   IPv6  |      ----------      -----------     -----
+   |   |  -> -----------  ->  |server 2|  ->  |   UDP*  |  -> |   |
+   -----     |  anytun |      ----------      -----------     -----
+   #####     -----------                      |  IPv6*  |     #####
+             |   UDP   |      ----------      -----------
+   client 1  -----------  ->  |server 3|  ->  |   ...   |     client 2
+             |   IPv4  |      ----------
+             -----------
+             |   ...   |       anycast        * changed source address
+                                                or port
+
+                                 Figure 2
+
    In open tunnel mode only one of two clients talking to each other
    over the servers MUST use the anytun protocol.  When a client using
    the anytun protocol wants to tunnel data, it is building a connection
@@ -193,6 +213,17 @@ Internet-Draft           Anycast stream relaying              March 2007
 1.1.2.1.  anycast udp mode
 
 1.1.2.2.  unicast tcp with anycast initialisation
+
+
+
+
+
+
+
+Gsenger                 Expires September 2, 2007               [Page 4]
+
+Internet-Draft           Anycast stream relaying              March 2007
+
 
 1.1.2.3.  full anycast tcp
 
@@ -220,7 +251,32 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 4]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gsenger                 Expires September 2, 2007               [Page 5]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -276,7 +332,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 5]
+Gsenger                 Expires September 2, 2007               [Page 6]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -332,7 +388,7 @@ Appendix A.  The appan
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 6]
+Gsenger                 Expires September 2, 2007               [Page 7]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -388,7 +444,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 7]
+Gsenger                 Expires September 2, 2007               [Page 8]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -444,7 +500,7 @@ Author's Address
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 8]
+Gsenger                 Expires September 2, 2007               [Page 9]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -500,5 +556,5 @@ Acknowledgment
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 9]
+Gsenger                 Expires September 2, 2007              [Page 10]
 

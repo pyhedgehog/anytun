@@ -69,6 +69,27 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
 	    </section>
 
 	    <section title='Open tunnel mode'>
+              <figure anchor="open_tunnel_mode">
+                 <preamble>An example of anytun used in open tunnel mode</preamble>
+                 <artwork>
+          -----------                                 
+          |   RTP   |      ----------                 
+          -----------  ->  |server 1|  ->             
+          |   UDP   |      ----------      -----------
+          -----------                      |   RTP   |
+-----     |   IPv6  |      ----------      -----------     -----
+|   |  -> -----------  ->  |server 2|  ->  |   UDP*  |  -> |   |
+-----     |  anytun |      ----------      -----------     -----
+#####     -----------                      |  IPv6*  |     #####
+          |   UDP   |      ----------      -----------
+client 1  -----------  ->  |server 3|  ->  |   ...   |     client 2
+          |   IPv4  |      ----------                 
+          -----------                                 
+          |   ...   |       anycast        * changed source address
+                                             or port   
+                 </artwork>
+       </figure>
+
                <t>In open tunnel mode only one of two clients talking to each other over the servers MUST use the anytun protocol. When a client using the anytun protocol wants to tunnel data, it is building a connection to the anycast servers using the anytun protocol. The anycast servers relay the encapsulated packages directly to the destination without using the anytun protocol. The source address of the datagramm HAS TO be changed to the anycast address of the server. The anytun servers act like a source NAT router, therefor for the destination it saems that it is talking to the client directly.</t>
 	    </section>
 	    <section title='relay mode'>
