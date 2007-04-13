@@ -189,9 +189,9 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
                  <artwork>
 HEX
 0000 Reserved
-0001 Raw Ethernet - both IEEE 802.3 and DIX Etherernet 
+0001 Raw Ethernet - both IEEE 802.3 and DIX ethernet 
                     without preamble,SFD, PAD and FCS
-0002 Raw Ethernet with FCS
+0002 Raw ethernet with FCS
 0003 Reserved
 .... Reserved
 05DC Reserved
