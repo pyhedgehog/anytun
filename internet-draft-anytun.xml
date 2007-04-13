@@ -192,10 +192,15 @@ HEX
 0001 Raw Ethernet - both IEEE 802.3 and DIX Etherernet 
                     without preamble,SFD, PAD and FCS
 0002 Raw Ethernet with FCS
-0003-05DC Reserved
-05DD and above as in http://www.iana.org/assignments/ethernet-numbers
-0800  Internet IP (IPv4)
-86DD  IPv6
+0003 Reserved
+.... Reserved
+05DC Reserved
+05DD as in http://www.iana.org/assignments/ethernet-numbers
+.... as in http://www.iana.org/assignments/ethernet-numbers
+0800 Internet IP (IPv4)
+.... as in http://www.iana.org/assignments/ethernet-numbers
+86DD IPv6
+.... as in http://www.iana.org/assignments/ethernet-numbers
 </artwork>
 </figure>
 </t>
