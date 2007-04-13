@@ -453,17 +453,17 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 3.1.  Header format
 
+3.2.  Protocol field
 
-
-
-
-
-
-
-
-
-
-
+   The protocol field defines the payload protocol.  ETHER TYPE protocol
+   numerbers are used. http://www.iana.org/assignments/ethernet-numbers
+   Values from 0 to 0000-05DC are not used for DIX ethernet lenght, but
+   are reservered for special purposes.  As the definition of
+   transparent ethernet bridging is very unclear 2 special types are
+   added for ethernet frames HEX 0001 Raw Ethernet - both IEEE 802.3 and
+   DIX Etherernet without preamble,SFD, PAD and FCS 0002 Raw Ethernet
+   with FCS further special types MAY be added in the furture.  Most
+   important ETHER TYPEs 0800 Internet IP (IPv4) 86DD IPv6
 
 
 
