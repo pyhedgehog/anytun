@@ -168,7 +168,7 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
                  </artwork>
        </figure>
 
-      <t>The light UDP mode is neerly the same as the normal UDP mode, the only difference is, that the udp size is set to the udp header lenght and not to the length of the full packet and therefor the checksum is only calculated for the udo header itself. So there is no error correction or detection done on the payload. This can be usefull if realtime data is beeing transimittet or the tunneled protocol does error correction/detection by itself.</t>
+      <t>The light UDP mode is neerly the same as the normal UDP mode, the only difference is, that the udp size is set to the udp header lenght and not to the length of the full packet and therefor the checksum is only calculated for the udp header itself. So there is no error correction or detection done on the payload. This can be usefull if realtime data is beeing transimittet or the tunneled protocol does error correction/detection by itself.</t>
 	  </section>
 	  <section title="unicast tcp with anycast initialisation">
 	  </section>
