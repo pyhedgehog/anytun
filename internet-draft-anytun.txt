@@ -6,7 +6,7 @@ Internet-Draft                                                March 2007
 Expires: September 2, 2007
 
 
-                        Anycast stream relaying
+                  anycast tunneling and relay protocol
                      draft-gsenger-anycast-relay-00
 
 Status of this Memo
@@ -54,23 +54,23 @@ Copyright Notice
 
 Gsenger                 Expires September 2, 2007               [Page 1]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 Abstract
 
-   The anycast tunneling (anytun) protocol defines a protocol used for
-   communication between unicast clients and anycast servers.  It can be
-   used for tunneling information between 2 clients over the servers or
-   in relay mode to transmit data form the client over the servers to a
-   third party not using the protocol and vice versa.
-
-
-
-
-
-
-
+   The anycast tunneling and relay protocol (anytun) defines a protocol
+   used for communication between unicast clients and anycast servers.
+   It can be used for tunneling information between 2 clients over the
+   anycast servers or in relay mode to transmit data form the client
+   over the anycast servers to a third party not using the protocol and
+   vice versa.  Unlike other tunneling protocols like GRE or IPIP
+   tunnels which indeed will work with anycast as well, anytun directly
+   includes cryptography and authentication.  In relay mode it also
+   supports source NAT with integrated NAT transversal.  It is intended
+   to deliver a high performance and reliability solution for tunneling
+   and relaying of data over servers, where direct client to client
+   connections are not possible or not wanted.
 
 
 
@@ -110,7 +110,7 @@ Abstract
 
 Gsenger                 Expires September 2, 2007               [Page 2]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 1.  Introduction
@@ -166,7 +166,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 3]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 2.  Operation modes
@@ -222,7 +222,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 4]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 2.1.2.  Open tunnel mode
@@ -278,7 +278,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 5]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 2.1.3.  relay mode
@@ -315,12 +315,12 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 2.2.  Transport modes
 
+2.2.1.  anycast udp mode
 
-
-
-
-
-
+   Anytun does not define wich lower layer protocols HAVE TO be used,
+   but it's most likely used on top of udp.  This section should only
+   discuss some issues on udp in combination with anycasting and
+   tunnels.
 
 
 
@@ -334,12 +334,12 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 6]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
-2.2.1.  anycast udp mode
+2.2.2.  Using UDP
 
-   An example of anytun used with udp transport
+   An example of anytun used with udp as transport
 
              -----------                      -----------
              |   RTP   |      ----------      |   RTP   |
@@ -358,12 +358,13 @@ Internet-Draft           Anycast stream relaying              March 2007
 
                                  Figure 4
 
-   In anycast udp mode the data between clients and anycast serveres is
-   carried by udp packets.  Packets are routed by the serveres from one
-   client to another.  Because udp is stateless no inforamtion has to be
-   syncronised
+   When using UDP no flow controll or retransmission is done, neigther
+   by UDP nor anytun.  The encapsulated protocol HAS TO take care of
+   this tasks if needed.  UDP however has a checksum of the complete udp
+   datagram, so a packet gets discarded if there is a biterror in the
+   payload
 
-2.2.2.  anycast light udp mode
+2.2.3.  Using lightUDP
 
    An example of anytun used with udp transport
 
@@ -384,27 +385,39 @@ Internet-Draft           Anycast stream relaying              March 2007
 
                                  Figure 5
 
-   The light UDP mode is neerly the same as the normal UDP mode, the
 
 
 
 Gsenger                 Expires September 2, 2007               [Page 7]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
-   only difference is, that the udp size is set to the udp header lenght
-   and not to the length of the full packet and therefor the checksum is
-   only calculated for the udp header itself.  So there is no error
-   correction or detection done on the payload.  This can be usefull if
-   realtime data is beeing transimittet or the tunneled protocol does
-   error correction/detection by itself.
+   The difference between normal UDP and lightUDP is, that the udp size
+   is not set to the length of the full packet, but to the lenght of the
+   data used for the checksum and therefor the checksum is only
+   calculated for that part.  When using lightUDP, the lenght HAS tO be
+   set to the udp header length + the anytun header lenght.  So there is
+   no error correction or detection done on the payload.  This can be
+   usefull if realtime data is beeing transimittet or the tunneled
+   protocol does error correction/detection by itself.
 
-2.2.3.  Protocol specification
+2.2.4.  Fragmentation
 
-2.2.3.1.  Header format
+   The only way of fully supporting fragmentation would be to syncronise
+   fragments between all anycast servers.  This is considered to be to
+   much overhead, so there are two non perfect solutions for this
+   problems.  Either fragmentation HAS TO be disabled or if not all
+   fragments arrive at the same server the ip datagramm HAS TO be
+   discarded.  As routing changes are not expected to occure very
+   frequently, the encapsulated protocol can do a retransmission and all
+   fragments will arrive at the new server.
 
-2.2.3.2.  Protocol field
+2.3.  Protocol specification
+
+2.3.1.  Header format
+
+2.3.2.  Protocol field
 
    The protocol field defines the payload protocol.  ETHER TYPE protocol
    numerbers are used. http://www.iana.org/assignments/ethernet-numbers
@@ -431,22 +444,9 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Gsenger                 Expires September 2, 2007               [Page 8]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 Appendix A.  The appan
@@ -502,7 +502,7 @@ Appendix A.  The appan
 
 Gsenger                 Expires September 2, 2007               [Page 9]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 3.  References
@@ -558,7 +558,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 Gsenger                 Expires September 2, 2007              [Page 10]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 Author's Address
@@ -614,7 +614,7 @@ Author's Address
 
 Gsenger                 Expires September 2, 2007              [Page 11]
 
-Internet-Draft           Anycast stream relaying              March 2007
+Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 Full Copyright Statement

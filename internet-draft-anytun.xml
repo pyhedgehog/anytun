@@ -6,7 +6,7 @@
 ]>
     <rfc ipr='full3978' docName='draft-gsenger-anycast-relay-00'>
     <front>
-        <title>Anycast stream relaying</title>
+        <title>anycast tunneling and relay protocol</title>
 
         <author initials='O.G.' surname='Gsenger'
                 fullname='Othmar Gsenger'>
@@ -32,17 +32,20 @@
         <workgroup></workgroup>
         <keyword>anytun</keyword>
         <keyword>Internet-Draft</keyword>
-        <keyword>Anycast tunneling / relaying</keyword>
+        <keyword>anycast tunneling / relaying</keyword>
+        <keyword>tunnel</keyword>
+        <keyword>relay</keyword>
+        <keyword>protocol</keyword>
         <abstract>
-            <t>The anycast tunneling (anytun) protocol defines a protocol used for communication between unicast clients and anycast servers. It can be used for tunneling information between 2 clients over the servers or in relay mode to transmit data form the client over the servers to a third party not using the protocol and vice versa.
+            <t>The anycast tunneling and relay protocol (anytun) defines a protocol used for communication between unicast clients and anycast servers. It can be used for tunneling information between 2 clients over the anycast servers or in relay mode to transmit data form the client over the anycast servers to a third party not using the protocol and vice versa. Unlike other tunneling protocols like GRE or IPIP tunnels which indeed will work with anycast as well, anytun directly includes cryptography and authentication. In relay mode it also supports source NAT with integrated NAT transversal. It is intended to deliver a high performance and reliability solution for tunneling and relaying of data over servers, where direct client to client connections are not possible or not wanted.
             </t>
         </abstract>
-    </front>
-    <middle>
     <section title='Introduction'>
         <t>anytun defines a Host Anycast Service as defined in rfc1546. It can be used to build high scalable and redundant tunnel services. It supports both UDP and TCP connections. Additionally to the possibility of establashing an unicast TCP connection over an anycast address as suggested in rfc1546, it supports real anycast TCP connections with state syncronisation and heuristic state forecast. It also has a relay mode, that makes it possible, that only one of the connection endpoints has to use the anytun protocol. This can be used to make connections through Firewalls or behind a NAT Router</t>
          <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
     </section> 
+    </front>
+    <middle>
     <section title="Operation modes">
        <t>This section gives an overview of possible operation modes und usage scenarios. Please note, that the protocols used in the figures are only examples and that anytun itself does not care about either transport protocols or encapsulated protocols. Routing and network address translation is not done by anytun. Each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). Anytun is used to establish and controll tunnnels, to encapsulate and encrypt data.</t>
        <section title="Tunnel modes">
