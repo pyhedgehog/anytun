@@ -125,9 +125,13 @@ controller
 	    </section>
 	</section>
 	<section title="Transport modes">
-	  <section title="anycast udp mode">
+    <section title="anycast udp mode">
+      <t>Anytun does not define wich lower layer protocols HAVE TO be used, but it's most likely used on top of udp. This section should only discuss some issues on udp in combination with anycasting and tunnels.
+      </t>
+    </section> 
+	  <section title="Using UDP">
               <figure anchor="transtort_udp">
-                 <preamble>An example of anytun used with udp transport</preamble>
+                 <preamble>An example of anytun used with udp as transport</preamble>
                  <artwork>
           -----------                      -----------
           |   RTP   |      ----------      |   RTP   |
@@ -145,9 +149,9 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
           |   ...   |       anycast        |   ...   |
                  </artwork>
        </figure>
-      <t>In anycast udp mode the data between clients and anycast serveres is carried by udp packets. Packets are routed by the serveres from one client to another. Because udp is stateless no inforamtion has to be syncronised</t>
+      <t>When using UDP no flow controll or retransmission is done, neigther by UDP nor anytun. The encapsulated protocol HAS TO take care of this tasks if needed. UDP however has a checksum of the complete udp datagram, so a packet gets discarded if there is a biterror in the payload</t>
 	  </section>
-	  <section title="anycast light udp mode">
+	  <section title="Using lightUDP">
               <figure anchor="transport_lightudp">
                  <preamble>An example of anytun used with udp transport</preamble>
                  <artwork>
@@ -168,8 +172,14 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
                  </artwork>
        </figure>
 
-      <t>The light UDP mode is neerly the same as the normal UDP mode, the only difference is, that the udp size is set to the udp header lenght and not to the length of the full packet and therefor the checksum is only calculated for the udp header itself. So there is no error correction or detection done on the payload. This can be usefull if realtime data is beeing transimittet or the tunneled protocol does error correction/detection by itself.</t>
+      <t>The difference between normal UDP and lightUDP is, that the udp size is not set to the length of the full packet, but to the lenght of the data used for the checksum and therefor the checksum is only calculated for that part. When using lightUDP, the lenght HAS tO be set to the udp header length + the anytun header lenght. So there is no error correction or detection done on the payload. This can be usefull if realtime data is beeing transimittet or the tunneled protocol does error correction/detection by itself.</t>
     </section>
+         <section title="Fragmentation">
+         <t>
+           The only way of fully supporting fragmentation would be to syncronise fragments between all anycast servers. This is considered to be to much overhead, so there are two non perfect solutions for this problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server.
+         </t>
+         </section>
+   </section>
      <section title="Protocol specification">
        <section title="Header format">
        </section>
@@ -189,7 +199,6 @@ HEX
 </figure>
 </t>
      </section>
-    </section>
     </section>
     </section>
         <appendix title='The appan'></appendix>
