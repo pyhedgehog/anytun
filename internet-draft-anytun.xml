@@ -169,47 +169,29 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
        </figure>
 
       <t>The light UDP mode is neerly the same as the normal UDP mode, the only difference is, that the udp size is set to the udp header lenght and not to the length of the full packet and therefor the checksum is only calculated for the udp header itself. So there is no error correction or detection done on the payload. This can be usefull if realtime data is beeing transimittet or the tunneled protocol does error correction/detection by itself.</t>
-	  </section>
-	  <section title="unicast tcp with anycast initialisation">
-	  </section>
-	  <section title="full anycast tcp">
-	     <section title="Introduction">
-	     <t>TCP is statefull, this is a big problem, because everey anycast server hast to know the tcp state. The TCP state has to be synced between the servers, that meens a lot of overhead. To keep this amount small and therefor make anycast TCP connections efficient some tricks SHOULD be used.
-       </t>
-       </section>
-	     <section title="keep alive message request">
-	     <t>Most NAT routers need a tcp connection to transmit some packets once in while to stay open. In full anycast tcp mode anytun hast to predict the tcp state including the sequence number. Synconisation of the sequence number would be to much overhead, so a keep alive intervall is agreed. This interval is used to calculate the sequemce number.</t>
-	     </section>
-	  </section>
-	</section>
-     </section>
+    </section>
      <section title="Protocol specification">
        <section title="Header format">
        </section>
        <section title="Protocol field">
-         <t>The protocol field defines the payload protocol. ETHER TYPE protocol numerbers are used. http://www.iana.org/assignments/ethernet-numbers . The values 0000-05DC are not used for DIX ethernet lenght, but are reservered for special purposes. As the definition of transparent ethernet bridging is very unclear 2 special types are added for ethernet frames<br/>
+         <t>The protocol field defines the payload protocol. ETHER TYPE protocol numerbers are used. http://www.iana.org/assignments/ethernet-numbers . The values 0000-05DC are reserverd and not used at the moment. 
             <figure anchor="prot_type_table">
-               <preamble>Protocol Types</preamble>
+               <preamble>Some exmples for protocol types</preamble>
                  <artwork>
 HEX
 0000 Reserved
-0001 Raw Ethernet - both IEEE 802.3 and DIX ethernet 
-                    without preamble,SFD, PAD and FCS
-0002 Raw ethernet with FCS
-0003 Reserved
 .... Reserved
 05DC Reserved
-05DD as in http://www.iana.org/assignments/ethernet-numbers
-.... as in http://www.iana.org/assignments/ethernet-numbers
 0800 Internet IP (IPv4)
-.... as in http://www.iana.org/assignments/ethernet-numbers
+6558 transparent ethernet bridging
 86DD IPv6
-.... as in http://www.iana.org/assignments/ethernet-numbers
 </artwork>
 </figure>
 </t>
-       </section>
      </section>
+    </section>
+    </section>
+    </section>
         <appendix title='The appan'></appendix>
     </middle>
     <back>

@@ -400,27 +400,27 @@ Internet-Draft           Anycast stream relaying              March 2007
    realtime data is beeing transimittet or the tunneled protocol does
    error correction/detection by itself.
 
-2.2.3.  unicast tcp with anycast initialisation
+2.2.3.  Protocol specification
 
-2.2.4.  full anycast tcp
+2.2.3.1.  Header format
 
-2.2.4.1.  Introduction
+2.2.3.2.  Protocol field
 
-   TCP is statefull, this is a big problem, because everey anycast
-   server hast to know the tcp state.  The TCP state has to be synced
-   between the servers, that meens a lot of overhead.  To keep this
-   amount small and therefor make anycast TCP connections efficient some
-   tricks SHOULD be used.
+   The protocol field defines the payload protocol.  ETHER TYPE protocol
+   numerbers are used. http://www.iana.org/assignments/ethernet-numbers
+   .  The values 0000-05DC are reserverd and not used at the moment.
 
-2.2.4.2.  keep alive message request
+   Some exmples for protocol types
 
-   Most NAT routers need a tcp connection to transmit some packets once
-   in while to stay open.  In full anycast tcp mode anytun hast to
-   predict the tcp state including the sequence number.  Synconisation
-   of the sequence number would be to much overhead, so a keep alive
-   intervall is agreed.  This interval is used to calculate the sequemce
-   number.
+   HEX
+   0000 Reserved
+   .... Reserved
+   05DC Reserved
+   0800 Internet IP (IPv4)
+   6558 transparent ethernet bridging
+   86DD IPv6
 
+                                 Figure 6
 
 
 
@@ -445,62 +445,6 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 Gsenger                 Expires September 2, 2007               [Page 8]
-
-Internet-Draft           Anycast stream relaying              March 2007
-
-
-3.  Protocol specification
-
-3.1.  Header format
-
-3.2.  Protocol field
-
-   The protocol field defines the payload protocol.  ETHER TYPE protocol
-   numerbers are used. http://www.iana.org/assignments/ethernet-numbers
-   .  The values 0000-05DC are not used for DIX ethernet lenght, but are
-   reservered for special purposes.  As the definition of transparent
-   ethernet bridging is very unclear 2 special types are added for
-   ethernet frames
-
-   Protocol Types
-
-   HEX
-   0000 Reserved
-   0001 Raw Ethernet - both IEEE 802.3 and DIX ethernet
-                       without preamble,SFD, PAD and FCS
-   0002 Raw ethernet with FCS
-   0003 Reserved
-   .... Reserved
-   05DC Reserved
-   05DD as in http://www.iana.org/assignments/ethernet-numbers
-   .... as in http://www.iana.org/assignments/ethernet-numbers
-   0800 Internet IP (IPv4)
-   .... as in http://www.iana.org/assignments/ethernet-numbers
-   86DD IPv6
-   .... as in http://www.iana.org/assignments/ethernet-numbers
-
-                                 Figure 6
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Gsenger                 Expires September 2, 2007               [Page 9]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -556,12 +500,12 @@ Appendix A.  The appan
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 10]
+Gsenger                 Expires September 2, 2007               [Page 9]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
 
-4.  References
+3.  References
 
    [1]  Huitema, C., "An Anycast Prefix for 6to4 Relay Routers",
         RFC 3068, June 2001.
@@ -612,7 +556,7 @@ Internet-Draft           Anycast stream relaying              March 2007
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 11]
+Gsenger                 Expires September 2, 2007              [Page 10]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -668,7 +612,7 @@ Author's Address
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 12]
+Gsenger                 Expires September 2, 2007              [Page 11]
 
 Internet-Draft           Anycast stream relaying              March 2007
 
@@ -724,5 +668,5 @@ Acknowledgment
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 13]
+Gsenger                 Expires September 2, 2007              [Page 12]
 
