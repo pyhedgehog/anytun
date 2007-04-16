@@ -40,17 +40,17 @@
             <t>The anycast tunneling and relay protocol (anytun) defines a protocol used for communication between unicast clients and anycast servers. It can be used for tunneling information between 2 clients over the anycast servers or in relay mode to transmit data form the client over the anycast servers to a third party not using the protocol and vice versa. Unlike other tunneling protocols like GRE or IPIP tunnels which indeed will work with anycast as well, anytun directly includes cryptography and authentication. In relay mode it also supports source NAT with integrated NAT transversal. It is intended to deliver a high performance and reliability solution for tunneling and relaying of data over servers, where direct client to client connections are not possible or not wanted.
             </t>
         </abstract>
-    <section title='Introduction'>
-        <t>anytun defines a Host Anycast Service as defined in rfc1546. It can be used to build high scalable and redundant tunnel services. It supports both UDP and TCP connections. Additionally to the possibility of establashing an unicast TCP connection over an anycast address as suggested in rfc1546, it supports real anycast TCP connections with state syncronisation and heuristic state forecast. It also has a relay mode, that makes it possible, that only one of the connection endpoints has to use the anytun protocol. This can be used to make connections through Firewalls or behind a NAT Router</t>
-         <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
-    </section> 
     </front>
     <middle>
+    <section title='Introduction'>
+        <t>anytun defines a Host Anycast Service as defined in rfc1546. It uses a peer-to-peer achitecture, with anycast servers and unicast clients. It can be used to build high scalable and redundant tunnel services. It also has a relay mode, that makes it possible, that only one of the connection endpoints has to use the anytun protocol. This can be used to make connections through Firewalls or behind a NAT Router</t>
+         <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
+    </section> 
     <section title="Operation modes">
        <t>This section gives an overview of possible operation modes und usage scenarios. Please note, that the protocols used in the figures are only examples and that anytun itself does not care about either transport protocols or encapsulated protocols. Routing and network address translation is not done by anytun. Each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). Anytun is used to establish and controll tunnnels, to encapsulate and encrypt data.</t>
-       <section title="Tunnel modes">
+       <section title="Usage scenarions">
     
-            <section title='Tunneling Mode'>
+            <section title='tunneling from unicast client over anycast servers to unicast client'>
               <figure anchor="tunnel_mode">
                  <preamble>An example of anytun used in tunnel mode</preamble>
                  <artwork>
@@ -73,7 +73,7 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
 	      <t>In tunneling mode the payload of the anytun packet is transmitted from one unicast host to the anycast server. This server makes a routing descision based on the underlying protocol and transmits a new anytun package to one or more clients depending on the routing descition. The server MAY also route the packet to a directly connected network or a service running on the server, but please note, that this is only usefull for anycast host services like DNS and that the services HAVE TO be running on all servers in order to work.</t> 
 	    </section>
 
-	    <section title='Open tunnel mode'>
+	    <section title='tunneling from client to a server connected network'>
               <figure anchor="open_tunnel_mode">
                  <preamble>An example of anytun used in open tunnel mode</preamble>
                  <artwork>
@@ -98,40 +98,10 @@ client 1  -----------  ->  |server 3|  ->  |   ...   |    host
 
                <t>In open tunnel mode only one of two clients talking to each other over the servers MUST use the anytun protocol. When a client using the anytun protocol wants to tunnel data, it is building a connection to the anycast servers using the anytun protocol. The anycast servers relay the encapsulated packages directly to the destination without using the anytun protocol. The source address of the datagramm HAS TO be changed to the anycast address of the server. The anytun servers act like a source NAT router, therefor for the destination it saems that it is talking to the client directly.</t>
 	    </section>
-	    <section title='relay mode'>
-              <figure anchor="relay_mode">
-                 <preamble>An example of anytun used in relay mode</preamble>
-                 <artwork>
-          -----------
------     |   RTP   |      ----------
-|   |  -> -----------  ->  |server 1|  ->
------     |   UDP** |      ----------      -----------
-#####     -----------                      |   RTP   |
-          |   IPv6**|      ----------      -----------     -----
-host      -----------  ->  |server 2|  ->  |   UDP*  |  -> |   |
-not using |   ...   |      ----------      -----------     -----
-anytun                                     |   IPv6* |     #####
-                           ----------      -----------
-          -----------  ->  |server 3|      |   ...   |    host
------     |  anytun |      ----------                     not using
-|   |  -> -----------                                     anytun
------     |   IPv4  |       anycast
-#####     -----------
-connection|   ...   |
-controller
-
- *changed source address or port
- **changed destination address or port
-                 </artwork>
-       </figure>
-	       <t>In relay mode the anycast serveres directly repaet the packetes of clients, only the source and destination addresses are changed. The anytun protocol is only used for controll messages, but not fr encapsulation.</t> 
-	    </section>
 	</section>
 	<section title="Transport modes">
-    <section title="anycast udp mode">
       <t>Anytun does not define wich lower layer protocols HAVE TO be used, but it's most likely used on top of udp. This section should only discuss some issues on udp in combination with anycasting and tunnels.
       </t>
-    </section> 
 	  <section title="Using UDP">
               <figure anchor="transtort_udp">
                  <preamble>An example of anytun used with udp as transport</preamble>
