@@ -2,11 +2,12 @@
     <!DOCTYPE rfc SYSTEM 'rfcXXXX.dtd' [
     
     <!ENTITY rfc3068 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.3068.xml'>
+    <!ENTITY rfc3711 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.3711.xml'>
 
 ]>
-    <rfc ipr='full3978' docName='draft-gsenger-anycast-relay-00'>
+    <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-00'>
     <front>
-        <title>anycast tunneling and relay protocol</title>
+        <title>secure anycast tunneling protocol (satp)</title>
 
         <author initials='O.G.' surname='Gsenger'
                 fullname='Othmar Gsenger'>
@@ -30,14 +31,15 @@
 
         <area>General</area>
         <workgroup></workgroup>
-        <keyword>anytun</keyword>
+        <keyword>satp</keyword>
         <keyword>Internet-Draft</keyword>
-        <keyword>anycast tunneling / relaying</keyword>
+        <keyword>secure anycast tunneling protocol</keyword>
+        <keyword>anycast</keyword>
         <keyword>tunnel</keyword>
-        <keyword>relay</keyword>
+        <keyword>secure</keyword>
         <keyword>protocol</keyword>
         <abstract>
-            <t>The anycast tunneling and relay protocol (anytun) defines a protocol used for communication between unicast clients and anycast servers. It can be used for tunneling information between 2 clients over the anycast servers or in relay mode to transmit data form the client over the anycast servers to a third party not using the protocol and vice versa. Unlike other tunneling protocols like GRE or IPIP tunnels which indeed will work with anycast as well, anytun directly includes cryptography and authentication. In relay mode it also supports source NAT with integrated NAT transversal. It is intended to deliver a high performance and reliability solution for tunneling and relaying of data over servers, where direct client to client connections are not possible or not wanted.
+            <t>The secure anycast tunneling protocol (satp) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It has less protocol overhead than IPSec in Tunnel mode and allows tunneling of every ETHER TYPE protocol (e.g. ethernet, ip, arp ...). satp directly includes cryptography and message authentication based on the methodes used by SRTP. It is intended to deliver a generic, scaleable, secure and reliability solution for tunneling and relaying of packets of any protocol.
             </t>
         </abstract>
     </front>
@@ -161,14 +163,12 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
         0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |V=2|   ????????????????????    |       sequence number         | |
+     |                         sequence number                       | |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
-   | |    payload lenght             |      payload type             | |
-   | |-------------------------------+-------------------------------| |
    | |              ....        payload        ...                   | |
-                                     +-------------------------------+ |
-   | |                               |       padding (OPTIONAL)      | |
+   | |-------------------------------+-------------------------------+ |
+   | | padding (OPT) | pad count(OPT)|         payload type          | |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    | ~                          MKI (OPTIONAL)                       ~ |
    | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
@@ -180,10 +180,24 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
 </figure>
 <t></t>
        </section>
+       <section title="sequence number">
+       <t>The sequenze number is a 32bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.</t>
+       </section>
+       <section title="payload">
+       <t>A packet of the type payload type (e.g. an IP packet).</t>
+       </section>
+       <section title="padding (OPTINAL)">
+       <t>Padding of max 255 ocitets.
+None of the pre-defined encryption transforms uses any padding; for
+   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If padding field is present, than the padding count field MUST be set to the padding lenght.</t>
+       </section>
+       <section title="padding count">
+       <t>The number of octets of the padding field. This field is optional. It's presents is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.</t>
+       </section>
        <section title="payload type field">
-         <t>The protocol field defines the payload protocol. ETHER TYPE protocol numerbers are used. http://www.iana.org/assignments/ethernet-numbers . The values 0000-05DC are reserverd and not used at the moment. 
+         <t>The payload type field defines the payload protocol. ETHER TYPE protocol numerbers are used. http://www.iana.org/assignments/ethernet-numbers . The values 0000-05DC are reserverd and MUST NOT be used. 
             <figure anchor="prot_type_table">
-               <preamble>Some exmples for protocol types</preamble>
+               <preamble>Some examples for protocol types</preamble>
                  <artwork>
 HEX
 0000 Reserved

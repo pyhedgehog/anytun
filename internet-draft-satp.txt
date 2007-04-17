@@ -6,8 +6,8 @@ Internet-Draft                                                March 2007
 Expires: September 2, 2007
 
 
-                  anycast tunneling and relay protocol
-                     draft-gsenger-anycast-relay-00
+                secure anycast tunneling protocol (satp)
+           draft-gsenger-secure-anycast-tunneling-protocol-00
 
 Status of this Memo
 
@@ -54,23 +54,23 @@ Copyright Notice
 
 Gsenger                 Expires September 2, 2007               [Page 1]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 Abstract
 
-   The anycast tunneling and relay protocol (anytun) defines a protocol
-   used for communication between unicast clients and anycast servers.
-   It can be used for tunneling information between 2 clients over the
-   anycast servers or in relay mode to transmit data form the client
-   over the anycast servers to a third party not using the protocol and
-   vice versa.  Unlike other tunneling protocols like GRE or IPIP
-   tunnels which indeed will work with anycast as well, anytun directly
-   includes cryptography and authentication.  In relay mode it also
-   supports source NAT with integrated NAT transversal.  It is intended
-   to deliver a high performance and reliability solution for tunneling
-   and relaying of data over servers, where direct client to client
-   connections are not possible or not wanted.
+   The secure anycast tunneling protocol (satp) defines a protocol used
+   for communication between any combination of unicast and anycast
+   tunnel endpoints.  It has less protocol overhead than IPSec in Tunnel
+   mode and allows tunneling of every ETHER TYPE protocol (e.g.
+   ethernet, ip, arp ...). satp directly includes cryptography and
+   message authentication based on the methodes used by SRTP.  It is
+   intended to deliver a generic, scaleable, secure and reliability
+   solution for tunneling and relaying of packets of any protocol.
+
+
+
+
 
 
 
@@ -110,7 +110,7 @@ Abstract
 
 Gsenger                 Expires September 2, 2007               [Page 2]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 1.  Introduction
@@ -166,7 +166,7 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 3]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 2.  Operation modes
@@ -222,7 +222,7 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 4]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 2.1.2.  tunneling from client to a server connected network
@@ -278,7 +278,7 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 5]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 2.2.1.  Using UDP
@@ -334,7 +334,7 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 6]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
    The difference between normal UDP and lightUDP is, that the udp size
@@ -366,14 +366,12 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
         0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |V=2|   ????????????????????    |       sequence number         | |
+     |                         sequence number                       | |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
-   | |    payload lenght             |      payload type             | |
-   | |-------------------------------+-------------------------------| |
    | |              ....        payload        ...                   | |
-                                     +-------------------------------+ |
-   | |                               |       padding (OPTIONAL)      | |
+   | |-------------------------------+-------------------------------+ |
+   | | padding (OPT) | pad count(OPT)|         payload type          | |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    | ~                          MKI (OPTIONAL)                       ~ |
    | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
@@ -388,18 +386,49 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 
+
+
 Gsenger                 Expires September 2, 2007               [Page 7]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
-2.3.2.  payload type field
+2.3.2.  sequence number
 
-   The protocol field defines the payload protocol.  ETHER TYPE protocol
-   numerbers are used. http://www.iana.org/assignments/ethernet-numbers
-   .  The values 0000-05DC are reserverd and not used at the moment.
+   The sequenze number is a 32bit unsigned integer in network byte
+   order.  It starts with a random value and is increased by 1 for every
+   sent packet.  After the maximum value, it starts over from 0.  This
+   overrun causes the ROC to be increased.
 
-   Some exmples for protocol types
+2.3.3.  payload
+
+   A packet of the type payload type (e.g. an IP packet).
+
+2.3.4.  padding (OPTINAL)
+
+   Padding of max 255 ocitets.  None of the pre-defined encryption
+   transforms uses any padding; for these, the plaintext and encrypted
+   payload sizes match exactly.  Transforms are based on transforms of
+   the SRTP protocol and these transforms might use the RTP padding
+   format, so a RTP like padding is supported.  If padding field is
+   present, than the padding count field MUST be set to the padding
+   lenght.
+
+2.3.5.  padding count
+
+   The number of octets of the padding field.  This field is optional.
+   It's presents is signaled by the key management and not by this
+   protocol.  If this field isn't present, the padding field MUST NOT be
+   present as well.
+
+2.3.6.  payload type field
+
+   The payload type field defines the payload protocol.  ETHER TYPE
+   protocol numerbers are used.
+   http://www.iana.org/assignments/ethernet-numbers .  The values 0000-
+   05DC are reserverd and MUST NOT be used.
+
+   Some examples for protocol types
 
    HEX
    0000 Reserved
@@ -415,38 +444,9 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Gsenger                 Expires September 2, 2007               [Page 8]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 Appendix A.  The appan
@@ -502,7 +502,7 @@ Appendix A.  The appan
 
 Gsenger                 Expires September 2, 2007               [Page 9]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 3.  References
@@ -558,7 +558,7 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 Gsenger                 Expires September 2, 2007              [Page 10]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 Author's Address
@@ -614,7 +614,7 @@ Author's Address
 
 Gsenger                 Expires September 2, 2007              [Page 11]
 
-Internet-Draft    anycast tunneling and relay protocol        March 2007
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 Full Copyright Statement
