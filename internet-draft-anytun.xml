@@ -155,8 +155,32 @@ client 1  -----------  ->  |server 3|  ->  -----------     client 2
    </section>
      <section title="Protocol specification">
        <section title="Header format">
+            <figure anchor="prot_header_table">
+               <preamble>Protocol Format</preamble>
+                 <artwork>
+        0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |V=2|   ????????????????????    |       sequence number         | |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   | |    payload lenght             |      payload type             | |
+   | |-------------------------------+-------------------------------| |
+   | |              ....        payload        ...                   | |
+                                     +-------------------------------+ |
+   | |                               |       padding (OPTIONAL)      | |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | ~                          MKI (OPTIONAL)                       ~ |
+   | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   | :                 authentication tag (RECOMMENDED)              : |
+   | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   |                                                                   |
+   +- Encrypted Portion*                      Authenticated Portion ---+
+</artwork>
+</figure>
+<t></t>
        </section>
-       <section title="Protocol field">
+       <section title="payload type field">
          <t>The protocol field defines the payload protocol. ETHER TYPE protocol numerbers are used. http://www.iana.org/assignments/ethernet-numbers . The values 0000-05DC are reserverd and not used at the moment. 
             <figure anchor="prot_type_table">
                <preamble>Some exmples for protocol types</preamble>

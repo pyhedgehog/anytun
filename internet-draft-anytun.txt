@@ -361,7 +361,39 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 2.3.1.  Header format
 
-2.3.2.  Protocol field
+   Protocol Format
+
+        0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |V=2|   ????????????????????    |       sequence number         | |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   | |    payload lenght             |      payload type             | |
+   | |-------------------------------+-------------------------------| |
+   | |              ....        payload        ...                   | |
+                                     +-------------------------------+ |
+   | |                               |       padding (OPTIONAL)      | |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | ~                          MKI (OPTIONAL)                       ~ |
+   | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   | :                 authentication tag (RECOMMENDED)              : |
+   | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   |                                                                   |
+   +- Encrypted Portion*                      Authenticated Portion ---+
+
+                                 Figure 5
+
+
+
+
+
+Gsenger                 Expires September 2, 2007               [Page 7]
+
+Internet-Draft    anycast tunneling and relay protocol        March 2007
+
+
+2.3.2.  payload type field
 
    The protocol field defines the payload protocol.  ETHER TYPE protocol
    numerbers are used. http://www.iana.org/assignments/ethernet-numbers
@@ -377,7 +409,7 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
    6558 transparent ethernet bridging
    86DD IPv6
 
-                                 Figure 5
+                                 Figure 6
 
 
 
@@ -388,7 +420,31 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 7]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gsenger                 Expires September 2, 2007               [Page 8]
 
 Internet-Draft    anycast tunneling and relay protocol        March 2007
 
@@ -444,7 +500,7 @@ Appendix A.  The appan
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 8]
+Gsenger                 Expires September 2, 2007               [Page 9]
 
 Internet-Draft    anycast tunneling and relay protocol        March 2007
 
@@ -500,7 +556,7 @@ Internet-Draft    anycast tunneling and relay protocol        March 2007
 
 
 
-Gsenger                 Expires September 2, 2007               [Page 9]
+Gsenger                 Expires September 2, 2007              [Page 10]
 
 Internet-Draft    anycast tunneling and relay protocol        March 2007
 
@@ -556,7 +612,7 @@ Author's Address
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 10]
+Gsenger                 Expires September 2, 2007              [Page 11]
 
 Internet-Draft    anycast tunneling and relay protocol        March 2007
 
@@ -612,5 +668,5 @@ Acknowledgment
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 11]
+Gsenger                 Expires September 2, 2007              [Page 12]
 
