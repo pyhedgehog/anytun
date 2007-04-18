@@ -187,7 +187,6 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    An example of SATP used to tunnel in a unicast client - anycast
    server model
 
-                                 anycast
                        --------- router -----------
                       /                            \
        unicast ------+---------- router ------------+------ unicast
@@ -205,6 +204,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    routing descision based on the underlying protocol and transmits a
    new SATP package to one or more unicast hosts depending on the
    routing descition.
+
 
 
 
