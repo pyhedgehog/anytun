@@ -48,8 +48,8 @@
         <t>anytun defines a Host Anycast Service as defined in rfc1546. </t>
          <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
     </section> 
-    <section title="Features and usage scenarios">
-       <t>This section gives an overview of possible operation modes und usage scenarios. Please note, that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.</t>
+    <section title="Motivation and usage scenarios">
+       <t>This section gives an overview of possible usage scenarios. Please note, that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.</t>
        <section title="Usage scenarions">
     
             <section title='tunneling from unicast hosts over anycast routers to other unicast hosts'>
@@ -96,7 +96,6 @@ host      |   IPv4  |      ----------
                  </artwork>
        </figure>
 
-               <t>When a client using the anytun protocol wants to tunnel data, it is building a connection to the anycast servers using the anytun protocol. The anycast servers relay the encapsulated packages directly to the destination without using the anytun protocol. The source address of the datagramm HAS TO be changed to the anycast address of the server. The anytun servers act like a source NAT router, therefor for the destination it saems that it is talking to the client directly.</t>
 	    </section>
       <section title='redundant tunnel connection of 2 networks'>
               <figure anchor="connect_networks">
@@ -119,54 +118,47 @@ host      |   IPv4  |      ----------
                <t>Network A has multible routers, that act as gateway/tunnel endpoint to another network B. This is done to build e redundant encrpted tunnel connection between the to networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address.</t>
       </section>
 	</section>
-	<section title="Transport modes">
-      <t>Anytun does not define wich lower layer protocols HAVE TO be used, but it's most likely used on top of udp. This section should only discuss some issues on udp in combination with anycasting and tunnels.
+	<section title="Lower layer protocol">
+      <t>SATP does not depend an which lower layer protocols is used, but it's most likely used on top of ip or udp. This section should only discuss some issues on ip and udp in combination with anycasting and tunnels.
       </t>
-	  <section title="Using UDP">
-              <figure anchor="transtort_udp">
-                 <preamble>An example of anytun used with udp as transport</preamble>
-                 <artwork>
-          -----------                      -----------
-          |   RTP   |      ----------      |   RTP   |
-          -----------  ->  |server 1|  ->  -----------
-          |   UDP   |      ----------      |   UDP   |
-          -----------                      -----------
------     |   IPv6  |      ----------      |   IPv6  |     -----
-|   |  -> -----------  ->  |server 2|  ->  -----------  -> |   |
------     |  anytun |      ----------      |  anytun |     -----
-#####     -----------                      -----------     #####
-          |   UDP   |      ----------      |   UDP   |
-client 1  -----------  ->  |server 3|  ->  -----------     client 2
-          |   IPv4  |      ----------      |   IPv4  |
-          -----------                      -----------
-          |   ...   |       anycast        |   ...   |
+      <figure anchor="transtort_udp">
+        <preamble>Examples of SATP used with different lower layer and payload protocols</preamble>
+          <artwork>
+    +------+-----+-------------------------------+
+    |      |     |      + ---------------+------ |
+    | IPv6 | UDP | SATP | Ethernet 802.3 | ... | |
+    |      |     |      +----------------+-----+ |
+    +------+-----+-------------------------------+
+
+Tunnelung of Ethernet over UDP/IPv6
+
+    +------+-----+---------------------------+
+    |      |     |      +------+-----+-----+ |
+    | IPv4 | UDP | SATP | IPv6 | UDP | RTP | |
+    |      |     |      +------+-----+-----+ |
+    +------+-----+---------------------------+
+
+Tunneling of IPv6 over UDP/IPv4 with RTP payload
+
+    +------+--------------------------------+
+    |      |       + ---------------+------ |
+    | IPv6 |  SATP | Ethernet 802.3 | ... | |
+    |      |       +----------------+-----+ |
+    +------+--------------------------------+
+
+Tunnelung of Ethernet over IPv6
+
+    +------+----------------------------+
+    |      |       +------+-----+-----+ |
+    | IPv4 |  SATP | IPv6 | UDP | RTP | |
+    |      |       +------+-----+-----+ |
+    +------+----------------------------+
+
+Tunneling of IPv6 over IPv4 with RTP payload
                  </artwork>
        </figure>
       <t>When using UDP no flow controll or retransmission is done, neigther by UDP nor anytun. The encapsulated protocol HAS TO take care of this tasks if needed. UDP however has a checksum of the complete udp datagram, so a packet gets discarded if there is a biterror in the payload</t>
 	  </section>
-	  <section title="Using lightUDP">
-              <figure anchor="transport_lightudp">
-                 <preamble>An example of anytun used with udp transport</preamble>
-                 <artwork>
-          -----------                      -----------
-          |   RTP   |      ----------      |   RTP   |
-          -----------  ->  |server 1|  ->  -----------
-          |   UDP   |      ----------      |   UDP   |
-          -----------                      -----------
------     |   IPv6  |      ----------      |   IPv6  |     -----
-|   |  -> -----------  ->  |server 2|  ->  -----------  -> |   |
------     |  anytun |      ----------      |  anytun |     -----
-#####     -----------                      -----------     #####
-          |lightUDP |      ----------      |lightUDP |
-client 1  -----------  ->  |server 3|  ->  -----------     client 2
-          |   IPv4  |      ----------      |   IPv4  |
-          -----------                      -----------
-          |   ...   |       anycast        |   ...   |
-                 </artwork>
-       </figure>
-
-      <t>The difference between normal UDP and lightUDP is, that the udp size is not set to the length of the full packet, but to the lenght of the data used for the checksum and therefor the checksum is only calculated for that part. When using lightUDP, the lenght HAS tO be set to the udp header length + the anytun header lenght. So there is no error correction or detection done on the payload. This can be usefull if realtime data is beeing transimittet or the tunneled protocol does error correction/detection by itself.</t>
-    </section>
          <section title="Fragmentation">
          <t>
            The only way of fully supporting fragmentation would be to syncronise fragments between all anycast servers. This is considered to be to much overhead, so there are two non perfect solutions for this problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server.
@@ -231,7 +223,6 @@ HEX
 </figure>
 </t>
      </section>
-    </section>
     </section>
         <appendix title='The appan'></appendix>
     </middle>

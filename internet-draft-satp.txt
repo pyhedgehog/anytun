@@ -169,15 +169,15 @@ Gsenger                 Expires September 2, 2007               [Page 3]
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
-2.  Features and usage scenarios
+2.  Motivation and usage scenarios
 
-   This section gives an overview of possible operation modes und usage
-   scenarios.  Please note, that the protocols used in the figures are
-   only examples and that SATP itself does not care about either
-   transport protocols or encapsulated protocols.  Routing is not done
-   by SATP and each implemetation MAY choose it's own way of doing this
-   task (e.g. using functions provided by the operating system).  SATP
-   is used only to encapsulate and encrypt data.
+   This section gives an overview of possible usage scenarios.  Please
+   note, that the protocols used in the figures are only examples and
+   that SATP itself does not care about either transport protocols or
+   encapsulated protocols.  Routing is not done by SATP and each
+   implemetation MAY choose it's own way of doing this task (e.g. using
+   functions provided by the operating system).  SATP is used only to
+   encapsulate and encrypt data.
 
 2.1.  Usage scenarions
 
@@ -246,15 +246,6 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
                                  Figure 2
 
-   When a client using the anytun protocol wants to tunnel data, it is
-   building a connection to the anycast servers using the anytun
-   protocol.  The anycast servers relay the encapsulated packages
-   directly to the destination without using the anytun protocol.  The
-   source address of the datagramm HAS TO be changed to the anycast
-   address of the server.  The anytun servers act like a source NAT
-   router, therefor for the destination it saems that it is talking to
-   the client directly.
-
 2.1.3.  redundant tunnel connection of 2 networks
 
    An example of anytun used in open tunnel mode
@@ -273,6 +264,15 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
                                  Figure 3
 
+   Network A has multible routers, that act as gateway/tunnel endpoint
+   to another network B. This is done to build e redundant encrpted
+   tunnel connection between the to networks.  All tunnel endpoints of
+   network A share the same anycast address and all tunnel endpoints of
+   network B share another anycast address.
+
+
+
+
 
 
 
@@ -281,37 +281,47 @@ Gsenger                 Expires September 2, 2007               [Page 5]
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
-   Network A has multible routers, that act as gateway/tunnel endpoint
-   to another network B. This is done to build e redundant encrpted
-   tunnel connection between the to networks.  All tunnel endpoints of
-   network A share the same anycast address and all tunnel endpoints of
-   network B share another anycast address.
+2.2.  Lower layer protocol
 
-2.2.  Transport modes
-
-   Anytun does not define wich lower layer protocols HAVE TO be used,
-   but it's most likely used on top of udp.  This section should only
-   discuss some issues on udp in combination with anycasting and
+   SATP does not depend an which lower layer protocols is used, but it's
+   most likely used on top of ip or udp.  This section should only
+   discuss some issues on ip and udp in combination with anycasting and
    tunnels.
 
-2.2.1.  Using UDP
+   Examples of SATP used with different lower layer and payload
+   protocols
 
-   An example of anytun used with udp as transport
+       +------+-----+-------------------------------+
+       |      |     |      + ---------------+------ |
+       | IPv6 | UDP | SATP | Ethernet 802.3 | ... | |
+       |      |     |      +----------------+-----+ |
+       +------+-----+-------------------------------+
 
-             -----------                      -----------
-             |   RTP   |      ----------      |   RTP   |
-             -----------  ->  |server 1|  ->  -----------
-             |   UDP   |      ----------      |   UDP   |
-             -----------                      -----------
-   -----     |   IPv6  |      ----------      |   IPv6  |     -----
-   |   |  -> -----------  ->  |server 2|  ->  -----------  -> |   |
-   -----     |  anytun |      ----------      |  anytun |     -----
-   #####     -----------                      -----------     #####
-             |   UDP   |      ----------      |   UDP   |
-   client 1  -----------  ->  |server 3|  ->  -----------     client 2
-             |   IPv4  |      ----------      |   IPv4  |
-             -----------                      -----------
-             |   ...   |       anycast        |   ...   |
+   Tunnelung of Ethernet over UDP/IPv6
+
+       +------+-----+---------------------------+
+       |      |     |      +------+-----+-----+ |
+       | IPv4 | UDP | SATP | IPv6 | UDP | RTP | |
+       |      |     |      +------+-----+-----+ |
+       +------+-----+---------------------------+
+
+   Tunneling of IPv6 over UDP/IPv4 with RTP payload
+
+       +------+--------------------------------+
+       |      |       + ---------------+------ |
+       | IPv6 |  SATP | Ethernet 802.3 | ... | |
+       |      |       +----------------+-----+ |
+       +------+--------------------------------+
+
+   Tunnelung of Ethernet over IPv6
+
+       +------+----------------------------+
+       |      |       +------+-----+-----+ |
+       | IPv4 |  SATP | IPv6 | UDP | RTP | |
+       |      |       +------+-----+-----+ |
+       +------+----------------------------+
+
+   Tunneling of IPv6 over IPv4 with RTP payload
 
                                  Figure 4
 
@@ -319,16 +329,6 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    by UDP nor anytun.  The encapsulated protocol HAS TO take care of
    this tasks if needed.  UDP however has a checksum of the complete udp
    datagram, so a packet gets discarded if there is a biterror in the
-   payload
-
-
-
-
-
-
-
-
-
 
 
 
@@ -337,37 +337,9 @@ Gsenger                 Expires September 2, 2007               [Page 6]
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
-2.2.2.  Using lightUDP
+   payload
 
-   An example of anytun used with udp transport
-
-             -----------                      -----------
-             |   RTP   |      ----------      |   RTP   |
-             -----------  ->  |server 1|  ->  -----------
-             |   UDP   |      ----------      |   UDP   |
-             -----------                      -----------
-   -----     |   IPv6  |      ----------      |   IPv6  |     -----
-   |   |  -> -----------  ->  |server 2|  ->  -----------  -> |   |
-   -----     |  anytun |      ----------      |  anytun |     -----
-   #####     -----------                      -----------     #####
-             |lightUDP |      ----------      |lightUDP |
-   client 1  -----------  ->  |server 3|  ->  -----------     client 2
-             |   IPv4  |      ----------      |   IPv4  |
-             -----------                      -----------
-             |   ...   |       anycast        |   ...   |
-
-                                 Figure 5
-
-   The difference between normal UDP and lightUDP is, that the udp size
-   is not set to the length of the full packet, but to the lenght of the
-   data used for the checksum and therefor the checksum is only
-   calculated for that part.  When using lightUDP, the lenght HAS tO be
-   set to the udp header length + the anytun header lenght.  So there is
-   no error correction or detection done on the payload.  This can be
-   usefull if realtime data is beeing transimittet or the tunneled
-   protocol does error correction/detection by itself.
-
-2.2.3.  Fragmentation
+2.3.  Fragmentation
 
    The only way of fully supporting fragmentation would be to syncronise
    fragments between all anycast servers.  This is considered to be to
@@ -378,7 +350,35 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    frequently, the encapsulated protocol can do a retransmission and all
    fragments will arrive at the new server.
 
-2.3.  Protocol specification
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -393,7 +393,9 @@ Gsenger                 Expires September 2, 2007               [Page 7]
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
-2.3.1.  Header format
+3.  Protocol specification
+
+3.1.  Header format
 
    Protocol Format
 
@@ -414,33 +416,31 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    |                                                                   |
    +- Encrypted Portion*                      Authenticated Portion ---+
 
-                                 Figure 6
+                                 Figure 5
 
-2.3.2.  sender ID
+3.2.  sender ID
 
    The sender ID is a 16bit unsigned integer in network byte order.  It
    HAS TO be unique for every sender sharing the same anycast address
 
-2.3.3.  sequence number
+3.3.  sequence number
 
    The sequenze number is a 16bit unsigned integer in network byte
    order.  It starts with a random value and is increased by 1 for every
    sent packet.  After the maximum value, it starts over from 0.  This
    overrun causes the ROC to be increased.
 
-2.3.4.  payload
+3.4.  payload
 
    A packet of the type payload type (e.g. an IP packet).
 
-2.3.5.  padding (OPTINAL)
+3.5.  padding (OPTINAL)
 
    Padding of max 255 ocitets.  None of the pre-defined encryption
    transforms uses any padding; for these, the plaintext and encrypted
    payload sizes match exactly.  Transforms are based on transforms of
    the SRTP protocol and these transforms might use the RTP padding
    format, so a RTP like padding is supported.  If padding field is
-   present, than the padding count field MUST be set to the padding
-   lenght.
 
 
 
@@ -449,14 +449,17 @@ Gsenger                 Expires September 2, 2007               [Page 8]
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
-2.3.6.  padding count
+   present, than the padding count field MUST be set to the padding
+   lenght.
+
+3.6.  padding count
 
    The number of octets of the padding field.  This field is optional.
    It's presents is signaled by the key management and not by this
    protocol.  If this field isn't present, the padding field MUST NOT be
    present as well.
 
-2.3.7.  payload type field
+3.7.  payload type field
 
    The payload type field defines the payload protocol.  ETHER TYPE
    protocol numerbers are used.
@@ -473,10 +476,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    6558 transparent ethernet bridging
    86DD IPv6
 
-                                 Figure 7
-
-
-
+                                 Figure 6
 
 
 
@@ -561,7 +561,7 @@ Gsenger                 Expires September 2, 2007              [Page 10]
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
-3.  References
+4.  References
 
    [1]  Huitema, C., "An Anycast Prefix for 6to4 Relay Routers",
         RFC 3068, June 2001.
