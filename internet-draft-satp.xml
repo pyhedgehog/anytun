@@ -56,7 +56,6 @@
               <figure anchor="tunnel_mode">
                  <preamble>An example of SATP used to tunnel in a unicast client - anycast server model</preamble>
                  <artwork>
-                              anycast
                     --------- router ----------- 
                    /                            \ 
     unicast ------+---------- router ------------+------ unicast
