@@ -187,20 +187,16 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    An example of SATP used to tunnel in a unicast client - anycast
    server model
 
-             -----------                      -----------
-             |   RTP   |      ----------      |   RTP   |
-             -----------  ->  |router 1|  ->  -----------
-             |   UDP   |      ----------      |   UDP   |
-             -----------                      -----------
-   -----     |   IPv6  |      ----------      |   IPv6  |     -----
-   |   |  -> -----------  ->  |router 2|  ->  -----------  -> |   |
-   -----     |   SATP  |      ----------      |   SATP  |     -----
-   #####     -----------                      -----------     #####
-             |   UDP   |      ----------      |   UDP   |
-   unicast   -----------  ->  |router 3|  ->  -----------    unicast
-   host 1    |   IPv4  |      ----------      |   IPv4  |    host 2
-             -----------       anycast        -----------
-             |   ...   |       hosts          |   ...   |
+                                 anycast
+                       --------- router -----------
+                      /                            \
+       unicast ------+---------- router ------------+------ unicast
+       host           \                            /        host
+                       --------- router -----------
+
+     unicast  | encrypted     |  anycast  | encrypted     |  unicast
+     tunnel   | communication |  tunnel   | communication |  tunnel
+     endpoint | using SATP    |  endpoint | using SATP    |  endpoint
 
                                  Figure 1
 
@@ -220,6 +216,10 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 
+
+
+
+
 Gsenger                 Expires September 2, 2007               [Page 4]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
@@ -227,22 +227,25 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 2.1.2.  tunneling from unicast hosts to anycast networks
 
-   An example of anytun used in open tunnel mode
+   An example of SATP used to encrypt data between a unicast host and
+   anycast networks
 
-             -----------
-             |   DNS   |      ----------
-             -----------  ->  |router 1|  ->               -> DNS server
-             |   UDP   |      ----------      -----------
-             -----------                      |   DNS   |
-   -----     |   IPv6  |      ----------      -----------
-   |   |  -> -----------  ->  |router 2|  ->  |   UDP   |  -> DNS server
-   -----     |   SATP  |      ----------      -----------
-   #####     -----------                      |   IPv6  |
-             |   UDP   |      ----------      -----------
-   unicast   -----------  ->  |router 3|  ->  |   ...   |  -> DNS server
-   host      |   IPv4  |      ----------
-             -----------
-             |   ...   |       anycast
+                          -------Router -+---- DNS Server
+                         /                \
+                        /                  --- 6to4 Router
+                       /
+       unicast -------+----------Router --+--- DNS Server
+       host            \                   \
+                        \                   --- 6to4 Router
+                         \
+                          -------Router -+---- DNS Server
+                                          \
+                                           --- 6to4 Router
+
+     unicast  | encrypted     |  anycast  | plaintext
+     tunnel   | communication |  tunnel   | anycast
+     endpoint | using SATP    |  endpoint | services
+
 
                                  Figure 2
 
@@ -269,9 +272,6 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    tunnel connection between the to networks.  All tunnel endpoints of
    network A share the same anycast address and all tunnel endpoints of
    network B share another anycast address.
-
-
-
 
 
 
@@ -307,19 +307,19 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
    Tunneling of IPv6 over UDP/IPv4 with RTP payload
 
-       +------+--------------------------------+
-       |      |       + ---------------+------ |
-       | IPv6 |  SATP | Ethernet 802.3 | ... | |
-       |      |       +----------------+-----+ |
-       +------+--------------------------------+
+       +------+-------------------------------+
+       |      |      + ---------------+------ |
+       | IPv6 | SATP | Ethernet 802.3 | ... | |
+       |      |      +----------------+-----+ |
+       +------+-------------------------------+
 
    Tunnelung of Ethernet over IPv6
 
-       +------+----------------------------+
-       |      |       +------+-----+-----+ |
-       | IPv4 |  SATP | IPv6 | UDP | RTP | |
-       |      |       +------+-----+-----+ |
-       +------+----------------------------+
+       +------+---------------------------+
+       |      |      +------+-----+-----+ |
+       | IPv4 | SATP | IPv6 | UDP | RTP | |
+       |      |      +------+-----+-----+ |
+       +------+---------------------------+
 
    Tunneling of IPv6 over IPv4 with RTP payload
 
