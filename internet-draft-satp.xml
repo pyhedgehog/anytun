@@ -1,9 +1,11 @@
 <?xml version='1.0'?>
     <!DOCTYPE rfc SYSTEM 'rfcXXXX.dtd' [
     
-    <!ENTITY rfc3068 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.3068.xml'>
+    <!ENTITY rfc1546 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.1546.xml'>
     <!ENTITY rfc3711 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.3711.xml'>
-
+    <!ENTITY rfc3068 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.3068.xml'>
+    <!ENTITY rfc2784 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2784.xml'>
+    <!ENTITY rfc2401 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2401.xml'>
 ]>
     <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-00'>
     <front>
@@ -45,8 +47,7 @@
     </front>
     <middle>
     <section title='Introduction'>
-        <t>anytun defines a Host Anycast Service as defined in rfc1546. </t>
-         <t><xref target="RFC3068">RFC3068</xref> DTD.</t>
+        <t>SATP is somehow a mixture of an generic encapsulation protocol as <xref target="RFC2784">GRE</xref> and a secure tunneling protocol as <xref target="RFC2401">IPsec</xref> in tunnel mode. To save some header overhead it uses the encryption technices of <xref target="RFC3068">SRTP</xref>. It supports peer to peer tunnels, where tunnel endpoints CAN be any combination of unicast, multicast or anycast hosts, so it defines a Host Anycast Service as defined in <xref target="RFC1546">rfc1546</xref></t>
     </section> 
     <section title="Motivation and usage scenarios">
        <t>This section gives an overview of possible usage scenarios. Please note, that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.</t>
@@ -96,7 +97,7 @@
 	    </section>
       <section title='redundant tunnel connection of 2 networks'>
               <figure anchor="connect_networks">
-                 <preamble>An example of anytun used in open tunnel mode</preamble>
+                 <preamble>An example of SATP used to connect 2 networks</preamble>
                  <artwork>
               Router -----------   ---------------Router
             /                   \ /                     \
@@ -115,7 +116,7 @@
                <t>Network A has multible routers, that act as gateway/tunnel endpoint to another network B. This is done to build e redundant encrpted tunnel connection between the to networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address.</t>
       </section>
 	</section>
-	<section title="Lower layer protocol">
+	<section title="Encapsulation">
       <t>SATP does not depend an which lower layer protocols is used, but it's most likely used on top of ip or udp. This section should only discuss some issues on ip and udp in combination with anycasting and tunnels.
       </t>
       <figure anchor="transtort_udp">
@@ -225,7 +226,10 @@ HEX
     </middle>
     <back>
     <references>
-        &rfc3068; An Anycast Prefix for 6to4 Relay Routers
+        &rfc2784; 
+        &rfc2401;
+        &rfc3068;
+        &rfc1546;
     </references>
     </back>
     </rfc>

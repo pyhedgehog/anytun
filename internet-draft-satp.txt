@@ -115,12 +115,12 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 1.  Introduction
 
-   anytun defines a Host Anycast Service as defined in rfc1546.
-
-   RFC3068 [1] DTD.
-
-
-
+   SATP is somehow a mixture of an generic encapsulation protocol as GRE
+   [1] and a secure tunneling protocol as IPsec [2] in tunnel mode.  To
+   save some header overhead it uses the encryption technices of SRTP
+   [3].  It supports peer to peer tunnels, where tunnel endpoints CAN be
+   any combination of unicast, multicast or anycast hosts, so it defines
+   a Host Anycast Service as defined in rfc1546 [4]
 
 
 
@@ -251,7 +251,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 2.1.3.  redundant tunnel connection of 2 networks
 
-   An example of anytun used in open tunnel mode
+   An example of SATP used to connect 2 networks
 
                  Router -----------   ---------------Router
                /                   \ /                     \
@@ -281,7 +281,7 @@ Gsenger                 Expires September 2, 2007               [Page 5]
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
-2.2.  Lower layer protocol
+2.2.  Encapsulation
 
    SATP does not depend an which lower layer protocols is used, but it's
    most likely used on top of ip or udp.  This section should only
@@ -563,17 +563,17 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 4.  References
 
-   [1]  Huitema, C., "An Anycast Prefix for 6to4 Relay Routers",
+   [1]  Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina,
+        "Generic Routing Encapsulation (GRE)", RFC 2784, March 2000.
+
+   [2]  Kent, S. and R. Atkinson, "Security Architecture for the
+        Internet Protocol", RFC 2401, November 1998.
+
+   [3]  Huitema, C., "An Anycast Prefix for 6to4 Relay Routers",
         RFC 3068, June 2001.
 
-
-
-
-
-
-
-
-
+   [4]  Partridge, C., Mendez, T., and W. Milliken, "Host Anycasting
+        Service", RFC 1546, November 1993.
 
 
 
