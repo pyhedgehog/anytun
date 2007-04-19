@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en"><head><title>secure anycast tunneling protocol (satp)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="description" content="secure anycast tunneling protocol (satp)">
+<meta name="keywords" content="satp, Internet-Draft, secure anycast tunneling protocol, anycast, tunnel, secure, protocol">
+<meta name="generator" content="xml2rfc v1.32 (http://xml.resource.org/)">
+<style type='text/css'><!--
+        body {
+                font-family: verdana, charcoal, helvetica, arial, sans-serif;
+                font-size: small; color: #000; background-color: #FFF;
+                margin: 2em;
+        }
+        h1, h2, h3, h4, h5, h6 {
+                font-family: helvetica, monaco, "MS Sans Serif", arial, sans-serif;
+                font-weight: bold; font-style: normal;
+        }
+        h1 { color: #900; background-color: transparent; text-align: right; }
+        h3 { color: #333; background-color: transparent; }
+
+        td.RFCbug {
+                font-size: x-small; text-decoration: none;
+                width: 30px; height: 30px; padding-top: 2px;
+                text-align: justify; vertical-align: middle;
+                background-color: #000;
+        }
+        td.RFCbug span.RFC {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: bold; color: #666;
+        }
+        td.RFCbug span.hotText {
+                font-family: charcoal, monaco, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: normal; text-align: center; color: #FFF;
+        }
+
+        table.TOCbug { width: 30px; height: 15px; }
+        td.TOCbug {
+                text-align: center; width: 30px; height: 15px;
+                color: #FFF; background-color: #900;
+        }
+        td.TOCbug a {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, sans-serif;
+                font-weight: bold; font-size: x-small; text-decoration: none;
+                color: #FFF; background-color: transparent;
+        }
+
+        td.header {
+                font-family: arial, helvetica, sans-serif; font-size: x-small;
+                vertical-align: top; width: 33%;
+                color: #FFF; background-color: #666;
+        }
+        td.author { font-weight: bold; font-size: x-small; margin-left: 4em; }
+        td.author-text { font-size: x-small; }
+
+        /* info code from SantaKlauss at http://www.madaboutstyle.com/tooltip2.html */
+        a.info {
+                /* This is the key. */
+                position: relative;
+                z-index: 24;
+                text-decoration: none;
+        }
+        a.info:hover {
+                z-index: 25;
+                color: #FFF; background-color: #900;
+        }
+        a.info span { display: none; }
+        a.info:hover span.info {
+                /* The span will display just on :hover state. */
+                display: block;
+                position: absolute;
+                font-size: smaller;
+                top: 2em; left: -5em; width: 15em;
+                padding: 2px; border: 1px solid #333;
+                color: #900; background-color: #EEE;
+                text-align: left;
+        }
+
+        a { font-weight: bold; }
+        a:link    { color: #900; background-color: transparent; }
+        a:visited { color: #633; background-color: transparent; }
+        a:active  { color: #633; background-color: transparent; }
+
+        p { margin-left: 2em; margin-right: 2em; }
+        p.copyright { font-size: x-small; }
+        p.toc { font-size: small; font-weight: bold; margin-left: 3em; }
+        table.toc { margin: 0 0 0 3em; padding: 0; border: 0; vertical-align: text-top; }
+        td.toc { font-size: small; font-weight: bold; vertical-align: text-top; }
+
+        ol.text { margin-left: 2em; margin-right: 2em; }
+        ul.text { margin-left: 2em; margin-right: 2em; }
+        li      { margin-left: 3em; }
+
+        /* RFC-2629 <spanx>s and <artwork>s. */
+        em     { font-style: italic; }
+        strong { font-weight: bold; }
+        dfn    { font-weight: bold; font-style: normal; }
+        cite   { font-weight: normal; font-style: normal; }
+        tt     { color: #036; }
+        tt, pre, pre dfn, pre em, pre cite, pre span {
+                font-family: "Courier New", Courier, monospace; font-size: small;
+        }
+        pre {
+                text-align: left; padding: 4px;
+                color: #000; background-color: #CCC;
+        }
+        pre dfn  { color: #900; }
+        pre em   { color: #66F; background-color: #FFC; font-weight: normal; }
+        pre .key { color: #33C; font-weight: bold; }
+        pre .id  { color: #900; }
+        pre .str { color: #000; background-color: #CFF; }
+        pre .val { color: #066; }
+        pre .rep { color: #909; }
+        pre .oth { color: #000; background-color: #FCF; }
+        pre .err { background-color: #FCC; }
+
+        /* RFC-2629 <texttable>s. */
+        table.all, table.full, table.headers, table.none {
+                font-size: small; text-align: center; border-width: 2px;
+                vertical-align: top; border-collapse: collapse;
+        }
+        table.all, table.full { border-style: solid; border-color: black; }
+        table.headers, table.none { border-style: none; }
+        th {
+                font-weight: bold; border-color: black;
+                border-width: 2px 2px 3px 2px;
+        }
+        table.all th, table.full th { border-style: solid; }
+        table.headers th { border-style: none none solid none; }
+        table.none th { border-style: none; }
+        table.all td {
+                border-style: solid; border-color: #333;
+                border-width: 1px 2px;
+        }
+        table.full td, table.headers td, table.none td { border-style: none; }
+
+        hr { height: 1px; }
+        hr.insert {
+                width: 80%; border-style: none; border-width: 0;
+                color: #CCC; background-color: #CCC;
+        }
+--></style>
+</head>
+<body>
+<table summary="layout" width="66%" border="0" cellpadding="0" cellspacing="0"><tr><td><table summary="layout" width="100%" border="0" cellpadding="2" cellspacing="1">
+<tr><td class="header">Network Working Group</td><td class="header">O. Gsenger</td></tr>
+<tr><td class="header">Internet-Draft</td><td class="header">March 2007</td></tr>
+<tr><td class="header">Expires: September 2, 2007</td><td class="header">&nbsp;</td></tr>
+</table></td></tr></table>
+<h1><br />secure anycast tunneling protocol (satp)<br />draft-gsenger-secure-anycast-tunneling-protocol-00</h1>
+
+<h3>Status of this Memo</h3>
+<p>
+By submitting this Internet-Draft,
+each author represents that any applicable patent or other IPR claims of which
+he or she is aware have been or will be disclosed,
+and any of which he or she becomes aware will be disclosed,
+in accordance with Section&nbsp;6 of BCP&nbsp;79.</p>
+<p>
+Internet-Drafts are working documents of the Internet Engineering
+Task Force (IETF), its areas, and its working groups.
+Note that other groups may also distribute working documents as
+Internet-Drafts.</p>
+<p>
+Internet-Drafts are draft documents valid for a maximum of six months
+and may be updated, replaced, or obsoleted by other documents at any time.
+It is inappropriate to use Internet-Drafts as reference material or to cite
+them other than as &ldquo;work in progress.&rdquo;</p>
+<p>
+The list of current Internet-Drafts can be accessed at
+<a href='http://www.ietf.org/ietf/1id-abstracts.txt'>http://www.ietf.org/ietf/1id-abstracts.txt</a>.</p>
+<p>
+The list of Internet-Draft Shadow Directories can be accessed at
+<a href='http://www.ietf.org/shadow.html'>http://www.ietf.org/shadow.html</a>.</p>
+<p>
+This Internet-Draft will expire on September 2, 2007.</p>
+
+<h3>Copyright Notice</h3>
+<p>
+Copyright &copy; The IETF Trust (2007).</p>
+
+<h3>Abstract</h3>
+
+<p>The secure anycast tunneling protocol (satp) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It has less protocol overhead than IPSec in Tunnel mode and allows tunneling of every ETHER TYPE protocol (e.g. ethernet, ip, arp ...). satp directly includes cryptography and message authentication based on the methodes used by SRTP. It is intended to deliver a generic, scaleable and secure solution for tunneling and relaying of packets of any protocol.
+            
+</p>
+<a name="anchor1"></a><br /><hr />
+<a name="rfc.section.1"></a><h3>1.&nbsp;
+Introduction</h3>
+
+<p>SATP is somehow a mixture of an generic encapsulation protocol as <a class='info' href='#RFC2784'>GRE<span> (</span><span class='info'>Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina, &ldquo;Generic Routing Encapsulation (GRE),&rdquo; March&nbsp;2000.</span><span>)</span></a> [1] and a secure tunneling protocol as <a class='info' href='#RFC2401'>IPsec<span> (</span><span class='info'>Kent, S. and R. Atkinson, &ldquo;Security Architecture for the Internet Protocol,&rdquo; November&nbsp;1998.</span><span>)</span></a> [2] in tunnel mode. To save some header overhead it uses the encryption technices of <a class='info' href='#RFC3068'>SRTP<span> (</span><span class='info'>Huitema, C., &ldquo;An Anycast Prefix for 6to4 Relay Routers,&rdquo; June&nbsp;2001.</span><span>)</span></a> [3]. It supports peer to peer tunnels, where tunnel endpoints CAN be any combination of unicast, multicast or anycast hosts, so it defines a <a class='info' href='#RFC1546'>Host Anycast Service<span> (</span><span class='info'>Partridge, C., Mendez, T., and W. Milliken, &ldquo;Host Anycasting Service,&rdquo; November&nbsp;1993.</span><span>)</span></a> [4]
+</p>
+<a name="anchor2"></a><br /><hr />
+<a name="rfc.section.2"></a><h3>2.&nbsp;
+Motivation and usage scenarios</h3>
+
+<p>This section gives an overview of possible usage scenarios. Please note, that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.
+</p>
+<a name="anchor3"></a><br /><hr />
+<a name="rfc.section.2.1"></a><h3>2.1.&nbsp;
+Usage scenarions</h3>
+
+<a name="anchor4"></a><br /><hr />
+<a name="rfc.section.2.1.1"></a><h3>2.1.1.&nbsp;
+tunneling from unicast hosts over anycast routers to other unicast hosts</h3>
+<br /><hr class="insert" />
+<a name="tunnel_mode"></a>
+
+<p>An example of SATP used to tunnel in a unicast client - anycast server model
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+                    --------- router -----------
+                   /                            \
+    unicast ------+---------- router ------------+------ unicast
+    host           \                            /        host
+                    --------- router -----------
+
+  unicast  | encrypted     |  anycast  | encrypted     |  unicast
+  tunnel   | communication |  tunnel   | communication |  tunnel
+  endpoint | using SATP    |  endpoint | using SATP    |  endpoint
+</pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;1&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
+<p>In this scenario the payload of a SATP packet is transmitted from one unicast host to one of the anycast routers. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing descition.
+</p>
+<a name="anchor5"></a><br /><hr />
+<a name="rfc.section.2.1.2"></a><h3>2.1.2.&nbsp;
+tunneling from unicast hosts to anycast networks</h3>
+<br /><hr class="insert" />
+<a name="open_tunnel_mode"></a>
+
+<p>An example of SATP used to encrypt data between a unicast host and anycast networks
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+                       -------Router -+---- DNS Server
+                      /                \
+                     /                  --- 6to4 Router
+                    /
+    unicast -------+----------Router --+--- DNS Server
+    host            \                   \
+                     \                   --- 6to4 Router
+                      \
+                       -------Router -+---- DNS Server
+                                       \
+                                        --- 6to4 Router
+
+  unicast  | encrypted     |  anycast  | plaintext
+  tunnel   | communication |  tunnel   | anycast
+  endpoint | using SATP    |  endpoint | services
+
+</pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;2&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
+<a name="anchor6"></a><br /><hr />
+<a name="rfc.section.2.1.3"></a><h3>2.1.3.&nbsp;
+redundant tunnel connection of 2 networks</h3>
+<br /><hr class="insert" />
+<a name="connect_networks"></a>
+
+<p>An example of SATP used to connect 2 networks
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+              Router -----------   ---------------Router
+            /                   \ /                     \
+    Network - Router ------------x                       Network
+       A    \                   / \                     /   B
+              Router -----------   ---------------Router
+
+            | packets       |  packets  |  packets      |
+ plaintext  | get           |  take a   |  get          | plaintext
+ packets    | de/encrypted  |  random   |  de/encrypted | packets
+            |de/encapsulated|   path    |de/encapsulated|
+
+</pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;3&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
+<p>Network A has multible routers, that act as gateway/tunnel endpoint to another network B. This is done to build e redundant encrpted tunnel connection between the to networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address.
+</p>
+<a name="anchor7"></a><br /><hr />
+<a name="rfc.section.2.2"></a><h3>2.2.&nbsp;
+Encapsulation</h3>
+
+<p>SATP does not depend an which lower layer protocols is used, but it's most likely used on top of ip or udp. This section should only discuss some issues on ip and udp in combination with anycasting and tunnels.
+      
+</p><br /><hr class="insert" />
+<a name="transtort_udp"></a>
+
+<p>Examples of SATP used with different lower layer and payload protocols
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+    +------+-----+-------------------------------+
+    |      |     |      + ---------------+------ |
+    | IPv6 | UDP | SATP | Ethernet 802.3 | ... | |
+    |      |     |      +----------------+-----+ |
+    +------+-----+-------------------------------+
+
+Tunnelung of Ethernet over UDP/IPv6
+
+    +------+-----+---------------------------+
+    |      |     |      +------+-----+-----+ |
+    | IPv4 | UDP | SATP | IPv6 | UDP | RTP | |
+    |      |     |      +------+-----+-----+ |
+    +------+-----+---------------------------+
+
+Tunneling of IPv6 over UDP/IPv4 with RTP payload
+
+    +------+-------------------------------+
+    |      |      + ---------------+------ |
+    | IPv6 | SATP | Ethernet 802.3 | ... | |
+    |      |      +----------------+-----+ |
+    +------+-------------------------------+
+
+Tunnelung of Ethernet over IPv6
+
+    +------+---------------------------+
+    |      |      +------+-----+-----+ |
+    | IPv4 | SATP | IPv6 | UDP | RTP | |
+    |      |      +------+-----+-----+ |
+    +------+---------------------------+
+
+Tunneling of IPv6 over IPv4 with RTP payload
+</pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;4&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
+<p>When using UDP no flow controll or retransmission is done, neigther by UDP nor anytun. The encapsulated protocol HAS TO take care of this tasks if needed. UDP however has a checksum of the complete udp datagram, so a packet gets discarded if there is a biterror in the payload
+</p>
+<a name="anchor8"></a><br /><hr />
+<a name="rfc.section.2.3"></a><h3>2.3.&nbsp;
+Fragmentation</h3>
+
+<p>
+           The only way of fully supporting fragmentation would be to syncronise fragments between all anycast servers. This is considered to be to much overhead, so there are two non perfect solutions for this problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server.
+         
+</p>
+<a name="anchor9"></a><br /><hr />
+<a name="rfc.section.3"></a><h3>3.&nbsp;
+Protocol specification</h3>
+
+<a name="anchor10"></a><br /><hr />
+<a name="rfc.section.3.1"></a><h3>3.1.&nbsp;
+Header format</h3>
+<br /><hr class="insert" />
+<a name="prot_header_table"></a>
+
+<p>Protocol Format
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+        0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |           sender ID           |         sequence number       | |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   | |              ....        payload        ...                   | |
+   | |-------------------------------+-------------------------------+ |
+   | | padding (OPT) | pad count(OPT)|         payload type          | |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | ~                          MKI (OPTIONAL)                       ~ |
+   | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   | :                 authentication tag (RECOMMENDED)              : |
+   | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   |                                                                   |
+   +- Encrypted Portion*                      Authenticated Portion ---+
+</pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;5&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
+<p>
+</p>
+<a name="anchor11"></a><br /><hr />
+<a name="rfc.section.3.2"></a><h3>3.2.&nbsp;
+sender ID</h3>
+
+<p>The sender ID is a 16bit unsigned integer in network byte order. It HAS TO be unique for every sender sharing the same anycast address
+</p>
+<a name="anchor12"></a><br /><hr />
+<a name="rfc.section.3.3"></a><h3>3.3.&nbsp;
+sequence number</h3>
+
+<p>The sequenze number is a 16bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.
+</p>
+<a name="anchor13"></a><br /><hr />
+<a name="rfc.section.3.4"></a><h3>3.4.&nbsp;
+payload</h3>
+
+<p>A packet of the type payload type (e.g. an IP packet).
+</p>
+<a name="anchor14"></a><br /><hr />
+<a name="rfc.section.3.5"></a><h3>3.5.&nbsp;
+padding (OPTINAL)</h3>
+
+<p>Padding of max 255 ocitets.
+None of the pre-defined encryption transforms uses any padding; for
+   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If padding field is present, than the padding count field MUST be set to the padding lenght.
+</p>
+<a name="anchor15"></a><br /><hr />
+<a name="rfc.section.3.6"></a><h3>3.6.&nbsp;
+padding count</h3>
+
+<p>The number of octets of the padding field. This field is optional. It's presents is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.
+</p>
+<a name="anchor16"></a><br /><hr />
+<a name="rfc.section.3.7"></a><h3>3.7.&nbsp;
+payload type field</h3>
+
+<p>The payload type field defines the payload protocol. ETHER TYPE protocol numerbers are used. http://www.iana.org/assignments/ethernet-numbers . The values 0000-05DC are reserverd and MUST NOT be used. 
+            <br /><hr class="insert" />
+<a name="prot_type_table"></a>
+
+<p>Some examples for protocol types
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+HEX
+0000 Reserved
+.... Reserved
+05DC Reserved
+0800 Internet IP (IPv4)
+6558 transparent ethernet bridging
+86DD IPv6
+</pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;6&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
+
+
+<a name="anchor17"></a><br /><hr />
+<a name="rfc.section.A"></a><h3>Appendix A.&nbsp;
+The appan</h3>
+
+<a name="rfc.references1"></a><br /><hr />
+<h3>4.&nbsp;References</h3>
+<table width="99%" border="0">
+<tr><td class="author-text" valign="top"><a name="RFC2784">[1]</a></td>
+<td class="author-text"><a href="mailto:dino@procket.com">Farinacci, D.</a>, <a href="mailto:tony1@home.net">Li, T.</a>, <a href="mailto:stan_hanks@enron.net">Hanks, S.</a>, <a href="mailto:dmm@cisco.com">Meyer, D.</a>, and <a href="mailto:pst@juniper.net">P. Traina</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2784.txt">Generic Routing Encapsulation (GRE)</a>,&rdquo; RFC&nbsp;2784, March&nbsp;2000.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2401">[2]</a></td>
+<td class="author-text"><a href="mailto:kent@bbn.com">Kent, S.</a> and <a href="mailto:rja@corp.home.net">R. Atkinson</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2401.txt">Security Architecture for the Internet Protocol</a>,&rdquo; RFC&nbsp;2401, November&nbsp;1998 (<a href="ftp://ftp.isi.edu/in-notes/rfc2401.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc2401.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2401.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3068">[3]</a></td>
+<td class="author-text">Huitema, C., &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc3068.txt">An Anycast Prefix for 6to4 Relay Routers</a>,&rdquo; RFC&nbsp;3068, June&nbsp;2001.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC1546">[4]</a></td>
+<td class="author-text"><a href="mailto:craig@bbn.com">Partridge, C.</a>, <a href="mailto:tmendez@bbn.com">Mendez, T.</a>, and <a href="mailto:milliken@bbn.com">W. Milliken</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc1546.txt">Host Anycasting Service</a>,&rdquo; RFC&nbsp;1546, November&nbsp;1993.</td></tr>
+</table>
+
+<a name="rfc.authors"></a><br /><hr />
+<h3>Author's Address</h3>
+<table width="99%" border="0" cellpadding="0" cellspacing="0">
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Othmar Gsenger</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Sporgasse 6</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Graz  8010</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">AT</td></tr>
+<tr><td class="author" align="right">Phone:&nbsp;</td>
+<td class="author-text"></td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:otti@wirdorange.org">otti@wirdorange.org</a></td></tr>
+<tr><td class="author" align="right">URI:&nbsp;</td>
+<td class="author-text"><a href="http://anytun.org/">http://anytun.org/</a></td></tr>
+</table>
+<a name="rfc.copyright"></a><br /><hr />
+<h3>Full Copyright Statement</h3>
+<p class='copyright'>
+Copyright &copy; The IETF Trust (2007).</p>
+<p class='copyright'>
+This document is subject to the rights,
+licenses and restrictions contained in BCP&nbsp;78,
+and except as set forth therein,
+the authors retain all their rights.</p>
+<p class='copyright'>
+This document and the information contained herein are provided
+on an &ldquo;AS IS&rdquo; basis and THE CONTRIBUTOR,
+THE ORGANIZATION HE/SHE REPRESENTS
+OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY, THE IETF TRUST
+AND THE INTERNET ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT
+THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY
+IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+PURPOSE.</p>
+<h3>Intellectual Property</h3>
+<p class='copyright'>
+The IETF takes no position regarding the validity or scope of any
+Intellectual Property Rights or other rights that might be claimed
+to pertain to the implementation or use of the technology
+described in this document or the extent to which any license
+under such rights might or might not be available; nor does it
+represent that it has made any independent effort to identify any
+such rights.
+Information on the procedures with respect to
+rights in RFC documents can be found in BCP&nbsp;78 and BCP&nbsp;79.</p>
+<p class='copyright'>
+Copies of IPR disclosures made to the IETF Secretariat and any
+assurances of licenses to be made available,
+or the result of an attempt made to obtain a general license or
+permission for the use of such proprietary rights by implementers or
+users of this specification can be obtained from the IETF on-line IPR
+repository at <a href='http://www.ietf.org/ipr'>http://www.ietf.org/ipr</a>.</p>
+<p class='copyright'>
+The IETF invites any interested party to bring to its attention
+any copyrights,
+patents or patent applications,
+or other
+proprietary rights that may cover technology that may be required
+to implement this standard.
+Please address the information to the IETF at <a href='mailto:ietf-ipr@ietf.org'>ietf-ipr@ietf.org</a>.</p>
+<h3>Acknowledgment</h3>
+<p class='copyright'>
+Funding for the RFC Editor function is provided by
+the IETF Administrative Support Activity (IASA).</p>
+</body></html>

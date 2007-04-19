@@ -120,7 +120,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    save some header overhead it uses the encryption technices of SRTP
    [3].  It supports peer to peer tunnels, where tunnel endpoints CAN be
    any combination of unicast, multicast or anycast hosts, so it defines
-   a Host Anycast Service as defined in rfc1546 [4]
+   a Host Anycast Service [4]
 
 
 
