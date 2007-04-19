@@ -569,12 +569,12 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    [2]  Kent, S. and R. Atkinson, "Security Architecture for the
         Internet Protocol", RFC 2401, November 1998.
 
-   [3]  Huitema, C., "An Anycast Prefix for 6to4 Relay Routers",
-        RFC 3068, June 2001.
+   [3]  Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K.
+        Norrman, "The Secure Real-time Transport Protocol (SRTP)",
+        RFC 3711, March 2004.
 
    [4]  Partridge, C., Mendez, T., and W. Milliken, "Host Anycasting
         Service", RFC 1546, November 1993.
-
 
 
 
