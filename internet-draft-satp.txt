@@ -420,12 +420,12 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 3.2.  sender ID
 
-   The sender ID is a 16bit unsigned integer in network byte order.  It
-   HAS TO be unique for every sender sharing the same anycast address
+   The sender ID is a 8bit unsigned integer.  It HAS TO be unique for
+   every sender sharing the same anycast address
 
 3.3.  sequence number
 
-   The sequenze number is a 16bit unsigned integer in network byte
+   The sequenze number is a 24 bit unsigned integer in network byte
    order.  It starts with a random value and is increased by 1 for every
    sent packet.  After the maximum value, it starts over from 0.  This
    overrun causes the ROC to be increased.
@@ -462,9 +462,8 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 3.7.  payload type field
 
    The payload type field defines the payload protocol.  ETHER TYPE
-   protocol numerbers are used.
-   http://www.iana.org/assignments/ethernet-numbers .  The values 0000-
-   05DC are reserverd and MUST NOT be used.
+   protocol numerbers are used.  See IANA assigned ethernet numbers [5]
+   .  The values 0000-05DC are reserverd and MUST NOT be used.
 
    Some examples for protocol types
 
@@ -478,9 +477,10 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
                                  Figure 6
 
+3.8.  Encryption
 
-
-
+   Encryption is done in the same way as for SRTP [3].  This section
+   will only discuss some small changes that HAVE TO be made.
 
 
 
@@ -576,7 +576,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    [4]  Partridge, C., Mendez, T., and W. Milliken, "Host Anycasting
         Service", RFC 1546, November 1993.
 
-
+   [5]  <http://www.iana.org/assignments/ethernet-numbers>
 
 
 

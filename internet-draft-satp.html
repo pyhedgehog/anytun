@@ -358,13 +358,13 @@ Header format</h3>
 <a name="rfc.section.3.2"></a><h3>3.2.&nbsp;
 sender ID</h3>
 
-<p>The sender ID is a 16bit unsigned integer in network byte order. It HAS TO be unique for every sender sharing the same anycast address
+<p>The sender ID is a 8bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address
 </p>
 <a name="anchor12"></a><br /><hr />
 <a name="rfc.section.3.3"></a><h3>3.3.&nbsp;
 sequence number</h3>
 
-<p>The sequenze number is a 16bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.
+<p>The sequenze number is a 24 bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.
 </p>
 <a name="anchor13"></a><br /><hr />
 <a name="rfc.section.3.4"></a><h3>3.4.&nbsp;
@@ -390,7 +390,7 @@ padding count</h3>
 <a name="rfc.section.3.7"></a><h3>3.7.&nbsp;
 payload type field</h3>
 
-<p>The payload type field defines the payload protocol. ETHER TYPE protocol numerbers are used. http://www.iana.org/assignments/ethernet-numbers . The values 0000-05DC are reserverd and MUST NOT be used. 
+<p>The payload type field defines the payload protocol. ETHER TYPE protocol numerbers are used. <a href='http://www.iana.org/assignments/ethernet-numbers'>See IANA assigned ethernet numbers</a> . The values 0000-05DC are reserverd and MUST NOT be used. 
             <br /><hr class="insert" />
 <a name="prot_type_table"></a>
 
@@ -408,6 +408,12 @@ HEX
 
 
 <a name="anchor17"></a><br /><hr />
+<a name="rfc.section.3.8"></a><h3>3.8.&nbsp;
+Encryption</h3>
+
+<p>Encryption is done in the same way as for <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [3]. This section will only discuss some small changes that HAVE TO be made.
+</p>
+<a name="anchor18"></a><br /><hr />
 <a name="rfc.section.A"></a><h3>Appendix A.&nbsp;
 The appan</h3>
 
