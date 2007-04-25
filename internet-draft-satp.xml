@@ -17,15 +17,15 @@
 
             <address>
                 <postal>
-                    <street>Sporgasse 6</street>
-                    <city>Graz</city>
-                    <code>8010</code>
+                    <street>Puerstingerstr 32/7</street>
+                    <city>Saalfelden</city>
+                    <code>5760</code>
                     <country>AT</country>
                 </postal>
 
                 <phone></phone>
-                <email>otti@wirdorange.org</email>
-                <uri>http://anytun.org/</uri>
+                <email>satp@gsenger.com</email>
+                <uri>http://www.gsenger.com/satp/</uri>
             </address>
         </author>
 
@@ -68,7 +68,7 @@
   endpoint | using SATP    |  endpoint | using SATP    |  endpoint 
                  </artwork>
        </figure>
-	      <t>In this scenario the payload of a SATP packet is transmitted from one unicast host to one of the anycast routers. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing descition.</t> 
+	      <t>In this scenario the payload gets encapsuleted into a SATP packet by a unicast host and gets transmitted to one of the anycast routers. It than gets decapsulated by the router. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing descition.</t> 
 	    </section>
 
 	    <section title='tunneling from unicast hosts to anycast networks'>
@@ -113,7 +113,7 @@
                  </artwork>
        </figure>
 
-               <t>Network A has multible routers, that act as gateway/tunnel endpoint to another network B. This is done to build e redundant encrpted tunnel connection between the to networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address.</t>
+               <t>Network A has multible routers, that act as gateway/tunnel endpoint to another network B. This is done to build a redundant encrpted tunnel connection between the two networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address. When a packet from network a gets transmitted to network B, it first arrives on one of networks A border routers. Which router is used is determined by network A's internal routing. This router encapsulates the package and sends it to the anycast address of the network B routers. The SATP packet arrives at one of network B's routers and gets decapsulated and routed to it's destination within network B.</t>
       </section>
 	</section>
 	<section title="Encapsulation">
