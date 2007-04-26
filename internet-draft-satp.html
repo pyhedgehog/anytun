@@ -179,14 +179,14 @@ Copyright &copy; The IETF Trust (2007).</p>
 
 <h3>Abstract</h3>
 
-<p>The secure anycast tunneling protocol (satp) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It has less protocol overhead than IPSec in Tunnel mode and allows tunneling of every ETHER TYPE protocol (e.g. ethernet, ip, arp ...). satp directly includes cryptography and message authentication based on the methodes used by SRTP. It is intended to deliver a generic, scaleable and secure solution for tunneling and relaying of packets of any protocol.
+<p>The secure anycast tunneling protocol (satp) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It allows tunneling of every ETHER TYPE protocol (e.g. ethernet, ip, arp ...). SATP directly includes cryptography and message authentication based on the methodes used by SRTP. It is intended to deliver a generic, scaleable and secure solution for tunneling and relaying of packets of any protocol.
             
 </p>
 <a name="anchor1"></a><br /><hr />
 <a name="rfc.section.1"></a><h3>1.&nbsp;
 Introduction</h3>
 
-<p>SATP is somehow a mixture of an generic encapsulation protocol as <a class='info' href='#RFC2784'>GRE<span> (</span><span class='info'>Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina, &ldquo;Generic Routing Encapsulation (GRE),&rdquo; March&nbsp;2000.</span><span>)</span></a> [1] and a secure tunneling protocol as <a class='info' href='#RFC2401'>IPsec<span> (</span><span class='info'>Kent, S. and R. Atkinson, &ldquo;Security Architecture for the Internet Protocol,&rdquo; November&nbsp;1998.</span><span>)</span></a> [2] in tunnel mode. To save some header overhead it uses the encryption technices of <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [3]. It supports peer to peer tunnels, where tunnel endpoints CAN be any combination of unicast, multicast or anycast hosts, so it defines a <a class='info' href='#RFC1546'>Host Anycast Service<span> (</span><span class='info'>Partridge, C., Mendez, T., and W. Milliken, &ldquo;Host Anycasting Service,&rdquo; November&nbsp;1993.</span><span>)</span></a> [4]
+<p>SATP is somehow a mixture of an generic encapsulation protocol as <a class='info' href='#RFC2784'>GRE<span> (</span><span class='info'>Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina, &ldquo;Generic Routing Encapsulation (GRE),&rdquo; March&nbsp;2000.</span><span>)</span></a> [1] and a secure tunneling protocol as <a class='info' href='#RFC2401'>IPsec<span> (</span><span class='info'>Kent, S. and R. Atkinson, &ldquo;Security Architecture for the Internet Protocol,&rdquo; November&nbsp;1998.</span><span>)</span></a> [2] in tunnel mode. To save some header overhead it uses the encryption technices of <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [3]. It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <a class='info' href='#RFC1546'>Host Anycast Service<span> (</span><span class='info'>Partridge, C., Mendez, T., and W. Milliken, &ldquo;Host Anycasting Service,&rdquo; November&nbsp;1993.</span><span>)</span></a> [4]
 </p>
 <a name="anchor2"></a><br /><hr />
 <a name="rfc.section.2"></a><h3>2.&nbsp;
@@ -217,7 +217,7 @@ tunneling from unicast hosts over anycast routers to other unicast hosts</h3>
   endpoint | using SATP    |  endpoint | using SATP    |  endpoint
 </pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;1&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
 
-<p>In this scenario the payload of a SATP packet is transmitted from one unicast host to one of the anycast routers. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing descition.
+<p>In this scenario the payload gets encapsuleted into a SATP packet by a unicast host and gets transmitted to one of the anycast routers. It than gets decapsulated by the router. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing descition.
 </p>
 <a name="anchor5"></a><br /><hr />
 <a name="rfc.section.2.1.2"></a><h3>2.1.2.&nbsp;
@@ -266,7 +266,7 @@ redundant tunnel connection of 2 networks</h3>
 
 </pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;3&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
 
-<p>Network A has multible routers, that act as gateway/tunnel endpoint to another network B. This is done to build e redundant encrpted tunnel connection between the to networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address.
+<p>Network A has multible routers, that act as gateway/tunnel endpoint to another network B. This is done to build a redundant encrpted tunnel connection between the two networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address. When a packet from network a gets transmitted to network B, it first arrives on one of networks A border routers. Which router is used is determined by network A's internal routing. This router encapsulates the package and sends it to the anycast address of the network B routers. The SATP packet arrives at one of network B's routers and gets decapsulated and routed to it's destination within network B.
 </p>
 <a name="anchor7"></a><br /><hr />
 <a name="rfc.section.2.2"></a><h3>2.2.&nbsp;
@@ -436,17 +436,17 @@ The appan</h3>
 <tr><td class="author-text">&nbsp;</td>
 <td class="author-text">Othmar Gsenger</td></tr>
 <tr><td class="author-text">&nbsp;</td>
-<td class="author-text">Sporgasse 6</td></tr>
+<td class="author-text">Puerstingerstr 32/7</td></tr>
 <tr><td class="author-text">&nbsp;</td>
-<td class="author-text">Graz  8010</td></tr>
+<td class="author-text">Saalfelden  5760</td></tr>
 <tr><td class="author-text">&nbsp;</td>
 <td class="author-text">AT</td></tr>
 <tr><td class="author" align="right">Phone:&nbsp;</td>
 <td class="author-text"></td></tr>
 <tr><td class="author" align="right">Email:&nbsp;</td>
-<td class="author-text"><a href="mailto:otti@wirdorange.org">otti@wirdorange.org</a></td></tr>
+<td class="author-text"><a href="mailto:satp@gsenger.com">satp@gsenger.com</a></td></tr>
 <tr><td class="author" align="right">URI:&nbsp;</td>
-<td class="author-text"><a href="http://anytun.org/">http://anytun.org/</a></td></tr>
+<td class="author-text"><a href="http://www.gsenger.com/satp/">http://www.gsenger.com/satp/</a></td></tr>
 </table>
 <a name="rfc.copyright"></a><br /><hr />
 <h3>Full Copyright Statement</h3>

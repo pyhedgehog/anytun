@@ -61,12 +61,12 @@ Abstract
 
    The secure anycast tunneling protocol (satp) defines a protocol used
    for communication between any combination of unicast and anycast
-   tunnel endpoints.  It has less protocol overhead than IPSec in Tunnel
-   mode and allows tunneling of every ETHER TYPE protocol (e.g.
-   ethernet, ip, arp ...). satp directly includes cryptography and
-   message authentication based on the methodes used by SRTP.  It is
+   tunnel endpoints.  It allows tunneling of every ETHER TYPE protocol
+   (e.g. ethernet, ip, arp ...).  SATP directly includes cryptography
+   and message authentication based on the methodes used by SRTP.  It is
    intended to deliver a generic, scaleable and secure solution for
    tunneling and relaying of packets of any protocol.
+
 
 
 
@@ -118,7 +118,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    SATP is somehow a mixture of an generic encapsulation protocol as GRE
    [1] and a secure tunneling protocol as IPsec [2] in tunnel mode.  To
    save some header overhead it uses the encryption technices of SRTP
-   [3].  It supports peer to peer tunnels, where tunnel endpoints CAN be
+   [3].  It supports peer to peer tunnels, where tunnel endpoints can be
    any combination of unicast, multicast or anycast hosts, so it defines
    a Host Anycast Service [4]
 
@@ -199,12 +199,12 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
                                  Figure 1
 
-   In this scenario the payload of a SATP packet is transmitted from one
-   unicast host to one of the anycast routers.  This router makes a
-   routing descision based on the underlying protocol and transmits a
-   new SATP package to one or more unicast hosts depending on the
-   routing descition.
-
+   In this scenario the payload gets encapsuleted into a SATP packet by
+   a unicast host and gets transmitted to one of the anycast routers.
+   It than gets decapsulated by the router.  This router makes a routing
+   descision based on the underlying protocol and transmits a new SATP
+   package to one or more unicast hosts depending on the routing
+   descition.
 
 
 
@@ -268,11 +268,11 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
                                  Figure 3
 
    Network A has multible routers, that act as gateway/tunnel endpoint
-   to another network B. This is done to build e redundant encrpted
-   tunnel connection between the to networks.  All tunnel endpoints of
+   to another network B. This is done to build a redundant encrpted
+   tunnel connection between the two networks.  All tunnel endpoints of
    network A share the same anycast address and all tunnel endpoints of
-   network B share another anycast address.
-
+   network B share another anycast address.  When a packet from network
+   a gets transmitted to network B, it first arrives on one of networks
 
 
 
@@ -280,6 +280,12 @@ Gsenger                 Expires September 2, 2007               [Page 5]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
+
+   A border routers.  Which router is used is determined by network A's
+   internal routing.  This router encapsulates the package and sends it
+   to the anycast address of the network B routers.  The SATP packet
+   arrives at one of network B's routers and gets decapsulated and
+   routed to it's destination within network B.
 
 2.2.  Encapsulation
 
@@ -323,12 +329,6 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
    Tunneling of IPv6 over IPv4 with RTP payload
 
-                                 Figure 4
-
-   When using UDP no flow controll or retransmission is done, neigther
-   by UDP nor anytun.  The encapsulated protocol HAS TO take care of
-   this tasks if needed.  UDP however has a checksum of the complete udp
-   datagram, so a packet gets discarded if there is a biterror in the
 
 
 
@@ -337,6 +337,12 @@ Gsenger                 Expires September 2, 2007               [Page 6]
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
+                                 Figure 4
+
+   When using UDP no flow controll or retransmission is done, neigther
+   by UDP nor anytun.  The encapsulated protocol HAS TO take care of
+   this tasks if needed.  UDP however has a checksum of the complete udp
+   datagram, so a packet gets discarded if there is a biterror in the
    payload
 
 2.3.  Fragmentation
@@ -349,12 +355,6 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    discarded.  As routing changes are not expected to occure very
    frequently, the encapsulated protocol can do a retransmission and all
    fragments will arrive at the new server.
-
-
-
-
-
-
 
 
 
@@ -620,13 +620,13 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 Author's Address
 
    Othmar Gsenger
-   Sporgasse 6
-   Graz  8010
+   Puerstingerstr 32/7
+   Saalfelden  5760
    AT
 
    Phone:
-   Email: otti@wirdorange.org
-   URI:   http://anytun.org/
+   Email: satp@gsenger.com
+   URI:   http://www.gsenger.com/satp/
 
 
 
