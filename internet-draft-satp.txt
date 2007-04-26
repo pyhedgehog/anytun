@@ -115,9 +115,9 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 1.  Introduction
 
-   SATP is somehow a mixture of an generic encapsulation protocol as GRE
-   [1] and a secure tunneling protocol as IPsec [2] in tunnel mode.  To
-   save some header overhead it uses the encryption technices of SRTP
+   SATP is somehow a mixture of a generic encapsulation protocol like
+   GRE [1] and a secure tunneling protocol as IPsec [2] in tunnel mode.
+   To save some header overhead it uses the encryption technices of SRTP
    [3].  It supports peer to peer tunnels, where tunnel endpoints can be
    any combination of unicast, multicast or anycast hosts, so it defines
    a Host Anycast Service [4]

@@ -47,7 +47,7 @@
     </front>
     <middle>
     <section title='Introduction'>
-        <t>SATP is somehow a mixture of an generic encapsulation protocol as <xref target="RFC2784">GRE</xref> and a secure tunneling protocol as <xref target="RFC2401">IPsec</xref> in tunnel mode. To save some header overhead it uses the encryption technices of <xref target="RFC3711">SRTP</xref>. It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <xref target="RFC1546">Host Anycast Service</xref></t>
+        <t>SATP is somehow a mixture of a generic encapsulation protocol like <xref target="RFC2784">GRE</xref> and a secure tunneling protocol as <xref target="RFC2401">IPsec</xref> in tunnel mode. To save some header overhead it uses the encryption technices of <xref target="RFC3711">SRTP</xref>. It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <xref target="RFC1546">Host Anycast Service</xref></t>
     </section> 
     <section title="Motivation and usage scenarios">
        <t>This section gives an overview of possible usage scenarios. Please note, that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.</t>
