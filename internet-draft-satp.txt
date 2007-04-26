@@ -303,7 +303,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
        |      |     |      +----------------+-----+ |
        +------+-----+-------------------------------+
 
-   Tunnelung of Ethernet over UDP/IPv6
+   Tunneling of Ethernet over UDP/IPv6
 
        +------+-----+---------------------------+
        |      |     |      +------+-----+-----+ |
@@ -319,7 +319,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
        |      |      +----------------+-----+ |
        +------+-------------------------------+
 
-   Tunnelung of Ethernet over IPv6
+   Tunneling of Ethernet over IPv6
 
        +------+---------------------------+
        |      |      +------+-----+-----+ |
@@ -434,7 +434,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
    A packet of the type payload type (e.g. an IP packet).
 
-3.5.  padding (OPTINAL)
+3.5.  padding (OPTIONAL)
 
    Padding of max 255 ocitets.  None of the pre-defined encryption
    transforms uses any padding; for these, the plaintext and encrypted

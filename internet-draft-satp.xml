@@ -128,7 +128,7 @@
     |      |     |      +----------------+-----+ |
     +------+-----+-------------------------------+
 
-Tunnelung of Ethernet over UDP/IPv6
+Tunneling of Ethernet over UDP/IPv6
 
     +------+-----+---------------------------+
     |      |     |      +------+-----+-----+ |
@@ -144,7 +144,7 @@ Tunneling of IPv6 over UDP/IPv4 with RTP payload
     |      |      +----------------+-----+ |
     +------+-------------------------------+
 
-Tunnelung of Ethernet over IPv6
+Tunneling of Ethernet over IPv6
 
     +------+---------------------------+
     |      |      +------+-----+-----+ |
@@ -197,7 +197,7 @@ Tunneling of IPv6 over IPv4 with RTP payload
        <section title="payload">
        <t>A packet of the type payload type (e.g. an IP packet).</t>
        </section>
-       <section title="padding (OPTINAL)">
+       <section title="padding (OPTIONAL)">
        <t>Padding of max 255 ocitets.
 None of the pre-defined encryption transforms uses any padding; for
    these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If padding field is present, than the padding count field MUST be set to the padding lenght.</t>
