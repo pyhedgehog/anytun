@@ -92,8 +92,8 @@
   endpoint | using SATP    |  endpoint | services
 
                  </artwork>
-       </figure>
-
+               </figure>
+            <t></t>
 	    </section>
       <section title='redundant tunnel connection of 2 networks'>
               <figure anchor="connect_networks">
