@@ -186,19 +186,25 @@ Copyright &copy; The IETF Trust (2007).</p>
 <a name="rfc.section.1"></a><h3>1.&nbsp;
 Introduction</h3>
 
-<p>SATP is somehow a mixture of a generic encapsulation protocol like <a class='info' href='#RFC2784'>GRE<span> (</span><span class='info'>Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina, &ldquo;Generic Routing Encapsulation (GRE),&rdquo; March&nbsp;2000.</span><span>)</span></a> [1] and a secure tunneling protocol as <a class='info' href='#RFC2401'>IPsec<span> (</span><span class='info'>Kent, S. and R. Atkinson, &ldquo;Security Architecture for the Internet Protocol,&rdquo; November&nbsp;1998.</span><span>)</span></a> [2] in tunnel mode. To save some header overhead it uses the encryption technices of <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [3]. It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <a class='info' href='#RFC1546'>Host Anycast Service<span> (</span><span class='info'>Partridge, C., Mendez, T., and W. Milliken, &ldquo;Host Anycasting Service,&rdquo; November&nbsp;1993.</span><span>)</span></a> [4]
+<p>SATP is somehow a mixture of a generic encapsulation protocol like <a class='info' href='#RFC2784'>GRE<span> (</span><span class='info'>Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina, &ldquo;Generic Routing Encapsulation (GRE),&rdquo; March&nbsp;2000.</span><span>)</span></a> [3] and a secure tunneling protocol as <a class='info' href='#RFC2401'>IPsec<span> (</span><span class='info'>Kent, S. and R. Atkinson, &ldquo;Security Architecture for the Internet Protocol,&rdquo; November&nbsp;1998.</span><span>)</span></a> [4] in tunnel mode. To save some header overhead it uses the encryption technices of <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1]. It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <a class='info' href='#RFC1546'>Host Anycast Service<span> (</span><span class='info'>Partridge, C., Mendez, T., and W. Milliken, &ldquo;Host Anycasting Service,&rdquo; November&nbsp;1993.</span><span>)</span></a> [5]
 </p>
 <a name="anchor2"></a><br /><hr />
+<a name="rfc.section.1.1"></a><h3>1.1.&nbsp;
+Notational Conventions</h3>
+
+<p>The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in  <a class='info' href='#RFC2119'>RFC2119<span> (</span><span class='info'>Bradner, S., &ldquo;Key words for use in RFCs to Indicate Requirement Levels,&rdquo; March&nbsp;1997.</span><span>)</span></a> [2].
+</p>
+<a name="anchor3"></a><br /><hr />
 <a name="rfc.section.2"></a><h3>2.&nbsp;
 Motivation and usage scenarios</h3>
 
 <p>This section gives an overview of possible usage scenarios. Please note, that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.
 </p>
-<a name="anchor3"></a><br /><hr />
+<a name="anchor4"></a><br /><hr />
 <a name="rfc.section.2.1"></a><h3>2.1.&nbsp;
 Usage scenarions</h3>
 
-<a name="anchor4"></a><br /><hr />
+<a name="anchor5"></a><br /><hr />
 <a name="rfc.section.2.1.1"></a><h3>2.1.1.&nbsp;
 tunneling from unicast hosts over anycast routers to other unicast hosts</h3>
 <br /><hr class="insert" />
@@ -219,7 +225,7 @@ tunneling from unicast hosts over anycast routers to other unicast hosts</h3>
 
 <p>In this scenario the payload gets encapsuleted into a SATP packet by a unicast host and gets transmitted to one of the anycast routers. It than gets decapsulated by the router. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing descition.
 </p>
-<a name="anchor5"></a><br /><hr />
+<a name="anchor6"></a><br /><hr />
 <a name="rfc.section.2.1.2"></a><h3>2.1.2.&nbsp;
 tunneling from unicast hosts to anycast networks</h3>
 <br /><hr class="insert" />
@@ -247,7 +253,7 @@ tunneling from unicast hosts to anycast networks</h3>
 
 <p>
 </p>
-<a name="anchor6"></a><br /><hr />
+<a name="anchor7"></a><br /><hr />
 <a name="rfc.section.2.1.3"></a><h3>2.1.3.&nbsp;
 redundant tunnel connection of 2 networks</h3>
 <br /><hr class="insert" />
@@ -270,7 +276,7 @@ redundant tunnel connection of 2 networks</h3>
 
 <p>Network A has multiple routers, that act as gateway/tunnel endpoints to another network B. This is done to build a redundant encrypted tunnel connection between the two networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address. When a packet from network A gets transmitted to network B, it first arrives on one of network A's border routers. Which router is used is determined by network A's internal routing. This router encapsulates the package and sends it to the anycast address of the network B routers. The SATP packet arrives at one of network B's routers and gets decapsulated and routed to it's destination within network B.
 </p>
-<a name="anchor7"></a><br /><hr />
+<a name="anchor8"></a><br /><hr />
 <a name="rfc.section.2.2"></a><h3>2.2.&nbsp;
 Encapsulation</h3>
 
@@ -316,20 +322,24 @@ Tunneling of IPv6 over IPv4 with RTP payload
 
 <p>When using UDP no flow control or retransmission is done, neither by UDP nor anytun. The encapsulated protocol HAS TO take care of this tasks if needed. UDP however has a checksum of the complete UDP datagram, so a packet gets discarded if there is a biterror in the payload
 </p>
-<a name="anchor8"></a><br /><hr />
-<a name="rfc.section.2.3"></a><h3>2.3.&nbsp;
+<a name="anchor9"></a><br /><hr />
+<a name="rfc.section.3"></a><h3>3.&nbsp;
+Using SATP on top of IP</h3>
+
+<a name="anchor10"></a><br /><hr />
+<a name="rfc.section.3.1"></a><h3>3.1.&nbsp;
 Fragmentation</h3>
 
 <p>
            The only way of fully supporting fragmentation would be to synchronise fragments between all anycast servers. This is considered to be too much overhead, so there are two non perfect solutions for these problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server.
          
 </p>
-<a name="anchor9"></a><br /><hr />
-<a name="rfc.section.3"></a><h3>3.&nbsp;
+<a name="anchor11"></a><br /><hr />
+<a name="rfc.section.4"></a><h3>4.&nbsp;
 Protocol specification</h3>
 
-<a name="anchor10"></a><br /><hr />
-<a name="rfc.section.3.1"></a><h3>3.1.&nbsp;
+<a name="anchor12"></a><br /><hr />
+<a name="rfc.section.4.1"></a><h3>4.1.&nbsp;
 Header format</h3>
 <br /><hr class="insert" />
 <a name="prot_header_table"></a>
@@ -357,40 +367,40 @@ Header format</h3>
 
 <p>
 </p>
-<a name="anchor11"></a><br /><hr />
-<a name="rfc.section.3.2"></a><h3>3.2.&nbsp;
+<a name="anchor13"></a><br /><hr />
+<a name="rfc.section.4.2"></a><h3>4.2.&nbsp;
 sender ID</h3>
 
 <p>The sender ID is a 16bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address
 </p>
-<a name="anchor12"></a><br /><hr />
-<a name="rfc.section.3.3"></a><h3>3.3.&nbsp;
+<a name="anchor14"></a><br /><hr />
+<a name="rfc.section.4.3"></a><h3>4.3.&nbsp;
 sequence number</h3>
 
 <p>The sequence number is a 32 bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.
 </p>
-<a name="anchor13"></a><br /><hr />
-<a name="rfc.section.3.4"></a><h3>3.4.&nbsp;
+<a name="anchor15"></a><br /><hr />
+<a name="rfc.section.4.4"></a><h3>4.4.&nbsp;
 payload</h3>
 
 <p>A packet of the type payload type (e.g. an IP packet).
 </p>
-<a name="anchor14"></a><br /><hr />
-<a name="rfc.section.3.5"></a><h3>3.5.&nbsp;
+<a name="anchor16"></a><br /><hr />
+<a name="rfc.section.4.5"></a><h3>4.5.&nbsp;
 padding (OPTIONAL)</h3>
 
 <p>Padding of max 255 octets.
 None of the pre-defined encryption transforms uses any padding; for
    these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If padding field is present, than the padding count field MUST be set to the padding lenght.
 </p>
-<a name="anchor15"></a><br /><hr />
-<a name="rfc.section.3.6"></a><h3>3.6.&nbsp;
+<a name="anchor17"></a><br /><hr />
+<a name="rfc.section.4.6"></a><h3>4.6.&nbsp;
 padding count</h3>
 
 <p>The number of octets of the padding field. This field is optional. It's presence is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.
 </p>
-<a name="anchor16"></a><br /><hr />
-<a name="rfc.section.3.7"></a><h3>3.7.&nbsp;
+<a name="anchor18"></a><br /><hr />
+<a name="rfc.section.4.7"></a><h3>4.7.&nbsp;
 payload type field</h3>
 
 <p>The payload type field defines the payload protocol. ETHER TYPE protocol numbers are used. <a href='http://www.iana.org/assignments/ethernet-numbers'>See IANA assigned ethernet numbers</a> . The values 0000-05DC are reserverd and MUST NOT be used. 
@@ -410,22 +420,45 @@ HEX
 
 
 
-<a name="anchor17"></a><br /><hr />
-<a name="rfc.section.3.8"></a><h3>3.8.&nbsp;
+<a name="anchor19"></a><br /><hr />
+<a name="rfc.section.4.8"></a><h3>4.8.&nbsp;
 Encryption</h3>
 
-<p>Encryption is done in the same way as for <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [3]. This section will only discuss some small changes that HAVE TO be made.
+<p>Encryption is done in the same way as for <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1]. This section will only discuss some small changes that HAVE TO be made. Please read  <a class='info' href='#RFC3711'>SRTP RFC3711 section 3-9<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1] for details. SSRC is replaced by the sender ID
 </p>
+<a name="anchor20"></a><br /><hr />
+<a name="rfc.section.5"></a><h3>5.&nbsp;
+Security Considerations</h3>
+
+<p>As satp uses the same encrytion technics as <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1], it shares the same security issues. This section will only discuss some small changes. Please read  <a class='info' href='#RFC3711'>SRTP RFC3711 section 9<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1] for details.
+</p>
+<a name="anchor21"></a><br /><hr />
+<a name="rfc.section.5.1"></a><h3>5.1.&nbsp;
+Replay protection</h3>
+
+<p>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast reciever. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.
+</p>
+<a name="rfc.references"></a><br /><hr />
+<a name="rfc.section.6"></a><h3>6.&nbsp;
+References</h3>
+
 <a name="rfc.references1"></a><br /><hr />
-<h3>4.&nbsp;References</h3>
+<h3>6.1.&nbsp;Normative References</h3>
 <table width="99%" border="0">
-<tr><td class="author-text" valign="top"><a name="RFC2784">[1]</a></td>
-<td class="author-text"><a href="mailto:dino@procket.com">Farinacci, D.</a>, <a href="mailto:tony1@home.net">Li, T.</a>, <a href="mailto:stan_hanks@enron.net">Hanks, S.</a>, <a href="mailto:dmm@cisco.com">Meyer, D.</a>, and <a href="mailto:pst@juniper.net">P. Traina</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2784.txt">Generic Routing Encapsulation (GRE)</a>,&rdquo; RFC&nbsp;2784, March&nbsp;2000.</td></tr>
-<tr><td class="author-text" valign="top"><a name="RFC2401">[2]</a></td>
-<td class="author-text"><a href="mailto:kent@bbn.com">Kent, S.</a> and <a href="mailto:rja@corp.home.net">R. Atkinson</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2401.txt">Security Architecture for the Internet Protocol</a>,&rdquo; RFC&nbsp;2401, November&nbsp;1998 (<a href="ftp://ftp.isi.edu/in-notes/rfc2401.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc2401.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2401.xml">XML</a>).</td></tr>
-<tr><td class="author-text" valign="top"><a name="RFC3711">[3]</a></td>
+<tr><td class="author-text" valign="top"><a name="RFC3711">[1]</a></td>
 <td class="author-text">Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc3711.txt">The Secure Real-time Transport Protocol (SRTP)</a>,&rdquo; RFC&nbsp;3711, March&nbsp;2004.</td></tr>
-<tr><td class="author-text" valign="top"><a name="RFC1546">[4]</a></td>
+<tr><td class="author-text" valign="top"><a name="RFC2119">[2]</a></td>
+<td class="author-text"><a href="mailto:sob@harvard.edu">Bradner, S.</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2119.txt">Key words for use in RFCs to Indicate Requirement Levels</a>,&rdquo; BCP&nbsp;14, RFC&nbsp;2119, March&nbsp;1997 (<a href="ftp://ftp.isi.edu/in-notes/rfc2119.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc2119.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2119.xml">XML</a>).</td></tr>
+</table>
+
+<a name="rfc.references2"></a><br /><hr />
+<h3>6.2.&nbsp;Informational References</h3>
+<table width="99%" border="0">
+<tr><td class="author-text" valign="top"><a name="RFC2784">[3]</a></td>
+<td class="author-text"><a href="mailto:dino@procket.com">Farinacci, D.</a>, <a href="mailto:tony1@home.net">Li, T.</a>, <a href="mailto:stan_hanks@enron.net">Hanks, S.</a>, <a href="mailto:dmm@cisco.com">Meyer, D.</a>, and <a href="mailto:pst@juniper.net">P. Traina</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2784.txt">Generic Routing Encapsulation (GRE)</a>,&rdquo; RFC&nbsp;2784, March&nbsp;2000.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2401">[4]</a></td>
+<td class="author-text"><a href="mailto:kent@bbn.com">Kent, S.</a> and <a href="mailto:rja@corp.home.net">R. Atkinson</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2401.txt">Security Architecture for the Internet Protocol</a>,&rdquo; RFC&nbsp;2401, November&nbsp;1998 (<a href="ftp://ftp.isi.edu/in-notes/rfc2401.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc2401.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2401.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC1546">[5]</a></td>
 <td class="author-text"><a href="mailto:craig@bbn.com">Partridge, C.</a>, <a href="mailto:tmendez@bbn.com">Mendez, T.</a>, and <a href="mailto:milliken@bbn.com">W. Milliken</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc1546.txt">Host Anycasting Service</a>,&rdquo; RFC&nbsp;1546, November&nbsp;1993.</td></tr>
 </table>
 

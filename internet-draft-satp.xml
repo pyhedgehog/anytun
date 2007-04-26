@@ -6,6 +6,7 @@
     <!ENTITY rfc3068 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.3068.xml'>
     <!ENTITY rfc2784 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2784.xml'>
     <!ENTITY rfc2401 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2401.xml'>
+    <!ENTITY rfc2119 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
 ]>
     <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-00'>
     <front>
@@ -48,6 +49,9 @@
     <middle>
     <section title='Introduction'>
         <t>SATP is somehow a mixture of a generic encapsulation protocol like <xref target="RFC2784">GRE</xref> and a secure tunneling protocol as <xref target="RFC2401">IPsec</xref> in tunnel mode. To save some header overhead it uses the encryption technices of <xref target="RFC3711">SRTP</xref>. It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <xref target="RFC1546">Host Anycast Service</xref></t>
+      <section title='Notational Conventions'>
+        <t>The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in  <xref target="RFC2119">RFC2119</xref>.</t>
+       </section>
     </section> 
     <section title="Motivation and usage scenarios">
        <t>This section gives an overview of possible usage scenarios. Please note, that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.</t>
@@ -115,7 +119,7 @@
 
                <t>Network A has multiple routers, that act as gateway/tunnel endpoints to another network B. This is done to build a redundant encrypted tunnel connection between the two networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address. When a packet from network A gets transmitted to network B, it first arrives on one of network A's border routers. Which router is used is determined by network A's internal routing. This router encapsulates the package and sends it to the anycast address of the network B routers. The SATP packet arrives at one of network B's routers and gets decapsulated and routed to it's destination within network B.</t>
       </section>
-	</section>
+    </section>
 	<section title="Encapsulation">
       <t>SATP does not depend on which lower layer protocols is used, but it's most likely used on top of IP or UDP. This section should only discuss some issues on IP and UDP in combination with anycasting and tunnels.
       </t>
@@ -157,12 +161,14 @@ Tunneling of IPv6 over IPv4 with RTP payload
        </figure>
       <t>When using UDP no flow control or retransmission is done, neither by UDP nor anytun. The encapsulated protocol HAS TO take care of this tasks if needed. UDP however has a checksum of the complete UDP datagram, so a packet gets discarded if there is a biterror in the payload</t>
 	  </section>
+	</section>
+  <section title="Using SATP on top of IP">
          <section title="Fragmentation">
          <t>
            The only way of fully supporting fragmentation would be to synchronise fragments between all anycast servers. This is considered to be too much overhead, so there are two non perfect solutions for these problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server.
          </t>
          </section>
-   </section>
+     </section>
      <section title="Protocol specification">
        <section title="Header format">
             <figure anchor="prot_header_table">
@@ -223,16 +229,25 @@ HEX
 </t>
      </section>
     <section title="Encryption">
-     <t>Encryption is done in the same way as for <xref target="RFC3711">SRTP</xref>. This section will only discuss some small changes that HAVE TO be made.</t>
+     <t>Encryption is done in the same way as for <xref target="RFC3711">SRTP</xref>. This section will only discuss some small changes that HAVE TO be made. Please read  <xref target="RFC3711">SRTP RFC3711 section 3-9</xref> for details. SSRC is replaced by the sender ID</t>
     </section>
+  </section>
+    <section title="Security Considerations">
+     <t>As satp uses the same encrytion technics as <xref target="RFC3711">SRTP</xref>, it shares the same security issues. This section will only discuss some small changes. Please read  <xref target="RFC3711">SRTP RFC3711 section 9</xref> for details.</t>
+      <section title="Replay protection">
+      <t>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast reciever. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.</t>
+      </section>
     </section>
     </middle>
     <back>
-    <references>
+      <references title="Normative References">
+        &rfc3711;
+        &rfc2119;
+      </references>
+      <references title="Informational References">
         &rfc2784; 
         &rfc2401;
-        &rfc3711;
         &rfc1546;
-    </references>
+      </references>
     </back>
     </rfc>
