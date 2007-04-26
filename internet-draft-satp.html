@@ -204,7 +204,7 @@ tunneling from unicast hosts over anycast routers to other unicast hosts</h3>
 <br /><hr class="insert" />
 <a name="tunnel_mode"></a>
 
-<p>An example of SATP used to tunnel in an unicast client - anycast server model
+<p>An example of SATP used to tunnel in a unicast client - anycast server model
 </p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
                     --------- router -----------
                    /                            \
@@ -266,13 +266,13 @@ redundant tunnel connection of 2 networks</h3>
 
 </pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;3&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
 
-<p>Network A has multible routers, that act as gateway/tunnel endpoint to another network B. This is done to build a redundant encrpted tunnel connection between the two networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address. When a packet from network a gets transmitted to network B, it first arrives on one of networks A border routers. Which router is used is determined by network A's internal routing. This router encapsulates the package and sends it to the anycast address of the network B routers. The SATP packet arrives at one of network B's routers and gets decapsulated and routed to it's destination within network B.
+<p>Network A has multiple routers, that act as gateway/tunnel endpoints to another network B. This is done to build a redundant encrypted tunnel connection between the two networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address. When a packet from network A gets transmitted to network B, it first arrives on one of network A's border routers. Which router is used is determined by network A's internal routing. This router encapsulates the package and sends it to the anycast address of the network B routers. The SATP packet arrives at one of network B's routers and gets decapsulated and routed to it's destination within network B.
 </p>
 <a name="anchor7"></a><br /><hr />
 <a name="rfc.section.2.2"></a><h3>2.2.&nbsp;
 Encapsulation</h3>
 
-<p>SATP does not depend an which lower layer protocols is used, but it's most likely used on top of ip or udp. This section should only discuss some issues on ip and udp in combination with anycasting and tunnels.
+<p>SATP does not depend on which lower layer protocols is used, but it's most likely used on top of IP or UDP. This section should only discuss some issues on IP and UDP in combination with anycasting and tunnels.
       
 </p><br /><hr class="insert" />
 <a name="transtort_udp"></a>
@@ -312,14 +312,14 @@ Tunneling of Ethernet over IPv6
 Tunneling of IPv6 over IPv4 with RTP payload
 </pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;4&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
 
-<p>When using UDP no flow controll or retransmission is done, neigther by UDP nor anytun. The encapsulated protocol HAS TO take care of this tasks if needed. UDP however has a checksum of the complete udp datagram, so a packet gets discarded if there is a biterror in the payload
+<p>When using UDP no flow control or retransmission is done, neither by UDP nor anytun. The encapsulated protocol HAS TO take care of this tasks if needed. UDP however has a checksum of the complete UDP datagram, so a packet gets discarded if there is a biterror in the payload
 </p>
 <a name="anchor8"></a><br /><hr />
 <a name="rfc.section.2.3"></a><h3>2.3.&nbsp;
 Fragmentation</h3>
 
 <p>
-           The only way of fully supporting fragmentation would be to syncronise fragments between all anycast servers. This is considered to be to much overhead, so there are two non perfect solutions for this problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server.
+           The only way of fully supporting fragmentation would be to synchronise fragments between all anycast servers. This is considered to be too much overhead, so there are two non perfect solutions for these problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server.
          
 </p>
 <a name="anchor9"></a><br /><hr />
@@ -337,13 +337,14 @@ Header format</h3>
         0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |           sender ID           |         sequence number       | |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+     |                         sequence number                       | |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+ |
+     |           sender ID           #                               | |
+   +#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+                               + |
    | |              ....        payload        ...                   | |
    | |-------------------------------+-------------------------------+ |
    | | padding (OPT) | pad count(OPT)|         payload type          | |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+-+
    | ~                          MKI (OPTIONAL)                       ~ |
    | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
    | :                 authentication tag (RECOMMENDED)              : |
@@ -358,13 +359,13 @@ Header format</h3>
 <a name="rfc.section.3.2"></a><h3>3.2.&nbsp;
 sender ID</h3>
 
-<p>The sender ID is a 8bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address
+<p>The sender ID is a 16bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address
 </p>
 <a name="anchor12"></a><br /><hr />
 <a name="rfc.section.3.3"></a><h3>3.3.&nbsp;
 sequence number</h3>
 
-<p>The sequenze number is a 24 bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.
+<p>The sequence number is a 32 bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.
 </p>
 <a name="anchor13"></a><br /><hr />
 <a name="rfc.section.3.4"></a><h3>3.4.&nbsp;
@@ -376,7 +377,7 @@ payload</h3>
 <a name="rfc.section.3.5"></a><h3>3.5.&nbsp;
 padding (OPTIONAL)</h3>
 
-<p>Padding of max 255 ocitets.
+<p>Padding of max 255 octets.
 None of the pre-defined encryption transforms uses any padding; for
    these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If padding field is present, than the padding count field MUST be set to the padding lenght.
 </p>
@@ -384,13 +385,13 @@ None of the pre-defined encryption transforms uses any padding; for
 <a name="rfc.section.3.6"></a><h3>3.6.&nbsp;
 padding count</h3>
 
-<p>The number of octets of the padding field. This field is optional. It's presents is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.
+<p>The number of octets of the padding field. This field is optional. It's presence is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.
 </p>
 <a name="anchor16"></a><br /><hr />
 <a name="rfc.section.3.7"></a><h3>3.7.&nbsp;
 payload type field</h3>
 
-<p>The payload type field defines the payload protocol. ETHER TYPE protocol numerbers are used. <a href='http://www.iana.org/assignments/ethernet-numbers'>See IANA assigned ethernet numbers</a> . The values 0000-05DC are reserverd and MUST NOT be used. 
+<p>The payload type field defines the payload protocol. ETHER TYPE protocol numbers are used. <a href='http://www.iana.org/assignments/ethernet-numbers'>See IANA assigned ethernet numbers</a> . The values 0000-05DC are reserverd and MUST NOT be used. 
             <br /><hr class="insert" />
 <a name="prot_type_table"></a>
 
@@ -413,10 +414,6 @@ Encryption</h3>
 
 <p>Encryption is done in the same way as for <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [3]. This section will only discuss some small changes that HAVE TO be made.
 </p>
-<a name="anchor18"></a><br /><hr />
-<a name="rfc.section.A"></a><h3>Appendix A.&nbsp;
-The appan</h3>
-
 <a name="rfc.references1"></a><br /><hr />
 <h3>4.&nbsp;References</h3>
 <table width="99%" border="0">
