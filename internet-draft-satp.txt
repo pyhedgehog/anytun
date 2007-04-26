@@ -184,7 +184,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 2.1.1.  tunneling from unicast hosts over anycast routers to other
         unicast hosts
 
-   An example of SATP used to tunnel in a unicast client - anycast
+   An example of SATP used to tunnel in an unicast client - anycast
    server model
 
                        --------- router -----------

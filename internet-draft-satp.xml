@@ -55,7 +55,7 @@
     
             <section title='tunneling from unicast hosts over anycast routers to other unicast hosts'>
               <figure anchor="tunnel_mode">
-                 <preamble>An example of SATP used to tunnel in a unicast client - anycast server model</preamble>
+                 <preamble>An example of SATP used to tunnel in an unicast client - anycast server model</preamble>
                  <artwork>
                     --------- router ----------- 
                    /                            \ 
