@@ -200,7 +200,7 @@ Tunneling of IPv6 over IPv4 with RTP payload
 <t></t>
        </section>
        <section title="sender ID">
-       <t>The sender ID is a 16bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address</t>
+       <t>The sender ID is a 16 bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address</t>
        </section>
        <section title="sequence number">
        <t>The sequence number is a 32 bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.</t>

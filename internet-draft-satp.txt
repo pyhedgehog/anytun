@@ -477,7 +477,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)      April 2007
 
 4.2.  sender ID
 
-   The sender ID is a 16bit unsigned integer.  It HAS TO be unique for
+   The sender ID is a 16 bit unsigned integer.  It HAS TO be unique for
    every sender sharing the same anycast address
 
 4.3.  sequence number
