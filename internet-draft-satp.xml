@@ -77,7 +77,7 @@
 	      <t>In this scenario the payload gets encapsuleted into a SATP packet by a unicast host and gets transmitted to one of the anycast routers. It than gets decapsulated by the router. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing descition.</t> 
 	    </section>
 
-	    <section title='tunneling from unicast hosts to anycast networks'>
+	    <section title='Tunneling from unicast hosts to anycast networks'>
               <figure anchor="open_tunnel_mode">
                  <preamble>An example of SATP used to encrypt data between a unicast host and anycast networks</preamble>
                  <artwork>
@@ -101,7 +101,7 @@
                </figure>
             <t>When the unicast hosts wants to transmit data to one of the anycast DNS servers, it encapsulates the data and sends a SATP packet to the anycast address of the routers. The packet arrives at one of the routers, gets decapsulated and routed to the DNS server. This method can be used to tunnel between a clients and networks providing anycast services. It can also be used the other way to virtually locate a unicast service within anycasted networks.</t>
 	    </section>
-      <section title='redundant tunnel connection of 2 networks'>
+      <section title='Redundant tunnel connection of 2 networks'>
               <figure anchor="connect_networks">
                  <preamble>An example of SATP used to connect 2 networks</preamble>
                  <artwork>

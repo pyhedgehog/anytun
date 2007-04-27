@@ -76,8 +76,8 @@ Table of Contents
      2.1.  Usage scenarions . . . . . . . . . . . . . . . . . . . . .  4
        2.1.1.  Tunneling from unicast hosts over anycast routers
                to other unicast hosts . . . . . . . . . . . . . . . .  4
-       2.1.2.  tunneling from unicast hosts to anycast networks . . .  5
-       2.1.3.  redundant tunnel connection of 2 networks  . . . . . .  5
+       2.1.2.  Tunneling from unicast hosts to anycast networks . . .  5
+       2.1.3.  Redundant tunnel connection of 2 networks  . . . . . .  5
      2.2.  Encapsulation  . . . . . . . . . . . . . . . . . . . . . .  6
    3.  Using SATP on top of IP  . . . . . . . . . . . . . . . . . . .  8
      3.1.  Fragmentation  . . . . . . . . . . . . . . . . . . . . . .  8
@@ -225,7 +225,7 @@ Gsenger                 Expires September 2, 2007               [Page 4]
 Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
-2.1.2.  tunneling from unicast hosts to anycast networks
+2.1.2.  Tunneling from unicast hosts to anycast networks
 
    An example of SATP used to encrypt data between a unicast host and
    anycast networks
@@ -257,7 +257,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
    anycast services.  It can also be used the other way to virtually
    locate a unicast service within anycasted networks.
 
-2.1.3.  redundant tunnel connection of 2 networks
+2.1.3.  Redundant tunnel connection of 2 networks
 
    An example of SATP used to connect 2 networks
 
