@@ -538,13 +538,13 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
    Encryption is done in the same way as for SRTP [1].  This section
    will only discuss some small changes that HAVE TO be made.  Please
-   read SRTP RFC3711 section 3-9 [1] for details.  SSRC is replaced by
-   the sender ID
+   read SRTP RFC3711 section 3-9 [1] for details.
 
-
-
-
-
+   The least significant bits of SSRC are replaced by the sender ID and
+   the rest is filled with zeros.  For the SRTP SEQ the 16 least
+   significant bits of the SATP sequence number are used and the 16 most
+   significant bits of the sequence number replace the 16 least
+   significant bits of the SRTP ROC.
 
 
 
@@ -557,6 +557,62 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 Gsenger                 Expires September 2, 2007              [Page 10]
+
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+
+
+   Difference between SRTP and SATP
+
+          0                   1                   2                   3
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |                     SATP    sequence number                   |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                      =
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       | SRTP ROC least significant   |         SRTP SEQ               |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+          0                   1                   2                   3
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0|       SATP sender ID          |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                      =
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |                           SRTP SSRC                           |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                                 Figure 7
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gsenger                 Expires September 2, 2007              [Page 11]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
@@ -612,7 +668,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 11]
+Gsenger                 Expires September 2, 2007              [Page 12]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
@@ -668,7 +724,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 12]
+Gsenger                 Expires September 2, 2007              [Page 13]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
@@ -724,7 +780,7 @@ URIs
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 13]
+Gsenger                 Expires September 2, 2007              [Page 14]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
@@ -732,7 +788,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 Author's Address
 
    Othmar Gsenger
-   Puerstingerstr 32/7
+   Puerstingerstr 32
    Saalfelden  5760
    AT
 
@@ -780,7 +836,7 @@ Author's Address
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 14]
+Gsenger                 Expires September 2, 2007              [Page 15]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
@@ -836,5 +892,5 @@ Acknowledgment
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 15]
+Gsenger                 Expires September 2, 2007              [Page 16]
 

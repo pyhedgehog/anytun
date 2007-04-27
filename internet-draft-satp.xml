@@ -19,7 +19,7 @@
 
             <address>
                 <postal>
-                    <street>Puerstingerstr 32/7</street>
+                    <street>Puerstingerstr 32</street>
                     <city>Saalfelden</city>
                     <code>5760</code>
                     <country>AT</country>
@@ -232,7 +232,32 @@ HEX
 </t>
      </section>
     <section title="Encryption">
-     <t>Encryption is done in the same way as for <xref target="RFC3711">SRTP</xref>. This section will only discuss some small changes that HAVE TO be made. Please read  <xref target="RFC3711">SRTP RFC3711 section 3-9</xref> for details. SSRC is replaced by the sender ID</t>
+     <t>Encryption is done in the same way as for <xref target="RFC3711">SRTP</xref>. This section will only discuss some small changes that HAVE TO be made. Please read  <xref target="RFC3711">SRTP RFC3711 section 3-9</xref> for details. </t><t>The least significant bits of SSRC are replaced by the sender ID and the rest is filled with zeros. For the SRTP SEQ the 16 least significant bits of the SATP sequence number are used and the 16 most significant bits of the sequence number replace the 16 least significant bits of the SRTP ROC.</t>
+   <figure anchor="srtp_vs_satp">
+      <preamble>Difference between SRTP and SATP</preamble>
+      <artwork>
+        0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                     SATP    sequence number                   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                    =
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     | SRTP ROC least significant   |         SRTP SEQ               |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+        0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0|       SATP sender ID          |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                    =
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                           SRTP SSRC                           |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      </artwork>
+    </figure>
     </section>
   </section>
     <section title="Security Considerations">

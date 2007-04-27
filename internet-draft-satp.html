@@ -430,8 +430,36 @@ HEX
 <a name="rfc.section.4.8"></a><h3>4.8.&nbsp;
 Encryption</h3>
 
-<p>Encryption is done in the same way as for <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1]. This section will only discuss some small changes that HAVE TO be made. Please read  <a class='info' href='#RFC3711'>SRTP RFC3711 section 3-9<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1] for details. SSRC is replaced by the sender ID
+<p>Encryption is done in the same way as for <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1]. This section will only discuss some small changes that HAVE TO be made. Please read  <a class='info' href='#RFC3711'>SRTP RFC3711 section 3-9<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1] for details. 
 </p>
+<p>The least significant bits of SSRC are replaced by the sender ID and the rest is filled with zeros. For the SRTP SEQ the 16 least significant bits of the SATP sequence number are used and the 16 most significant bits of the sequence number replace the 16 least significant bits of the SRTP ROC.
+</p><br /><hr class="insert" />
+<a name="srtp_vs_satp"></a>
+
+<p>Difference between SRTP and SATP
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+        0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                     SATP    sequence number                   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                    =
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     | SRTP ROC least significant   |         SRTP SEQ               |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+        0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0|       SATP sender ID          |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                    =
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                           SRTP SSRC                           |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;7&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
 <a name="anchor21"></a><br /><hr />
 <a name="rfc.section.5"></a><h3>5.&nbsp;
 Security Considerations</h3>
@@ -476,7 +504,7 @@ References</h3>
 <tr><td class="author-text">&nbsp;</td>
 <td class="author-text">Othmar Gsenger</td></tr>
 <tr><td class="author-text">&nbsp;</td>
-<td class="author-text">Puerstingerstr 32/7</td></tr>
+<td class="author-text">Puerstingerstr 32</td></tr>
 <tr><td class="author-text">&nbsp;</td>
 <td class="author-text">Saalfelden  5760</td></tr>
 <tr><td class="author-text">&nbsp;</td>
