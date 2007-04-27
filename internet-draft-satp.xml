@@ -7,6 +7,7 @@
     <!ENTITY rfc2784 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2784.xml'>
     <!ENTITY rfc2401 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2401.xml'>
     <!ENTITY rfc2119 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
+    <!ENTITY rfc2003 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2003.xml'>
 ]>
     <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-00'>
     <front>
@@ -97,7 +98,7 @@
 
                  </artwork>
                </figure>
-            <t></t>
+            <t>When the unicast hosts wants to transmit data to one of the anycast DNS servers, it encapsulates the data and sends a SATP packet to the anycast address of the routers. The packet arrives at one of the routers, gets decapsulated and routed to the DNS server. This method can be used to tunnel between a clients and networks providing anycast services. It can also be used the other way to virtually locate a unicast service within anycasted networks.</t>
 	    </section>
       <section title='redundant tunnel connection of 2 networks'>
               <figure anchor="connect_networks">
@@ -121,9 +122,9 @@
       </section>
     </section>
 	<section title="Encapsulation">
-      <t>SATP does not depend on which lower layer protocols is used, but it's most likely used on top of IP or UDP. This section should only discuss some issues on IP and UDP in combination with anycasting and tunnels.
+      <t>SATP does not depend on which lower layer protocols is used, but this section gives an example of how packets could look like.
       </t>
-      <figure anchor="transtort_udp">
+      <figure anchor="transport_udp">
         <preamble>Examples of SATP used with different lower layer and payload protocols</preamble>
           <artwork>
     +------+-----+-------------------------------+
@@ -159,15 +160,17 @@ Tunneling of Ethernet over IPv6
 Tunneling of IPv6 over IPv4 with RTP payload
                  </artwork>
        </figure>
-      <t>When using UDP no flow control or retransmission is done, neither by UDP nor anytun. The encapsulated protocol HAS TO take care of this tasks if needed. UDP however has a checksum of the complete UDP datagram, so a packet gets discarded if there is a biterror in the payload</t>
 	  </section>
 	</section>
   <section title="Using SATP on top of IP">
          <section title="Fragmentation">
          <t>
-           The only way of fully supporting fragmentation would be to synchronise fragments between all anycast servers. This is considered to be too much overhead, so there are two non perfect solutions for these problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server.
-         </t>
+           The only way of fully supporting fragmentation would be to synchronise fragments between all anycast servers. This is considered to be too much overhead, so there are two non perfect solutions for these problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server. 
+         </t><t>If the payload ip headers's Don't Fragment (DF) bit is set, than the DF bit of the outer ip header HAS TO be set as well.</t>
          </section>
+	 <section title="ICMP messages">
+	   <t>ICMP messages MUST be relayed according to <xref target="RFC2003">rfc2003 section 4</xref>. This is needed for path MTU discover</t>
+	 </section>
      </section>
      <section title="Protocol specification">
        <section title="Header format">
@@ -243,6 +246,7 @@ HEX
       <references title="Normative References">
         &rfc3711;
         &rfc2119;
+	&rfc2003;
       </references>
       <references title="Informational References">
         &rfc2784; 
