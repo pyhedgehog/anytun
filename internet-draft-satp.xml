@@ -59,7 +59,7 @@
        <t>This section gives an overview of possible usage scenarios. Please note, that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.</t>
        <section title="Usage scenarions">
     
-            <section title='tunneling from unicast hosts over anycast routers to other unicast hosts'>
+            <section title='Tunneling from unicast hosts over anycast routers to other unicast hosts'>
               <figure anchor="tunnel_mode">
                  <preamble>An example of SATP used to tunnel in a unicast client - anycast server model</preamble>
                  <artwork>
