@@ -68,37 +68,37 @@ Abstract
    tunneling and relaying of packets of any protocol.
 
 
+Table of Contents
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   1.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     1.1.  Notational Conventions . . . . . . . . . . . . . . . . . .  3
+   2.  Motivation and usage scenarios . . . . . . . . . . . . . . . .  4
+     2.1.  Usage scenarions . . . . . . . . . . . . . . . . . . . . .  4
+       2.1.1.  tunneling from unicast hosts over anycast routers
+               to other unicast hosts . . . . . . . . . . . . . . . .  4
+       2.1.2.  tunneling from unicast hosts to anycast networks . . .  5
+       2.1.3.  redundant tunnel connection of 2 networks  . . . . . .  5
+     2.2.  Encapsulation  . . . . . . . . . . . . . . . . . . . . . .  6
+   3.  Using SATP on top of IP  . . . . . . . . . . . . . . . . . . .  8
+     3.1.  Fragmentation  . . . . . . . . . . . . . . . . . . . . . .  8
+     3.2.  ICMP messages  . . . . . . . . . . . . . . . . . . . . . .  8
+   4.  Protocol specification . . . . . . . . . . . . . . . . . . . .  9
+     4.1.  Header format  . . . . . . . . . . . . . . . . . . . . . .  9
+     4.2.  sender ID  . . . . . . . . . . . . . . . . . . . . . . . .  9
+     4.3.  sequence number  . . . . . . . . . . . . . . . . . . . . .  9
+     4.4.  payload  . . . . . . . . . . . . . . . . . . . . . . . . .  9
+     4.5.  padding (OPTIONAL) . . . . . . . . . . . . . . . . . . . .  9
+     4.6.  padding count  . . . . . . . . . . . . . . . . . . . . . . 10
+     4.7.  payload type field . . . . . . . . . . . . . . . . . . . . 10
+     4.8.  Encryption . . . . . . . . . . . . . . . . . . . . . . . . 10
+   5.  Security Considerations  . . . . . . . . . . . . . . . . . . . 12
+     5.1.  Replay protection  . . . . . . . . . . . . . . . . . . . . 12
+   6.  IANA Considerations  . . . . . . . . . . . . . . . . . . . . . 13
+   7.  References . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+     7.1.  Normative References . . . . . . . . . . . . . . . . . . . 14
+     7.2.  Informational References . . . . . . . . . . . . . . . . . 14
+   Author's Address . . . . . . . . . . . . . . . . . . . . . . . . . 16
+   Intellectual Property and Copyright Statements . . . . . . . . . . 17
 
 
 
@@ -673,9 +673,65 @@ Gsenger                 Expires September 2, 2007              [Page 12]
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
-6.  References
+6.  IANA Considerations
 
-6.1.  Normative References
+   To use the protocol on top of IP, UDP and TCP protocol numberes have
+   to be
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gsenger                 Expires September 2, 2007              [Page 13]
+
+Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+
+
+7.  References
+
+7.1.  Normative References
 
    [1]  Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K.
         Norrman, "The Secure Real-time Transport Protocol (SRTP)",
@@ -687,7 +743,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    [3]  Perkins, C., "IP Encapsulation within IP", RFC 2003,
         October 1996.
 
-6.2.  Informational References
+7.2.  Informational References
 
    [4]  Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina,
         "Generic Routing Encapsulation (GRE)", RFC 2784, March 2000.
@@ -724,7 +780,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 13]
+Gsenger                 Expires September 2, 2007              [Page 14]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
@@ -780,7 +836,7 @@ URIs
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 14]
+Gsenger                 Expires September 2, 2007              [Page 15]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
@@ -836,7 +892,7 @@ Author's Address
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 15]
+Gsenger                 Expires September 2, 2007              [Page 16]
 
 Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
@@ -892,5 +948,5 @@ Acknowledgment
 
 
 
-Gsenger                 Expires September 2, 2007              [Page 16]
+Gsenger                 Expires September 2, 2007              [Page 17]
 

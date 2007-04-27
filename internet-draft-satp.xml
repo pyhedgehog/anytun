@@ -9,6 +9,7 @@
     <!ENTITY rfc2119 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
     <!ENTITY rfc2003 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2003.xml'>
 ]>
+<?rfc toc='yes'?>
     <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-00'>
     <front>
         <title>secure anycast tunneling protocol (satp)</title>
@@ -265,6 +266,9 @@ HEX
       <section title="Replay protection">
       <t>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast reciever. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.</t>
       </section>
+    </section>
+    <section title="IANA Considerations">
+      <t>To use the protocol on top of IP, UDP and TCP protocol numberes have to be</t>
     </section>
     </middle>
     <back>
