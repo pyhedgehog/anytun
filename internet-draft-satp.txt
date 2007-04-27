@@ -412,7 +412,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)      April 2007
 3.2.  ICMP messages
 
    ICMP messages MUST be relayed according to rfc2003 section 4 [3].
-   This is needed for path MTU discover
+   This is needed for path MTU dedection.
 
 
 

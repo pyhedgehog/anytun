@@ -170,7 +170,7 @@ Tunneling of IPv6 over IPv4 with RTP payload
          </t><t>If the payload ip headers's Don't Fragment (DF) bit is set, than the DF bit of the outer ip header HAS TO be set as well.</t>
          </section>
 	 <section title="ICMP messages">
-	   <t>ICMP messages MUST be relayed according to <xref target="RFC2003">rfc2003 section 4</xref>. This is needed for path MTU discover</t>
+	   <t>ICMP messages MUST be relayed according to <xref target="RFC2003">rfc2003 section 4</xref>. This is needed for path MTU dedection.</t>
 	 </section>
      </section>
      <section title="Protocol specification">
