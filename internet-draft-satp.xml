@@ -234,7 +234,7 @@ HEX
         <t>The MKI (Master Key Identifier) is OPTIONAL and of configurable length. See <xref target="RFC3711">SRTP Section 3.1</xref> for details</t>
         </section>
 	<section title="authentication tag">
-	<t>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not ofthe MKI. On sender side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO first calculate the authentication tag and than decrypt the encrypted portion.</t>
+	<t>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not of the MKI. On sender side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO calculate the authentication tag before decrypting the encrypted portion.</t>
 	</section>
 </t>
      </section>

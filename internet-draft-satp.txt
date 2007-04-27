@@ -543,10 +543,10 @@ Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
    The authentication tag is RECOMMENDED and of configurable length.  It
    contains a cryptographic checksum of the sender ID, sequence number
-   and the encrypted portion, but not ofthe MKI.  On sender side
+   and the encrypted portion, but not of the MKI.  On sender side
    encryption HAS TO be done before calculating the authentication tag.
-   A receiver HAS TO first calculate the authentication tag and than
-   decrypt the encrypted portion.
+   A receiver HAS TO calculate the authentication tag before decrypting
+   the encrypted portion.
 
 4.8.  Encryption
 
