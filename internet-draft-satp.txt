@@ -626,7 +626,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)      April 2007
 5.1.  Replay protection
 
    Replay protection is done by a replay list.  Every anycast receiver
-   has it's own replay list, which SOULDN'T be syncronised, because of
+   has it's own replay list, which SHOULDN'T be syncronised, because of
    massive overhead.  This leads to an additional possible attack.  A
    attacker is able to replay a captured packet once to every anycast
    reciever.  This attack is considered of be very unlikely, because
