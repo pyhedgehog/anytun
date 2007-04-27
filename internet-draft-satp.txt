@@ -6,7 +6,7 @@ Internet-Draft                                                March 2007
 Expires: September 2, 2007
 
 
-                secure anycast tunneling protocol (satp)
+                secure anycast tunneling protocol (SATP)
            draft-gsenger-secure-anycast-tunneling-protocol-00
 
 Status of this Memo
@@ -54,12 +54,12 @@ Copyright Notice
 
 Gsenger                 Expires September 2, 2007               [Page 1]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 Abstract
 
-   The secure anycast tunneling protocol (satp) defines a protocol used
+   The secure anycast tunneling protocol (SATP) defines a protocol used
    for communication between any combination of unicast and anycast
    tunnel endpoints.  It allows tunneling of every ETHER TYPE protocol
    (e.g. ethernet, ip, arp ...).  SATP directly includes cryptography
@@ -90,6 +90,8 @@ Table of Contents
      4.5.  padding (OPTIONAL) . . . . . . . . . . . . . . . . . . . .  9
      4.6.  padding count  . . . . . . . . . . . . . . . . . . . . . . 10
      4.7.  payload type field . . . . . . . . . . . . . . . . . . . . 10
+       4.7.1.  MKI  . . . . . . . . . . . . . . . . . . . . . . . . . 10
+       4.7.2.  authentication tag . . . . . . . . . . . . . . . . . . 10
      4.8.  Encryption . . . . . . . . . . . . . . . . . . . . . . . . 10
    5.  Security Considerations  . . . . . . . . . . . . . . . . . . . 12
      5.1.  Replay protection  . . . . . . . . . . . . . . . . . . . . 12
@@ -106,11 +108,9 @@ Table of Contents
 
 
 
-
-
 Gsenger                 Expires September 2, 2007               [Page 2]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 1.  Introduction
@@ -166,7 +166,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 3]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 2.  Motivation and usage scenarios
@@ -222,7 +222,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 4]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 2.1.2.  tunneling from unicast hosts to anycast networks
@@ -278,7 +278,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 5]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
                                  Figure 3
@@ -334,7 +334,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 6]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
    Examples of SATP used with different lower layer and payload
@@ -390,7 +390,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 7]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 3.  Using SATP on top of IP
@@ -446,7 +446,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 8]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 4.  Protocol specification
@@ -471,7 +471,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
    | :                 authentication tag (RECOMMENDED)              : |
    | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
    |                                                                   |
-   +- Encrypted Portion*                      Authenticated Portion ---+
+   +- Encrypted Portion                       Authenticated Portion ---+
 
                                  Figure 5
 
@@ -502,7 +502,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007               [Page 9]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
    format, so a RTP like padding is supported.  If padding field is
@@ -534,32 +534,38 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
                                  Figure 6
 
+4.7.1.  MKI
+
+   The MKI (Master Key Identifier) is OPTIONAL and of configurable
+   length.  See SRTP Section 3.1 [1] for details
+
+4.7.2.  authentication tag
+
+   The authentication tag is RECOMMENDED and of configurable length.  It
+   contains a cryptographic checksum of the sender ID, sequence number
+   and the encrypted portion, but not ofthe MKI.  On sender side
+   encryption HAS TO be done before calculating the authentication tag.
+   A receiver HAS TO first calculate the authentication tag and than
+   decrypt the encrypted portion.
+
 4.8.  Encryption
 
    Encryption is done in the same way as for SRTP [1].  This section
    will only discuss some small changes that HAVE TO be made.  Please
    read SRTP RFC3711 section 3-9 [1] for details.
 
+
+
+Gsenger                 Expires September 2, 2007              [Page 10]
+
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
+
+
    The least significant bits of SSRC are replaced by the sender ID and
    the rest is filled with zeros.  For the SRTP SEQ the 16 least
    significant bits of the SATP sequence number are used and the 16 most
    significant bits of the sequence number replace the 16 least
    significant bits of the SRTP ROC.
-
-
-
-
-
-
-
-
-
-
-
-Gsenger                 Expires September 2, 2007              [Page 10]
-
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
-
 
    Difference between SRTP and SATP
 
@@ -606,20 +612,14 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 
 
-
-
-
-
-
-
 Gsenger                 Expires September 2, 2007              [Page 11]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 5.  Security Considerations
 
-   As satp uses the same encrytion technics as SRTP [1], it shares the
+   As SATP uses the same encrytion technics as SRTP [1], it shares the
    same security issues.  This section will only discuss some small
    changes.  Please read SRTP RFC3711 section 9 [1] for details.
 
@@ -670,7 +670,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007              [Page 12]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 6.  IANA Considerations
@@ -726,7 +726,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007              [Page 13]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 7.  References
@@ -782,7 +782,7 @@ Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
 
 Gsenger                 Expires September 2, 2007              [Page 14]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 URIs
@@ -838,7 +838,7 @@ URIs
 
 Gsenger                 Expires September 2, 2007              [Page 15]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 Author's Address
@@ -894,7 +894,7 @@ Author's Address
 
 Gsenger                 Expires September 2, 2007              [Page 16]
 
-Internet-Draft  secure anycast tunneling protocol (satp)      March 2007
+Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 
 Full Copyright Statement

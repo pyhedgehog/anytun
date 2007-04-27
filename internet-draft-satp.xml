@@ -12,7 +12,7 @@
 <?rfc toc='yes'?>
     <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-00'>
     <front>
-        <title>secure anycast tunneling protocol (satp)</title>
+        <title>secure anycast tunneling protocol (SATP)</title>
 
         <author initials='O.G.' surname='Gsenger'
                 fullname='Othmar Gsenger'>
@@ -44,7 +44,7 @@
         <keyword>secure</keyword>
         <keyword>protocol</keyword>
         <abstract>
-            <t>The secure anycast tunneling protocol (satp) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It allows tunneling of every ETHER TYPE protocol (e.g. ethernet, ip, arp ...). SATP directly includes cryptography and message authentication based on the methodes used by SRTP. It is intended to deliver a generic, scaleable and secure solution for tunneling and relaying of packets of any protocol.
+            <t>The secure anycast tunneling protocol (SATP) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It allows tunneling of every ETHER TYPE protocol (e.g. ethernet, ip, arp ...). SATP directly includes cryptography and message authentication based on the methodes used by SRTP. It is intended to deliver a generic, scaleable and secure solution for tunneling and relaying of packets of any protocol.
             </t>
         </abstract>
     </front>
@@ -194,7 +194,7 @@ Tunneling of IPv6 over IPv4 with RTP payload
    | :                 authentication tag (RECOMMENDED)              : |
    | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
    |                                                                   |
-   +- Encrypted Portion*                      Authenticated Portion ---+
+   +- Encrypted Portion                       Authenticated Portion ---+
 </artwork>
 </figure>
 <t></t>
@@ -218,7 +218,7 @@ None of the pre-defined encryption transforms uses any padding; for
        </section>
        <section title="payload type field">
          <t>The payload type field defines the payload protocol. ETHER TYPE protocol numbers are used. <eref target="http://www.iana.org/assignments/ethernet-numbers">See IANA assigned ethernet numbers</eref> . The values 0000-05DC are reserverd and MUST NOT be used. 
-            <figure anchor="prot_type_table">
+        <figure anchor="prot_type_table">
                <preamble>Some examples for protocol types</preamble>
                  <artwork>
 HEX
@@ -230,6 +230,12 @@ HEX
 86DD IPv6
 </artwork>
 </figure>
+        <section title="MKI">
+        <t>The MKI (Master Key Identifier) is OPTIONAL and of configurable length. See <xref target="RFC3711">SRTP Section 3.1</xref> for details</t>
+        </section>
+	<section title="authentication tag">
+	<t>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not ofthe MKI. On sender side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO first calculate the authentication tag and than decrypt the encrypted portion.</t>
+	</section>
 </t>
      </section>
     <section title="Encryption">
@@ -262,7 +268,7 @@ HEX
     </section>
   </section>
     <section title="Security Considerations">
-     <t>As satp uses the same encrytion technics as <xref target="RFC3711">SRTP</xref>, it shares the same security issues. This section will only discuss some small changes. Please read  <xref target="RFC3711">SRTP RFC3711 section 9</xref> for details.</t>
+     <t>As SATP uses the same encrytion technics as <xref target="RFC3711">SRTP</xref>, it shares the same security issues. This section will only discuss some small changes. Please read  <xref target="RFC3711">SRTP RFC3711 section 9</xref> for details.</t>
       <section title="Replay protection">
       <t>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast reciever. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.</t>
       </section>

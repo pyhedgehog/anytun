@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en"><head><title>secure anycast tunneling protocol (satp)</title>
+<html lang="en"><head><title>secure anycast tunneling protocol (SATP)</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="description" content="secure anycast tunneling protocol (satp)">
+<meta name="description" content="secure anycast tunneling protocol (SATP)">
 <meta name="keywords" content="satp, Internet-Draft, secure anycast tunneling protocol, anycast, tunnel, secure, protocol">
 <meta name="generator" content="xml2rfc v1.32 (http://xml.resource.org/)">
 <style type='text/css'><!--
@@ -146,7 +146,7 @@
 <tr><td class="header">Internet-Draft</td><td class="header">March 2007</td></tr>
 <tr><td class="header">Expires: September 2, 2007</td><td class="header">&nbsp;</td></tr>
 </table></td></tr></table>
-<h1><br />secure anycast tunneling protocol (satp)<br />draft-gsenger-secure-anycast-tunneling-protocol-00</h1>
+<h1><br />secure anycast tunneling protocol (SATP)<br />draft-gsenger-secure-anycast-tunneling-protocol-00</h1>
 
 <h3>Status of this Memo</h3>
 <p>
@@ -180,7 +180,7 @@ Copyright &copy; The IETF Trust (2007).</p>
 
 <h3>Abstract</h3>
 
-<p>The secure anycast tunneling protocol (satp) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It allows tunneling of every ETHER TYPE protocol (e.g. ethernet, ip, arp ...). SATP directly includes cryptography and message authentication based on the methodes used by SRTP. It is intended to deliver a generic, scaleable and secure solution for tunneling and relaying of packets of any protocol.
+<p>The secure anycast tunneling protocol (SATP) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It allows tunneling of every ETHER TYPE protocol (e.g. ethernet, ip, arp ...). SATP directly includes cryptography and message authentication based on the methodes used by SRTP. It is intended to deliver a generic, scaleable and secure solution for tunneling and relaying of packets of any protocol.
             
 </p><a name="toc"></a><br /><hr />
 <h3>Table of Contents</h3>
@@ -223,13 +223,17 @@ padding (OPTIONAL)<br />
 padding count<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor19">4.7.</a>&nbsp;
 payload type field<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor20">4.8.</a>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor20">4.7.1.</a>&nbsp;
+MKI<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor21">4.7.2.</a>&nbsp;
+authentication tag<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor22">4.8.</a>&nbsp;
 Encryption<br />
-<a href="#anchor21">5.</a>&nbsp;
+<a href="#anchor23">5.</a>&nbsp;
 Security Considerations<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor22">5.1.</a>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor24">5.1.</a>&nbsp;
 Replay protection<br />
-<a href="#anchor23">6.</a>&nbsp;
+<a href="#anchor25">6.</a>&nbsp;
 IANA Considerations<br />
 <a href="#rfc.references1">7.</a>&nbsp;
 References<br />
@@ -443,7 +447,7 @@ Header format</h3>
    | :                 authentication tag (RECOMMENDED)              : |
    | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
    |                                                                   |
-   +- Encrypted Portion*                      Authenticated Portion ---+
+   +- Encrypted Portion                       Authenticated Portion ---+
 </pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;5&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
 
 <p>
@@ -491,7 +495,7 @@ padding count</h3>
 payload type field</h3>
 
 <p>The payload type field defines the payload protocol. ETHER TYPE protocol numbers are used. <a href='http://www.iana.org/assignments/ethernet-numbers'>See IANA assigned ethernet numbers</a> . The values 0000-05DC are reserverd and MUST NOT be used. 
-            <br /><hr class="insert" />
+        <br /><hr class="insert" />
 <a name="prot_type_table"></a>
 
 <p>Some examples for protocol types
@@ -505,9 +509,25 @@ HEX
 86DD IPv6
 </pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;6&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
 
-
-
+        
 <a name="anchor20"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.4.7.1"></a><h3>4.7.1.&nbsp;
+MKI</h3>
+
+<p>The MKI (Master Key Identifier) is OPTIONAL and of configurable length. See <a class='info' href='#RFC3711'>SRTP Section 3.1<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1] for details
+</p>
+	
+<a name="anchor21"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.4.7.2"></a><h3>4.7.2.&nbsp;
+authentication tag</h3>
+
+<p>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not ofthe MKI. On sender side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO first calculate the authentication tag and than decrypt the encrypted portion.
+</p>
+
+
+<a name="anchor22"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.4.8"></a><h3>4.8.&nbsp;
 Encryption</h3>
@@ -542,21 +562,21 @@ Encryption</h3>
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </pre></div><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Figure&nbsp;7&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
 
-<a name="anchor21"></a><br /><hr />
+<a name="anchor23"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.5"></a><h3>5.&nbsp;
 Security Considerations</h3>
 
-<p>As satp uses the same encrytion technics as <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1], it shares the same security issues. This section will only discuss some small changes. Please read  <a class='info' href='#RFC3711'>SRTP RFC3711 section 9<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1] for details.
+<p>As SATP uses the same encrytion technics as <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1], it shares the same security issues. This section will only discuss some small changes. Please read  <a class='info' href='#RFC3711'>SRTP RFC3711 section 9<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1] for details.
 </p>
-<a name="anchor22"></a><br /><hr />
+<a name="anchor24"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.5.1"></a><h3>5.1.&nbsp;
 Replay protection</h3>
 
 <p>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast reciever. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.
 </p>
-<a name="anchor23"></a><br /><hr />
+<a name="anchor25"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.6"></a><h3>6.&nbsp;
 IANA Considerations</h3>
