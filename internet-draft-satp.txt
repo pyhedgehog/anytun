@@ -675,8 +675,8 @@ Internet-Draft  secure anycast tunneling protocol (SATP)      March 2007
 
 6.  IANA Considerations
 
-   To use the protocol on top of IP, UDP and TCP protocol numberes have
-   to be assiged by IANA.
+   To use the protocol on top of UDP and IP protocol numberes have to be
+   assiged by IANA.
 
 
 
