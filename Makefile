@@ -23,11 +23,13 @@ OPENVPNDEPS = openvpn/tun.o \
               openvpn/event.o \
               openvpn/route.o \
               openvpn/helper.o \
-	            openvpn/init.o \
-							openvpn/interval.o \
-	            openvpn/base64.o \
-	            openvpn/shaper.o \
+              openvpn/init.o \
+              openvpn/interval.o \
+              openvpn/base64.o \
+              openvpn/shaper.o \
               openvpn/fragment.o
+
+
 
 OBJS = anytun.o tunDevice.o buffer.o $(OPENVPNDEPS)
 EXECUTABLE = anytun

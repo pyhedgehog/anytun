@@ -42,13 +42,11 @@ int main(int argc, char* argv[])
   for(int i=0;i<100;++i)
     test[i] = i;
   
-
   Buffer a(test, 100);
   Buffer b(a);
-  Buffer c;
 
+  Buffer c;
   c = b;
-  
   c.resize(500);
 
   for(unsigned int i=0;i<c.getLength();++i)
