@@ -38,6 +38,15 @@ Buffer::Buffer() : buf_(0), length_(0)
 {  
 }
 
+Buffer::Buffer(u_int32_t length) : length_(length)
+{
+  buf_ = new u_int8_t[length_];
+  if(buf_)
+    std::memset(buf_, 0, length_);
+  else 
+    length_ = 0;
+}
+
 Buffer::Buffer(u_int8_t* data, u_int32_t length) : length_(length)
 {
   buf_ = new u_int8_t[length_];

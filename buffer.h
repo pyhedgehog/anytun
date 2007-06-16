@@ -35,6 +35,7 @@ class Buffer
 {
 public:
   Buffer();
+  Buffer(u_int32_t length);
   Buffer(u_int8_t* data, u_int32_t length);
   ~Buffer();
   Buffer(const Buffer &src);
