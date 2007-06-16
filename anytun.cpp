@@ -28,23 +28,31 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _TUNDEVICE_H_
-#define _TUNDEVICE_H_
+#include <iostream>
 
-class TunDevice
+#include "datatypes.h"
+
+#include "buffer.h"
+
+int main(int argc, char* argv[])
 {
-public:
-  TunDevice(const char* dev);
-  ~TunDevice();
+  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
+
+  u_int8_t test[100];
+  for(int i=0;i<100;++i)
+    test[i] = i;
   
-  int read(uint8_t *buf, int len);
-  int write(uint8_t *buf, int len);
 
-private:
-  void operator=(const TunDevice &src);
-  TunDevice(const TunDevice &src);
+  Buffer a(test, 100);
+  Buffer b(a);
+  Buffer c;
 
-  struct tuntap *dev_;
-};
+  c = b;
+  
+  c.resize(500);
 
-#endif
+  for(unsigned int i=0;i<c.getLength();++i)
+    c[i] = i;
+
+  return 0;
+}

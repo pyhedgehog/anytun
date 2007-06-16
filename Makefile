@@ -1,21 +1,50 @@
 C = gcc
+CFLAGS = -g -Wall
 C++ = g++
-CCFLAGS = -Wall
-LDFLAGS = #-lpthread #-static
+CCFLAGS = -g -Wall
+LD = g++
+LDFLAGS = -g -O2 -ldl
 
-OBJS = tunDevice.o tun.c
+OPENVPNDEPS = openvpn/tun.o \
+              openvpn/error.o \
+              openvpn/socket.o \
+              openvpn/buffer.o \
+              openvpn/misc.o \
+              openvpn/manage.o \
+              openvpn/fdmisc.o \
+              openvpn/otime.o \
+              openvpn/options.o \
+              openvpn/mtu.o \
+              openvpn/plugin.o \
+              openvpn/sig.o \
+              openvpn/proxy.o \
+              openvpn/socks.o \
+              openvpn/status.o \
+              openvpn/event.o \
+              openvpn/route.o \
+              openvpn/helper.o \
+	            openvpn/init.o \
+							openvpn/interval.o \
+	            openvpn/base64.o \
+	            openvpn/shaper.o \
+              openvpn/fragment.o
+
+OBJS = anytun.o tunDevice.o buffer.o $(OPENVPNDEPS)
 EXECUTABLE = anytun
 
 all: $(EXECUTABLE)
 
 anytun: $(OBJS)
-	$(C++) $(OBJS) -o $@ $(LDFLAGS)
+	$(LD) $(OBJS) -o $@ $(LDFLAGS)
 
-tunDevice.o: tunDevice.cpp tunDevice.h openvpn/tun.h
+tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
 
-tun.o: openvpn/tun.c openvpn/tun.h
-	$(C) $(CCFLAGS) $< -c
+Buffer.o: buffer.cpp buffer.h
+	$(C++) $(CCFLAGS) $< -c
+
+anytun.o: anytun.cpp
+	$(C++) $(CCFLAGS) $< -c
 
 clean:
 	rm -f *.o

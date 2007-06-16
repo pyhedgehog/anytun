@@ -27,28 +27,75 @@
  *  distribution); if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+extern "C" {
+#include "openvpn/config.h"
+#include "openvpn/syshead.h"
 #include "openvpn/tun.h"
+}
+
 #include "tunDevice.h"
 
 
-TunDevice::TunDevice(string dev_name)
+TunDevice::TunDevice(const char* dev)
 {
-//  dev = init_tun(dev_name.c_str(), ... );
+  dev_ = NULL;
+
+
+// init_tun (const char *dev,       /* --dev option */
+// 	  const char *dev_type,  /* --dev-type option */
+// 	  const char *ifconfig_local_parm,          /* --ifconfig parm 1 */
+// 	  const char *ifconfig_remote_netmask_parm, /* --ifconfig parm 2 */
+// 	  in_addr_t local_public,
+// 	  in_addr_t remote_public,
+// 	  const bool strict_warn,
+// 	  struct env_set *es)
+
+// init_tun_post (struct tuntap *tt,
+// 	       const struct frame *frame,
+// 	       const struct tuntap_options *options)
+
+
+//  open_tun (const char *dev, const char *dev_type, const char *dev_node, false, dev_)
+
+//------------------------
+//   c->c1.tuntap = init_tun (c->options.dev,
+//                            c->options.dev_type,
+//                            c->options.ifconfig_local,
+//                            c->options.ifconfig_remote_netmask,
+//                            addr_host (&c->c1.link_socket_addr.local),
+//                            addr_host (&c->c1.link_socket_addr.remote),
+//                            !c->options.ifconfig_nowarn,
+//                            c->c2.es);
   
+//   init_tun_post (c->c1.tuntap,
+//                  &c->c2.frame,
+//                  &c->options.tuntap_options);
+  
+//  dev_ = init_tun(dev, 
+  
+  
+
 }
 
 TunDevice::~TunDevice()
 {
-  close_tun(dev);
+  if(dev_)
+    close_tun(dev_);
+
 }
 
 int TunDevice::read(uint8_t *buf, int len)
 {
-  return read_tun(dev, buf, len);
+  if(!dev_)
+    return -1;
+
+  return read_tun(dev_, buf, len);
 }
 
 int TunDevice::write(uint8_t *buf, int len)
 {
-  return write_tun(dev, buf, len);
+  if(!dev_)
+    return -1;
+
+  return write_tun(dev_, buf, len);
 }

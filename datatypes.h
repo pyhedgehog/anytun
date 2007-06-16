@@ -28,23 +28,21 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _TUNDEVICE_H_
-#define _TUNDEVICE_H_
+#ifndef _DATATYPES_H_
+#define _DATATYPES_H_
 
-class TunDevice
-{
-public:
-  TunDevice(const char* dev);
-  ~TunDevice();
-  
-  int read(uint8_t *buf, int len);
-  int write(uint8_t *buf, int len);
+typedef signed char int8_t;
+typedef unsigned char u_int8_t;
 
-private:
-  void operator=(const TunDevice &src);
-  TunDevice(const TunDevice &src);
+typedef signed short int16;
+typedef unsigned short u_int16_t;
 
-  struct tuntap *dev_;
-};
+typedef signed int int32;
+typedef unsigned int u_int32_t;
+
+typedef signed long long int64_t;
+typedef unsigned long long u_int64_t;
+
+typedef u_int32_t auth_tag_t;
 
 #endif

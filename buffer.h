@@ -28,23 +28,28 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _TUNDEVICE_H_
-#define _TUNDEVICE_H_
+#ifndef _BUFFER_H_
+#define _BUFFER_H_
 
-class TunDevice
+class Buffer
 {
 public:
-  TunDevice(const char* dev);
-  ~TunDevice();
-  
-  int read(uint8_t *buf, int len);
-  int write(uint8_t *buf, int len);
+  Buffer();
+  Buffer(u_int8_t* data, u_int32_t length);
+  ~Buffer();
+  Buffer(const Buffer &src);
+  void operator=(const Buffer &src);
 
-private:
-  void operator=(const TunDevice &src);
-  TunDevice(const TunDevice &src);
+  u_int32_t resize(u_int32_t new_length);
+  u_int32_t getLength() const;
+  u_int8_t* getBuf();
+  operator u_int8_t*( );
 
-  struct tuntap *dev_;
+protected:
+
+  u_int32_t length_;
+  u_int8_t *buf_;
 };
+
 
 #endif
