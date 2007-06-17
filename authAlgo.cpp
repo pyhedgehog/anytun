@@ -30,7 +30,7 @@
 
 #include "authAlgo.h"
 
-auth_tag_t NullAuthAlgo::calc(Buffer& buf)
+auth_tag_t NullAuthAlgo::calc(const Buffer& buf)
 {
   return 0;
 }

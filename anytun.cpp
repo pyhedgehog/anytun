@@ -55,37 +55,47 @@ int main(int argc, char* argv[])
   for(unsigned int i=0;i<c.getLength();++i)
     c[i] = i;
 
-  TunDevice* dev;
+//   TunDevice* dev;
 
-  dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
-  std::cout << "dev created (opened)" << std::endl;
-  std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
-  std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
-  sleep(10);
-  delete dev;
-  std::cout << "dev destroyed" << std::endl;
+//   dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
+//   std::cout << "dev created (opened)" << std::endl;
+//   std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
+//   std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
+
   
-  sleep(10);
+//   sleep(10);
+  
+//   Buffer inBuf(2000);
+  
+//   int32_t len = 0;
+//   do
+//   {
+//     len = dev->read(inBuf);
+//     std::cout << "read " << len << " bytes" << std::endl;
+//   }
+//   while(len >= 0);
 
-  dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
-  std::cout << "dev created (opened)" << std::endl;
-  std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
-  std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
-  sleep(10);
-  delete dev;
-  std::cout << "dev destroyed" << std::endl;
+//   delete dev;
+//   std::cout << "dev destroyed" << std::endl;
 
-  sleep(10);
+//   dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
+//   std::cout << "dev created (opened)" << std::endl;
+//   std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
+//   std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
+//   sleep(10);
+//   delete dev;
+//   std::cout << "dev destroyed" << std::endl;
 
-  dev = new TunDevice("tun17", "192.168.200.1", "192.168.201.1");
-  std::cout << "dev created (opened)" << std::endl;
-  std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
-  std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
-  sleep(10);
-  delete dev;
-  std::cout << "dev destroyed" << std::endl;
+//   sleep(10);
 
-  NullAuthAlgo au;
+//   dev = new TunDevice("tun17", "192.168.200.1", "192.168.201.1");
+//   std::cout << "dev created (opened)" << std::endl;
+//   std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
+//   std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
+//   sleep(10);
+//   delete dev;
+//   std::cout << "dev destroyed" << std::endl;
+
 
   return 0;
 }

@@ -42,7 +42,7 @@ public:
   void cypher(Buffer& buf);
   
 protected:
-  void calc(u_int8_t* buf, u_int8_t* bit_stream, u_int32_t length);
+  void exor(Buffer& buf, const Buffer& bit_stream);
   virtual Buffer getBitStream(u_int32_t length) = 0;
 };
 

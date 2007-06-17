@@ -31,6 +31,8 @@
 #ifndef _BUFFER_H_
 #define _BUFFER_H_
 
+class TunDevice;
+
 class Buffer
 {
 public:
@@ -44,13 +46,15 @@ public:
   u_int32_t resize(u_int32_t new_length);
   u_int32_t getLength() const;
   u_int8_t* getBuf();
-  operator u_int8_t*( );
+  u_int8_t& operator[](u_int32_t index);
+  u_int8_t const& operator[](u_int32_t index) const;
 
 protected:
+  operator u_int8_t*(); // just for write/read tun
+  friend class TunDevice;
 
   u_int8_t *buf_;
   u_int32_t length_;
 };
-
 
 #endif

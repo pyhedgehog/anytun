@@ -28,10 +28,10 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdexcept>
 #include <string>
 
 #include "datatypes.h"
-
 #include "buffer.h"
 
 Buffer::Buffer() : buf_(0), length_(0)
@@ -115,7 +115,24 @@ u_int8_t* Buffer::getBuf()
   return buf_;
 }
 
-Buffer::operator u_int8_t*( )
+u_int8_t& Buffer::operator[](u_int32_t index)
+{
+  if(index >= length_)
+    throw std::out_of_range("buffer::operator[]");
+
+  return buf_[index];
+}
+
+u_int8_t const& Buffer::operator[](u_int32_t index) const
+{
+  if(index >= length_)
+    throw std::out_of_range("buffer::operator[] const");
+
+  return buf_[index];
+}
+
+Buffer::operator u_int8_t*() // just for write/read tun
 {
   return buf_;
 }
+

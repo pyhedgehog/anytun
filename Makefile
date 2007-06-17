@@ -48,9 +48,6 @@ buffer.o: buffer.cpp buffer.h
 cypher.o: cypher.cpp cypher.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
-cypher.o: cypher.cpp cypher.h buffer.h
-	$(C++) $(CCFLAGS) $< -c
-
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 

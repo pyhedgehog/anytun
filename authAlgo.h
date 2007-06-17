@@ -40,13 +40,13 @@ public:
   AuthAlgo() {};
   virtual ~AuthAlgo() {};
 
-  virtual auth_tag_t calc(Buffer& buf) = 0;
+  virtual auth_tag_t calc(const Buffer& buf) = 0;
 };
 
 class NullAuthAlgo : AuthAlgo
 {
 public:
-  auth_tag_t calc(Buffer& buf);
+  auth_tag_t calc(const Buffer& buf);
 };
 
 #endif

@@ -28,6 +28,8 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdexcept>
+
 #include "datatypes.h"
 
 #include "cypher.h"
@@ -35,15 +37,18 @@
 void Cypher::cypher(Buffer& buf)
 {
   Buffer stream = getBitStream(buf.getLength());
-  calc(buf, stream, buf.getLength());
+  exor(buf, stream);
 }
 
-void Cypher::calc(u_int8_t* buf, u_int8_t* bit_stream, u_int32_t length)
+void Cypher::exor(Buffer& buf, const Buffer& bit_stream)
 {
-  for(u_int32_t i; i<length; ++i)
-    buf[i] ^= bit_stream[i];
+  try
+  {
+    for(u_int32_t i; i<buf.getLength(); ++i)
+      buf[i] ^= bit_stream[i];
+  }
+  catch(std::out_of_range& o) {}
 }
-
 
 Buffer NullCypher::getBitStream(u_int32_t length)
 {

@@ -110,6 +110,8 @@ int TunDevice::read(Buffer& buf)
   if(!dev_)
     return -1;
 
+  perf_push (PERF_READ_IN_TUN);
+
   return read_tun(dev_, buf, buf.getLength());
 }
 
