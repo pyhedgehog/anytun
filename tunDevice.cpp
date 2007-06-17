@@ -41,12 +41,7 @@ extern "C" {
 
 TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifcfg_rnmp)
 {
-  is_open_ = false;
   dev_ = NULL;
-  if(!dev_name)
-    dev_name_ = NULL;
-  else
-    strcpy(dev_name_,dev_name);
 
 // init_tun (const char *dev,       /* --dev option */
 // 	         const char *dev_type,  /* --dev-type option */
@@ -60,6 +55,12 @@ TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifc
 // init_tun_post (struct tuntap *tt,
 // 	              const struct frame *frame,
 // 	              const struct tuntap_options *options)
+
+// open_tun (const char *dev,
+//           const char *dev_type,
+//           const char *dev_node, 
+//           bool ipv6, 
+//           struct tuntap *tt)
 
 // -------------------------------------------
 
@@ -75,6 +76,14 @@ TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifc
 // init_tun_post (c->c1.tuntap,
 //                &c->c2.frame,
 //                &c->options.tuntap_options);
+
+// open_tun (c->options.dev, 
+//           c->options.dev_type, 
+//           c->options.dev_node,
+//           c->options.tun_ipv6,
+//           c->c1.tuntap);
+
+
   
   in_addr_t lp, rp;
 
@@ -84,48 +93,16 @@ TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifc
   dev_ = init_tun(dev_name, NULL, ifcfg_lp, ifcfg_rnmp, lp, rp, 0, NULL);
       //init_tun_post(dev_, NULL, NULL);
   if(!dev_)
-    throw std::runtime_error("can't init tun");
+    throw std::runtime_error("can't init tun/tap device");
+
+  open_tun (dev_name, NULL, NULL, false, dev_);
+  do_ifconfig(dev_, dev_->actual_name, 1500, NULL);
 }
 
 TunDevice::~TunDevice()
 {
-  if(dev_ && is_open_)
-    close_tun(dev_);
-}
-
-void TunDevice::open()
-{
-  if(!dev_)
-    return;
-// open_tun (const char *dev,
-//           const char *dev_type,
-//           const char *dev_node, 
-//           bool ipv6, 
-//           struct tuntap *tt)
-
-// ------------------------
-
-// open_tun (c->options.dev, 
-//           c->options.dev_type, 
-//           c->options.dev_node,
-//           c->options.tun_ipv6,
-//           c->c1.tuntap);
-
-  open_tun (dev_name_, NULL, NULL, false, dev_);
-  do_ifconfig(dev_, dev_->actual_name, 1500, NULL);
-  is_open_ = true;
-}
-
-void TunDevice::close()
-{
   if(dev_)
     close_tun(dev_);
-  is_open_ = false;
-}
-
-bool TunDevice::isOpen()
-{
-  return is_open_;
 }
 
 int TunDevice::read(Buffer& buf)
@@ -150,4 +127,18 @@ char* TunDevice::getActualName()
     return NULL;
 
   return dev_->actual_name;
+}
+
+char* TunDevice::getType()
+{
+  if(!dev_)
+    return NULL;
+  
+  switch(dev_->type)
+  {
+  case DEV_TYPE_UNDEF: return "undef"; break;
+  case DEV_TYPE_TUN: return "tun"; break;
+  case DEV_TYPE_TAP: return "tap"; break;
+  }
+  return NULL;
 }

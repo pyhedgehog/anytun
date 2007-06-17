@@ -47,14 +47,13 @@ public:
   int write(Buffer& buf);
 
   char* getActualName();
+  char* getType();
 
 private:
   void operator=(const TunDevice &src);
   TunDevice(const TunDevice &src);
 
   struct tuntap *dev_;
-  char *dev_name_;
-  bool is_open_;
 };
 
 #endif

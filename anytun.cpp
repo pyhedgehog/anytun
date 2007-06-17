@@ -56,32 +56,32 @@ int main(int argc, char* argv[])
   TunDevice* dev;
 
   dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
-  dev->open();
-  std::cout << "dev has actual name: " << dev->getActualName() << std::endl;
-
+  std::cout << "dev created (opened)" << std::endl;
+  std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
+  std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
   sleep(10);
-
-  dev->close();
-
-  sleep(10);
-
   delete dev;
+  std::cout << "dev destroyed" << std::endl;
+  
+  sleep(10);
 
-//   dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
-//   dev->open();
-//   std::cout << "dev has actual name: " << dev->getActualName() << std::endl;
+  dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
+  std::cout << "dev created (opened)" << std::endl;
+  std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
+  std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
+  sleep(10);
+  delete dev;
+  std::cout << "dev destroyed" << std::endl;
 
-//   sleep(10);
+  sleep(10);
 
-//   delete dev;
-
-//   dev = new TunDevice("tun12", "192.168.200.1", "192.168.201.1");
-//   dev->open();
-//   std::cout << "dev has actual name: " << dev->getActualName() << std::endl;
-
-//   sleep(10);
-
-//   delete dev;
-   
+  dev = new TunDevice("tun17", "192.168.200.1", "192.168.201.1");
+  std::cout << "dev created (opened)" << std::endl;
+  std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
+  std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
+  sleep(10);
+  delete dev;
+  std::cout << "dev destroyed" << std::endl;
+  
   return 0;
 }
