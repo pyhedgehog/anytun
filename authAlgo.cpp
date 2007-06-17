@@ -28,94 +28,9 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <string>
+#include "authAlgo.h"
 
-#include "datatypes.h"
-
-#include "buffer.h"
-
-Buffer::Buffer() : buf_(0), length_(0)
-{  
-}
-
-Buffer::Buffer(u_int32_t length) : length_(length)
+auth_tag_t NullAuthAlgo::calc(Buffer& buf)
 {
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memset(buf_, 0, length_);
-  else 
-    length_ = 0;
-}
-
-Buffer::Buffer(u_int8_t* data, u_int32_t length) : length_(length)
-{
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memcpy(buf_, data, length_);
-  else 
-    length_ = 0;
-}
-
-Buffer::~Buffer()
-{
-  if(buf_)
-    delete[] buf_;
-}
-
-Buffer::Buffer(const Buffer &src) : length_(src.length_)
-{
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memcpy(buf_, src.buf_, length_);
-  else 
-    length_ = 0;
-}
-
-void Buffer::operator=(const Buffer &src)
-{
-  if(buf_)
-    delete[] buf_;
- 
-  length_ = src.length_;
- 
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memcpy(buf_, src.buf_, length_);
-  else
-    length_ = 0;
-}
-
-u_int32_t Buffer::resize(u_int32_t new_length)
-{
-  if(length_ == new_length)
-    return length_;
-
-  u_int8_t *tmp = new u_int8_t[new_length];
-  if(!tmp)
-    return length_;
-
-  if(buf_)
-  {
-    std::memcpy(tmp, buf_, length_);
-    delete[] buf_;
-  }
-
-  length_ = new_length;
-  buf_ = tmp;
-  return length_;
-}
-
-u_int32_t Buffer::getLength() const
-{
-  return length_;
-}
-
-u_int8_t* Buffer::getBuf()
-{
-  return buf_;
-}
-
-Buffer::operator u_int8_t*( )
-{
-  return buf_;
+  return 0;
 }

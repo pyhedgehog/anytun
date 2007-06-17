@@ -34,6 +34,8 @@
 
 #include "tunDevice.h"
 #include "buffer.h"
+#include "cypher.h"
+#include "authAlgo.h"
 
 int main(int argc, char* argv[])
 {
@@ -82,6 +84,8 @@ int main(int argc, char* argv[])
   sleep(10);
   delete dev;
   std::cout << "dev destroyed" << std::endl;
-  
+
+  NullAuthAlgo au;
+
   return 0;
 }

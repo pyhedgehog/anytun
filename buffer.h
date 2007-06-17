@@ -48,8 +48,8 @@ public:
 
 protected:
 
-  u_int32_t length_;
   u_int8_t *buf_;
+  u_int32_t length_;
 };
 
 

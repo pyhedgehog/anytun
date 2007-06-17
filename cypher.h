@@ -28,94 +28,28 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <string>
-
-#include "datatypes.h"
+#ifndef _CYPHER_H_
+#define _CYPHER_H_
 
 #include "buffer.h"
 
-Buffer::Buffer() : buf_(0), length_(0)
-{  
-}
-
-Buffer::Buffer(u_int32_t length) : length_(length)
+class Cypher
 {
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memset(buf_, 0, length_);
-  else 
-    length_ = 0;
-}
+public:
+  Cypher() {};
+  virtual ~Cypher() {};
+  
+  void cypher(Buffer& buf);
+  
+protected:
+  void calc(u_int8_t* buf, u_int8_t* bit_stream, u_int32_t length);
+  virtual Buffer getBitStream(u_int32_t length) = 0;
+};
 
-Buffer::Buffer(u_int8_t* data, u_int32_t length) : length_(length)
+class NullCypher : Cypher
 {
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memcpy(buf_, data, length_);
-  else 
-    length_ = 0;
-}
+protected:
+  Buffer getBitStream(u_int32_t length);
+};
 
-Buffer::~Buffer()
-{
-  if(buf_)
-    delete[] buf_;
-}
-
-Buffer::Buffer(const Buffer &src) : length_(src.length_)
-{
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memcpy(buf_, src.buf_, length_);
-  else 
-    length_ = 0;
-}
-
-void Buffer::operator=(const Buffer &src)
-{
-  if(buf_)
-    delete[] buf_;
- 
-  length_ = src.length_;
- 
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memcpy(buf_, src.buf_, length_);
-  else
-    length_ = 0;
-}
-
-u_int32_t Buffer::resize(u_int32_t new_length)
-{
-  if(length_ == new_length)
-    return length_;
-
-  u_int8_t *tmp = new u_int8_t[new_length];
-  if(!tmp)
-    return length_;
-
-  if(buf_)
-  {
-    std::memcpy(tmp, buf_, length_);
-    delete[] buf_;
-  }
-
-  length_ = new_length;
-  buf_ = tmp;
-  return length_;
-}
-
-u_int32_t Buffer::getLength() const
-{
-  return length_;
-}
-
-u_int8_t* Buffer::getBuf()
-{
-  return buf_;
-}
-
-Buffer::operator u_int8_t*( )
-{
-  return buf_;
-}
+#endif
