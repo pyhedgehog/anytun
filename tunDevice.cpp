@@ -27,6 +27,9 @@
  *  distribution); if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include <stdexcept>
+
 extern "C" {
 #include "openvpn/config.h"
 #include "openvpn/syshead.h"
@@ -36,66 +39,115 @@ extern "C" {
 #include "tunDevice.h"
 
 
-TunDevice::TunDevice(const char* dev)
+TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifcfg_rnmp)
 {
+  is_open_ = false;
   dev_ = NULL;
-
+  if(!dev_name)
+    dev_name_ = NULL;
+  else
+    strcpy(dev_name_,dev_name);
 
 // init_tun (const char *dev,       /* --dev option */
-// 	  const char *dev_type,  /* --dev-type option */
-// 	  const char *ifconfig_local_parm,          /* --ifconfig parm 1 */
-// 	  const char *ifconfig_remote_netmask_parm, /* --ifconfig parm 2 */
-// 	  in_addr_t local_public,
-// 	  in_addr_t remote_public,
-// 	  const bool strict_warn,
-// 	  struct env_set *es)
+// 	         const char *dev_type,  /* --dev-type option */
+// 	         const char *ifconfig_local_parm,          /* --ifconfig parm 1 */
+// 	         const char *ifconfig_remote_netmask_parm, /* --ifconfig parm 2 */
+// 	         in_addr_t local_public,
+// 	         in_addr_t remote_public,
+// 	         const bool strict_warn,
+// 	         struct env_set *es)
 
 // init_tun_post (struct tuntap *tt,
-// 	       const struct frame *frame,
-// 	       const struct tuntap_options *options)
+// 	              const struct frame *frame,
+// 	              const struct tuntap_options *options)
 
+// -------------------------------------------
 
-//  open_tun (const char *dev, const char *dev_type, const char *dev_node, false, dev_)
+// c->c1.tuntap = init_tun (c->options.dev,
+//                          c->options.dev_type,
+//                          c->options.ifconfig_local,
+//                          c->options.ifconfig_remote_netmask,
+//                          addr_host (&c->c1.link_socket_addr.local),
+//                          addr_host (&c->c1.link_socket_addr.remote),
+//                          !c->options.ifconfig_nowarn,
+//                          c->c2.es);
+  
+// init_tun_post (c->c1.tuntap,
+//                &c->c2.frame,
+//                &c->options.tuntap_options);
+  
+  in_addr_t lp, rp;
 
-//------------------------
-//   c->c1.tuntap = init_tun (c->options.dev,
-//                            c->options.dev_type,
-//                            c->options.ifconfig_local,
-//                            c->options.ifconfig_remote_netmask,
-//                            addr_host (&c->c1.link_socket_addr.local),
-//                            addr_host (&c->c1.link_socket_addr.remote),
-//                            !c->options.ifconfig_nowarn,
-//                            c->c2.es);
-  
-//   init_tun_post (c->c1.tuntap,
-//                  &c->c2.frame,
-//                  &c->options.tuntap_options);
-  
-//  dev_ = init_tun(dev, 
-  
-  
+//   lp = inet_addr("192.168.198.1");
+//   rp = inet_addr("192.168.199.1");
 
+  dev_ = init_tun(dev_name, NULL, ifcfg_lp, ifcfg_rnmp, lp, rp, 0, NULL);
+      //init_tun_post(dev_, NULL, NULL);
+  if(!dev_)
+    throw std::runtime_error("can't init tun");
 }
 
 TunDevice::~TunDevice()
 {
+  if(dev_ && is_open_)
+    close_tun(dev_);
+}
+
+void TunDevice::open()
+{
+  if(!dev_)
+    return;
+// open_tun (const char *dev,
+//           const char *dev_type,
+//           const char *dev_node, 
+//           bool ipv6, 
+//           struct tuntap *tt)
+
+// ------------------------
+
+// open_tun (c->options.dev, 
+//           c->options.dev_type, 
+//           c->options.dev_node,
+//           c->options.tun_ipv6,
+//           c->c1.tuntap);
+
+  open_tun (dev_name_, NULL, NULL, false, dev_);
+  do_ifconfig(dev_, dev_->actual_name, 1500, NULL);
+  is_open_ = true;
+}
+
+void TunDevice::close()
+{
   if(dev_)
     close_tun(dev_);
-
+  is_open_ = false;
 }
 
-int TunDevice::read(uint8_t *buf, int len)
+bool TunDevice::isOpen()
+{
+  return is_open_;
+}
+
+int TunDevice::read(Buffer& buf)
 {
   if(!dev_)
     return -1;
 
-  return read_tun(dev_, buf, len);
+  return read_tun(dev_, buf, buf.getLength());
 }
 
-int TunDevice::write(uint8_t *buf, int len)
+int TunDevice::write(Buffer& buf)
 {
   if(!dev_)
     return -1;
 
-  return write_tun(dev_, buf, len);
+  return write_tun(dev_, buf, buf.getLength());
+}
+
+char* TunDevice::getActualName()
+{
+  if(!dev_)
+    return NULL;
+
+  return dev_->actual_name;
 }

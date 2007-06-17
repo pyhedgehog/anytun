@@ -43,6 +43,11 @@ typedef unsigned int u_int32_t;
 typedef signed long long int64_t;
 typedef unsigned long long u_int64_t;
 
+typedef u_int32_t seq_nr_t;
+typedef u_int16_t sender_id_t;
+typedef u_int8_t padding_t;
+typedef u_int8_t pad_cnt_t;
+typedef u_int16_t payload_type_t;
 typedef u_int32_t auth_tag_t;
 
 #endif

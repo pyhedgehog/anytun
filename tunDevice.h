@@ -31,20 +31,30 @@
 #ifndef _TUNDEVICE_H_
 #define _TUNDEVICE_H_
 
+#include "buffer.h"
+
 class TunDevice
 {
 public:
-  TunDevice(const char* dev);
+  TunDevice(const char* dev, const char* ifcfg_lp, const char* ifcfg_rnmp);
   ~TunDevice();
   
-  int read(uint8_t *buf, int len);
-  int write(uint8_t *buf, int len);
+  void open();
+  void close();
+  bool isOpen();
+
+  int read(Buffer& buf);
+  int write(Buffer& buf);
+
+  char* getActualName();
 
 private:
   void operator=(const TunDevice &src);
   TunDevice(const TunDevice &src);
 
   struct tuntap *dev_;
+  char *dev_name_;
+  bool is_open_;
 };
 
 #endif
