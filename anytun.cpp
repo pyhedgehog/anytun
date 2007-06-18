@@ -39,6 +39,17 @@
 #include "cypher.h"
 #include "authAlgo.h"
 
+void printStat(Package& pack)
+{
+  std::cout << "pack[0-" << pack.getLength() << "]: '";
+  for(unsigned int i=0; i<pack.getLength(); ++i)
+    std::cout << (int)pack[i] << ",";
+  std::cout << std::endl;
+  std::cout << "pack: hdr=" << pack.hasHeader() << " payt=" << pack.hasPayloadType() << " autht=" << pack.hasAuthTag();
+  std::cout << " -- seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << " payload_type=" << pack.getPayloadType()
+            << " auth_tag=" << pack.getAuthTag() << std::endl << std::endl;
+}
+
 int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
@@ -50,136 +61,51 @@ int main(int argc, char* argv[])
 
   std::cout << std::hex;
 
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+  pack.setSeqNr(0x55AA55AA).setSenderId(0xBB11);
+  printStat(pack);
 
-//   pack.setSeqNr(0x55AA55AA).setSenderId(0xBB11);
+  pack.addHeader(0x12345678, 0x9ABC);
+  printStat(pack);
 
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+  pack.removeHeader();
+  printStat(pack);
+
+  pack.withHeader(true);
+  printStat(pack);
+
+  pack.withHeader(false);
+  printStat(pack);
+
+  pack.addPayloadType(0xCCFF);
+  printStat(pack);
+
+  pack.addPayloadType(0xEEBB);
+  printStat(pack);
+
+  pack.removePayloadType();
+  printStat(pack);
+
+  pack.withPayloadType(true);
+  printStat(pack);
+
+  pack.withPayloadType(false);
+
+  pack.addAuthTag(0xCCDDEEFF);
+  printStat(pack);
   
-//   pack.addHeader(0x12345678, 0x9ABC);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
-
-//   pack.removeHeader();
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
-
-//   pack.withHeader(true);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
-
-//   pack.withHeader(false);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: hdr=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
+  pack.removeAuthTag();
+  printStat(pack);
   
-//   pack.addPayloadType(0xCCFF);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
+  pack.withAuthTag(true);
+  printStat(pack);
   
-//   pack.addPayloadType(0xEEBB);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
-
-//   pack.removePayloadType();
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
-
-//   pack.withPayloadType(true);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
-
-//   pack.withPayloadType(false);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
-
-//   pack.addAuthTag(0xCCDDEEFF);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: autht=" << pack.hasAuthTag() << " auth_tag=" << pack.getAuthTag() << std::endl;
-
-//   pack.removeAuthTag();
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: autht=" << pack.hasAuthTag() << " auth_tag=" << pack.getAuthTag() << std::endl;
-
-//   pack.withAuthTag(true);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: autht=" << pack.hasAuthTag() << " auth_tag=" << pack.getAuthTag() << std::endl;
-
-//   pack.withAuthTag(false);
-
-//   std::cout << "pack[0-" << pack.getLength() << "]: '";
-//   for(unsigned int i=0; i<pack.getLength(); ++i)
-//     std::cout << (int)pack[i] << ",";
-//   std::cout << std::endl;
-//   std::cout << "pack: autht=" << pack.hasAuthTag() << " auth_tag=" << pack.getAuthTag() << std::endl;
+  pack.withAuthTag(false);
+  printStat(pack);
   
   std::cout << std::endl << std::endl;
-
-  pack.addHeader(0x56789ABC,0xDEF0);
-
-  std::cout << "pack[0-" << pack.getLength() << "]: '";
-  for(unsigned int i=0; i<pack.getLength(); ++i)
-    std::cout << (int)pack[i] << ",";
-  std::cout << std::endl;
-  std::cout << "pack: hdr=" << pack.hasHeader() << " payt=" << pack.hasPayloadType() << " autht=" << pack.hasAuthTag() << std::endl;
-  std::cout << "seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << " payload_type=" << pack.getPayloadType()
-            << " auth_tag=" << pack.getAuthTag() << std::endl;
-
+  pack.addPayloadType(0x1234).addHeader(0x56789ABC,0xDEF0).addAuthTag(0xFEDCBA98);
+  printStat(pack);
+  
   std::cout << std::dec;
 
 //   TunDevice* dev;

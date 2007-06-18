@@ -68,9 +68,9 @@ private:
     seq_nr_t seq_nr;
     sender_id_t sender_id;
   }__attribute__((__packed__));
-  struct HeaderStruct* header_;
-  payload_type_t* payload_type_;
-  auth_tag_t* auth_tag_;
+  bool has_header_;
+  bool has_payload_type_;
+  bool has_auth_tag_;
 };
 
 #endif
