@@ -35,6 +35,7 @@
 
 #include "tunDevice.h"
 #include "buffer.h"
+#include "package.h"
 #include "cypher.h"
 #include "authAlgo.h"
 
@@ -42,28 +43,50 @@ int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
 
-//   Buffer test(25);
-//   for(unsigned int i=0; i<test.getLength(); ++i)
-//     test[i] = i+1;
-  
-//   std::cout << "test[0-" << test.getLength() << "]: '" << std::hex;
-//   for(unsigned int i=0; i<test.getLength(); ++i)
-//     std::cout << (int)test[i] << ",";
-//   std::cout << std::dec << std::endl;
+  Buffer test(25);
+  for(unsigned int i=0; i<test.getLength(); ++i)
+    test[i] = i+1;
+  Package pack(test);
 
-//   test.resizeFront(1);
+  std::cout << std::hex;
+  std::cout << "pack[0-" << pack.getLength() << "]: '";
+  for(unsigned int i=0; i<pack.getLength(); ++i)
+    std::cout << (int)pack[i] << ",";
+  std::cout << std::endl;
+  std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+
+  pack.setSeqNr(0x55AA55AA).setSenderId(0xBB11);
+
+  std::cout << "pack[0-" << pack.getLength() << "]: '";
+  for(unsigned int i=0; i<pack.getLength(); ++i)
+    std::cout << (int)pack[i] << ",";
+  std::cout << std::endl;
+  std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
   
-//   std::cout << "test[0-" << test.getLength() << "]: '" << std::hex;
-//   for(unsigned int i=0; i<test.getLength(); ++i)
-//     std::cout << (int)test[i] << ",";
-//   std::cout << std::dec << std::endl;
+  pack.addHeader(0x12345678, 0x9ABC);
+
+  std::cout << "pack[0-" << pack.getLength() << "]: '";
+  for(unsigned int i=0; i<pack.getLength(); ++i)
+    std::cout << (int)pack[i] << ",";
+  std::cout << std::endl;
+  std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+
+  pack.removeHeader();
+
+  std::cout << "pack[0-" << pack.getLength() << "]: '";
+  for(unsigned int i=0; i<pack.getLength(); ++i)
+    std::cout << (int)pack[i] << ",";
+  std::cout << std::endl;
+  std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+  
+
+  std::cout << std::dec;
 
 //   TunDevice* dev;
 //   dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
 //   std::cout << "dev created (opened)" << std::endl;
 //   std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
 //   std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
-
   
 //   sleep(10);
   

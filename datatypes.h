@@ -44,8 +44,19 @@ typedef signed long long int64_t;
 typedef unsigned long long u_int64_t;
 
 typedef u_int32_t seq_nr_t;
+#define SEQ_NR_T_NTOH(a) ntohl(a)
+#define SEQ_NR_T_HTON(a) htonl(a)
+
 typedef u_int16_t sender_id_t;
+#define SENDER_ID_T_NTOH(a) ntohs(a)
+#define SENDER_ID_T_HTON(a) htons(a)
+
 typedef u_int16_t payload_type_t;
+#define PAYLOAD_TYPE_T_NTOH(a) ntohs(a)
+#define PAYLOAD_TYPE_T_HTON(a) htons(a)
+
 typedef u_int32_t auth_tag_t;
+#define AUTH_TAG_T_NTOH(a) ntohl(a)
+#define AUTH_TAG_T_HTON(a) htonl(a)
 
 #endif

@@ -37,29 +37,41 @@
 class Package : public Buffer
 {
 public:
-  Package() {}
-  Package(const Buffer &src) {}
+  Package();
+  Package(u_int32_t length);
+  Package(const Buffer &src);
   
   bool hasHeader() const;
   Package& withHeader(bool b);
   seq_nr_t getSeqNr() const;
   sender_id_t getSenderId() const;
-  Package& setHeader(seq_nr_t seq_nr, sender_id_t sender_id);
+  Package& addHeader(seq_nr_t seq_nr, sender_id_t sender_id);
+  Package& removeHeader();
+  Package& setSeqNr(seq_nr_t seq_nr);
+  Package& setSenderId(sender_id_t sender_id);
+                       
   
   bool hasPayloadType() const;
   Package& withPayloadType(bool b);
   payload_type_t getPayloadType() const;  
-  Package& setPayloadType(payload_type_t payload_type);
-
+  Package& addPayloadType(payload_type_t payload_type);
+  Package& removePayloadType();
+  
   bool hasAuthTag() const;
   Package& withAuthTag(bool b);
   auth_tag_t getAuthTag() const;
-  Package& setAuthTag(auth_tag_t auth_tag);
+  Package& addAuthTag(auth_tag_t auth_tag);
+  Package& removeAuthTag();                     
 
 private:
-  bool has_header_;
-  bool has_payload_type_;
-  bool has_auth_tag_;
+  struct HeaderStruct
+  {
+    seq_nr_t seq_nr;
+    sender_id_t sender_id;
+  }__attribute__((__packed__));
+  struct HeaderStruct* header_;
+  payload_type_t* payload_type_;
+  auth_tag_t* auth_tag_;
 };
 
 #endif
