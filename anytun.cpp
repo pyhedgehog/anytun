@@ -39,74 +39,9 @@
 #include "cypher.h"
 #include "authAlgo.h"
 
-void printStat(Package& pack)
-{
-  std::cout << "pack[0-" << pack.getLength() << "]: '";
-  for(unsigned int i=0; i<pack.getLength(); ++i)
-    std::cout << (int)pack[i] << ",";
-  std::cout << std::endl;
-  std::cout << "pack: hdr=" << pack.hasHeader() << " payt=" << pack.hasPayloadType() << " autht=" << pack.hasAuthTag();
-  std::cout << " -- seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << " payload_type=" << pack.getPayloadType()
-            << " auth_tag=" << pack.getAuthTag() << std::endl << std::endl;
-}
-
 int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
-
-  Buffer test(25);
-  for(unsigned int i=0; i<test.getLength(); ++i)
-    test[i] = i+1;
-  Package pack(test);
-
-  std::cout << std::hex;
-
-  pack.setSeqNr(0x55AA55AA).setSenderId(0xBB11);
-  printStat(pack);
-
-  pack.addHeader(0x12345678, 0x9ABC);
-  printStat(pack);
-
-  pack.removeHeader();
-  printStat(pack);
-
-  pack.withHeader(true);
-  printStat(pack);
-
-  pack.withHeader(false);
-  printStat(pack);
-
-  pack.addPayloadType(0xCCFF);
-  printStat(pack);
-
-  pack.addPayloadType(0xEEBB);
-  printStat(pack);
-
-  pack.removePayloadType();
-  printStat(pack);
-
-  pack.withPayloadType(true);
-  printStat(pack);
-
-  pack.withPayloadType(false);
-
-  pack.addAuthTag(0xCCDDEEFF);
-  printStat(pack);
-  
-  pack.removeAuthTag();
-  printStat(pack);
-  
-  pack.withAuthTag(true);
-  printStat(pack);
-  
-  pack.withAuthTag(false);
-  printStat(pack);
-  
-  std::cout << std::endl << std::endl;
-  pack.addPayloadType(0x1234).addHeader(0x56789ABC,0xDEF0).addAuthTag(0xFEDCBA98);
-  printStat(pack);
-  
-  std::cout << std::dec;
 
 //   TunDevice* dev;
 //   dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
