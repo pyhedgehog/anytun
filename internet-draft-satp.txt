@@ -62,10 +62,11 @@ Abstract
    The secure anycast tunneling protocol (SATP) defines a protocol used
    for communication between any combination of unicast and anycast
    tunnel endpoints.  It allows tunneling of every ETHER TYPE protocol
-   (e.g. ethernet, ip, arp ...).  SATP directly includes cryptography
-   and message authentication based on the methodes used by SRTP.  It is
-   intended to deliver a generic, scaleable and secure solution for
-   tunneling and relaying of packets of any protocol.
+   (ethernet, ip ...).  SATP directly includes cryptography and message
+   authentication based on the methodes used by SRTP.  It can be used as
+   an encrypted alternative to IP Encapsulation within IP [3] and
+   Generic Routing Encapsulation (GRE) [4].  It supports both anycast
+   receivers and senders.
 
 
 Table of Contents
@@ -101,7 +102,6 @@ Table of Contents
      7.2.  Informational References . . . . . . . . . . . . . . . . . 14
    Author's Address . . . . . . . . . . . . . . . . . . . . . . . . . 16
    Intellectual Property and Copyright Statements . . . . . . . . . . 17
-
 
 
 
