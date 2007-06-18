@@ -50,7 +50,6 @@ public:
   Package& setSeqNr(seq_nr_t seq_nr);
   Package& setSenderId(sender_id_t sender_id);
                        
-  
   bool hasPayloadType() const;
   Package& withPayloadType(bool b);
   payload_type_t getPayloadType() const;  

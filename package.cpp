@@ -28,6 +28,7 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdexcept>
 #include <arpa/inet.h>
 
 #include "datatypes.h"
@@ -126,5 +127,112 @@ Package& Package::setSenderId(sender_id_t sender_id)
   if(header_)
     header_->sender_id = SENDER_ID_T_HTON(sender_id);
 
+  return *this;
+}
+
+bool Package::hasPayloadType() const
+{
+  return payload_type_;
+}
+
+Package& Package::withPayloadType(bool b)
+{
+  if(auth_tag_)
+    throw std::runtime_error("can't change payload_type state with existing auth_tag");
+
+  if(b && length_ >= sizeof(payload_type_t))
+    payload_type_ = reinterpret_cast<payload_type_t*>(&buf_[length_ - sizeof(payload_type_t)]);
+  else
+    payload_type_ = 0;
+
+  return *this;
+}
+
+payload_type_t Package::getPayloadType() const
+{
+  if(!payload_type_)
+    return 0;
+
+  return PAYLOAD_TYPE_T_NTOH(*payload_type_);
+}
+
+Package& Package::addPayloadType(payload_type_t payload_type)
+{
+  if(auth_tag_)
+    throw std::runtime_error("can't add payload_type with existing auth_tag");
+
+  if(!payload_type_)
+  {
+    if(sizeof(payload_type_t) > resizeBack(length_ + sizeof(payload_type_t)))
+      return *this;
+
+    payload_type_ = reinterpret_cast<payload_type_t*>(&buf_[length_ - sizeof(payload_type_t)]);
+  }
+  *payload_type_ = PAYLOAD_TYPE_T_HTON(payload_type);
+  return *this;
+}
+
+Package& Package::removePayloadType()
+{
+  if(auth_tag_)
+    throw std::runtime_error("can't remove payload_type with existing auth_tag");
+
+  if(!payload_type_)
+    return *this;
+
+  if(length_ >= sizeof(payload_type_t))
+    resizeBack(length_ - sizeof(payload_type_t));
+
+  payload_type_ = 0;
+  
+  return *this;
+}
+
+bool Package::hasAuthTag() const
+{
+  return auth_tag_;
+}
+
+Package& Package::withAuthTag(bool b)
+{
+  if(b && length_ >= sizeof(auth_tag_t))
+    auth_tag_ = reinterpret_cast<auth_tag_t*>(&buf_[length_ - sizeof(auth_tag_t)]);
+  else
+    auth_tag_ = 0;
+
+  return *this;
+}
+
+auth_tag_t Package::getAuthTag() const
+{
+  if(!auth_tag_)
+    return 0;
+
+  return AUTH_TAG_T_NTOH(*auth_tag_);
+}
+
+Package& Package::addAuthTag(auth_tag_t auth_tag)
+{
+  if(!auth_tag_)
+  {
+    if(sizeof(auth_tag_t) > resizeBack(length_ + sizeof(auth_tag_t)))
+      return *this;
+
+    auth_tag_ = reinterpret_cast<auth_tag_t*>(&buf_[length_ - sizeof(auth_tag_t)]);
+  }
+  *auth_tag_ = AUTH_TAG_T_HTON(auth_tag);
+  return *this;
+}
+
+Package& Package::removeAuthTag()
+{
+  if(!auth_tag_)
+    return *this;
+
+  if(length_ >= sizeof(auth_tag_t))
+    resizeBack(length_ - sizeof(auth_tag_t));
+
+  auth_tag_ = 0;
+  
   return *this;
 }

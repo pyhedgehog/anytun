@@ -49,36 +49,136 @@ int main(int argc, char* argv[])
   Package pack(test);
 
   std::cout << std::hex;
-  std::cout << "pack[0-" << pack.getLength() << "]: '";
-  for(unsigned int i=0; i<pack.getLength(); ++i)
-    std::cout << (int)pack[i] << ",";
-  std::cout << std::endl;
-  std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
 
-  pack.setSeqNr(0x55AA55AA).setSenderId(0xBB11);
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
 
-  std::cout << "pack[0-" << pack.getLength() << "]: '";
-  for(unsigned int i=0; i<pack.getLength(); ++i)
-    std::cout << (int)pack[i] << ",";
-  std::cout << std::endl;
-  std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+//   pack.setSeqNr(0x55AA55AA).setSenderId(0xBB11);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
   
-  pack.addHeader(0x12345678, 0x9ABC);
+//   pack.addHeader(0x12345678, 0x9ABC);
 
-  std::cout << "pack[0-" << pack.getLength() << "]: '";
-  for(unsigned int i=0; i<pack.getLength(); ++i)
-    std::cout << (int)pack[i] << ",";
-  std::cout << std::endl;
-  std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
 
-  pack.removeHeader();
+//   pack.removeHeader();
 
-  std::cout << "pack[0-" << pack.getLength() << "]: '";
-  for(unsigned int i=0; i<pack.getLength(); ++i)
-    std::cout << (int)pack[i] << ",";
-  std::cout << std::endl;
-  std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+
+//   pack.withHeader(true);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: hdr=" << pack.hasHeader() << " seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << std::endl;
+
+//   pack.withHeader(false);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: hdr=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
   
+//   pack.addPayloadType(0xCCFF);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
+  
+//   pack.addPayloadType(0xEEBB);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
+
+//   pack.removePayloadType();
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
+
+//   pack.withPayloadType(true);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
+
+//   pack.withPayloadType(false);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: payt=" << pack.hasPayloadType() << " payload_type=" << pack.getPayloadType() << std::endl;
+
+//   pack.addAuthTag(0xCCDDEEFF);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: autht=" << pack.hasAuthTag() << " auth_tag=" << pack.getAuthTag() << std::endl;
+
+//   pack.removeAuthTag();
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: autht=" << pack.hasAuthTag() << " auth_tag=" << pack.getAuthTag() << std::endl;
+
+//   pack.withAuthTag(true);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: autht=" << pack.hasAuthTag() << " auth_tag=" << pack.getAuthTag() << std::endl;
+
+//   pack.withAuthTag(false);
+
+//   std::cout << "pack[0-" << pack.getLength() << "]: '";
+//   for(unsigned int i=0; i<pack.getLength(); ++i)
+//     std::cout << (int)pack[i] << ",";
+//   std::cout << std::endl;
+//   std::cout << "pack: autht=" << pack.hasAuthTag() << " auth_tag=" << pack.getAuthTag() << std::endl;
+  
+  std::cout << std::endl << std::endl;
+
+  pack.addHeader(0x56789ABC,0xDEF0);
+
+  std::cout << "pack[0-" << pack.getLength() << "]: '";
+  for(unsigned int i=0; i<pack.getLength(); ++i)
+    std::cout << (int)pack[i] << ",";
+  std::cout << std::endl;
+  std::cout << "pack: hdr=" << pack.hasHeader() << " payt=" << pack.hasPayloadType() << " autht=" << pack.hasAuthTag() << std::endl;
+  std::cout << "seq_nr=" << pack.getSeqNr() << " sender_id=" << pack.getSenderId() << " payload_type=" << pack.getPayloadType()
+            << " auth_tag=" << pack.getAuthTag() << std::endl;
 
   std::cout << std::dec;
 
