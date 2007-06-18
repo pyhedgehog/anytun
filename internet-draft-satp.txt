@@ -89,10 +89,10 @@ Table of Contents
      4.3.  sequence number  . . . . . . . . . . . . . . . . . . . . .  9
      4.4.  payload  . . . . . . . . . . . . . . . . . . . . . . . . .  9
      4.5.  padding (OPTIONAL) . . . . . . . . . . . . . . . . . . . .  9
-     4.6.  padding count  . . . . . . . . . . . . . . . . . . . . . . 10
+     4.6.  padding count (OPTIONAL) . . . . . . . . . . . . . . . . . 10
      4.7.  payload type field . . . . . . . . . . . . . . . . . . . . 10
-       4.7.1.  MKI  . . . . . . . . . . . . . . . . . . . . . . . . . 10
-       4.7.2.  authentication tag . . . . . . . . . . . . . . . . . . 10
+       4.7.1.  MKI (OPTIONAL) . . . . . . . . . . . . . . . . . . . . 10
+       4.7.2.  authentication tag (RECOMMENDED) . . . . . . . . . . . 10
      4.8.  Encryption . . . . . . . . . . . . . . . . . . . . . . . . 10
    5.  Security Considerations  . . . . . . . . . . . . . . . . . . . 12
      5.1.  Replay protection  . . . . . . . . . . . . . . . . . . . . 12
@@ -406,14 +406,14 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
    to occure very frequently, the encapsulated protocol can do a
    retransmission and all fragments will arrive at the new server.
 
-   If the payload ip headers's Don't Fragment (DF) bit is set, than the
-   DF bit of the outer ip header HAS TO be set as well.
+   If the payload type is IP and the ip headers's Don't Fragment (DF)
+   bit is set, than the DF bit of the outer IP header HAS TO be set as
+   well.
 
 3.2.  ICMP messages
 
    ICMP messages MUST be relayed according to rfc2003 section 4 [3].
    This is needed for path MTU detection.
-
 
 
 
@@ -505,11 +505,11 @@ Gsenger                 Expires December 20, 2007               [Page 9]
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
-   format, so a RTP like padding is supported.  If padding field is
-   present, than the padding count field MUST be set to the padding
-   lenght.
+   format, so a RTP like padding is supported.  If the padding count
+   field is present, than the padding count field MUST be set to the
+   padding lenght.
 
-4.6.  padding count
+4.6.  padding count (OPTIONAL)
 
    The number of octets of the padding field.  This field is optional.
    It's presence is signaled by the key management and not by this
@@ -534,12 +534,12 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
                                  Figure 6
 
-4.7.1.  MKI
+4.7.1.  MKI (OPTIONAL)
 
    The MKI (Master Key Identifier) is OPTIONAL and of configurable
    length.  See SRTP Section 3.1 [1] for details
 
-4.7.2.  authentication tag
+4.7.2.  authentication tag (RECOMMENDED)
 
    The authentication tag is RECOMMENDED and of configurable length.  It
    contains a cryptographic checksum of the sender ID, sequence number
@@ -629,7 +629,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
    has it's own replay list, which SHOULDN'T be syncronised, because of
    massive overhead.  This leads to an additional possible attack.  A
    attacker is able to replay a captured packet once to every anycast
-   reciever.  This attack is considered of be very unlikely, because
+   receiver.  This attack is considered of be very unlikely, because
    multiple attack hosts in different loactions are needed to reach the
    seperate anycast receivers and the number of replays is limited to
    the count of receivers - 1.  Such replays might also happen because
@@ -676,7 +676,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 6.  IANA Considerations
 
    The protocol is intended to be used on top of IP or on top of UDP (to
-   be compatible with NAT routers), so UDP and IP protocol numberes have
+   be compatible with NAT routers), so UDP and IP protocol numbers have
    to be assiged by IANA.
 
 

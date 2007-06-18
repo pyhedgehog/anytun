@@ -167,7 +167,7 @@ Tunneling of IPv6 over IPv4 with RTP payload
          <section title="Fragmentation">
          <t>
            The only way of fully supporting fragmentation would be to synchronise fragments between all anycast servers. This is considered to be too much overhead, so there are two non perfect solutions for these problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server. 
-         </t><t>If the payload ip headers's Don't Fragment (DF) bit is set, than the DF bit of the outer ip header HAS TO be set as well.</t>
+         </t><t>If the payload type is IP and the ip headers's Don't Fragment (DF) bit is set, than the DF bit of the outer IP header HAS TO be set as well.</t>
          </section>
 	 <section title="ICMP messages">
 	   <t>ICMP messages MUST be relayed according to <xref target="RFC2003">rfc2003 section 4</xref>. This is needed for path MTU detection.</t>
@@ -211,9 +211,9 @@ Tunneling of IPv6 over IPv4 with RTP payload
        <section title="padding (OPTIONAL)">
        <t>Padding of max 255 octets.
 None of the pre-defined encryption transforms uses any padding; for
-   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If padding field is present, than the padding count field MUST be set to the padding lenght.</t>
+   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If the padding count field is present, than the padding count field MUST be set to the padding lenght.</t>
        </section>
-       <section title="padding count">
+       <section title="padding count (OPTIONAL)">
        <t>The number of octets of the padding field. This field is optional. It's presence is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.</t>
        </section>
        <section title="payload type field">
@@ -230,10 +230,10 @@ HEX
 86DD IPv6
 </artwork>
 </figure>
-        <section title="MKI">
+        <section title="MKI (OPTIONAL)">
         <t>The MKI (Master Key Identifier) is OPTIONAL and of configurable length. See <xref target="RFC3711">SRTP Section 3.1</xref> for details</t>
         </section>
-	<section title="authentication tag">
+	<section title="authentication tag (RECOMMENDED)">
 	<t>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not of the MKI. On sender side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO calculate the authentication tag before decrypting the encrypted portion.</t>
 	</section>
 </t>
@@ -270,11 +270,11 @@ HEX
     <section title="Security Considerations">
      <t>As SATP uses the same encrytion technics as <xref target="RFC3711">SRTP</xref>, it shares the same security issues. This section will only discuss some small changes. Please read  <xref target="RFC3711">SRTP RFC3711 section 9</xref> for details.</t>
       <section title="Replay protection">
-      <t>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SHOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast reciever. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.</t>
+      <t>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SHOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast receiver. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.</t>
       </section>
     </section>
     <section title="IANA Considerations">
-      <t>The protocol is intended to be used on top of IP or on top of UDP (to be compatible with NAT routers), so UDP and IP protocol numberes have to be assiged by IANA.</t>
+      <t>The protocol is intended to be used on top of IP or on top of UDP (to be compatible with NAT routers), so UDP and IP protocol numbers have to be assiged by IANA.</t>
     </section>
     </middle>
     <back>
