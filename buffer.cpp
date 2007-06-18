@@ -85,7 +85,7 @@ void Buffer::operator=(const Buffer &src)
     length_ = 0;
 }
 
-u_int32_t Buffer::resize(u_int32_t new_length)
+u_int32_t Buffer::resizeFront(u_int32_t new_length)
 {
   if(length_ == new_length)
     return length_;
@@ -96,7 +96,34 @@ u_int32_t Buffer::resize(u_int32_t new_length)
 
   if(buf_)
   {
-    std::memcpy(tmp, buf_, length_);
+    u_int8_t *src=buf_, *dest=tmp;
+    if(length_ < new_length)
+      dest = &dest[new_length - length_];
+    else
+      src = &src[length_ - new_length];
+    u_int32_t len = length_ < new_length ? length_ : new_length;
+    std::memcpy(dest, src, len);
+    delete[] buf_;
+  }
+
+  length_ = new_length;
+  buf_ = tmp;
+  return length_;
+}
+
+u_int32_t Buffer::resizeBack(u_int32_t new_length)
+{
+  if(length_ == new_length)
+    return length_;
+
+  u_int8_t *tmp = new u_int8_t[new_length];
+  if(!tmp)
+    return length_;
+
+  if(buf_)
+  {
+    u_int32_t len = length_ < new_length ? length_ : new_length;
+    std::memcpy(tmp, buf_, len);
     delete[] buf_;
   }
 

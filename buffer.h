@@ -39,11 +39,12 @@ public:
   Buffer();
   Buffer(u_int32_t length);
   Buffer(u_int8_t* data, u_int32_t length);
-  ~Buffer();
+  virtual ~Buffer();
   Buffer(const Buffer &src);
   void operator=(const Buffer &src);
 
-  u_int32_t resize(u_int32_t new_length);
+  u_int32_t resizeFront(u_int32_t new_length);
+  u_int32_t resizeBack(u_int32_t new_length);
   u_int32_t getLength() const;
   u_int8_t* getBuf();
   u_int8_t& operator[](u_int32_t index);

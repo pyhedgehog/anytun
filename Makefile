@@ -31,7 +31,7 @@ OPENVPNDEPS = openvpn/tun.o \
 
 
 
-OBJS = anytun.o tunDevice.o buffer.o cypher.o authAlgo.o $(OPENVPNDEPS)
+OBJS = anytun.o tunDevice.o buffer.o package.o cypher.o authAlgo.o $(OPENVPNDEPS)
 EXECUTABLE = anytun
 
 all: $(EXECUTABLE)
@@ -43,6 +43,9 @@ tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
 
 buffer.o: buffer.cpp buffer.h
+	$(C++) $(CCFLAGS) $< -c
+
+package.o: package.cpp package.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 cypher.o: cypher.cpp cypher.h buffer.h

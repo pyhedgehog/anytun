@@ -28,24 +28,38 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DATATYPES_H_
-#define _DATATYPES_H_
+#ifndef _PACKAGE_H_
+#define _PACKAGE_H_
 
-typedef signed char int8_t;
-typedef unsigned char u_int8_t;
+#include "datatypes.h"
+#include "buffer.h"
 
-typedef signed short int16;
-typedef unsigned short u_int16_t;
+class Package : public Buffer
+{
+public:
+  Package() {}
+  Package(const Buffer &src) {}
+  
+  bool hasHeader() const;
+  Package& withHeader(bool b);
+  seq_nr_t getSeqNr() const;
+  sender_id_t getSenderId() const;
+  Package& setHeader(seq_nr_t seq_nr, sender_id_t sender_id);
+  
+  bool hasPayloadType() const;
+  Package& withPayloadType(bool b);
+  payload_type_t getPayloadType() const;  
+  Package& setPayloadType(payload_type_t payload_type);
 
-typedef signed int int32;
-typedef unsigned int u_int32_t;
+  bool hasAuthTag() const;
+  Package& withAuthTag(bool b);
+  auth_tag_t getAuthTag() const;
+  Package& setAuthTag(auth_tag_t auth_tag);
 
-typedef signed long long int64_t;
-typedef unsigned long long u_int64_t;
-
-typedef u_int32_t seq_nr_t;
-typedef u_int16_t sender_id_t;
-typedef u_int16_t payload_type_t;
-typedef u_int32_t auth_tag_t;
+private:
+  bool has_header_;
+  bool has_payload_type_;
+  bool has_auth_tag_;
+};
 
 #endif
