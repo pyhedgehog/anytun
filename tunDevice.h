@@ -43,7 +43,7 @@ public:
   void close();
   bool isOpen();
 
-  int read(Buffer& buf);
+  short read(Buffer& buf);
   int write(Buffer& buf);
 
   char* getActualName();

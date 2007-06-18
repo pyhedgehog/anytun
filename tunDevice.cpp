@@ -29,6 +29,7 @@
  */
 
 #include <stdexcept>
+#include <poll.h>
 
 extern "C" {
 #include "openvpn/config.h"
@@ -105,14 +106,17 @@ TunDevice::~TunDevice()
     close_tun(dev_);
 }
 
-int TunDevice::read(Buffer& buf)
+short TunDevice::read(Buffer& buf)
 {
   if(!dev_)
     return -1;
 
-  perf_push (PERF_READ_IN_TUN);
-
-  return read_tun(dev_, buf, buf.getLength());
+  struct pollfd pfd[1];
+  pfd[0].fd = tun_event_handle(dev_);
+//  pfd[0].events = POLLIN | POLLRDNORM | POLLRDBAND | POLLPRI | POLLOUT | POLLWRNORM | POLLWRBAND | POLLERR | POLLHUP | POLLNVAL;
+  pfd[0].events = POLLIN | POLLRDNORM | POLLRDBAND | POLLPRI;
+  poll(pfd, 1, -1);
+  return pfd[0].revents;//read_tun(dev_, buf, buf.getLength());
 }
 
 int TunDevice::write(Buffer& buf)

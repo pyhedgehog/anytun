@@ -29,6 +29,7 @@
  */
 
 #include <iostream>
+#include <poll.h>
 
 #include "datatypes.h"
 
@@ -41,42 +42,59 @@ int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
 
-  u_int8_t test[100];
-  for(int i=0;i<100;++i)
-    test[i] = i;
+//   u_int8_t test[100];
+//   for(int i=0;i<100;++i)
+//     test[i] = i;
   
-  Buffer a(test, 100);
-  Buffer b(a);
+//   Buffer a(test, 100);
+//   Buffer b(a);
 
-  Buffer c;
-  c = b;
-  c.resize(500);
+//   Buffer c;
+//   c = b;
+//   c.resize(500);
 
-  for(unsigned int i=0;i<c.getLength();++i)
-    c[i] = i;
+//   for(unsigned int i=0;i<c.getLength();++i)
+//     c[i] = i;
 
-//   TunDevice* dev;
-
-//   dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
-//   std::cout << "dev created (opened)" << std::endl;
-//   std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
-//   std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
+  TunDevice* dev;
+  dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
+  std::cout << "dev created (opened)" << std::endl;
+  std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
+  std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
 
   
-//   sleep(10);
+  sleep(10);
   
-//   Buffer inBuf(2000);
+  Buffer inBuf(2000);
   
-//   int32_t len = 0;
-//   do
-//   {
-//     len = dev->read(inBuf);
-//     std::cout << "read " << len << " bytes" << std::endl;
-//   }
-//   while(len >= 0);
+  while(1)
+  {
+    short revents = dev->read(inBuf);
+    if(revents & POLLIN)
+      std::cout << "POLLIN,";
+    else if(revents & POLLRDNORM)
+      std::cout << "POLLRDNORM,";
+    else if(revents & POLLRDBAND)
+      std::cout << "POLLRDBAND,";
+    else if(revents & POLLPRI)
+      std::cout << "POLLPRI,";
+    else if(revents & POLLOUT)
+      std::cout << "POLLOUT,";
+    else if(revents & POLLWRNORM)
+      std::cout << "POLLWRNORM,";
+    else if(revents & POLLWRBAND)
+      std::cout << "POLLWRBAND,";
+    else if(revents & POLLERR)
+      std::cout << "POLLERR,";
+    else if(revents & POLLHUP)
+      std::cout << "POLLHUP,";
+    else if(revents & POLLNVAL)
+      std::cout << "POLLNVAL,";
+    std::cout << std::endl;
+  }
 
-//   delete dev;
-//   std::cout << "dev destroyed" << std::endl;
+  delete dev;
+  std::cout << "dev destroyed" << std::endl;
 
 //   dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
 //   std::cout << "dev created (opened)" << std::endl;

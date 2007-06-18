@@ -115,7 +115,7 @@ u_int8_t* Buffer::getBuf()
   return buf_;
 }
 
-u_int8_t Buffer::operator[](u_int32_t index)
+u_int8_t& Buffer::operator[](u_int32_t index)
 {
   if(index >= length_)
     throw std::out_of_range("buffer::operator[]");
@@ -123,7 +123,7 @@ u_int8_t Buffer::operator[](u_int32_t index)
   return buf_[index];
 }
 
-u_int8_t const& Buffer::operator[](u_int32_t index) const
+u_int8_t Buffer::operator[](u_int32_t index) const
 {
   if(index >= length_)
     throw std::out_of_range("buffer::operator[] const");

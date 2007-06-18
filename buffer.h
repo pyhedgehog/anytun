@@ -46,8 +46,8 @@ public:
   u_int32_t resize(u_int32_t new_length);
   u_int32_t getLength() const;
   u_int8_t* getBuf();
-  u_int8_t operator[](u_int32_t index);
-  u_int8_t const& operator[](u_int32_t index) const;
+  u_int8_t& operator[](u_int32_t index);
+  u_int8_t operator[](u_int32_t index) const;
 
 protected:
   operator u_int8_t*(); // just for write/read tun
