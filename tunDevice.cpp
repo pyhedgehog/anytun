@@ -100,7 +100,7 @@ TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifc
     throw std::runtime_error("can't init tun/tap device");
 
   open_tun (dev_name, NULL, NULL, false, dev_);
-  do_ifconfig(dev_, dev_->actual_name, 1500, NULL);
+  do_ifconfig(dev_, dev_->actual_name, 1000, NULL);
 }
 
 TunDevice::~TunDevice()

@@ -44,14 +44,14 @@ int main(int argc, char* argv[])
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
 
   TunDevice* dev;
-  dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
-//  dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
+//  dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
+  dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
 //  dev = new TunDevice("tun17", "192.168.200.1", "192.168.201.1");
   std::cout << "dev created (opened)" << std::endl;
   std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
   std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
   
-  Buffer inBuf(1000);
+  Buffer inBuf(2000);
   int len;
   do
   {
