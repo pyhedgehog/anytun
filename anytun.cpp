@@ -44,39 +44,21 @@ int main(int argc, char* argv[])
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
 
   TunDevice* dev;
-//   dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
-  dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
-//   dev = new TunDevice("tun17", "192.168.200.1", "192.168.201.1");
+  dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
+//  dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
+//  dev = new TunDevice("tun17", "192.168.200.1", "192.168.201.1");
   std::cout << "dev created (opened)" << std::endl;
   std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
   std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
   
-  Buffer inBuf(2000);
-  while(1)
+  Buffer inBuf(1000);
+  int len;
+  do
   {
-    short revents = dev->read(inBuf);
-    if(revents & POLLIN)
-      std::cout << "POLLIN,";
-    else if(revents & POLLRDNORM)
-      std::cout << "POLLRDNORM,";
-    else if(revents & POLLRDBAND)
-      std::cout << "POLLRDBAND,";
-    else if(revents & POLLPRI)
-      std::cout << "POLLPRI,";
-    else if(revents & POLLOUT)
-      std::cout << "POLLOUT,";
-    else if(revents & POLLWRNORM)
-      std::cout << "POLLWRNORM,";
-    else if(revents & POLLWRBAND)
-      std::cout << "POLLWRBAND,";
-    else if(revents & POLLERR)
-      std::cout << "POLLERR,";
-    else if(revents & POLLHUP)
-      std::cout << "POLLHUP,";
-    else if(revents & POLLNVAL)
-      std::cout << "POLLNVAL,";
-    std::cout << std::endl;
+    len = dev->read(inBuf);  
+    std::cout << "read " << len << " bytes" << std::endl;
   }
+  while(len);
 
   delete dev;
   std::cout << "dev destroyed" << std::endl;

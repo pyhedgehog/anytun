@@ -1839,9 +1839,9 @@ configure:7855: $? = 0
 configure:7867: result: yes
 configure:7779: checking for chsize
 configure:7836: gcc -o conftest -g -O2  -I.  conftest.c  >&5
-/tmp/cce9busE.o: In function `main':
+/tmp/ccs2XERn.o: In function `main':
 /home/equinox/anytun/src/anytun/openvpn/conftest.c:151: undefined reference to `chsize'
-/tmp/cce9busE.o:(.data+0x0): undefined reference to `chsize'
+/tmp/ccs2XERn.o:(.data+0x0): undefined reference to `chsize'
 collect2: ld returned 1 exit status
 configure:7842: $? = 1
 configure: failed program was:
@@ -2190,9 +2190,9 @@ configure:9159: checking for dlfcn.h
 configure:9166: result: yes
 configure:9171: checking for dlopen
 configure:9228: gcc -o conftest -g -O2  -I.  conftest.c  >&5
-/tmp/cc8anXrV.o: In function `main':
+/tmp/ccAXz6h6.o: In function `main':
 /home/equinox/anytun/src/anytun/openvpn/conftest.c:170: undefined reference to `dlopen'
-/tmp/cc8anXrV.o:(.data+0x0): undefined reference to `dlopen'
+/tmp/ccAXz6h6.o:(.data+0x0): undefined reference to `dlopen'
 collect2: ld returned 1 exit status
 configure:9234: $? = 1
 configure: failed program was:
@@ -2402,6 +2402,7 @@ config.status:708: creating openvpn.spec
 config.status:708: creating config-win32.h
 config.status:708: creating install-win32/openvpn.nsi
 config.status:812: creating config.h
+config.status:1204: config.h is unchanged
 config.status:1384: executing depfiles commands
 
 ## ---------------- ##

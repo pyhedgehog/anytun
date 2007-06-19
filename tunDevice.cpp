@@ -92,7 +92,10 @@ TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifc
 //   rp = inet_addr("192.168.199.1");
 
   dev_ = init_tun(dev_name, NULL, ifcfg_lp, ifcfg_rnmp, lp, rp, 0, NULL);
-      //init_tun_post(dev_, NULL, NULL);
+  struct frame frame; // just for win32
+  struct tuntap_options options; // win32 & linux
+  options.txqueuelen = 100; // just for linux
+  init_tun_post(dev_, &frame, &options);
   if(!dev_)
     throw std::runtime_error("can't init tun/tap device");
 
@@ -113,10 +116,10 @@ short TunDevice::read(Buffer& buf)
 
   struct pollfd pfd[1];
   pfd[0].fd = tun_event_handle(dev_);
-//  pfd[0].events = POLLIN | POLLRDNORM | POLLRDBAND | POLLPRI | POLLOUT | POLLWRNORM | POLLWRBAND | POLLERR | POLLHUP | POLLNVAL;
-  pfd[0].events = POLLIN | POLLRDNORM | POLLRDBAND | POLLPRI;
+  pfd[0].events = POLLIN | POLLPRI;
+  pfd[0].revents = 0;
   poll(pfd, 1, -1);
-  return pfd[0].revents;//read_tun(dev_, buf, buf.getLength());
+  return read_tun(dev_, buf, buf.getLength());
 }
 
 int TunDevice::write(Buffer& buf)
