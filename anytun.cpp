@@ -38,30 +38,39 @@
 #include "package.h"
 #include "cypher.h"
 #include "authAlgo.h"
+#include "signalController.h"
+
+void* receiver(void* d)
+{
+  TunDevice* dev = reinterpret_cast<TunDevice*>(d);  
+
+  Buffer buf(1600);
+  while(1)
+  {
+    int len = dev->read(buf);
+    std::cout << "read " << len << " bytes" << std::endl;
+  }
+  pthread_exit(NULL);
+}
 
 int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
-
-  TunDevice* dev;
-//  dev = new TunDevice("tun", "192.168.200.1", "192.168.201.1");
-  dev = new TunDevice("tap", "192.168.202.1", "255.255.255.0");
-//  dev = new TunDevice("tun17", "192.168.200.1", "192.168.201.1");
-  std::cout << "dev created (opened)" << std::endl;
-  std::cout << "dev opened - actual name is '" << dev->getActualName() << "'" << std::endl;
-  std::cout << "dev type is '" << dev->getType() << "'" << std::endl;
   
-  Buffer inBuf(2000);
-  int len;
-  do
-  {
-    len = dev->read(inBuf);  
-    std::cout << "read " << len << " bytes" << std::endl;
-  }
-  while(len);
+ SignalController sig;
+ sig.init();
 
-  delete dev;
-  std::cout << "dev destroyed" << std::endl;
+//  TunDevice dev("tun", "192.168.200.1", "192.168.201.1");
+  TunDevice dev("tap", "192.168.202.1", "255.255.255.0");
+//  TunDevice dev("tun17", "192.168.200.1", "192.168.201.1");
 
-  return 0;
+  std::cout << "dev created (opened)" << std::endl;
+  std::cout << "dev opened - actual name is '" << dev.getActualName() << "'" << std::endl;
+  std::cout << "dev type is '" << dev.getType() << "'" << std::endl;
+  
+  pthread_t receiverThread;
+  pthread_create(&receiverThread, NULL, receiver, &dev);  
+  pthread_detach(receiverThread);
+
+  return sig.run();;
 }

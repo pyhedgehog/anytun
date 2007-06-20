@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 C++ = g++
 CCFLAGS = -g -Wall
 LD = g++
-LDFLAGS = -g -O2 -ldl
+LDFLAGS = -g -O2 -ldl -lpthread
 
 OPENVPNDEPS = openvpn/tun.o \
               openvpn/error.o \
@@ -31,7 +31,7 @@ OPENVPNDEPS = openvpn/tun.o \
 
 
 
-OBJS = anytun.o tunDevice.o buffer.o package.o cypher.o authAlgo.o PracticalSocket.o $(OPENVPNDEPS)
+OBJS = anytun.o tunDevice.o buffer.o package.o cypher.o authAlgo.o PracticalSocket.o signalController.o $(OPENVPNDEPS)
 EXECUTABLE = anytun
 
 all: $(EXECUTABLE)
@@ -52,6 +52,9 @@ cypher.o: cypher.cpp cypher.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
+	$(C++) $(CCFLAGS) $< -c
+
+signalController.o: signalController.cpp signalController.h
 	$(C++) $(CCFLAGS) $< -c
 
 PracticalSocket.o: PracticalSocket.cpp PracticalSocket.h
