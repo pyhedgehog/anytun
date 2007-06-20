@@ -31,7 +31,10 @@
 #ifndef _BUFFER_H_
 #define _BUFFER_H_
 
+#include "datatypes.h"
+
 class TunDevice;
+class UDPPacketSource;
 
 class Buffer
 {
@@ -51,8 +54,9 @@ public:
   u_int8_t operator[](u_int32_t index) const;
 
 protected:
-  operator u_int8_t*(); // just for write/read tun
+  operator u_int8_t*(); // just for write/read tun and packetSource
   friend class TunDevice;
+  friend class UDPPacketSource;
 
   u_int8_t *buf_;
   u_int32_t length_;

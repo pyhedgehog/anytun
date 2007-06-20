@@ -34,35 +34,103 @@
 #include "datatypes.h"
 
 #include "log.h"
-#include "tunDevice.h"
 #include "buffer.h"
-#include "package.h"
+#include "packet.h"
 #include "cypher.h"
 #include "authAlgo.h"
 #include "signalController.h"
+#include "packetSource.h"
+#include "tunDevice.h"
 
-void* sender(void* d)
+sender_id_t my_sender_id_ = 23;
+u_int16_t local_port_ = 4444;
+string remote_addr_ = "127.0.0.1";
+u_int16_t remote_port_ = 4444;
+string dev_type_ = "tap";
+string ifconfig_param_1_ = "192.168.200.1";
+string ifconfig_param_2_ = "255.255.255.0";
+
+#define PAYLOAD_TYPE_TAP 0x6558
+#define PAYLOAD_TYPE_TUN 0x0800
+
+struct Param
 {
-  TunDevice* dev = reinterpret_cast<TunDevice*>(d);  
-  
-  Buffer buf(1600);
+  TunDevice* dev;
+  Cypher* c;
+  AuthAlgo* a;
+  PacketSource* src;
+};
+
+void* sender(void* p)
+{
+  Param* param = reinterpret_cast<Param*>(p);
+
+  seq_nr_t seq = 0;
   while(1)
   {
-    int len = dev->read(buf);
-    std::cout << "read " << len << " bytes" << std::endl;
+    Packet pack(1600);
+
+        // read packet from device
+    int len = param->dev->read(pack);
+    pack.resizeBack(len);
+
+        // add payload type
+    if(param->dev->getType() == TunDevice::TYPE_TUN)
+      pack.addPayloadType(PAYLOAD_TYPE_TUN);
+    else if(param->dev->getType() == TunDevice::TYPE_TAP)
+      pack.addPayloadType(PAYLOAD_TYPE_TAP);
+    else 
+      pack.addPayloadType(0);
+
+        // cypher the packet
+    param->c->cypher(pack);
+
+        // add header to packet
+    pack.addHeader(my_sender_id_, seq);
+
+        // calc auth_tag and add it to the packet
+    auth_tag_t at = param->a->calc(pack);
+    pack.addAuthTag(at);
+
+        // send it out to remote host
+    param->src->send(pack, remote_addr_, remote_port_);
   }
   pthread_exit(NULL);
 }
 
-void* receiver(void* d)
+void* receiver(void* p)
 {
-  TunDevice* dev = reinterpret_cast<TunDevice*>(d);  
+  Param* param = reinterpret_cast<Param*>(p);  
   
-  Buffer buf(1234);
   while(1)
   {
-    sleep(1);
-    dev->write(buf);
+    string remote_host;
+    u_int16_t remote_port;
+    Packet pack(1600);
+
+        // read packet from socket
+    int len = param->src->recv(pack, remote_host, remote_port);
+    pack.resizeBack(len);
+
+        // check auth_tag and remove it
+    auth_tag_t at = param->a->calc(pack);
+    if(at != pack.getAuthTag())
+      continue;
+
+        // compare sender_id and seq with window
+    pack.removeHeader();
+
+        // decypher the packet
+    param->c->cypher(pack);
+
+        // check payload_type and remove it
+    if((param->dev->getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
+       (param->dev->getType() == TunDevice::TYPE_TAP && pack.getPayloadType() != PAYLOAD_TYPE_TAP))
+      continue;
+    pack.removePayloadType();
+    
+        // write it on the device
+    param->dev->write(pack);
   }
   pthread_exit(NULL);
 }
@@ -71,22 +139,40 @@ int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
   cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
+
+  if(argc > 1)
+    my_sender_id_ = atoi(argv[1]);
+  if(argc > 2)
+    local_port_ = atoi(argv[2]);
+  if(argc > 3)
+    remote_addr_ = argv[3];
+  if(argc > 4)
+    remote_port_ = atoi(argv[4]);
+  if(argc > 5)
+    dev_type_ = argv[5];
+  if(argc > 6)
+    ifconfig_param_1_ = argv[6];
+  if(argc > 7)
+    ifconfig_param_2_ = argv[7];
+
   
   SignalController sig;
   sig.init();
   
-//  TunDevice dev("tun", "192.168.200.1", "192.168.201.1");
-  TunDevice dev("tap", "192.168.202.1", "255.255.255.0");
-//  TunDevice dev("tun17", "192.168.200.1", "192.168.201.1");
-  
+  struct Param p;
+  p.dev = new TunDevice(dev_type_.c_str(), ifconfig_param_2_.c_str(), ifconfig_param_2_.c_str());
+  p.c = new NullCypher();
+  p.a = new NullAuthAlgo();
+  p.src = new UDPPacketSource(local_port_);
+    
   std::cout << "dev created (opened)" << std::endl;
-  std::cout << "dev opened - actual name is '" << dev.getActualName() << "'" << std::endl;
-  std::cout << "dev type is '" << dev.getType() << "'" << std::endl;
+  std::cout << "dev opened - actual name is '" << p.dev->getActualName() << "'" << std::endl;
+  std::cout << "dev type is '" << p.dev->getTypeString() << "'" << std::endl;
   
   pthread_t senderThread;
-  pthread_create(&senderThread, NULL, sender, &dev);  
+  pthread_create(&senderThread, NULL, sender, &p);  
   pthread_t receiverThread;
-  pthread_create(&receiverThread, NULL, receiver, &dev);  
+  pthread_create(&receiverThread, NULL, receiver, &p);  
 
   int ret = sig.run();
 
@@ -94,6 +180,11 @@ int main(int argc, char* argv[])
   pthread_cancel(receiverThread);  
   pthread_join(senderThread, NULL);
   pthread_join(receiverThread, NULL);
+
+  delete p.dev;
+  delete p.c;
+  delete p.a;
+  delete p.src;
 
   return ret;
 }

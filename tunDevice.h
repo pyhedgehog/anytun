@@ -37,6 +37,10 @@
 class TunDevice
 {
 public:
+  static const u_int32_t TYPE_UNDEF = 0;
+  static const u_int32_t TYPE_TUN = 1;
+  static const u_int32_t TYPE_TAP = 2;
+
   TunDevice(const char* dev, const char* ifcfg_lp, const char* ifcfg_rnmp);
   ~TunDevice();
   
@@ -48,7 +52,8 @@ public:
   int write(Buffer& buf);
 
   char* getActualName();
-  char* getType();
+  u_int32_t getType();
+  char* getTypeString();
 
 private:
   void operator=(const TunDevice &src);

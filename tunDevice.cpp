@@ -140,7 +140,20 @@ char* TunDevice::getActualName()
   return dev_->actual_name;
 }
 
-char* TunDevice::getType()
+u_int32_t TunDevice::getType()
+{
+  if(!dev_)
+    return TYPE_UNDEF;
+  
+  switch(dev_->type)
+  {
+  case DEV_TYPE_TUN: return TYPE_TUN;
+  case DEV_TYPE_TAP: return TYPE_TAP;
+  }
+  return TYPE_UNDEF;
+}
+
+char* TunDevice::getTypeString()
 {
   if(!dev_)
     return NULL;

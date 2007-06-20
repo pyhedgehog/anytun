@@ -28,49 +28,27 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _PACKAGE_H_
-#define _PACKAGE_H_
-
 #include "datatypes.h"
 #include "buffer.h"
+#include "PracticalSocket.h"
 
-class Package : public Buffer
+class PacketSource
 {
 public:
-  Package();
-  Package(u_int32_t length);
-  Package(const Buffer &src);
-  
-  bool hasHeader() const;
-  Package& withHeader(bool b);
-  seq_nr_t getSeqNr() const;
-  sender_id_t getSenderId() const;
-  Package& addHeader(seq_nr_t seq_nr, sender_id_t sender_id);
-  Package& removeHeader();
-  Package& setSeqNr(seq_nr_t seq_nr);
-  Package& setSenderId(sender_id_t sender_id);
-                       
-  bool hasPayloadType() const;
-  Package& withPayloadType(bool b);
-  payload_type_t getPayloadType() const;  
-  Package& addPayloadType(payload_type_t payload_type);
-  Package& removePayloadType();
-  
-  bool hasAuthTag() const;
-  Package& withAuthTag(bool b);
-  auth_tag_t getAuthTag() const;
-  Package& addAuthTag(auth_tag_t auth_tag);
-  Package& removeAuthTag();                     
+  virtual ~PacketSource() {}
 
-private:
-  struct HeaderStruct
-  {
-    seq_nr_t seq_nr;
-    sender_id_t sender_id;
-  }__attribute__((__packed__));
-  bool has_header_;
-  bool has_payload_type_;
-  bool has_auth_tag_;
+  virtual u_int32_t recv(Buffer buf, std::string addr, u_int16_t &port) = 0;
+  virtual void send(Buffer buf, std::string addr, u_int16_t port) = 0;
 };
 
-#endif
+class UDPPacketSource : public PacketSource, public UDPSocket
+{  
+public:
+  UDPPacketSource();
+  UDPPacketSource(u_int16_t port);
+  UDPPacketSource(std::string localaddr, u_int16_t port);
+
+  u_int32_t recv(Buffer buf, std::string addr, u_int16_t &port);
+  void send(Buffer buf, std::string addr, u_int16_t port);
+};
+

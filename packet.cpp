@@ -33,35 +33,35 @@
 
 #include "datatypes.h"
 
-#include "package.h"
+#include "packet.h"
 
-Package::Package()
+Packet::Packet()
 {
   has_header_ = false;
   has_payload_type_ = false;
   has_auth_tag_ = false;                
 }
 
-Package::Package(u_int32_t length) : Buffer(length)
+Packet::Packet(u_int32_t length) : Buffer(length)
 {
   has_header_ = false;
   has_payload_type_ = false;
   has_auth_tag_ = false;                
 }
 
-Package::Package(const Buffer &src) : Buffer(src)
+Packet::Packet(const Buffer &src) : Buffer(src)
 {
   has_header_ = false;
   has_payload_type_ = false;
   has_auth_tag_ = false;                
 }
   
-bool Package::hasHeader() const
+bool Packet::hasHeader() const
 {
   return has_header_;
 }
 
-Package& Package::withHeader(bool b)
+Packet& Packet::withHeader(bool b)
 {
   if(b && length_ >= sizeof(struct HeaderStruct))
     has_header_ = true;
@@ -71,7 +71,7 @@ Package& Package::withHeader(bool b)
   return *this;
 }
 
-seq_nr_t Package::getSeqNr() const
+seq_nr_t Packet::getSeqNr() const
 {
   if(!has_header_)
     return 0;
@@ -81,7 +81,7 @@ seq_nr_t Package::getSeqNr() const
   return SEQ_NR_T_NTOH(header->seq_nr);
 }
 
-sender_id_t Package::getSenderId() const
+sender_id_t Packet::getSenderId() const
 {
   if(!has_header_)
     return 0;
@@ -91,7 +91,7 @@ sender_id_t Package::getSenderId() const
   return SENDER_ID_T_NTOH(header->sender_id);
 }
 
-Package& Package::addHeader(seq_nr_t seq_nr, sender_id_t sender_id)
+Packet& Packet::addHeader(seq_nr_t seq_nr, sender_id_t sender_id)
 {
   if(!has_header_)
   {
@@ -107,7 +107,7 @@ Package& Package::addHeader(seq_nr_t seq_nr, sender_id_t sender_id)
   return *this;
 }
 
-Package& Package::removeHeader()
+Packet& Packet::removeHeader()
 {
   if(!has_header_)
     return *this;
@@ -120,7 +120,7 @@ Package& Package::removeHeader()
   return *this;
 }
 
-Package& Package::setSeqNr(seq_nr_t seq_nr)
+Packet& Packet::setSeqNr(seq_nr_t seq_nr)
 {
   if(has_header_)
   {
@@ -131,7 +131,7 @@ Package& Package::setSeqNr(seq_nr_t seq_nr)
   return *this;
 }
 
-Package& Package::setSenderId(sender_id_t sender_id)
+Packet& Packet::setSenderId(sender_id_t sender_id)
 {
   if(has_header_)
   {
@@ -144,12 +144,12 @@ Package& Package::setSenderId(sender_id_t sender_id)
 
 
 
-bool Package::hasPayloadType() const
+bool Packet::hasPayloadType() const
 {
   return has_payload_type_;
 }
 
-Package& Package::withPayloadType(bool b)
+Packet& Packet::withPayloadType(bool b)
 {
   if(b && length_ >= sizeof(payload_type_t))
     has_payload_type_ = true;
@@ -159,7 +159,7 @@ Package& Package::withPayloadType(bool b)
   return *this;
 }
 
-payload_type_t Package::getPayloadType() const
+payload_type_t Packet::getPayloadType() const
 {
   if(!has_payload_type_)
     return 0;
@@ -177,7 +177,7 @@ payload_type_t Package::getPayloadType() const
   return PAYLOAD_TYPE_T_NTOH(*payload_type);
 }
 
-Package& Package::addPayloadType(payload_type_t payload_type)
+Packet& Packet::addPayloadType(payload_type_t payload_type)
 {
   if(has_auth_tag_)
     throw std::runtime_error("can't add payload_type with existing auth_tag");
@@ -196,7 +196,7 @@ Package& Package::addPayloadType(payload_type_t payload_type)
   return *this;
 }
 
-Package& Package::removePayloadType()
+Packet& Packet::removePayloadType()
 {
   if(has_auth_tag_)
     throw std::runtime_error("can't remove payload_type with existing auth_tag");
@@ -214,12 +214,12 @@ Package& Package::removePayloadType()
 
 
 
-bool Package::hasAuthTag() const
+bool Packet::hasAuthTag() const
 {
   return has_auth_tag_;
 }
 
-Package& Package::withAuthTag(bool b)
+Packet& Packet::withAuthTag(bool b)
 {
   if(b && length_ >= sizeof(auth_tag_t))
     has_auth_tag_ = true;
@@ -229,7 +229,7 @@ Package& Package::withAuthTag(bool b)
   return *this;
 }  
 
-auth_tag_t Package::getAuthTag() const
+auth_tag_t Packet::getAuthTag() const
 {
   if(!has_auth_tag_)
     return 0;
@@ -242,7 +242,7 @@ auth_tag_t Package::getAuthTag() const
   return AUTH_TAG_T_NTOH(*auth_tag);
 }
 
-Package& Package::addAuthTag(auth_tag_t auth_tag)
+Packet& Packet::addAuthTag(auth_tag_t auth_tag)
 {
   if(!has_auth_tag_)
   {
@@ -258,7 +258,7 @@ Package& Package::addAuthTag(auth_tag_t auth_tag)
   return *this;
 }
 
-Package& Package::removeAuthTag()
+Packet& Packet::removeAuthTag()
 {
   if(!has_auth_tag_)
     return *this;

@@ -28,25 +28,30 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _AUTHALGO_H_
-#define _AUTHALGO_H_
-
 #include "datatypes.h"
+
+#include "packetSource.h"
 #include "buffer.h"
+#include "PracticalSocket.h"
 
-class AuthAlgo
+UDPPacketSource::UDPPacketSource()
 {
-public:
-  AuthAlgo() {};
-  virtual ~AuthAlgo() {};
+}
 
-  virtual auth_tag_t calc(const Buffer& buf) = 0;
-};
-
-class NullAuthAlgo : public AuthAlgo
+UDPPacketSource::UDPPacketSource(u_int16_t port) : UDPSocket(port)
 {
-public:
-  auth_tag_t calc(const Buffer& buf);
-};
+}
 
-#endif
+UDPPacketSource::UDPPacketSource(std::string localaddr, u_int16_t port) : UDPSocket(localaddr, port)
+{
+}
+
+u_int32_t UDPPacketSource::recv(Buffer buf, std::string addr, u_int16_t &port)
+{
+  return recvFrom(buf, buf.getLength(), addr, port);
+}
+
+void UDPPacketSource::send(Buffer buf, std::string addr, u_int16_t port)
+{
+  sendTo(buf, buf.getLength(), addr, port);
+}

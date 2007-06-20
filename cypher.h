@@ -46,7 +46,7 @@ protected:
   virtual Buffer getBitStream(u_int32_t length) = 0;
 };
 
-class NullCypher : Cypher
+class NullCypher : public Cypher
 {
 protected:
   Buffer getBitStream(u_int32_t length);
