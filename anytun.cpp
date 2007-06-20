@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
   sig.init();
   
   struct Param p;
-  p.dev = new TunDevice(dev_type_.c_str(), ifconfig_param_2_.c_str(), ifconfig_param_2_.c_str());
+  p.dev = new TunDevice(dev_type_.c_str(), ifconfig_param_1_.c_str(), ifconfig_param_2_.c_str());
   p.c = new NullCypher();
   p.a = new NullAuthAlgo();
   p.src = new UDPPacketSource(local_port_);
