@@ -35,46 +35,47 @@
 
 #include "threadUtils.hpp"
 #include "signalController.h"
+#include "log.h"
 
 
 int SigIntHandler::handle()
 {
-  std::cout << "SIG-Int caught" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Int caught";
 
   return 1;
 }
 
 int SigQuitHandler::handle()
 {
-  std::cout << "SIG-Quit caught" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Quit caught";
 
   return 1;
 }
 
 int SigHupHandler::handle()
 {
-  std::cout << "SIG-Hup caught" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Hup caught";
 
   return 0;
 }
 
 int SigTermHandler::handle()
 {
-  std::cout << "SIG-Term caught" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Term caught";
 
   return 1;
 }
 
 int SigUsr1Handler::handle()
 {
-  std::cout << "SIG-Usr1 caught" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr1 caught";
 
   return 0;
 }
 
 int SigUsr2Handler::handle()
 {
-  std::cout << "SIG-Usr2 caught" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr2 caught";
 
   return 0;
 }
@@ -91,10 +92,10 @@ void* SignalController::handle(void *s)
   sigset_t signal_set;
   int sigNum;
 
-  while(1) {
+  while(1) 
+  {
     sigfillset(&signal_set);
     sigwait(&signal_set, &sigNum);
-    
     {
       Lock(self->sigQueueMutex);
       self->sigQueue.push(sigNum);
@@ -115,7 +116,7 @@ void SignalController::init()
   sigdelset(&signal_set, SIGFPE);
   pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
 
-  pthread_create(&thread, NULL, handle, NULL);  
+  pthread_create(&thread, NULL, handle, this);  
   pthread_detach(thread);
 
   handler[SIGINT] = new SigIntHandler;
@@ -126,34 +127,27 @@ void SignalController::init()
   handler[SIGUSR2] = new SigUsr2Handler;
 }
 
-bool SignalController::sigQueueEmpty()
-{
-  Lock lock(sigQueueMutex);
-  return sigQueue.empty();
-}
-
 int SignalController::run()
 {
-  while(1) {
+  while(1) 
+  {
     sigQueueSem.down();
-    while(!sigQueueEmpty())
+    int sigNum;
     {
-      int sigNum;
-      {
-        Lock lock(sigQueueMutex);
-        sigNum = sigQueue.front();
-        sigQueue.pop();
-      }
-      HandlerMap::iterator it = handler.find(sigNum);
-      if(it != handler.end())
-      {
-        int ret = it->second->handle();
-        if(ret)
-          return ret;
-      }
-      else
-        std::cout << "SIG " << sigNum << " caught - ignoring" << std::endl;
+      Lock lock(sigQueueMutex);
+      sigNum = sigQueue.front();
+      sigQueue.pop();
     }
+    
+    HandlerMap::iterator it = handler.find(sigNum);
+    if(it != handler.end())
+    {
+      int ret = it->second->handle();
+      if(ret)
+        return ret;
+    }
+    else
+      cLog.msg(Log::PRIO_NOTICE) << "SIG " << sigNum << " caught - ignoring";
   }
   return 0;
 }

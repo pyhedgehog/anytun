@@ -38,6 +38,7 @@ extern "C" {
 }
 
 #include "tunDevice.h"
+#include "threadUtils.hpp"
 
 
 TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifcfg_rnmp)
@@ -119,6 +120,7 @@ short TunDevice::read(Buffer& buf)
   pfd[0].events = POLLIN | POLLPRI;
   pfd[0].revents = 0;
   poll(pfd, 1, -1);
+  Lock lock(io_mutex_);
   return read_tun(dev_, buf, buf.getLength());
 }
 
@@ -126,7 +128,7 @@ int TunDevice::write(Buffer& buf)
 {
   if(!dev_)
     return -1;
-
+  Lock lock(io_mutex_);
   return write_tun(dev_, buf, buf.getLength());
 }
 

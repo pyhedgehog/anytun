@@ -33,6 +33,7 @@
 
 #include "datatypes.h"
 
+#include "log.h"
 #include "tunDevice.h"
 #include "buffer.h"
 #include "package.h"
@@ -40,10 +41,10 @@
 #include "authAlgo.h"
 #include "signalController.h"
 
-void* receiver(void* d)
+void* sender(void* d)
 {
   TunDevice* dev = reinterpret_cast<TunDevice*>(d);  
-
+  
   Buffer buf(1600);
   while(1)
   {
@@ -53,24 +54,46 @@ void* receiver(void* d)
   pthread_exit(NULL);
 }
 
+void* receiver(void* d)
+{
+  TunDevice* dev = reinterpret_cast<TunDevice*>(d);  
+  
+  Buffer buf(1234);
+  while(1)
+  {
+    sleep(1);
+    dev->write(buf);
+  }
+  pthread_exit(NULL);
+}
+
 int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
   
- SignalController sig;
- sig.init();
-
+  SignalController sig;
+  sig.init();
+  
 //  TunDevice dev("tun", "192.168.200.1", "192.168.201.1");
   TunDevice dev("tap", "192.168.202.1", "255.255.255.0");
 //  TunDevice dev("tun17", "192.168.200.1", "192.168.201.1");
-
+  
   std::cout << "dev created (opened)" << std::endl;
   std::cout << "dev opened - actual name is '" << dev.getActualName() << "'" << std::endl;
   std::cout << "dev type is '" << dev.getType() << "'" << std::endl;
   
+  pthread_t senderThread;
+  pthread_create(&senderThread, NULL, sender, &dev);  
   pthread_t receiverThread;
   pthread_create(&receiverThread, NULL, receiver, &dev);  
-  pthread_detach(receiverThread);
 
-  return sig.run();;
+  int ret = sig.run();
+
+  pthread_cancel(senderThread);
+  pthread_cancel(receiverThread);  
+  pthread_join(senderThread, NULL);
+  pthread_join(receiverThread, NULL);
+
+  return ret;
 }

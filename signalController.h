@@ -110,8 +110,6 @@ private:
   SignalController(const SignalController &s);
   void operator=(const SignalController &s);
   
-  bool sigQueueEmpty();
-
   std::queue<int> sigQueue;
   Mutex sigQueueMutex;
   Semaphore sigQueueSem;

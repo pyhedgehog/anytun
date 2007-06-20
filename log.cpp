@@ -28,34 +28,71 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _TUNDEVICE_H_
-#define _TUNDEVICE_H_
+#include <iostream>
+#include <string>
+#include <syslog.h>
 
-#include "buffer.h"
+#include "log.h"
+
 #include "threadUtils.hpp"
 
-class TunDevice
+Log* Log::inst = NULL;
+Mutex Log::instMutex;
+Log& cLog = Log::instance();
+
+LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), prio(src.prio) 
 {
-public:
-  TunDevice(const char* dev, const char* ifcfg_lp, const char* ifcfg_rnmp);
-  ~TunDevice();
+  stream << src.stream.str();
+}
+
+LogStringBuilder::LogStringBuilder(Log& l, int p) : log(l), prio(p) 
+{
+      // do something on the start of the line.
+}
+
+LogStringBuilder::~LogStringBuilder() 
+{
+  Lock lock(log.mutex);
+  syslog(prio | log.getFacility(), stream.str().c_str());  
+}
+
+Log& Log::instance()
+{
+  Lock lock(instMutex);
+  static instanceCleaner c;
+  if(!inst)
+    inst = new Log();
   
-  void open();
-  void close();
-  bool isOpen();
+  return *inst;
+}
 
-  short read(Buffer& buf);
-  int write(Buffer& buf);
+Log::Log()
+{
+  facility = LOG_DAEMON;
+  logName = "anytun";
+  open();
+}
 
-  char* getActualName();
-  char* getType();
+Log::~Log()
+{
+  closelog();
+}
 
-private:
-  void operator=(const TunDevice &src);
-  TunDevice(const TunDevice &src);
+void Log::open()
+{
+  openlog(logName.c_str(), LOG_PID, facility);
+}
 
-  Mutex io_mutex_;
-  struct tuntap *dev_;
-};
+Log& Log::setLogName(std::string newLogName)
+{
+  logName = newLogName;
+  open();
+  return *this;
+}
 
-#endif
+Log& Log::setFacility(int newFacility)
+{
+  facility = newFacility;
+  open();
+  return *this;
+}

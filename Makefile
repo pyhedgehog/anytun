@@ -31,7 +31,7 @@ OPENVPNDEPS = openvpn/tun.o \
 
 
 
-OBJS = anytun.o tunDevice.o buffer.o package.o cypher.o authAlgo.o PracticalSocket.o signalController.o $(OPENVPNDEPS)
+OBJS = anytun.o tunDevice.o buffer.o package.o cypher.o authAlgo.o PracticalSocket.o signalController.o log.o $(OPENVPNDEPS)
 EXECUTABLE = anytun
 
 all: $(EXECUTABLE)
@@ -58,6 +58,9 @@ signalController.o: signalController.cpp signalController.h
 	$(C++) $(CCFLAGS) $< -c
 
 PracticalSocket.o: PracticalSocket.cpp PracticalSocket.h
+	$(C++) $(CCFLAGS) $< -c
+
+log.o: log.cpp log.h
 	$(C++) $(CCFLAGS) $< -c
 
 anytun.o: anytun.cpp
