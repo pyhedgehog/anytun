@@ -37,8 +37,8 @@ class PacketSource
 public:
   virtual ~PacketSource() {}
 
-  virtual u_int32_t recv(Buffer buf, std::string addr, u_int16_t &port) = 0;
-  virtual void send(Buffer buf, std::string addr, u_int16_t port) = 0;
+  virtual u_int32_t recv(Buffer& buf, std::string addr, u_int16_t &port) = 0;
+  virtual void send(Buffer& buf, std::string addr, u_int16_t port) = 0;
 };
 
 class UDPPacketSource : public PacketSource, public UDPSocket
@@ -48,7 +48,7 @@ public:
   UDPPacketSource(u_int16_t port);
   UDPPacketSource(std::string localaddr, u_int16_t port);
 
-  u_int32_t recv(Buffer buf, std::string addr, u_int16_t &port);
-  void send(Buffer buf, std::string addr, u_int16_t port);
+  u_int32_t recv(Buffer& buf, std::string addr, u_int16_t &port);
+  void send(Buffer& buf, std::string addr, u_int16_t port);
 };
 

@@ -107,22 +107,23 @@ void* receiver(void* p)
     string remote_host;
     u_int16_t remote_port;
     Packet pack(1600);
-
         // read packet from socket
-    int len = param->src->recv(pack, remote_host, remote_port);
+    u_int32_t len = param->src->recv(pack, remote_host, remote_port);
     pack.resizeBack(len);
+    pack.withPayloadType(true).withHeader(true).withAuthTag(true);
 
         // check auth_tag and remove it
-    auth_tag_t at = param->a->calc(pack);
-    if(at != pack.getAuthTag())
+    auth_tag_t at = pack.getAuthTag();
+    pack.removeAuthTag();
+    if(at != param->a->calc(pack))
       continue;
-
+    
         // compare sender_id and seq with window
     pack.removeHeader();
-
+    
         // decypher the packet
     param->c->cypher(pack);
-
+    
         // check payload_type and remove it
     if((param->dev->getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
        (param->dev->getType() == TunDevice::TYPE_TAP && pack.getPayloadType() != PAYLOAD_TYPE_TAP))
