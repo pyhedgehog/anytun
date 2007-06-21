@@ -41,20 +41,14 @@
 #include "signalController.h"
 #include "packetSource.h"
 #include "tunDevice.h"
-
-sender_id_t my_sender_id_ = 23;
-u_int16_t local_port_ = 4444;
-string remote_addr_ = "127.0.0.1";
-u_int16_t remote_port_ = 4444;
-string dev_type_ = "tap";
-string ifconfig_param_1_ = "192.168.200.1";
-string ifconfig_param_2_ = "255.255.255.0";
+#include "options.h"
 
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0800
 
 struct Param
 {
+  Options* opt;
   TunDevice* dev;
   Cypher* c;
   AuthAlgo* a;
@@ -86,14 +80,14 @@ void* sender(void* p)
     param->c->cypher(pack);
 
         // add header to packet
-    pack.addHeader(my_sender_id_, seq);
+    pack.addHeader(param->opt->getSenderId(), seq);
 
         // calc auth_tag and add it to the packet
     auth_tag_t at = param->a->calc(pack);
     pack.addAuthTag(at);
 
         // send it out to remote host
-    param->src->send(pack, remote_addr_, remote_port_);
+    param->src->send(pack, param->opt->getRemoteAddr(), param->opt->getRemotePort());
   }
   pthread_exit(NULL);
 }
@@ -139,32 +133,27 @@ void* receiver(void* p)
 int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
+  Options opt;
+  if(!opt.parse(argc, argv))
+  {
+    opt.printUsage();
+    exit(-1);
+  }
   cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
-
-  if(argc > 1)
-    my_sender_id_ = atoi(argv[1]);
-  if(argc > 2)
-    local_port_ = atoi(argv[2]);
-  if(argc > 3)
-    remote_addr_ = argv[3];
-  if(argc > 4)
-    remote_port_ = atoi(argv[4]);
-  if(argc > 5)
-    dev_type_ = argv[5];
-  if(argc > 6)
-    ifconfig_param_1_ = argv[6];
-  if(argc > 7)
-    ifconfig_param_2_ = argv[7];
 
   
   SignalController sig;
   sig.init();
   
   struct Param p;
-  p.dev = new TunDevice(dev_type_.c_str(), ifconfig_param_1_.c_str(), ifconfig_param_2_.c_str());
+  p.opt = &opt;
+  p.dev = new TunDevice(opt.getDevName().c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
   p.c = new NullCypher();
   p.a = new NullAuthAlgo();
-  p.src = new UDPPacketSource(local_port_);
+  if(opt.getLocalAddr() == "")
+    p.src = new UDPPacketSource(opt.getLocalPort());
+  else
+    p.src = new UDPPacketSource(opt.getLocalAddr(), opt.getLocalPort());
     
   std::cout << "dev created (opened)" << std::endl;
   std::cout << "dev opened - actual name is '" << p.dev->getActualName() << "'" << std::endl;
