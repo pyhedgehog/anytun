@@ -143,8 +143,8 @@
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <table summary="layout" width="66%" border="0" cellpadding="0" cellspacing="0"><tr><td><table summary="layout" width="100%" border="0" cellpadding="2" cellspacing="1">
 <tr><td class="header">Network Working Group</td><td class="header">O. Gsenger</td></tr>
-<tr><td class="header">Internet-Draft</td><td class="header">April 27, 2007</td></tr>
-<tr><td class="header">Expires: October 29, 2007</td><td class="header">&nbsp;</td></tr>
+<tr><td class="header">Internet-Draft</td><td class="header">June 21, 2007</td></tr>
+<tr><td class="header">Expires: December 23, 2007</td><td class="header">&nbsp;</td></tr>
 </table></td></tr></table>
 <h1><br />secure anycast tunneling protocol (SATP)<br />draft-gsenger-secure-anycast-tunneling-protocol-00</h1>
 
@@ -172,7 +172,7 @@ The list of current Internet-Drafts can be accessed at
 The list of Internet-Draft Shadow Directories can be accessed at
 <a href='http://www.ietf.org/shadow.html'>http://www.ietf.org/shadow.html</a>.</p>
 <p>
-This Internet-Draft will expire on October 29, 2007.</p>
+This Internet-Draft will expire on December 23, 2007.</p>
 
 <h3>Copyright Notice</h3>
 <p>
@@ -180,7 +180,7 @@ Copyright &copy; The IETF Trust (2007).</p>
 
 <h3>Abstract</h3>
 
-<p>The secure anycast tunneling protocol (SATP) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It allows tunneling of every ETHER TYPE protocol (e.g. ethernet, ip, arp ...). SATP directly includes cryptography and message authentication based on the methodes used by SRTP. It is intended to deliver a generic, scaleable and secure solution for tunneling and relaying of packets of any protocol.
+<p>The secure anycast tunneling protocol (SATP) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It allows tunneling of every ETHER TYPE protocol (ethernet, ip ...). SATP directly includes cryptography and message authentication based on the methodes used by SRTP. It can be used as an encrypted alternative to <a class='info' href='#RFC2003'>IP Encapsulation within IP<span> (</span><span class='info'>Perkins, C., &ldquo;IP Encapsulation within IP,&rdquo; October&nbsp;1996.</span><span>)</span></a> [3] and <a class='info' href='#RFC2784'>Generic Routing Encapsulation (GRE)<span> (</span><span class='info'>Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina, &ldquo;Generic Routing Encapsulation (GRE),&rdquo; March&nbsp;2000.</span><span>)</span></a> [4]. It supports both anycast receivers and senders.
             
 </p><a name="toc"></a><br /><hr />
 <h3>Table of Contents</h3>
@@ -220,13 +220,13 @@ payload<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor17">4.5.</a>&nbsp;
 padding (OPTIONAL)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor18">4.6.</a>&nbsp;
-padding count<br />
+padding count (OPTIONAL)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor19">4.7.</a>&nbsp;
 payload type field<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor20">4.7.1.</a>&nbsp;
-MKI<br />
+MKI (OPTIONAL)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor21">4.7.2.</a>&nbsp;
-authentication tag<br />
+authentication tag (RECOMMENDED)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor22">4.8.</a>&nbsp;
 Encryption<br />
 <a href="#anchor23">5.</a>&nbsp;
@@ -253,7 +253,9 @@ Intellectual Property and Copyright Statements<br />
 <a name="rfc.section.1"></a><h3>1.&nbsp;
 Introduction</h3>
 
-<p>SATP is somehow a mixture of a generic encapsulation protocol like <a class='info' href='#RFC2784'>GRE<span> (</span><span class='info'>Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina, &ldquo;Generic Routing Encapsulation (GRE),&rdquo; March&nbsp;2000.</span><span>)</span></a> [4] and a secure tunneling protocol as <a class='info' href='#RFC2401'>IPsec<span> (</span><span class='info'>Kent, S. and R. Atkinson, &ldquo;Security Architecture for the Internet Protocol,&rdquo; November&nbsp;1998.</span><span>)</span></a> [5] in tunnel mode. To save some header overhead it uses the encryption technices of <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1]. It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <a class='info' href='#RFC1546'>Host Anycast Service<span> (</span><span class='info'>Partridge, C., Mendez, T., and W. Milliken, &ldquo;Host Anycasting Service,&rdquo; November&nbsp;1993.</span><span>)</span></a> [6]
+<p>SATP is a mixture of a generic encapsulation protocol like <a class='info' href='#RFC2784'>GRE<span> (</span><span class='info'>Farinacci, D., Li, T., Hanks, S., Meyer, D., and P. Traina, &ldquo;Generic Routing Encapsulation (GRE),&rdquo; March&nbsp;2000.</span><span>)</span></a> [4] and a secure tunneling protocol as <a class='info' href='#RFC2401'>IPsec<span> (</span><span class='info'>Kent, S. and R. Atkinson, &ldquo;Security Architecture for the Internet Protocol,&rdquo; November&nbsp;1998.</span><span>)</span></a> [5] in tunnel mode.  It can be used to build redundant virtual private network (VPN) connections.  It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <a class='info' href='#RFC1546'>Host Anycast Service<span> (</span><span class='info'>Partridge, C., Mendez, T., and W. Milliken, &ldquo;Host Anycasting Service,&rdquo; November&nbsp;1993.</span><span>)</span></a> [6]. Encryption is done per packet, so the protocol is robust against packet loss and routing changes.
+				To save some header overhead it uses the encryption techniques of <a class='info' href='#RFC3711'>SRTP<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1]. 
+				
 </p>
 <a name="anchor2"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
@@ -408,7 +410,7 @@ Fragmentation</h3>
            The only way of fully supporting fragmentation would be to synchronise fragments between all anycast servers. This is considered to be too much overhead, so there are two non perfect solutions for these problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server. 
          
 </p>
-<p>If the payload ip headers's Don't Fragment (DF) bit is set, than the DF bit of the outer ip header HAS TO be set as well.
+<p>If the payload type is IP and the ip headers's Don't Fragment (DF) bit is set, than the DF bit of the outer IP header HAS TO be set as well.
 </p>
 <a name="anchor11"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
@@ -480,12 +482,12 @@ padding (OPTIONAL)</h3>
 
 <p>Padding of max 255 octets.
 None of the pre-defined encryption transforms uses any padding; for
-   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If padding field is present, than the padding count field MUST be set to the padding lenght.
+   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If the padding count field is present, than the padding count field MUST be set to the padding lenght.
 </p>
 <a name="anchor18"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.4.6"></a><h3>4.6.&nbsp;
-padding count</h3>
+padding count (OPTIONAL)</h3>
 
 <p>The number of octets of the padding field. This field is optional. It's presence is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.
 </p>
@@ -513,7 +515,7 @@ HEX
 <a name="anchor20"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.4.7.1"></a><h3>4.7.1.&nbsp;
-MKI</h3>
+MKI (OPTIONAL)</h3>
 
 <p>The MKI (Master Key Identifier) is OPTIONAL and of configurable length. See <a class='info' href='#RFC3711'>SRTP Section 3.1<span> (</span><span class='info'>Baugher, M., McGrew, D., Naslund, M., Carrara, E., and K. Norrman, &ldquo;The Secure Real-time Transport Protocol (SRTP),&rdquo; March&nbsp;2004.</span><span>)</span></a> [1] for details
 </p>
@@ -521,7 +523,7 @@ MKI</h3>
 <a name="anchor21"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.4.7.2"></a><h3>4.7.2.&nbsp;
-authentication tag</h3>
+authentication tag (RECOMMENDED)</h3>
 
 <p>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not of the MKI. On sender side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO calculate the authentication tag before decrypting the encrypted portion.
 </p>
@@ -574,14 +576,14 @@ Security Considerations</h3>
 <a name="rfc.section.5.1"></a><h3>5.1.&nbsp;
 Replay protection</h3>
 
-<p>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SHOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast reciever. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.
+<p>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SHOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast receiver. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.
 </p>
 <a name="anchor25"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.6"></a><h3>6.&nbsp;
 IANA Considerations</h3>
 
-<p>To use the protocol on top of UDP and IP protocol numberes have to be assiged by IANA.
+<p>The protocol is intended to be used on top of IP or on top of UDP (to be compatible with NAT routers), so UDP and IP protocol numbers have to be assiged by IANA.
 </p>
 <a name="rfc.references"></a><br /><hr />
 <table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
@@ -597,7 +599,7 @@ References</h3>
 <tr><td class="author-text" valign="top"><a name="RFC2119">[2]</a></td>
 <td class="author-text"><a href="mailto:sob@harvard.edu">Bradner, S.</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2119.txt">Key words for use in RFCs to Indicate Requirement Levels</a>,&rdquo; BCP&nbsp;14, RFC&nbsp;2119, March&nbsp;1997 (<a href="ftp://ftp.isi.edu/in-notes/rfc2119.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc2119.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2119.xml">XML</a>).</td></tr>
 <tr><td class="author-text" valign="top"><a name="RFC2003">[3]</a></td>
-<td class="author-text"><a href="mailto:perk@watson.ibm.com">Perkins, C.</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2003.txt">IP Encapsulation within IP</a>,&rdquo; RFC&nbsp;2003, October&nbsp;1996 (<a href="ftp://ftp.isi.edu/in-notes/rfc2003.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc2003.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2003.xml">XML</a>).</td></tr>
+<td class="author-text"><a href="mailto:perk@watson.ibm.com">Perkins, C.</a>, &ldquo;<a href="ftp://ftp.isi.edu/in-notes/rfc2003.txt">IP Encapsulation within IP</a>,&rdquo; RFC&nbsp;2003, October&nbsp;1996 (<a href="ftp://ftp.isi.edu/in-notes/rfc2003.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2003.xml">XML</a>).</td></tr>
 </table>
 
 <a name="rfc.references2"></a><br /><hr />

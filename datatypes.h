@@ -40,8 +40,8 @@ typedef unsigned short u_int16_t;
 typedef signed int int32;
 typedef unsigned int u_int32_t;
 
-typedef signed long long int64_t;
-typedef unsigned long long u_int64_t;
+//typedef signed long long int64_t;
+//typedef unsigned long long u_int64_t;
 
 typedef u_int32_t seq_nr_t;
 #define SEQ_NR_T_NTOH(a) ntohl(a)

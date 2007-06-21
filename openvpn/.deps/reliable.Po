@@ -1,3 +1,0 @@
-reliable.o reliable.o: reliable.c config.h
-
-config.h:

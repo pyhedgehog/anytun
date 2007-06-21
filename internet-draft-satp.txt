@@ -2,8 +2,8 @@
 
 
 Network Working Group                                         O. Gsenger
-Internet-Draft                                             June 18, 2007
-Expires: December 20, 2007
+Internet-Draft                                             June 21, 2007
+Expires: December 23, 2007
 
 
                 secure anycast tunneling protocol (SATP)
@@ -32,7 +32,7 @@ Status of this Memo
    The list of Internet-Draft Shadow Directories can be accessed at
    http://www.ietf.org/shadow.html.
 
-   This Internet-Draft will expire on December 20, 2007.
+   This Internet-Draft will expire on December 23, 2007.
 
 Copyright Notice
 
@@ -52,7 +52,7 @@ Copyright Notice
 
 
 
-Gsenger                 Expires December 20, 2007               [Page 1]
+Gsenger                 Expires December 23, 2007               [Page 1]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -108,19 +108,21 @@ Table of Contents
 
 
 
-Gsenger                 Expires December 20, 2007               [Page 2]
+Gsenger                 Expires December 23, 2007               [Page 2]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 1.  Introduction
 
-   SATP is somehow a mixture of a generic encapsulation protocol like
-   GRE [4] and a secure tunneling protocol as IPsec [5] in tunnel mode.
-   To save some header overhead it uses the encryption techniques of
-   SRTP [1].  It supports peer to peer tunnels, where tunnel endpoints
-   can be any combination of unicast, multicast or anycast hosts, so it
-   defines a Host Anycast Service [6].
+   SATP is a mixture of a generic encapsulation protocol like GRE [4]
+   and a secure tunneling protocol as IPsec [5] in tunnel mode.  It can
+   be used to build redundant virtual private network (VPN) connections.
+   It supports peer to peer tunnels, where tunnel endpoints can be any
+   combination of unicast, multicast or anycast hosts, so it defines a
+   Host Anycast Service [6].  Encryption is done per packet, so the
+   protocol is robust against packet loss and routing changes.  To save
+   some header overhead it uses the encryption techniques of SRTP [1].
 
 1.1.  Notational Conventions
 
@@ -162,9 +164,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-
-
-Gsenger                 Expires December 20, 2007               [Page 3]
+Gsenger                 Expires December 23, 2007               [Page 3]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -220,7 +220,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007               [Page 4]
+Gsenger                 Expires December 23, 2007               [Page 4]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -276,7 +276,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007               [Page 5]
+Gsenger                 Expires December 23, 2007               [Page 5]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -332,7 +332,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007               [Page 6]
+Gsenger                 Expires December 23, 2007               [Page 6]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -388,7 +388,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007               [Page 7]
+Gsenger                 Expires December 23, 2007               [Page 7]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -444,7 +444,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007               [Page 8]
+Gsenger                 Expires December 23, 2007               [Page 8]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -500,7 +500,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007               [Page 9]
+Gsenger                 Expires December 23, 2007               [Page 9]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -556,7 +556,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007              [Page 10]
+Gsenger                 Expires December 23, 2007              [Page 10]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -612,7 +612,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007              [Page 11]
+Gsenger                 Expires December 23, 2007              [Page 11]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -668,7 +668,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007              [Page 12]
+Gsenger                 Expires December 23, 2007              [Page 12]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -724,7 +724,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007              [Page 13]
+Gsenger                 Expires December 23, 2007              [Page 13]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -780,7 +780,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
 
 
-Gsenger                 Expires December 20, 2007              [Page 14]
+Gsenger                 Expires December 23, 2007              [Page 14]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -836,7 +836,7 @@ URIs
 
 
 
-Gsenger                 Expires December 20, 2007              [Page 15]
+Gsenger                 Expires December 23, 2007              [Page 15]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -892,7 +892,7 @@ Author's Address
 
 
 
-Gsenger                 Expires December 20, 2007              [Page 16]
+Gsenger                 Expires December 23, 2007              [Page 16]
 
 Internet-Draft  secure anycast tunneling protocol (SATP)       June 2007
 
@@ -948,5 +948,5 @@ Acknowledgment
 
 
 
-Gsenger                 Expires December 20, 2007              [Page 17]
+Gsenger                 Expires December 23, 2007              [Page 17]
 

@@ -1,3 +1,0 @@
-session_id.o session_id.o: session_id.c config.h
-
-config.h:

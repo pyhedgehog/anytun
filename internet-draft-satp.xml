@@ -50,7 +50,9 @@
     </front>
     <middle>
     <section title='Introduction'>
-        <t>SATP is somehow a mixture of a generic encapsulation protocol like <xref target="RFC2784">GRE</xref> and a secure tunneling protocol as <xref target="RFC2401">IPsec</xref> in tunnel mode. To save some header overhead it uses the encryption techniques of <xref target="RFC3711">SRTP</xref>. It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <xref target="RFC1546">Host Anycast Service</xref>.</t>
+        <t>SATP is a mixture of a generic encapsulation protocol like <xref target="RFC2784">GRE</xref> and a secure tunneling protocol as <xref target="RFC2401">IPsec</xref> in tunnel mode.  It can be used to build redundant virtual private network (VPN) connections.  It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <xref target="RFC1546">Host Anycast Service</xref>. Encryption is done per packet, so the protocol is robust against packet loss and routing changes.
+				To save some header overhead it uses the encryption techniques of <xref target="RFC3711">SRTP</xref>. 
+				</t>
       <section title='Notational Conventions'>
         <t>The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in  <xref target="RFC2119">RFC2119</xref>.</t>
        </section>

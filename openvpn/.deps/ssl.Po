@@ -1,3 +1,0 @@
-ssl.o ssl.o: ssl.c config.h
-
-config.h:
