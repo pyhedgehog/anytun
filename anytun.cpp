@@ -68,6 +68,9 @@ void* sender(void* p)
     int len = param->dev->read(pack);
     pack.resizeBack(len);
 
+    if(param->opt->getRemoteAddr() == "")
+      continue;
+
         // add payload type
     if(param->dev->getType() == TunDevice::TYPE_TUN)
       pack.addPayloadType(PAYLOAD_TYPE_TUN);
@@ -111,10 +114,14 @@ void* receiver(void* p)
     pack.removeAuthTag();
     if(at != param->a->calc(pack))
       continue;
+
+        // autodetect peer
+    if(param->opt->getRemoteAddr() == "")
+      param->opt->setRemoteAddrPort(remote_host, remote_port);
     
         // compare sender_id and seq with window
     pack.removeHeader();
-    
+
         // decypher the packet
     param->c->cypher(pack);
     

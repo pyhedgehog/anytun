@@ -31,25 +31,39 @@
 #ifndef _OPTIONS_H_
 #define _OPTIONS_H_
 
+#include "threadUtils.hpp"
+
 class Options
 {
 public:
   Options();
   bool parse(int argc, char* argv[]);
-  void printUsage() const;
-  void printOptions() const;
+  void printUsage();
+  void printOptions();
 
-  std::string getProgname() const;
-  sender_id_t getSenderId() const;
-  std::string getLocalAddr() const;
-  u_int16_t getLocalPort() const;
-  std::string getRemoteAddr() const;
-  u_int16_t getRemotePort() const;
-  std::string getDevName() const;
-  std::string getIfconfigParamLocal() const;
-  std::string getIfconfigParamRemoteNetmask() const;
+  std::string getProgname();
+  Options& setProgname(std::string p);
+  sender_id_t getSenderId();
+  Options& setSenderId(sender_id_t s);
+  std::string getLocalAddr();
+  Options& setLocalAddr(std::string l);
+  u_int16_t getLocalPort();
+  Options& setLocalPort(u_int16_t l);
+  std::string getRemoteAddr();
+  Options& setRemoteAddr(std::string r);
+  u_int16_t getRemotePort();
+  Options& setRemotePort(u_int16_t r);
+  Options& setRemoteAddrPort(std::string addr, u_int16_t port);
+  std::string getDevName();
+  Options& setDevName(std::string d);
+  std::string getIfconfigParamLocal();
+  Options& setIfconfigParamLocal(std::string i);
+  std::string getIfconfigParamRemoteNetmask();
+  Options& setIfconfigParamRemoteNetmask(std::string i);
 
 private:
+  Mutex mutex;
+
   std::string progname_;
   sender_id_t sender_id_;
   std::string local_addr_;

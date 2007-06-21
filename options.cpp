@@ -86,6 +86,8 @@ Options::Options()
 
 bool Options::parse(int argc, char* argv[])
 {
+  Lock lock(mutex);
+
   progname_ = argv[0];
   argc--;
 
@@ -109,7 +111,7 @@ bool Options::parse(int argc, char* argv[])
   return true;
 }
 
-void Options::printUsage() const
+void Options::printUsage()
 {
   std::cout << "USAGE:" << std::endl;
   std::cout << "anytun [-h|--help]                         prints this..." << std::endl;
@@ -124,8 +126,9 @@ void Options::printUsage() const
             << "                       <remote/netmask>    the remote address(tun) or netmask(tap)" << std::endl;
 }
 
-void Options::printOptions() const
+void Options::printOptions()
 {
+  Lock lock(mutex);
   std::cout << "Options:" << std::endl;
   std::cout << "sender_id='" << sender_id_ << "'" << std::endl;
   std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
@@ -137,43 +140,122 @@ void Options::printOptions() const
   std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
 }
 
-sender_id_t Options::getSenderId() const
+std::string Options::getProgname()
+{
+  Lock lock(mutex);
+  return progname_;
+}
+
+Options& Options::setProgname(std::string p)
+{
+  Lock lock(mutex);
+  progname_ = p;
+  return *this;
+}
+
+sender_id_t Options::getSenderId()
 {
   return sender_id_;
 }
 
-std::string Options::getLocalAddr() const
+Options& Options::setSenderId(sender_id_t s)
 {
+  sender_id_ = s;
+  return *this;
+}
+
+std::string Options::getLocalAddr()
+{
+  Lock lock(mutex);
   return local_addr_;
 }
 
-u_int16_t Options::getLocalPort() const
+Options& Options::setLocalAddr(std::string l)
+{
+  Lock lock(mutex);
+  local_addr_ = l;
+  return *this;
+}
+
+u_int16_t Options::getLocalPort()
 {
   return local_port_;
 }
 
-std::string Options::getRemoteAddr() const
+Options& Options::setLocalPort(u_int16_t l)
 {
+  local_port_ = l;
+  return *this;
+}
+
+std::string Options::getRemoteAddr()
+{
+  Lock lock(mutex);
   return remote_addr_;
 }
 
-u_int16_t Options::getRemotePort() const
+Options& Options::setRemoteAddr(std::string r)
+{
+  Lock lock(mutex);
+  remote_addr_ = r;
+  return *this;
+}
+
+u_int16_t Options::getRemotePort()
 {
   return remote_port_;
 }
 
-std::string Options::getDevName() const
+Options& Options::setRemotePort(u_int16_t r)
 {
+  remote_port_ = r;
+  return *this;
+}
+
+Options& Options::setRemoteAddrPort(std::string addr, u_int16_t port)
+{
+  Lock lock(mutex);
+  remote_addr_ = addr;
+  remote_port_ = port;
+  return *this;
+}
+
+std::string Options::getDevName()
+{
+  Lock lock(mutex);
   return dev_name_;
 }
 
-std::string Options::getIfconfigParamLocal() const
+Options& Options::setDevName(std::string d)
 {
+  Lock lock(mutex);
+  dev_name_ = d;
+  return *this;
+}
+
+std::string Options::getIfconfigParamLocal()
+{
+  Lock lock(mutex);
   return ifconfig_param_local_;
 }
 
-std::string Options::getIfconfigParamRemoteNetmask() const
+Options& Options::setIfconfigParamLocal(std::string i)
 {
+  Lock lock(mutex);
+  ifconfig_param_local_ = i;
+  return *this;
+}
+
+std::string Options::getIfconfigParamRemoteNetmask()
+{
+  Lock lock(mutex);
   return ifconfig_param_remote_netmask_;
+}
+
+Options& Options::setIfconfigParamRemoteNetmask(std::string i)
+{
+  Lock lock(mutex);
+  ifconfig_param_remote_netmask_ = i;
+  return *this;
 }
 
