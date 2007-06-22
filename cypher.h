@@ -33,7 +33,6 @@
 
 #include "buffer.h"
 
-// this is a svn test comment
 
 class Cypher
 {
@@ -49,6 +48,12 @@ protected:
 };
 
 class NullCypher : public Cypher
+{
+protected:
+  Buffer getBitStream(u_int32_t length);
+};
+
+class AesIcmCypher : public Cypher
 {
 protected:
   Buffer getBitStream(u_int32_t length);

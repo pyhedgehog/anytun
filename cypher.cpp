@@ -34,6 +34,10 @@
 
 #include "cypher.h"
 
+extern "C" {
+#include "srtp/crypto/include/cipher.h"
+}
+
 void Cypher::cypher(Buffer& buf)
 {
   Buffer stream = getBitStream(buf.getLength());
@@ -57,4 +61,11 @@ Buffer NullCypher::getBitStream(u_int32_t length)
     buf[i] = 0;
   return buf;
 }
-                 
+
+Buffer AesIcmCypher::getBitStream(u_int32_t length)
+{
+  Buffer buf(length);
+  return buf;
+}
+
+
