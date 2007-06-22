@@ -33,6 +33,8 @@
 
 #include "buffer.h"
 
+// this is a svn test comment
+
 class Cypher
 {
 public:
