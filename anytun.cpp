@@ -86,6 +86,7 @@ void* sender(void* p)
 
         // add header to packet
     pack.addHeader(param->opt.getSenderId(), seq);
+    seq++;
 
         // calc auth_tag and add it to the packet
     auth_tag_t at = param->a.calc(pack);
