@@ -28,37 +28,37 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DATATYPES_H_
-#define _DATATYPES_H_
+#ifndef _SEQ_WINDOW_H_
+#define _SEQ_WINDOW_H_
 
-typedef signed char int8_t;
-typedef unsigned char u_int8_t;
+#include <map>
+#include <queue>
 
-typedef signed short int16;
-typedef unsigned short u_int16_t;
+#include "threadUtils.hpp"
+#include "datatypes.h"
 
-typedef signed int int32;
-typedef unsigned int u_int32_t;
+class SeqWindow
+{
+public:
+  typedef std::queue<seq_nr_t> SeqQueue;
+  typedef std::map<sender_id_t, SeqQueue> SenderMap;
 
-//typedef signed long long int64_t;
-//typedef unsigned long long u_int64_t;
+  SeqWindow(window_size_t w);
+  ~SeqWindow();
 
-typedef u_int32_t window_size_t;
+  SeqQueue::size_type getLength(sender_id_t sender);
+  bool hasSeqNr(sender_id_t sender, seq_nr_t seq);
+  void addSeqNr(sender_id_t sender, seq_nr_t seq);
+  void clear(sender_id_t sender);
+  void clear();
 
-typedef u_int32_t seq_nr_t;
-#define SEQ_NR_T_NTOH(a) ntohl(a)
-#define SEQ_NR_T_HTON(a) htonl(a)
+private:
+  SeqWindow(const SeqWindow &s);
+  void operator=(const SeqWindow &s);
 
-typedef u_int16_t sender_id_t;
-#define SENDER_ID_T_NTOH(a) ntohs(a)
-#define SENDER_ID_T_HTON(a) htons(a)
-
-typedef u_int16_t payload_type_t;
-#define PAYLOAD_TYPE_T_NTOH(a) ntohs(a)
-#define PAYLOAD_TYPE_T_HTON(a) htons(a)
-
-typedef u_int32_t auth_tag_t;
-#define AUTH_TAG_T_NTOH(a) ntohl(a)
-#define AUTH_TAG_T_HTON(a) htonl(a)
+  window_size_t window_size_;
+  Mutex mutex_;
+  SenderMap sender;
+};
 
 #endif

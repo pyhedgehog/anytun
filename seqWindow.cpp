@@ -28,37 +28,41 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DATATYPES_H_
-#define _DATATYPES_H_
+#include "threadUtils.hpp"
+#include "datatypes.h"
 
-typedef signed char int8_t;
-typedef unsigned char u_int8_t;
+#include "seqWindow.h"
 
-typedef signed short int16;
-typedef unsigned short u_int16_t;
+SeqWindow::SeqWindow(window_size_t w) : window_size_(w)
+{
+}
 
-typedef signed int int32;
-typedef unsigned int u_int32_t;
+SeqWindow::~SeqWindow()
+{
 
-//typedef signed long long int64_t;
-//typedef unsigned long long u_int64_t;
+}
 
-typedef u_int32_t window_size_t;
+SeqWindow::SeqQueue::size_type SeqWindow::getLength(sender_id_t sender)
+{
+  return 0;
+}
 
-typedef u_int32_t seq_nr_t;
-#define SEQ_NR_T_NTOH(a) ntohl(a)
-#define SEQ_NR_T_HTON(a) htonl(a)
+bool SeqWindow::hasSeqNr(sender_id_t sender, seq_nr_t seq)
+{
+  return false;
+}
 
-typedef u_int16_t sender_id_t;
-#define SENDER_ID_T_NTOH(a) ntohs(a)
-#define SENDER_ID_T_HTON(a) htons(a)
+void SeqWindow::addSeqNr(sender_id_t sender, seq_nr_t seq)
+{
 
-typedef u_int16_t payload_type_t;
-#define PAYLOAD_TYPE_T_NTOH(a) ntohs(a)
-#define PAYLOAD_TYPE_T_HTON(a) htons(a)
+}
 
-typedef u_int32_t auth_tag_t;
-#define AUTH_TAG_T_NTOH(a) ntohl(a)
-#define AUTH_TAG_T_HTON(a) htonl(a)
+void SeqWindow::clear(sender_id_t sender)
+{
+  
+}
 
-#endif
+void SeqWindow::clear()
+{
+
+}

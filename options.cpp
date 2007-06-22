@@ -82,6 +82,9 @@ Options::Options()
   dev_name_ = "tap";
   ifconfig_param_local_ = "192.168.200.1";
   ifconfig_param_remote_netmask_ = "255.255.255.0";
+  seq_window_size_ = 100;
+  cypher_ = "null";
+  auth_algo_ = "null";
 }
 
 bool Options::parse(int argc, char* argv[])
@@ -104,7 +107,10 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-r","--remote-host", remote_addr_)
     PARSE_SCALAR_PARAM("-o","--remote-port", remote_port_)
     PARSE_SCALAR_PARAM("-d","--dev", dev_name_)
-    PARSE_SCALAR_PARAM2("-c","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
+    PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
+    PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
+    PARSE_SCALAR_PARAM("-c","--cypher", cypher_)
+    PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
     else 
       return false;
   }
@@ -122,8 +128,11 @@ void Options::printUsage()
   std::cout << "       [-r|--remote-host] <hostname/ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
   std::cout << "       [-d|--dev] <name>                   device name/type" << std::endl;
-  std::cout << "       [-c|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
+  std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
             << "                       <remote/netmask>    the remote address(tun) or netmask(tap)" << std::endl;
+  std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
+  std::cout << "       [-c|--cypher] <cypher type>         type of cypher" << std::endl;
+  std::cout << "       [-a|--auth-algo] <algo type>        authentication algoritm" << std::endl;
 }
 
 void Options::printOptions()
@@ -138,6 +147,9 @@ void Options::printOptions()
   std::cout << "dev_name='" << dev_name_ << "'" << std::endl;
   std::cout << "ifconfig_param_local='" << ifconfig_param_local_ << "'" << std::endl;
   std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
+  std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
+  std::cout << "cypher='" << cypher_ << "'" << std::endl;
+  std::cout << "auth_algo='" << auth_algo_ << "'" << std::endl;
 }
 
 std::string Options::getProgname()
@@ -259,3 +271,39 @@ Options& Options::setIfconfigParamRemoteNetmask(std::string i)
   return *this;
 }
 
+window_size_t Options::getSeqWindowSize()
+{
+  return seq_window_size_;
+}
+
+Options& Options::setSeqWindowSize(window_size_t s)
+{
+  seq_window_size_ = s;
+  return *this;
+}
+
+std::string Options::getCypher()
+{
+  Lock lock(mutex);
+  return cypher_;
+}
+
+Options& Options::setCypher(std::string c)
+{
+  Lock lock(mutex);
+  cypher_ = c;
+  return *this;
+}
+
+std::string Options::getAuthAlgo()
+{
+  Lock lock(mutex);
+  return auth_algo_;
+}
+
+Options& Options::setAuthAlgo(std::string a)
+{
+  Lock lock(mutex);
+  auth_algo_ = a;
+  return *this;
+}

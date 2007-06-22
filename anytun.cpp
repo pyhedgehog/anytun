@@ -42,17 +42,19 @@
 #include "packetSource.h"
 #include "tunDevice.h"
 #include "options.h"
+#include "seqWindow.h"
 
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0800
 
 struct Param
 {
-  Options* opt;
-  TunDevice* dev;
-  Cypher* c;
-  AuthAlgo* a;
-  PacketSource* src;
+  Options& opt;
+  TunDevice& dev;
+  Cypher& c;
+  AuthAlgo& a;
+  PacketSource& src;
+  SeqWindow& seq;
 };
 
 void* sender(void* p)
@@ -65,32 +67,32 @@ void* sender(void* p)
     Packet pack(1600);
 
         // read packet from device
-    int len = param->dev->read(pack);
+    int len = param->dev.read(pack);
     pack.resizeBack(len);
 
-    if(param->opt->getRemoteAddr() == "")
+    if(param->opt.getRemoteAddr() == "")
       continue;
 
         // add payload type
-    if(param->dev->getType() == TunDevice::TYPE_TUN)
+    if(param->dev.getType() == TunDevice::TYPE_TUN)
       pack.addPayloadType(PAYLOAD_TYPE_TUN);
-    else if(param->dev->getType() == TunDevice::TYPE_TAP)
+    else if(param->dev.getType() == TunDevice::TYPE_TAP)
       pack.addPayloadType(PAYLOAD_TYPE_TAP);
     else 
       pack.addPayloadType(0);
 
         // cypher the packet
-    param->c->cypher(pack);
+    param->c.cypher(pack);
 
         // add header to packet
-    pack.addHeader(param->opt->getSenderId(), seq);
+    pack.addHeader(param->opt.getSenderId(), seq);
 
         // calc auth_tag and add it to the packet
-    auth_tag_t at = param->a->calc(pack);
+    auth_tag_t at = param->a.calc(pack);
     pack.addAuthTag(at);
 
         // send it out to remote host
-    param->src->send(pack, param->opt->getRemoteAddr(), param->opt->getRemotePort());
+    param->src.send(pack, param->opt.getRemoteAddr(), param->opt.getRemotePort());
   }
   pthread_exit(NULL);
 }
@@ -105,34 +107,39 @@ void* receiver(void* p)
     u_int16_t remote_port;
     Packet pack(1600);
         // read packet from socket
-    u_int32_t len = param->src->recv(pack, remote_host, remote_port);
+    u_int32_t len = param->src.recv(pack, remote_host, remote_port);
     pack.resizeBack(len);
     pack.withPayloadType(true).withHeader(true).withAuthTag(true);
 
         // check auth_tag and remove it
     auth_tag_t at = pack.getAuthTag();
     pack.removeAuthTag();
-    if(at != param->a->calc(pack))
+    if(at != param->a.calc(pack))
       continue;
 
         // autodetect peer
-    if(param->opt->getRemoteAddr() == "")
-      param->opt->setRemoteAddrPort(remote_host, remote_port);
-    
+    if(param->opt.getRemoteAddr() == "")
+    {
+      param->opt.setRemoteAddrPort(remote_host, remote_port);
+      cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
+    }
         // compare sender_id and seq with window
+    if(param->seq.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
+      continue;
+    param->seq.addSeqNr(pack.getSenderId(), pack.getSeqNr());
     pack.removeHeader();
 
         // decypher the packet
-    param->c->cypher(pack);
+    param->c.cypher(pack);
     
         // check payload_type and remove it
-    if((param->dev->getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
-       (param->dev->getType() == TunDevice::TYPE_TAP && pack.getPayloadType() != PAYLOAD_TYPE_TAP))
+    if((param->dev.getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
+       (param->dev.getType() == TunDevice::TYPE_TAP && pack.getPayloadType() != PAYLOAD_TYPE_TAP))
       continue;
     pack.removePayloadType();
     
         // write it on the device
-    param->dev->write(pack);
+    param->dev.write(pack);
   }
   pthread_exit(NULL);
 }
@@ -148,23 +155,24 @@ int main(int argc, char* argv[])
   }
   cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
 
-  
   SignalController sig;
   sig.init();
   
-  struct Param p;
-  p.opt = &opt;
-  p.dev = new TunDevice(opt.getDevName().c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
-  p.c = new NullCypher();
-  p.a = new NullAuthAlgo();
+  TunDevice dev(opt.getDevName().c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
+  SeqWindow seq(opt.getSeqWindowSize());
+  NullCypher c;
+  NullAuthAlgo a;
+  PacketSource* src;
   if(opt.getLocalAddr() == "")
-    p.src = new UDPPacketSource(opt.getLocalPort());
+    src = new UDPPacketSource(opt.getLocalPort());
   else
-    p.src = new UDPPacketSource(opt.getLocalAddr(), opt.getLocalPort());
+    src = new UDPPacketSource(opt.getLocalAddr(), opt.getLocalPort());
+
+  struct Param p = {opt, dev, c, a, *src, seq};
     
   std::cout << "dev created (opened)" << std::endl;
-  std::cout << "dev opened - actual name is '" << p.dev->getActualName() << "'" << std::endl;
-  std::cout << "dev type is '" << p.dev->getTypeString() << "'" << std::endl;
+  std::cout << "dev opened - actual name is '" << p.dev.getActualName() << "'" << std::endl;
+  std::cout << "dev type is '" << p.dev.getTypeString() << "'" << std::endl;
   
   pthread_t senderThread;
   pthread_create(&senderThread, NULL, sender, &p);  
@@ -178,10 +186,7 @@ int main(int argc, char* argv[])
   pthread_join(senderThread, NULL);
   pthread_join(receiverThread, NULL);
 
-  delete p.dev;
-  delete p.c;
-  delete p.a;
-  delete p.src;
+  delete src;
 
   return ret;
 }

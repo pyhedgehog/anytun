@@ -40,6 +40,7 @@ OBJS = anytun.o \
        signalController.o \
        log.o \
        options.o \
+       seqWindow.o \
        $(OPENVPNDEPS)
 
 EXECUTABLE = anytun
@@ -77,6 +78,9 @@ log.o: log.cpp log.h
 	$(C++) $(CCFLAGS) $< -c
 
 options.o: options.cpp options.h
+	$(C++) $(CCFLAGS) $< -c
+
+seqWindow.o: seqWindow.cpp seqWindow.h
 	$(C++) $(CCFLAGS) $< -c
 
 anytun.o: anytun.cpp
