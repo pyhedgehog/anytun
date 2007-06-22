@@ -60,8 +60,7 @@ OBJS = anytun.o \
        log.o \
        options.o \
        seqWindow.o \
-       $(OPENVPNDEPS) \
-			 $(SRTPDEPS)
+       $(OPENVPNDEPS)
 
 EXECUTABLE = anytun
 
