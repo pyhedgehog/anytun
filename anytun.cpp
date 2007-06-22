@@ -64,7 +64,7 @@ void* sender(void* p)
   seq_nr_t seq = 0;
   while(1)
   {
-    Packet pack(1600);
+    Packet pack(1600); // fix me... mtu size
 
         // read packet from device
     int len = param->dev.read(pack);
@@ -105,7 +105,8 @@ void* receiver(void* p)
   {
     string remote_host;
     u_int16_t remote_port;
-    Packet pack(1600);
+    Packet pack(1600);  // fix me... mtu size
+
         // read packet from socket
     u_int32_t len = param->src.recv(pack, remote_host, remote_port);
     pack.resizeBack(len);

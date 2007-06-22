@@ -32,7 +32,7 @@
 #define _SEQ_WINDOW_H_
 
 #include <map>
-#include <queue>
+#include <deque>
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
@@ -40,13 +40,13 @@
 class SeqWindow
 {
 public:
-  typedef std::queue<seq_nr_t> SeqQueue;
-  typedef std::map<sender_id_t, SeqQueue> SenderMap;
+  typedef std::deque<seq_nr_t> SeqDeque;
+  typedef std::map<sender_id_t, SeqDeque> SenderMap;
 
   SeqWindow(window_size_t w);
   ~SeqWindow();
 
-  SeqQueue::size_type getLength(sender_id_t sender);
+  SeqDeque::size_type getLength(sender_id_t sender);
   bool hasSeqNr(sender_id_t sender, seq_nr_t seq);
   void addSeqNr(sender_id_t sender, seq_nr_t seq);
   void clear(sender_id_t sender);
@@ -58,7 +58,7 @@ private:
 
   window_size_t window_size_;
   Mutex mutex_;
-  SenderMap sender;
+  SenderMap sender_;
 };
 
 #endif

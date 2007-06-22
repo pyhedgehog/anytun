@@ -39,30 +39,48 @@ SeqWindow::SeqWindow(window_size_t w) : window_size_(w)
 
 SeqWindow::~SeqWindow()
 {
-
 }
 
-SeqWindow::SeqQueue::size_type SeqWindow::getLength(sender_id_t sender)
+SeqWindow::SeqDeque::size_type SeqWindow::getLength(sender_id_t sender)
 {
-  return 0;
+  Lock lock(mutex_);
+  SenderMap::const_iterator s = sender_.find(sender);
+  if(s == sender_.end())
+    return 0;
+
+  return s->second.size();
 }
 
 bool SeqWindow::hasSeqNr(sender_id_t sender, seq_nr_t seq)
 {
+  Lock lock(mutex_);
+  SenderMap::const_iterator s = sender_.find(sender);
+  if(s == sender_.end())
+    return false;
+
+  SeqDeque::const_iterator it;
+  for(it = s->second.begin(); it != s->second.end(); it++)
+    if(*it == seq)
+      return true;
+  
   return false;
 }
 
 void SeqWindow::addSeqNr(sender_id_t sender, seq_nr_t seq)
 {
-
+  Lock lock(mutex_);
+  sender_[sender].push_back(seq);
 }
 
 void SeqWindow::clear(sender_id_t sender)
 {
-  
+  Lock lock(mutex_);
+  sender_[sender].clear();
+  sender_.erase(sender);
 }
 
 void SeqWindow::clear()
 {
-
+  Lock lock(mutex_);
+  sender_.clear();
 }
