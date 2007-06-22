@@ -85,7 +85,7 @@ void* sender(void* p)
     param->c.cypher(pack);
 
         // add header to packet
-    pack.addHeader(param->opt.getSenderId(), seq);
+    pack.addHeader(seq, param->opt.getSenderId());
     seq++;
 
         // calc auth_tag and add it to the packet
