@@ -1,0 +1,13 @@
+Building and Installing libSRTP:
+===============================
+
+go to http://srtp.sourceforge.net/download.html and grab the latest and greatest.
+
+Then on your server decompress it:
+
+tar xzvf srtp-x.y.z.tgz
+cd srtp
+./configure
+make
+make install
+

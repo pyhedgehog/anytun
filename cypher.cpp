@@ -29,13 +29,14 @@
  */
 
 #include <stdexcept>
+#include <vector>
 
 #include "datatypes.h"
 
 #include "cypher.h"
 
 extern "C" {
-#include "srtp/crypto/include/cipher.h"
+#include "srtp/crypto/include/crypto_kernel.h"
 }
 
 void Cypher::cypher(Buffer& buf)
@@ -62,9 +63,30 @@ Buffer NullCypher::getBitStream(u_int32_t length)
   return buf;
 }
 
+void AesIcmCypher::cypher(Buffer& buf)
+{
+}
+
 Buffer AesIcmCypher::getBitStream(u_int32_t length)
 {
   Buffer buf(length);
+  extern cipher_type_t aes_icm;
+  err_status_t status;
+  cipher_t* cipher = NULL;
+  const uint8_t key = 0x42;
+  uint8_t idx[16] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34
+  };
+
+
+  status = cipher_type_alloc(&aes_icm, &cipher, sizeof(key));
+  status = cipher_init(cipher, &key, direction_encrypt);
+
+  status = cipher_set_iv(cipher, idx);
+  
+  status = cipher_output(cipher, buf, length);
+  status = cipher_dealloc(cipher);
   return buf;
 }
 

@@ -29,25 +29,6 @@ OPENVPNDEPS = openvpn/tun.o \
               openvpn/shaper.o \
               openvpn/fragment.o
 
-SRTPDEPS = srtp/crypto/cipher/aes_cbc.o \
-           srtp/crypto/cipher/aes_icm.o \
-           srtp/crypto/cipher/aes.o \
-           srtp/crypto/cipher/cipher.o \
-           srtp/crypto/cipher/null_cipher.o \
-           srtp/crypto/kernel/alloc.o \
-           srtp/crypto/kernel/crypto_kernel.o \
-           srtp/crypto/kernel/err.o \
-           srtp/crypto/kernel/key.o \
-           srtp/crypto/math/datatypes.o \
-           srtp/crypto/math/stat.o \
-           srtp/crypto/hash/auth.o \
-           srtp/crypto/hash/hmac.o \
-           srtp/crypto/hash/null_auth.o \
-           srtp/crypto/hash/sha1.o \
-           srtp/crypto/rng/ctr_prng.o \
-           srtp/crypto/rng/prng.o \
-           srtp/crypto/rng/rand_source.o
-
 OBJS = anytun.o \
        tunDevice.o \
        packetSource.o \
@@ -81,7 +62,7 @@ buffer.o: buffer.cpp buffer.h
 packet.o: packet.cpp packet.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
-cypher.o: cypher.cpp cypher.h buffer.h
+cypher.o: cypher.cpp cypher.h buffer.h srtp/libsrtp.a
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h

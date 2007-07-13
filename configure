@@ -3,6 +3,3 @@ cd openvpn
 ./configure --disable-lzo --disable-crypto
 cd ..
 
-cd srtp
-./configure
-cd ..

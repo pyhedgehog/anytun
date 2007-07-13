@@ -57,6 +57,7 @@ protected:
   operator u_int8_t*(); // just for write/read tun and packetSource
   friend class TunDevice;
   friend class UDPPacketSource;
+  friend class AesIcmCypher;
 
   u_int8_t *buf_;
   u_int32_t length_;

@@ -55,6 +55,9 @@ protected:
 
 class AesIcmCypher : public Cypher
 {
+public:
+  void cypher(Buffer& buf);
+
 protected:
   Buffer getBitStream(u_int32_t length);
 };
