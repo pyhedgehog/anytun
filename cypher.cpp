@@ -36,7 +36,7 @@
 #include "cypher.h"
 
 extern "C" {
-#include "srtp/crypto/include/crypto_kernel.h"
+#include <srtp/crypto_kernel.h>
 }
 
 void Cypher::cypher(Buffer& buf)

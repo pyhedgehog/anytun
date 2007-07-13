@@ -41,7 +41,8 @@ OBJS = anytun.o \
        log.o \
        options.o \
        seqWindow.o \
-       $(OPENVPNDEPS)
+       $(OPENVPNDEPS) \
+			 /usr/local/lib/libsrtp.a
 
 EXECUTABLE = anytun
 
@@ -62,7 +63,7 @@ buffer.o: buffer.cpp buffer.h
 packet.o: packet.cpp packet.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
-cypher.o: cypher.cpp cypher.h buffer.h srtp/libsrtp.a
+cypher.o: cypher.cpp cypher.h buffer.h 
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
