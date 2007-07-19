@@ -31,7 +31,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "datatypes.h"
+//#include "datatypes.h"
 
 #include "cypher.h"
 
@@ -39,9 +39,9 @@ extern "C" {
 #include <srtp/crypto_kernel.h>
 }
 
-void Cypher::cypher(Buffer& buf)
+void Cypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
 {
-  Buffer stream = getBitStream(buf.getLength());
+  Buffer stream = getBitStream(buf.getLength(), seq_nr, sender_id);
   exor(buf, stream);
 }
 
@@ -55,7 +55,7 @@ void Cypher::exor(Buffer& buf, const Buffer& bit_stream)
   catch(std::out_of_range& o) {}
 }
 
-Buffer NullCypher::getBitStream(u_int32_t length)
+Buffer NullCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
   Buffer buf(length);
   for(u_int32_t i; i<length; ++i)
@@ -63,27 +63,50 @@ Buffer NullCypher::getBitStream(u_int32_t length)
   return buf;
 }
 
-void AesIcmCypher::cypher(Buffer& buf)
+void AesIcmCypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
 {
 }
 
-Buffer AesIcmCypher::getBitStream(u_int32_t length)
+Buffer AesIcmCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
   Buffer buf(length);
   extern cipher_type_t aes_icm;
   err_status_t status;
   cipher_t* cipher = NULL;
-  const uint8_t key = 0x42;
-  uint8_t idx[16] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34
+  uint8_t key[20] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+    0x10, 0x11, 0x12, 0x13
   };
 
+  v128_t iv;
+  v128_set_to_zero(&iv);
 
-  status = cipher_type_alloc(&aes_icm, &cipher, sizeof(key));
-  status = cipher_init(cipher, &key, direction_encrypt);
+  // allocate cipher
+  status = cipher_type_alloc(&aes_icm, &cipher, 30);
+  if(status)
+    return buf;
 
-  status = cipher_set_iv(cipher, idx);
+  // init cipher
+  status = cipher_init(cipher, key, direction_any);
+  if(status)
+    return buf;
+
+  //set iv
+  //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
+  //  SRTP packet index i, and the SRTP session salting key k_s, as below.
+  //
+  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
+
+  // sizeof(k_s) = 112, random
+
+
+  iv.v32[0] ^= 0;
+  iv.v32[1] ^= sender_id; 
+  iv.v32[2] ^= (seq_nr >> 16);
+  iv.v32[3] ^= (seq_nr << 16);
+
+  status = cipher_set_iv(cipher, &iv);
   
   status = cipher_output(cipher, buf, length);
   status = cipher_dealloc(cipher);

@@ -31,6 +31,7 @@
 #ifndef _CYPHER_H_
 #define _CYPHER_H_
 
+#include "datatypes.h"
 #include "buffer.h"
 
 
@@ -40,26 +41,26 @@ public:
   Cypher() {};
   virtual ~Cypher() {};
   
-  void cypher(Buffer& buf);
+  void cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id);
   
 protected:
   void exor(Buffer& buf, const Buffer& bit_stream);
-  virtual Buffer getBitStream(u_int32_t length) = 0;
+  virtual Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) = 0;
 };
 
 class NullCypher : public Cypher
 {
 protected:
-  Buffer getBitStream(u_int32_t length);
+  Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
 };
 
 class AesIcmCypher : public Cypher
 {
 public:
-  void cypher(Buffer& buf);
+  void cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id);
 
 protected:
-  Buffer getBitStream(u_int32_t length);
+  Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
 };
 
 #endif

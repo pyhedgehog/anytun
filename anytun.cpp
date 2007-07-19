@@ -82,7 +82,7 @@ void* sender(void* p)
       pack.addPayloadType(0);
 
         // cypher the packet
-    param->c.cypher(pack);
+    param->c.cypher(pack, seq, param->opt.getSenderId());
 
         // add header to packet
     pack.addHeader(seq, param->opt.getSenderId());
@@ -132,7 +132,7 @@ void* receiver(void* p)
     pack.removeHeader();
 
         // decypher the packet
-    param->c.cypher(pack);
+    param->c.cypher(pack, pack.getSeqNr(), pack.getSenderId());
     
         // check payload_type and remove it
     if((param->dev.getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
