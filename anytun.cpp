@@ -162,7 +162,8 @@ int main(int argc, char* argv[])
   
   TunDevice dev(opt.getDevName().c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
   SeqWindow seq(opt.getSeqWindowSize());
-  NullCypher c;
+//  NullCypher c;
+  AesIcmCypher c;
   NullAuthAlgo a;
   PacketSource* src;
   if(opt.getLocalAddr() == "")
