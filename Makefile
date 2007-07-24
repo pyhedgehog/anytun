@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 C++ = g++
 CCFLAGS = -g -Wall
 LD = g++
-LDFLAGS = -g -O2 -ldl -lpthread
+LDFLAGS = -g -O2 -ldl -lpthread -lsrtp
 
 OPENVPNDEPS = openvpn/tun.o \
               openvpn/error.o \
@@ -41,8 +41,7 @@ OBJS = anytun.o \
        log.o \
        options.o \
        seqWindow.o \
-       $(OPENVPNDEPS) \
-			 /usr/local/lib/libsrtp.a
+       $(OPENVPNDEPS) 
 
 EXECUTABLE = anytun
 
