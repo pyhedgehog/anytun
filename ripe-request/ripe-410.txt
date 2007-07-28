@@ -1,0 +1,94 @@
+RIPE NCC
+
+Doc-ID: ripe-410
+Date: October 2005
+Obsolete: ripe-334, ripe-354, ripe-396
+
+
+% AS Number Request Form
+% ############################
+% ADDRESSES WILL BE USED FOR
+% AN INTERNET EXPERIMENT
+% ############################
+%
+
+% RIPE NCC members can use this form to request an Autonomous System (AS) Number.
+% Please see ripe-406 for instructions on how to complete this form.
+
+
+#[GENERAL INFORMATION]#
+%
+% Please add your RegID.
+
+request-type: as-number
+form-version: 1.1
+x-ncc-regid: 
+
+
+#[AS NUMBER USER]#
+%
+% Who will use the requested AS Number?
+
+legal-organisation-name: Othmar Gsenger
+website-if-available: http://www.anytun.org
+
+
+#[ADDRESS SPACE TO BE ANNOUNCED]#
+%
+% Which address prefix will originate from the new AS Number?
+
+prefix:
+
+% If the address assignment is waiting for approval, please 
+% include the ticket number of the request below.
+
+pending-ticket-ID:
+
+ 
+#[PEERING CONTACTS]#
+%
+% What are the e-mail addresses of the peering 
+% partners for the requested AS Number?
+
+peering: nibbler@nibbler.de
+peering: noc@mur.at
+peering: ripe@wirdorange.org
+peering: admin@funkfeuer.at
+
+
+#[DATABASE TEMPLATE(S)]# 
+%
+% Please complete all of the fields below.
+
+aut-num:       ASNEW 
+as-name:       OTTI-AS
+descr:         Othmar Gsenger
+descr:         experimental anycast AS
+org:	         ORG-OTTI1-RIPE
+import:        from AS250 action pref=1; accept ANY
+export:        to AS250 announce ASNEW
+import:        from AS42729 action pref=1; accept ANY
+export:        to AS42729 announce ASNEW
+import:        from AS39837 action pref=1; accept ANY
+export:        to  AS39837 announce ASNEW 
+import:        from AS35492 action pref=1; accept ANY
+export:        to  AS35492 announce ASNEW 
+admin-c:       OG674-RIPE
+tech-c:        OG674-RIPE
+mnt-by:        OTTI-MNT
+mnt-routes:    OTTI-MNT
+changed:       hostmaster@ripe.net
+source:        RIPE
+
+
+#[INSERT SUPPLEMENTAL COMMENTS]#
+%
+% Please add more information if you think it will help 
+% us understand this request.
+
+The AS number will be used for an internet experiment. 
+http://www.ietf.org/internet-drafts/draft-gsenger-secure-anycast-tunneling-protocol-00.txt
+
+
+#[END of REQUEST]#
+

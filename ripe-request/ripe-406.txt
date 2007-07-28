@@ -1,0 +1,172 @@
+Supporting Notes for the Autonomous System Number Request Form
+
+RIPE NCC 
+
+Document ID: ripe-395
+Date: November 2006
+Obsoletes: ripe-335, ripe-355
+
+
+
+This document contains instructions for LIRs on how to complete the "Autonomous System Number Request Form"
+http://www.ripe.net/ripe/docs/asnrequestform.html
+
+The instructions are based on the "Autonomous System (AS) Number Assignment Policies and Procedures"
+http://www.ripe.net/ripe/docs/asn-assignment.html
+
+For an explanation on when an AS Number is needed,
+please see: "Guidelines for Creation, Selection and Registration of an Autonomous System" (RFC 1930) 
+ftp://ftp.ripe.net/rfc/rfc1930.txt
+
+For more information on language specifications, 
+please see "Routing Policy Specification Language (RPSL)" (RFC 2622) and "RPSL extensions for 32 bit AS Numbers".
+ftp://ftp.ripe.net/rfc/rfc2622.txt and http://www.ietf.org/internet-drafts/draft-uijterwaal-rpsl-4byteas-ext-02.txt
+
+
+General Information 
+AS Number User 
+Address Space to be Announced 
+Peering Contacts 
+Database Template(s) 
+Insert Supplemental Comments 
+End of Request 
+
+
+General Information
+
+#[GENERAL INFORMATION]#
+
+%
+% Please add your RegID.
+ 
+request-type: as-number
+form-version: 1.1
+x-ncc-regid: 
+
+Please do not change the value of the "request-type:" and "form-version:" fields. 
+
+Enter your Registry Identifier (RegID) in the "x-ncc-regid:" field. RegIDs have the following format: <country code>.<name>. 
+
+If you do not know your RegID, please contact <ncc@ripe.net>. 
+
+AS Number User
+
+#[AS NUMBER USER]#
+%
+% Who will use the requested AS Number? 
+
+legal-organisation-name: North SantaBank
+website-if-available: http://www.nsb.nn 
+
+Enter the legal name of the organisation that will use this AS Number in the "legal-organisation-name:" field. If this organisation has a website, enter the URL in the "website-if-available:" field. Otherwise, enter "none" in this field. 
+
+Address Space to be Announced 
+
+#[ADDRESS SPACE TO BE ANNOUNCED]#
+%
+% Which address prefix will originate from the new AS Number? 
+
+prefix: 192.0.2.0/24
+
+% If the address assignment is waiting for approval, please
+% include the ticket number of the request below. 
+
+pending-ticket-ID: 
+
+You must include either an address prefix or a pending RIPE NCC ticket number (for example, NCC#xxxxxxxx). 
+
+Please specify address prefixes using slash notation (for example, x.x.x.x/xx ). The address space must be a valid assignment to the organisation that will use the AS number. 
+
+Peering Contacts 
+
+#[PEERING CONTACTS]#
+%
+% Please list the e-mail contact addresses of peering
+% partners for the requested AS Number. 
+
+peering: noddy@grottoinvestments.nn
+peering: mary@northernbanking.nn
+
+You must list the email addresses of at least two peering partners in the "peering:" fields. You can repeat the "peering:" field as many times as needed. 
+
+Database Template(s) 
+
+#[DATABASE TEMPLATE(S)]#
+%
+% Please complete all of the fields below. 
+
+aut-num:    ASNEW
+as-name:    NSB-AS
+descr:      North SantaBank's AS Number
+org:        ORG-NS31-RIPE
+import:     from AS64532 accept ANY
+export:     to AS64532 announce ASNEW
+import:     from AS64518 accept ANY
+export:     to AS64518 announce ASNEW
+admin-c:    ACM2-RIPE
+tech-c:     HOHO1-RIPE
+mnt-by:     SANTA-MNT
+mnt-routes: SANTA-MNT
+changed:    hostmaster@ripe.net
+source:     RIPE 
+
+The "aut-num:" field must be ASNEW as we (RIPE NCC) will choose the AS number. 
+
+The "as-name:" should be a short name associated with the Autonomous System. We recommend that the name reflects the name of the organisation that will use the AS Number. 
+
+Enter a short description of the Autonomous System in the "descr:" field. 
+
+Enter the org-ID of the AS Number user's organisation object in the "org:" field. 
+
+The "import:" and "export:" fields should contain the complete routing policy. Both fields may be repeated as many times as needed. 
+
+Basic syntax entries are as follows: 
+
+	import: from <peer1> accept <filter>
+	export: to <peer1> announce <filter>
+	import: from <peer2> accept <filter>
+	export: to <peer2> announce <filter> 
+
+For further details of language specifications, please refer to RFC 2622 and "RPSL extensions for 32 bit AS Numbers".
+ftp://ftp.ripe.net/rfc/rfc2622.txt and http://www.ietf.org/internet-drafts/draft-uijterwaal-rpsl-4byteas-ext-02.txt. 
+
+The nic-handle of the role or person object in the "admin-c:" field should reflect someone who is administratively responsible for the network. 
+
+The nic-handle of the role or person object in the "tech-c:" field should reflect someone who has technical knowledge of the network. 
+
+The "mnt-by" field shows which maintainer authenticates object updates. The "mnt-routes:" field shows which maintainer authenticates the creation of route objects. 
+
+You can put the LIR's or AS Number User's maintainers in the "mnt-by:" and "mnt-routes:" fields. 
+
+The RIPE Database must contain all of the objects that you use. 
+
+The "changed:" field must be hostmaster@ripe.net. 
+
+The "source:" field must be RIPE. 
+
+Insert Supplemental Comments
+#[INSERT SUPPLEMENTAL COMMENTS]#
+%
+% Please add more information if you think it will help
+% us understand this request.
+ 
+Our peering agreements are provisional and will be confirmed when the new AS Number is assigned.
+We would like a 4-byte AS Number.
+
+You can use this space for additional information that you think will be helpful for us when we evaluate your request. For example, if you would like a 4-byte AS Number, use this field to let us know. 
+
+From 1 January 2007 you can request a 4-byte AS Number. If you would like a 4-byte AS Number, use the Supplemental Comments field to let us know. If you give no preference, we will assign a 2-byte AS Number.
+
+From 1 January 2009, you can use the Supplemental Comments field to let us know if you would like a 2-byte AS Number. If you give no preference, we will assign a 4-byte AS Number. 
+
+From 1 January 2010 we will assign 4-byte AS Numbers only.
+
+End of Request
+
+#[END of REQUEST]# 
+
+Best Regards,
+Jan Janssen, Bluelight Admin 
+
+Please write your full name below the " #[END of REQUEST]# " header. 
+
