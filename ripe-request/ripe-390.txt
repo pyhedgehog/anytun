@@ -1,0 +1,145 @@
+RIPE NCC
+
+Document ID: ripe-390
+Date: September 2006
+
+% ############################
+% ADDRESSES WILL BE USED FOR 
+% AN INTERNET EXPERIMENT
+% ############################
+%
+% Anycast Assignment Request Form
+ 
+% RIPE NCC members can use this form to request an anycast assignment. 
+% Please see ripe-391 for instructions on how to complete this form.
+ 
+#[GENERAL INFORMATION]#
+%
+% Please add your RegID.
+
+request-type: anycast-assignment
+form-version: 1.0
+x-ncc-regid: 
+ 
+#[ADDRESS SPACE USER]#
+%
+% Which TLD operator will use the requested address space?
+
+legal-organisation-name: Othmar Gsenger
+tld(s): n/a
+organisation-location: Graz, Austria
+website-if-available: http://www.anytun.org
+
+% Does this End User already have address space in use for
+% anycast? (Yes/No)
+
+space-available: No
+
+ % Will the End User return any address space?
+
+address-space-returned: 
+
+#[INITIAL INFORMATION]#
+%
+% Does the End User accept the policies on anycast assignments?
+% http://www.ripe.net/ripe/docs/ipv4-policies.html
+% http://www.ripe.net/ripe/docs/ipv6policy.html (Yes/No)
+
+confirmation: Yes
+
+
+% Can the End User’s TLD nameserver set pass the “IANA 
+% Administrative Procedure for Root Zone Name Server Delegation
+% and Glue Data” without using anycast technology? 
+% http://www.iana.org/procedures/delegation-data.html (Yes/No)
+
+iana-procedure: No
+
+% Is the End User requesting an IPv4 assignment, an IPv6 
+% assignment, or both? (IPv4/IPv6/Both)
+
+ip-version: Both
+
+% If the End User is requesting an IPv4 assignment, will the TLD 
+% nameserver set apply anycasting as described in RFC3258?
+% http://www.ietf.org/rfc/rfc3258.txt (Yes/No)
+
+rfc3258: Yes
+% as far as appropriate
+
+#[ANYCAST NODE PLAN]#
+%
+% Which anycast nodes will be used?
+
+      	Node Name       Peers     Location    
+
+node: 
+node: 
+node: 
+
+number-of-nodes: 
+
+#[NETWORK DESCRIPTION]#
+%
+% Please add more information if you think it will help us understand
+% this request.
+
+<add more information>
+ 
+#[NETWORK DIAGRAM]#
+%
+% Have you attached a network diagram to this request? (Yes/No)
+
+diagram-attached: No
+
+#[DATABASE TEMPLATE(S)]#
+%	
+% IPv4
+% Please complete all of the fields below. 
+
+inetnum:	
+netname:	SECANY-NET
+descr:		experimental anycast network used
+descr:		for testing the
+descr:		secure anycast tunneling protocol
+descr:		see http://www.anytun.org
+country:	AT
+country:	DE
+country:	EU
+org:		ORG-OTTI1-RIPE
+admin-c:	OG674-RIPE
+tech-c:		OG674-RIPE
+status:		ASSIGNED ANYCAST
+mnt-by:	RIPE-NCC-HM-MNT
+mnt-lower:	RIPE-NCC-HM-MNT
+mnt-by:	OTTI-MNT
+mnt-routes:	OTTI-MNT
+mnt-domains:	OTTI-MNT
+changed:	hostmaster@ripe.net
+source:		RIPE
+ 
+% IPv6
+% Please complete all of the fields below. 
+
+inet6num:	
+netname:	SECANY-NET
+descr:		experimental anycast network used
+descr:		for testing the
+descr:		secure anycast tunneling protocol
+descr:		see http://www.anytun.org
+country:	AT
+country:	DE
+country:	EU
+org:		ORG-OTTI1-RIPE
+admin-c:	OG674-RIPE
+tech-c:		OG674-RIPE
+status:		ASSIGNED ANYCAST
+mnt-by:	RIPE-NCC-HM-MNT
+mnt-lower:	RIPE-NCC-HM-MNT
+mnt-by:	OTTI-MNT
+mnt-routes:	OTTI-MNT
+mnt-domains:	OTTI-MNT
+changed	hostmaster@ripe.net
+source:		RIPE
+
+#[END of REQUEST]#
