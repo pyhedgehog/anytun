@@ -31,6 +31,9 @@
  * This code was written under funding by Ericsson Radio Systems.
  */
 
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/queue.h>
@@ -518,7 +521,7 @@ pf_key_v2_open(void)
 
 	/* Open the socket we use to speak to IPsec. */
 	pf_key_v2_socket = -1;
-	fd = socket(PF_KEY, SOCK_RAW, PF_KEY_V2);
+	fd = socket(PF_UNIX, SOCK_RAW, 0);
 	if (fd == -1) {
 		log_error("pf_key_v2_open: "
 		    "socket (PF_KEY, SOCK_RAW, PF_KEY_V2) failed");
