@@ -3,10 +3,8 @@ RIPE NCC
 Document ID: ripe-390
 Date: September 2006
 
-% ############################
 % ADDRESSES WILL BE USED FOR 
 % AN INTERNET EXPERIMENT
-% ############################
 %
 % Anycast Assignment Request Form
  
@@ -28,7 +26,7 @@ x-ncc-regid:
 legal-organisation-name: Othmar Gsenger
 tld(s): n/a
 organisation-location: Graz, Austria
-website-if-available: http://www.anytun.org
+website-if-available: http://www.gsenger.com/satp/
 
 % Does this End User already have address space in use for
 % anycast? (Yes/No)
@@ -73,18 +71,28 @@ rfc3258: Yes
 
       	Node Name       Peers     Location    
 
-node: 
-node: 
-node: 
+node:   0xff Graz       AS42729   Graz, Austria
+node:   mur.at Graz     AS39837   Graz, Austria
+node:   0xff Wien       AS35492   Vienna, Austria
 
-number-of-nodes: 
+number-of-nodes: 3
 
 #[NETWORK DESCRIPTION]#
 %
 % Please add more information if you think it will help us understand
 % this request.
 
-<add more information>
+The IP addresses will be used for an internet experiment.
+
+The reference implementation of the secure anycast tunneling protocol will be used to build a highly redundant and scaleable voice over ip media relay cluster.
+
+All results of the internet experiment will be published online.
+
+secure anycast tunneling protocol:
+http://www.ietf.org/internet-drafts/draft-gsenger-secure-anycast-tunneling-protocol-00.txt
+
+description of the internet experiment:
+http://www.gsenger.com/satp/internet-experiment-proposal.txt
  
 #[NETWORK DIAGRAM]#
 %
@@ -103,9 +111,8 @@ descr:		experimental anycast network used
 descr:		for testing the
 descr:		secure anycast tunneling protocol
 descr:		see http://www.anytun.org
-country:	AT
-country:	DE
 country:	EU
+country:	AT
 org:		ORG-OTTI1-RIPE
 admin-c:	OG674-RIPE
 tech-c:		OG674-RIPE
@@ -127,9 +134,8 @@ descr:		experimental anycast network used
 descr:		for testing the
 descr:		secure anycast tunneling protocol
 descr:		see http://www.anytun.org
-country:	AT
-country:	DE
 country:	EU
+country:	AT
 org:		ORG-OTTI1-RIPE
 admin-c:	OG674-RIPE
 tech-c:		OG674-RIPE

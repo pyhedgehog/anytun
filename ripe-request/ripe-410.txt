@@ -5,11 +5,8 @@ Date: October 2005
 Obsolete: ripe-334, ripe-354, ripe-396
 
 
-% AS Number Request Form
-% ############################
 % ADDRESSES WILL BE USED FOR
 % AN INTERNET EXPERIMENT
-% ############################
 %
 
 % RIPE NCC members can use this form to request an Autonomous System (AS) Number.
@@ -30,7 +27,7 @@ x-ncc-regid:
 % Who will use the requested AS Number?
 
 legal-organisation-name: Othmar Gsenger
-website-if-available: http://www.anytun.org
+website-if-available: http://www.gsenger.com/satp/
 
 
 #[ADDRESS SPACE TO BE ANNOUNCED]#
@@ -50,10 +47,9 @@ pending-ticket-ID:
 % What are the e-mail addresses of the peering 
 % partners for the requested AS Number?
 
-peering: nibbler@nibbler.de
 peering: noc@mur.at
 peering: ripe@wirdorange.org
-peering: admin@funkfeuer.at
+peering: ripe-tech@funkfeuer.at
 
 
 #[DATABASE TEMPLATE(S)]# 
@@ -65,8 +61,6 @@ as-name:       OTTI-AS
 descr:         Othmar Gsenger
 descr:         experimental anycast AS
 org:	         ORG-OTTI1-RIPE
-import:        from AS250 action pref=1; accept ANY
-export:        to AS250 announce ASNEW
 import:        from AS42729 action pref=1; accept ANY
 export:        to AS42729 announce ASNEW
 import:        from AS39837 action pref=1; accept ANY
@@ -87,7 +81,19 @@ source:        RIPE
 % us understand this request.
 
 The AS number will be used for an internet experiment. 
+
+The reference implementation of the secure anycast tunneling protocol will be used to build a highly redundant and scaleable voice over ip media relay cluster.
+
+All results of the internet experiment will be published online.
+
+secure anycast tunneling protocol:
 http://www.ietf.org/internet-drafts/draft-gsenger-secure-anycast-tunneling-protocol-00.txt
+
+description of the internet experiment:
+http://www.gsenger.com/satp/internet-experiment-proposal.txt
+
+Our peering agreements are provisional and 
+will be confirmed when the new AS Number is assigned.
 
 
 #[END of REQUEST]#
