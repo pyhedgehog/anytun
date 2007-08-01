@@ -46,9 +46,9 @@ address-space-returned:
 confirmation: Yes
 
 
-% Can the End User’s TLD nameserver set pass the “IANA 
+% Can the End UserÂ’s TLD nameserver set pass the Â“IANA 
 % Administrative Procedure for Root Zone Name Server Delegation
-% and Glue Data” without using anycast technology? 
+% and Glue DataÂ” without using anycast technology? 
 % http://www.iana.org/procedures/delegation-data.html (Yes/No)
 
 iana-procedure: No
@@ -84,9 +84,14 @@ number-of-nodes: 3
 
 The IP addresses will be used for an internet experiment.
 
+The experimental assignments will not be used for commericial purposes during or
+after the experiment.
+
 The reference implementation of the secure anycast tunneling protocol will be used to build a highly redundant and scaleable voice over ip media relay cluster.
 
 All results of the internet experiment will be published online.
+
+We plan to finish the experiment at the end of february 2008.
 
 secure anycast tunneling protocol:
 http://www.ietf.org/internet-drafts/draft-gsenger-secure-anycast-tunneling-protocol-00.txt
