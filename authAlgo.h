@@ -49,4 +49,12 @@ public:
   auth_tag_t calc(const Buffer& buf);
 };
 
+
+// HMAC_SHA1
+class HmacAuthAlgo : public AuthAlgo
+{
+public:
+  auth_tag_t calc(const Buffer& buf);
+};
+
 #endif

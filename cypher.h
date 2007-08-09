@@ -61,6 +61,9 @@ public:
 
 protected:
   Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
+
+private:
+
 };
 
 #endif

@@ -28,39 +28,39 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "authAlgo.h"
+#ifndef _KEYDERIVATION_H_
+#define _KEYDERIVATION_H_
+
+#include "datatypes.h"
+#include "buffer.h"
+
 
 extern "C" {
-#include <srtp/crypto_kernel.h>
+  #include <srtp/crypto_kernel.h>
 }
 
 
-auth_tag_t NullAuthAlgo::calc(const Buffer& buf)
+typedef enum {
+  label_satp_encryption  = 0x00,
+  label_satp_msg_auth    = 0x01,
+  label_satp_salt        = 0x02,
+} satp_prf_label;
+
+class KeyDerivation
 {
-  return 0;
-}
+public:
+  KeyDerivation() : ld_kdr_(-1) {};
+  virtual ~KeyDerivation() {};
 
+  err_status_t init(const uint8_t key[30], const uint8_t salt[14]);
+  err_status_t setLogKDRate(const uint8_t ld_rate);
+  err_status_t generate(satp_prf_label label, seq_nr_t seq_nr, uint8_t *key, int length);
+  err_status_t clear();
 
-// HMAC_SHA1
-auth_tag_t HmacAuthAlgo::calc(const Buffer& buf)
-{
-  extern auth_type_t hmac;
-  err_status_t status = err_status_ok;
-  auth_t *auth = NULL;
+protected:
+  aes_icm_ctx_t kdf_;
+  int8_t ld_kdr_;     // ld(key_derivation_rate)
+  uint8_t salt_[14];
+};
 
-  uint8_t key[] = {
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-    0x10, 0x11, 0x12, 0x13
-  };
-
-  // auth_type_alloc(auth_type, auth, key_len, out_len)
-  status = auth_type_alloc(&hmac, &auth, 94, 4);
-  status = auth_init(auth, key);
-
-  status = auth_dealloc(auth);
-
-  return 0;
-}
-
-
+#endif

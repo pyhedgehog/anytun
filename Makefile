@@ -36,6 +36,7 @@ OBJS = anytun.o \
        packet.o \
        cypher.o \
        authAlgo.o \
+			 keyDerivation.o \
        PracticalSocket.o \
        signalController.o \
        log.o \
@@ -66,6 +67,9 @@ cypher.o: cypher.cpp cypher.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
+	$(C++) $(CCFLAGS) $< -c
+
+keyDerivation.o: keyDerivation.cpp keyDerivation.h
 	$(C++) $(CCFLAGS) $< -c
 
 signalController.o: signalController.cpp signalController.h
