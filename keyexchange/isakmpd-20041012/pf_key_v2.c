@@ -31,6 +31,13 @@
  * This code was written under funding by Ericsson Radio Systems.
  */
 
+// TODO Check this
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <stdlib.h>
+#include <stdio.h>
+//---
+
 #include <sys/stat.h>
 #include <fcntl.h>
 
@@ -111,6 +118,8 @@ TAILQ_HEAD(pf_key_v2_msg, pf_key_v2_node);
 
 #define PF_KEY_V2_NODE_MALLOCED 1
 #define PF_KEY_V2_NODE_MARK 2
+
+#define PF_KEY_V2_SOCK_PATH "/var/run/pkkey"
 
 /* Used to derive "unique" connection identifiers. */
 int             connection_seq = 0;
@@ -518,15 +527,33 @@ pf_key_v2_open(void)
 	int             fd = -1, err;
 	struct sadb_msg msg;
 	struct pf_key_v2_msg *regmsg = 0, *ret = 0;
+  struct sockaddr_un addr;
+  socklen_t addrLength = sizeof(addr);
 
 	/* Open the socket we use to speak to IPsec. */
 	pf_key_v2_socket = -1;
+
 	fd = socket(PF_UNIX, SOCK_RAW, 0);
+
 	if (fd == -1) {
 		log_error("pf_key_v2_open: "
 		    "socket (PF_KEY, SOCK_RAW, PF_KEY_V2) failed");
 		goto cleanup;
 	}
+
+  memset(&addr, 0, sizeof(struct sockaddr_un));
+  /* Clear structure */
+  addr.sun_family = AF_UNIX;
+  strncpy(addr.sun_path, PF_KEY_V2_SOCK_PATH,
+      sizeof(addr.sun_path) - 1);
+
+  if (connect(fd, (struct sockaddr *) &addr, 
+    sizeof(struct sockaddr_un)) == -1) {
+    perror("bind");
+    exit(EXIT_FAILURE);
+  }
+
+
 	pf_key_v2_socket = fd;
 
 	/* Register it to get ESP and AH acquires from the kernel.  */
