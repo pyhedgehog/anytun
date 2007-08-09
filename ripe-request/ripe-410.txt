@@ -19,7 +19,7 @@ Obsolete: ripe-334, ripe-354, ripe-396
 
 request-type: as-number
 form-version: 1.1
-x-ncc-regid: 
+x-ncc-regid: at.mur
 
 
 #[AS NUMBER USER]#
@@ -39,7 +39,7 @@ prefix:
 % If the address assignment is waiting for approval, please 
 % include the ticket number of the request below.
 
-pending-ticket-ID:
+pending-ticket-ID: NCC#2007074014
 
  
 #[PEERING CONTACTS]#
@@ -84,7 +84,12 @@ The AS number will be used for an internet experiment.
 
 The reference implementation of the secure anycast tunneling protocol will be used to build a highly redundant and scaleable voice over ip media relay cluster.
 
+The experimental assignments will not be used for commericial purposes during or
+after the experiment.
+
 All results of the internet experiment will be published online.
+
+We plan to finish the experiment at the end of february 2008.
 
 secure anycast tunneling protocol:
 http://www.ietf.org/internet-drafts/draft-gsenger-secure-anycast-tunneling-protocol-00.txt

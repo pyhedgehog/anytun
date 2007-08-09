@@ -17,7 +17,7 @@ Date: September 2006
 
 request-type: anycast-assignment
 form-version: 1.0
-x-ncc-regid: 
+x-ncc-regid: at.mur
  
 #[ADDRESS SPACE USER]#
 %
