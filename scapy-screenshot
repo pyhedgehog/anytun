@@ -1,0 +1,45 @@
+1 otti@vilap ~/anytun % sudo ./satp.py
+INFO: did not find python gnuplot wrapper . Won't be able to plot
+INFO: Can't import PyX. Won't be able to use psdump() or pdfdump()
+INFO: Can't find Crypto python lib. Won't be able to decrypt WEP
+INFO: Can't open /etc/ethertypes file
+Welcome to Scapy (1.0.4.1beta)
+Test add-on v3.14
+>>> pkts = rdpcap
+rdpcap
+>>> pkts = rdpcap("/home/otti/anytun/nullcypher.pcap")
+>>> pkts
+<nullcypher.pcap: UDP:62 TCP:0 ICMP:16 Other:0>
+>>> pkts[6]
+<Ether  dst=00:15:0c:33:13:98 src=00:15:58:30:fb:95 type=0x800 |<IP  version=4L ihl=5L tos=0x0 len=138 id=0 flags=DF frag=0L ttl=64 proto=UDP chksum=0x5546 src=192.168.1.24 dst=83.64.208.28 options='' |<UDP  sport=4444 dport=4444 len=118 chksum=0xe5a4 |<SATP  seq=826L id=0 |<Raw  load='B,\xa1lx\x8fR\xdd\xb5\x1c"\x9c\x08\x00E\x00\x00T\x00\x00@\x00@\x01)T\xc0\xa8\xc8\x02\xc0\xa8\xc8\x01\x08\x004r\x1f\x12\x02\xc8\x08\xad\xa4F\xfc\xbc\r\x00\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !"#$%&\'()*+,-./01234567eX\x00\x00\x00\x00' |>>>>>
+>>> pkts[6].show2()
+###[ Ethernet ]###
+  dst= 00:15:0c:33:13:98
+  src= 00:15:58:30:fb:95
+  type= 0x800
+###[ IP ]###
+     version= 4L
+     ihl= 5L
+     tos= 0x0
+     len= 138
+     id= 0
+     flags= DF
+     frag= 0L
+     ttl= 64
+     proto= UDP
+     chksum= 0x5546
+     src= 192.168.1.24
+     dst= 83.64.208.28
+     options= ''
+###[ UDP ]###
+        sport= 4444
+        dport= 4444
+        len= 118
+        chksum= 0xe5a4
+###[ SATP ]###
+           seq= 826L
+           id= 0
+###[ Raw ]###
+              load= 'B,\xa1lx\x8fR\xdd\xb5\x1c"\x9c\x08\x00E\x00\x00T\x00\x00@\x00@\x01)T\xc0\xa8\xc8\x02\xc0\xa8\xc8\x01\x08\x004r\x1f\x12\x02\xc8\x08\xad\xa4F\xfc\xbc\r\x00\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !"#$%&\'()*+,-./01234567eX\x00\x00\x00\x00'
+>>>
+
