@@ -57,12 +57,12 @@ protected:
 class AesIcmCypher : public Cypher
 {
 public:
+//  AesIcmCypher() {};
+//  ~AesIcmCypher() {};
   void cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id);
 
 protected:
-  Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
-
-private:
+  Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) { return Buffer(); };
 
 };
 

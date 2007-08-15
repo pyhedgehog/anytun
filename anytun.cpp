@@ -66,14 +66,14 @@ void* sender(void* p)
   {
     Packet pack(1600); // fix me... mtu size
 
-        // read packet from device
+    // read packet from device
     int len = param->dev.read(pack);
     pack.resizeBack(len);
 
     if(param->opt.getRemoteAddr() == "")
       continue;
 
-        // add payload type
+    // add payload type
     if(param->dev.getType() == TunDevice::TYPE_TUN)
       pack.addPayloadType(PAYLOAD_TYPE_TUN);
     else if(param->dev.getType() == TunDevice::TYPE_TAP)
@@ -81,18 +81,18 @@ void* sender(void* p)
     else 
       pack.addPayloadType(0);
 
-        // cypher the packet
+    // cypher the packet
     param->c.cypher(pack, seq, param->opt.getSenderId());
 
-        // add header to packet
+    // add header to packet
     pack.addHeader(seq, param->opt.getSenderId());
     seq++;
 
-        // calc auth_tag and add it to the packet
+    // calc auth_tag and add it to the packet
     auth_tag_t at = param->a.calc(pack);
     pack.addAuthTag(at);
 
-        // send it out to remote host
+    // send it out to remote host
     param->src.send(pack, param->opt.getRemoteAddr(), param->opt.getRemotePort());
   }
   pthread_exit(NULL);
@@ -108,39 +108,39 @@ void* receiver(void* p)
     u_int16_t remote_port;
     Packet pack(1600);  // fix me... mtu size
 
-        // read packet from socket
+    // read packet from socket
     u_int32_t len = param->src.recv(pack, remote_host, remote_port);
     pack.resizeBack(len);
     pack.withPayloadType(true).withHeader(true).withAuthTag(true);
 
-        // check auth_tag and remove it
+    // check auth_tag and remove it
     auth_tag_t at = pack.getAuthTag();
     pack.removeAuthTag();
     if(at != param->a.calc(pack))
       continue;
 
-        // autodetect peer
+    // autodetect peer
     if(param->opt.getRemoteAddr() == "")
     {
       param->opt.setRemoteAddrPort(remote_host, remote_port);
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
     }
-        // compare sender_id and seq with window
+    // compare sender_id and seq with window
     if(param->seq.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
       continue;
     param->seq.addSeqNr(pack.getSenderId(), pack.getSeqNr());
     pack.removeHeader();
 
-        // decypher the packet
+    // decypher the packet
     param->c.cypher(pack, pack.getSeqNr(), pack.getSenderId());
     
-        // check payload_type and remove it
+    // check payload_type and remove it
     if((param->dev.getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
        (param->dev.getType() == TunDevice::TYPE_TAP && pack.getPayloadType() != PAYLOAD_TYPE_TAP))
       continue;
     pack.removePayloadType();
     
-        // write it on the device
+    // write it on the device
     param->dev.write(pack);
   }
   pthread_exit(NULL);
@@ -162,8 +162,8 @@ int main(int argc, char* argv[])
   
   TunDevice dev(opt.getDevName().c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
   SeqWindow seq(opt.getSeqWindowSize());
-  NullCypher c;
-//  AesIcmCypher c;
+//  NullCypher c;
+  AesIcmCypher c;
   NullAuthAlgo a;
   PacketSource* src;
   if(opt.getLocalAddr() == "")

@@ -106,4 +106,3 @@ void AesIcmCypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
   status = cipher_dealloc(cipher);
 }
 
-
