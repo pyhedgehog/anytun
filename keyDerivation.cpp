@@ -37,10 +37,17 @@ extern "C" {
 
 err_status_t KeyDerivation::init(const uint8_t key[30], const uint8_t salt[14])
 {
-  aes_icm_context_init(&kdf_, key);
+  extern cipher_type_t aes_icm;
+  err_status_t status = err_status_ok;
 
   for(uint8_t i = 0; i < 14; i++)
     salt_[i] = salt[i];
+
+  // allocate cipher
+  status = cipher_type_alloc(&aes_icm, &cipher_, 30);
+
+  // init cipher
+  status = cipher_init(cipher_, key, direction_any);   
 
   return err_status_ok;
 }
@@ -56,8 +63,9 @@ err_status_t KeyDerivation::setLogKDRate(const uint8_t log_rate)
 }
 
 
-err_status_t KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, uint8_t *key, int length)
+err_status_t KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, uint8_t *key, uint32_t length)
 {
+  err_status_t status = err_status_ok;
   v128_t iv, salt, key_id;
   uint8_t r = 0;
 
@@ -78,10 +86,10 @@ err_status_t KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, uint
   v128_copy_octet_string(&salt, salt_);
   v128_xor(&iv, &salt, &key_id);
 
-  aes_icm_set_iv(&kdf_, &iv);
+  status = cipher_set_iv(cipher_, &iv);
 
   /* generate keystream output */
-  aes_icm_output(&kdf_, key, length);
+  status = cipher_output(cipher_, key, length);
 
   return err_status_ok;
 }
@@ -89,17 +97,7 @@ err_status_t KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, uint
 
 err_status_t KeyDerivation::clear() 
 {
-  /* zeroize aes context */
-
-  v128_set_to_zero(&kdf_.counter);
-  v128_set_to_zero(&kdf_.offset);
-  v128_set_to_zero(&kdf_.keystream_buffer);
-  for(uint8_t i = 0; i < 11; i++)
-  {
-    v128_set_to_zero(&kdf_.expanded_key[i]);
-  }
-  kdf_.bytes_in_buffer = 0;
-
+  cipher_dealloc(cipher_);
   return err_status_ok;
 }
 
