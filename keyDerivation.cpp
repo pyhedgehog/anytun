@@ -35,21 +35,26 @@ extern "C" {
 #include <srtp/crypto_kernel.h>
 }
 
-err_status_t KeyDerivation::init(const uint8_t key[30], const uint8_t salt[14])
+err_status_t KeyDerivation::init(Buffer key, Buffer salt)
 {
   extern cipher_type_t aes_icm;
   err_status_t status = err_status_ok;
 
-  for(uint8_t i = 0; i < 14; i++)
-    salt_[i] = salt[i];
+  salt_ = salt;
 
   // allocate cipher
+  // FIXXME: why we do not can do this??
+//  status = cipher_type_alloc(&aes_icm, &cipher_, key.getLength());
   status = cipher_type_alloc(&aes_icm, &cipher_, 30);
+  if( status )
+    return status;
 
   // init cipher
-  status = cipher_init(cipher_, key, direction_any);   
+  status = cipher_init(cipher_, key.getBuf(), direction_any);
+  if( status )
+    cipher_dealloc(cipher_);
 
-  return err_status_ok;
+  return status;
 }
 
 err_status_t KeyDerivation::setLogKDRate(const uint8_t log_rate)
@@ -63,7 +68,7 @@ err_status_t KeyDerivation::setLogKDRate(const uint8_t log_rate)
 }
 
 
-err_status_t KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, uint8_t *key, uint32_t length)
+err_status_t KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, uint32_t length)
 {
   err_status_t status = err_status_ok;
   v128_t iv, salt, key_id;
@@ -83,21 +88,25 @@ err_status_t KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, uint
   key_id.v32[0] = (label << 8);
   key_id.v32[0] += r;
 
-  v128_copy_octet_string(&salt, salt_);
+  v128_copy_octet_string(&salt, salt_.getBuf());
   v128_xor(&iv, &salt, &key_id);
 
   status = cipher_set_iv(cipher_, &iv);
+  if( status )
+  {
+    KeyDerivation::clear();
+    return status;
+  }
 
   /* generate keystream output */
   status = cipher_output(cipher_, key, length);
 
-  return err_status_ok;
+  return status;
 }
 
 
 err_status_t KeyDerivation::clear() 
 {
-  cipher_dealloc(cipher_);
-  return err_status_ok;
+  return cipher_dealloc(cipher_);
 }
 

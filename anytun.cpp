@@ -37,6 +37,7 @@
 #include "buffer.h"
 #include "packet.h"
 #include "cypher.h"
+#include "keyDerivation.h"
 #include "authAlgo.h"
 #include "signalController.h"
 #include "packetSource.h"
@@ -51,6 +52,7 @@ struct Param
 {
   Options& opt;
   TunDevice& dev;
+  KeyDerivation& kd;
   Cypher& c;
   AuthAlgo& a;
   PacketSource& src;
@@ -82,6 +84,11 @@ void* sender(void* p)
       pack.addPayloadType(0);
 
     // cypher the packet
+    Buffer tmp_key(16), tmp_salt(14);
+    param->kd.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
+    param->kd.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
+    param->c.setKey(tmp_key);
+    param->c.setSalt(tmp_salt);
     param->c.cypher(pack, seq, param->opt.getSenderId());
 
     // add header to packet
@@ -132,6 +139,11 @@ void* receiver(void* p)
     pack.removeHeader();
 
     // decypher the packet
+    Buffer tmp_key(16), tmp_salt(14);
+    param->kd.generate(label_satp_encryption, pack.getSeqNr(), tmp_key, tmp_key.getLength());
+    param->kd.generate(label_satp_salt, pack.getSeqNr(), tmp_salt, tmp_salt.getLength());
+    param->c.setKey(tmp_key);
+    param->c.setSalt(tmp_salt);
     param->c.cypher(pack, pack.getSeqNr(), pack.getSenderId());
     
     // check payload_type and remove it
@@ -162,6 +174,22 @@ int main(int argc, char* argv[])
   
   TunDevice dev(opt.getDevName().c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
   SeqWindow seq(opt.getSeqWindowSize());
+
+  uint8_t key[] = {
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+    'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+    'q', 'r', 's', 't'
+  };
+
+  uint8_t salt[] = {
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+    'i', 'j', 'k', 'l', 'm', 'n'
+  };
+
+
+  KeyDerivation kd;
+  kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
+
 //  NullCypher c;
   AesIcmCypher c;
   NullAuthAlgo a;
@@ -171,7 +199,7 @@ int main(int argc, char* argv[])
   else
     src = new UDPPacketSource(opt.getLocalAddr(), opt.getLocalPort());
 
-  struct Param p = {opt, dev, c, a, *src, seq};
+  struct Param p = {opt, dev, kd, c, a, *src, seq};
     
   std::cout << "dev created (opened)" << std::endl;
   std::cout << "dev opened - actual name is '" << p.dev.getActualName() << "'" << std::endl;

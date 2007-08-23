@@ -58,6 +58,7 @@ protected:
   friend class TunDevice;
   friend class UDPPacketSource;
   friend class AesIcmCypher;
+  friend class KeyDerivation;   // 
 
   u_int8_t *buf_;
   u_int32_t length_;

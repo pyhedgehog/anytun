@@ -40,7 +40,9 @@ class Cypher
 public:
   Cypher() {};
   virtual ~Cypher() {};
-  
+ 
+  void setKey(Buffer key) {};
+  void setSalt(Buffer salt) {};
   void cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id);
   
 protected:
@@ -57,13 +59,17 @@ protected:
 class AesIcmCypher : public Cypher
 {
 public:
-//  AesIcmCypher() {};
-//  ~AesIcmCypher() {};
+  AesIcmCypher() : key_(Buffer(0)), salt_(Buffer(14)) {};
+  void setKey(Buffer key);
+  void setSalt(Buffer salt);
   void cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id);
 
 protected:
   Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) { return Buffer(); };
 
+private:
+  Buffer key_;
+  Buffer salt_;   // size: 112 bit
 };
 
 #endif

@@ -52,14 +52,14 @@ public:
   KeyDerivation() : ld_kdr_(-1), cipher_(NULL) {};
   virtual ~KeyDerivation() {};
 
-  err_status_t init(const uint8_t key[30], const uint8_t salt[14]);
+  err_status_t init(Buffer key, Buffer salt);
   err_status_t setLogKDRate(const uint8_t ld_rate);
-  err_status_t generate(satp_prf_label label, seq_nr_t seq_nr, uint8_t *key, uint32_t length);
+  err_status_t generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, uint32_t length);
   err_status_t clear();
 
 protected:
   int8_t ld_kdr_;     // ld(key_derivation_rate)
-  uint8_t salt_[14];
+  Buffer salt_;
 
   cipher_t* cipher_;
 };

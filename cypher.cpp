@@ -32,6 +32,8 @@
 #include <vector>
 
 #include "cypher.h"
+#include "keyDerivation.h"
+
 
 extern "C" {
 #include <srtp/crypto_kernel.h>
@@ -62,44 +64,69 @@ Buffer NullCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t s
 }
 
 
+void AesIcmCypher::setKey(Buffer key)
+{
+  key_ = key;
+}
+
+void AesIcmCypher::setSalt(Buffer salt)
+{
+  salt = salt;
+}
+
 void AesIcmCypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
 {
   extern cipher_type_t aes_icm;
   err_status_t status = err_status_ok;
   cipher_t* cipher = NULL;
   uint32_t length = 0;
+  v128_t iv, sid, seq, salt;
 
-  uint8_t key[] = {
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-    0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d
-  };
-
-  v128_t iv;
   v128_set_to_zero(&iv);
+  v128_set_to_zero(&sid);
+  v128_set_to_zero(&seq);
+  v128_set_to_zero(&salt);
 
   // allocate cipher
+  // FIXXME: why we do not can do this???
+//  status = cipher_type_alloc(&aes_icm, &cipher, key_.getLength());
   status = cipher_type_alloc(&aes_icm, &cipher, 30);
+  if( status ) 
+    return;
 
   // init cipher
-  status = cipher_init(cipher, key, direction_any);
+  status = cipher_init(cipher, key_.getBuf(), direction_any);
+  if( status )
+  {
+    cipher_dealloc(cipher);
+    return;
+  }
 
-  //set iv
+  // set IV
   //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
   //  SRTP packet index i, and the SRTP session salting key k_s, as below.
   //
   //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
+  // sizeof(k_s) = 112 bit, random
 
-  // sizeof(k_s) = 112, random
+//  iv.v32[0] ^= 0;
+//  iv.v32[1] ^= sender_id; 
+//  iv.v32[2] ^= (seq_nr >> 16);
+//  iv.v32[3] ^= (seq_nr << 16);
 
-  iv.v32[0] ^= 0;
-  iv.v32[1] ^= sender_id; 
-  iv.v32[2] ^= (seq_nr >> 16);
-  iv.v32[3] ^= (seq_nr << 16);
+  seq.v64[0] = seq_nr;
+  sid.v64[0] = sender_id;
+  v128_copy_octet_string(&salt, salt_.getBuf());
+  v128_left_shift(&salt, 16);
+  v128_left_shift(&sid, 64);
+  v128_left_shift(&seq, 16);
 
+  v128_xor(&iv, &salt, &sid);
+  v128_xor(&iv, &iv, &seq);
 
   status = cipher_set_iv(cipher, &iv);
+  if( status )
+    cipher_dealloc(cipher);
 
   length = buf.getLength();
   
