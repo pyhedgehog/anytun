@@ -468,7 +468,7 @@ pf_key_v2_write(struct pf_key_v2_msg *pmsg)
 		    (u_int8_t *) iov[i].iov_base, iov[i].iov_len));
 	}
 
-	n = writev(pf_key_v2_socket, iov, cnt);
+	n = writev(pf_key_v4_socket, iov, cnt);
 	if (n == -1) {
 		log_error("pf_key_v2_write: writev (%d, %p, %d) failed",
 		    pf_key_v2_socket, iov, cnt);

@@ -34,12 +34,13 @@ website-if-available: http://www.gsenger.com/satp/
 %
 % Which address prefix will originate from the new AS Number?
 
-prefix:
+prefix: 77.87.240.0/21
+prefix: 2001:7fc::/32
 
 % If the address assignment is waiting for approval, please 
 % include the ticket number of the request below.
 
-pending-ticket-ID: NCC#2007074014
+pending-ticket-ID:
 
  
 #[PEERING CONTACTS]#
