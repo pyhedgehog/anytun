@@ -91,11 +91,8 @@ void* sender(void* p)
     param->c.setSalt(tmp_salt);
 
     std::cout << "seq: " << seq << std::endl << "sID: " <<  param->opt.getSenderId() << std::endl;
-    std::cout << "bevore cipher: " << std::endl << pack.getBuf() << std::endl;
 
     param->c.cypher(pack, seq, param->opt.getSenderId());
-
-    std::cout << "after cipher: " << std::endl << pack.getBuf() << std::endl;
 
     // add header to packet
     pack.addHeader(seq, param->opt.getSenderId());
