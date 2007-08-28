@@ -30,6 +30,7 @@
 
 #include <stdexcept>
 #include <vector>
+#include <iostream>
 
 #include "cypher.h"
 #include "keyDerivation.h"
@@ -41,6 +42,7 @@ extern "C" {
 
 void Cypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
 {
+  std::cout << "Cypher::cypher called" << std::endl;
   Buffer stream = getBitStream(buf.getLength(), seq_nr, sender_id);
   exor(buf, stream);
 }
@@ -74,12 +76,12 @@ void AesIcmCypher::setSalt(Buffer salt)
   salt = salt;
 }
 
-void AesIcmCypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
+Buffer AesIcmCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
+  Buffer buf(length);
   extern cipher_type_t aes_icm;
   err_status_t status = err_status_ok;
   cipher_t* cipher = NULL;
-  uint32_t length = 0;
   v128_t iv, sid, seq, salt;
 
   v128_set_to_zero(&iv);
@@ -87,19 +89,20 @@ void AesIcmCypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
   v128_set_to_zero(&seq);
   v128_set_to_zero(&salt);
 
+  std::cout << "AesIcmCypher::getBitStream called" << std::endl;
   // allocate cipher
   // FIXXME: why we do not can do this???
 //  status = cipher_type_alloc(&aes_icm, &cipher, key_.getLength());
   status = cipher_type_alloc(&aes_icm, &cipher, 30);
   if( status ) 
-    return;
+    return Buffer(0);
 
   // init cipher
   status = cipher_init(cipher, key_.getBuf(), direction_any);
   if( status )
   {
     cipher_dealloc(cipher);
-    return;
+    return Buffer(0);
   }
 
   // set IV
@@ -108,11 +111,6 @@ void AesIcmCypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
   //
   //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
   // sizeof(k_s) = 112 bit, random
-
-//  iv.v32[0] ^= 0;
-//  iv.v32[1] ^= sender_id; 
-//  iv.v32[2] ^= (seq_nr >> 16);
-//  iv.v32[3] ^= (seq_nr << 16);
 
   seq.v64[0] = seq_nr;
   sid.v64[0] = sender_id;
@@ -128,9 +126,70 @@ void AesIcmCypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
   if( status )
     cipher_dealloc(cipher);
 
-  length = buf.getLength();
-  
-  status = cipher_encrypt(cipher, buf, &length);
+  status = cipher_output(cipher, buf, length);
   status = cipher_dealloc(cipher);
+  return buf;
 }
 
+//
+//void AesIcmCypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
+//{
+//  extern cipher_type_t aes_icm;
+//  err_status_t status = err_status_ok;
+//  cipher_t* cipher = NULL;
+//  uint32_t length = 0;
+//  v128_t iv, sid, seq, salt;
+//
+//  v128_set_to_zero(&iv);
+//  v128_set_to_zero(&sid);
+//  v128_set_to_zero(&seq);
+//  v128_set_to_zero(&salt);
+//
+//  std::cout << "AesIcmCypher::cypher called" << std::endl;
+//  // allocate cipher
+//  // FIXXME: why we do not can do this???
+////  status = cipher_type_alloc(&aes_icm, &cipher, key_.getLength());
+//  status = cipher_type_alloc(&aes_icm, &cipher, 30);
+//  if( status ) 
+//    return;
+//
+//  // init cipher
+//  status = cipher_init(cipher, key_.getBuf(), direction_any);
+//  if( status )
+//  {
+//    cipher_dealloc(cipher);
+//    return;
+//  }
+//
+//  // set IV
+//  //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
+//  //  SRTP packet index i, and the SRTP session salting key k_s, as below.
+//  //
+//  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
+//  // sizeof(k_s) = 112 bit, random
+//
+////  iv.v32[0] ^= 0;
+////  iv.v32[1] ^= sender_id; 
+////  iv.v32[2] ^= (seq_nr >> 16);
+////  iv.v32[3] ^= (seq_nr << 16);
+//
+//  seq.v64[0] = seq_nr;
+//  sid.v64[0] = sender_id;
+//  v128_copy_octet_string(&salt, salt_.getBuf());
+//  v128_left_shift(&salt, 16);
+//  v128_left_shift(&sid, 64);
+//  v128_left_shift(&seq, 16);
+//
+//  v128_xor(&iv, &salt, &sid);
+//  v128_xor(&iv, &iv, &seq);
+//
+//  status = cipher_set_iv(cipher, &iv);
+//  if( status )
+//    cipher_dealloc(cipher);
+//
+//  length = buf.getLength();
+//  
+//  status = cipher_encrypt(cipher, buf, &length);
+//  status = cipher_dealloc(cipher);
+//}
+//
