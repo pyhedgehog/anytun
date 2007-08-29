@@ -117,6 +117,7 @@ void* receiver(void* p)
   {
     string remote_host;
     u_int16_t remote_port;
+    u_int16_t sid = 0, seq = 0;
     Packet pack(1600);  // fix me... mtu size
 
     // read packet from socket
@@ -136,6 +137,9 @@ void* receiver(void* p)
       param->opt.setRemoteAddrPort(remote_host, remote_port);
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
     }
+
+    sid = pack.getSenderId();
+    seq = pack.getSeqNr();
     // compare sender_id and seq with window
     if(param->seq.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
       continue;
@@ -144,14 +148,14 @@ void* receiver(void* p)
 
     // decypher the packet
     Buffer tmp_key(16), tmp_salt(14);
-    param->kd.generate(label_satp_encryption, pack.getSeqNr(), tmp_key, tmp_key.getLength());
-    param->kd.generate(label_satp_salt, pack.getSeqNr(), tmp_salt, tmp_salt.getLength());
+    param->kd.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
+    param->kd.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
     param->c.setKey(tmp_key);
     param->c.setSalt(tmp_salt);
-    param->c.cypher(pack, pack.getSeqNr(), pack.getSenderId());
+    param->c.cypher(pack, seq, sid);
    
-    std::cout << "Received Package: seq: " << pack.getSeqNr() << std::endl << "sID: " << pack.getSenderId() << std::endl;
-    std::cout << "Package dump: " << pack.getBuf() << std::endl;
+    std::cout << "Received Package: seq: " << seq << std::endl << "sID: " << sid << std::endl;
+    std::cout << "Package dump: " << seq << std::endl;
 
     // check payload_type and remove it
     if((param->dev.getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
