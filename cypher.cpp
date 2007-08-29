@@ -42,7 +42,6 @@ extern "C" {
 
 void Cypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
 {
-  std::cout << "Cypher::cypher called" << std::endl;
   Buffer stream = getBitStream(buf.getLength(), seq_nr, sender_id);
   exor(buf, stream);
 }
@@ -89,7 +88,6 @@ Buffer AesIcmCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t
   v128_set_to_zero(&seq);
   v128_set_to_zero(&salt);
 
-  std::cout << "AesIcmCypher::getBitStream called" << std::endl;
   // allocate cipher
   // FIXXME: why we do not can do this???
 //  status = cipher_type_alloc(&aes_icm, &cipher, key_.getLength());
