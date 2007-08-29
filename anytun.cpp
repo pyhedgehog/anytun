@@ -201,8 +201,8 @@ int main(int argc, char* argv[])
   KeyDerivation kd;
   kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
 
-//  NullCypher c;
-  AesIcmCypher c;
+  NullCypher c;
+//  AesIcmCypher c;
   NullAuthAlgo a;
   PacketSource* src;
   if(opt.getLocalAddr() == "")
