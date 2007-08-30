@@ -155,7 +155,7 @@ void* receiver(void* p)
     param->c.cypher(pack, seq, sid);
    
     std::cout << "Received Package: seq: " << seq << std::endl << "sID: " << sid << std::endl;
-    std::cout << "Package dump: " << pack.getBuf() << std::endl;
+    //std::cout << "Package dump: " << pack.getBuf() << std::endl;
 
     // check payload_type and remove it
     if((param->dev.getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
