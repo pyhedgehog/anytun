@@ -132,11 +132,11 @@ void* receiver(void* p)
       continue;
 
     // autodetect peer
-    if(param->opt.getRemoteAddr() == "")
-    {
+//    if(param->opt.getRemoteAddr() == "")
+//    {
       param->opt.setRemoteAddrPort(remote_host, remote_port);
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
-    }
+//    }
 
     sid = pack.getSenderId();
     seq = pack.getSeqNr();
