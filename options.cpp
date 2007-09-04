@@ -129,7 +129,7 @@ void Options::printUsage()
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
   std::cout << "       [-d|--dev] <name>                   device name/type" << std::endl;
   std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
-            << "                       <remote/netmask>    the remote address(tun) or netmask(tap)" << std::endl;
+            << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
   std::cout << "       [-c|--cypher] <cypher type>         type of cypher" << std::endl;
   std::cout << "       [-a|--auth-algo] <algo type>        authentication algoritm" << std::endl;
