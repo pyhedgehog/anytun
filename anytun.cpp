@@ -182,8 +182,8 @@ int main(int argc, char* argv[])
 
   SignalController sig;
   sig.init();
-  
-  TunDevice dev(opt.getDevName().c_str(),opt.getDevType().c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
+  std::string dev_type(opt.getDevType()); 
+  TunDevice dev(opt.getDevName().c_str(), dev_type=="" ? NULL : dev_type.c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
   SeqWindow seq(opt.getSeqWindowSize());
 
   uint8_t key[] = {
