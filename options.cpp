@@ -80,6 +80,7 @@ Options::Options()
   remote_addr_ = "";
   remote_port_ = 4444;
   dev_name_ = "tap";
+  dev_type_ = "";
   ifconfig_param_local_ = "192.168.200.1";
   ifconfig_param_remote_netmask_ = "255.255.255.0";
   seq_window_size_ = 100;
@@ -107,6 +108,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-r","--remote-host", remote_addr_)
     PARSE_SCALAR_PARAM("-o","--remote-port", remote_port_)
     PARSE_SCALAR_PARAM("-d","--dev", dev_name_)
+    PARSE_SCALAR_PARAM("-t","--type", dev_type_)
     PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
     PARSE_SCALAR_PARAM("-c","--cypher", cypher_)
@@ -127,7 +129,8 @@ void Options::printUsage()
   std::cout << "       [-p|--port] <port>                  local port to bind to" << std::endl;
   std::cout << "       [-r|--remote-host] <hostname/ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
-  std::cout << "       [-d|--dev] <name>                   device name/type" << std::endl;
+  std::cout << "       [-d|--dev] <name>                   device name" << std::endl;
+  std::cout << "       [-t|--type] <tun|tap>                   device type" << std::endl;
   std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
@@ -145,6 +148,7 @@ void Options::printOptions()
   std::cout << "remote_addr='" << remote_addr_ << "'" << std::endl;
   std::cout << "remote_port='" << remote_port_ << "'" << std::endl;
   std::cout << "dev_name='" << dev_name_ << "'" << std::endl;
+  std::cout << "dev_type='" << dev_type_ << "'" << std::endl;
   std::cout << "ifconfig_param_local='" << ifconfig_param_local_ << "'" << std::endl;
   std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
   std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
@@ -238,10 +242,23 @@ std::string Options::getDevName()
   return dev_name_;
 }
 
+std::string Options::getDevType()
+{
+  Lock lock(mutex);
+  return dev_type_;
+}
+
 Options& Options::setDevName(std::string d)
 {
   Lock lock(mutex);
   dev_name_ = d;
+  return *this;
+}
+
+Options& Options::setDevType(std::string d)
+{
+  Lock lock(mutex);
+  dev_type_ = d;
   return *this;
 }
 

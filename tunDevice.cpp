@@ -41,7 +41,7 @@ extern "C" {
 #include "threadUtils.hpp"
 
 
-TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifcfg_rnmp)
+TunDevice::TunDevice(const char* dev_name,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
 {
   dev_ = NULL;
 
@@ -92,7 +92,7 @@ TunDevice::TunDevice(const char* dev_name, const char* ifcfg_lp, const char* ifc
 //   lp = inet_addr("192.168.198.1");
 //   rp = inet_addr("192.168.199.1");
 
-  dev_ = init_tun(dev_name, NULL, ifcfg_lp, ifcfg_rnmp, lp, rp, 0, NULL);
+  dev_ = init_tun(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, lp, rp, 0, NULL);
   struct frame frame; // just for win32
   struct tuntap_options options; // win32 & linux
   options.txqueuelen = 100; // just for linux

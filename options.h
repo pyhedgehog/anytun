@@ -56,6 +56,8 @@ public:
   Options& setRemoteAddrPort(std::string addr, u_int16_t port);
   std::string getDevName();
   Options& setDevName(std::string d);
+  std::string getDevType();
+  Options& setDevType(std::string d);
   std::string getIfconfigParamLocal();
   Options& setIfconfigParamLocal(std::string i);
   std::string getIfconfigParamRemoteNetmask();
@@ -77,6 +79,7 @@ private:
   std::string remote_addr_;
   u_int16_t remote_port_;
   std::string dev_name_;
+  std::string dev_type_;
   std::string ifconfig_param_local_;
   std::string ifconfig_param_remote_netmask_;
   window_size_t seq_window_size_;

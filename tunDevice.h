@@ -41,7 +41,7 @@ public:
   static const u_int32_t TYPE_TUN = 1;
   static const u_int32_t TYPE_TAP = 2;
 
-  TunDevice(const char* dev, const char* ifcfg_lp, const char* ifcfg_rnmp);
+  TunDevice(const char* dev,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp);
   ~TunDevice();
   
   void open();
