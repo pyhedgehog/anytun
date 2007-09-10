@@ -54,6 +54,8 @@ SeqWindow::SeqDeque::size_type SeqWindow::getLength(sender_id_t sender)
 bool SeqWindow::hasSeqNr(sender_id_t sender, seq_nr_t seq)
 {
   Lock lock(mutex_);
+  if (!window_size_)
+    return false;
   SenderMap::const_iterator s = sender_.find(sender);
   if(s == sender_.end())
     return false;
