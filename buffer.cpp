@@ -30,8 +30,8 @@
 
 #include <stdexcept>
 #include <string>
-#include <iostream>
 #include <cstdio>
+#include <iostream>
 
 #include "datatypes.h"
 #include "buffer.h"
@@ -165,15 +165,13 @@ Buffer::operator u_int8_t*() // just for write/read tun
   return buf_;
 }
 
-std::ostream& operator<<(std::ostream& output, const Buffer &src)
+void Buffer::printHexDump() const
 {
-  char buf[10];
+  char text[10];
 
-  for( u_int32_t index = 0; index < src.getLength(); index++ )
+  for( u_int32_t index = 0; index < length_; index++ )
   {
-    std::sprintf(buf, "%#x", src[index]);
-    output << buf << " ";
+    std::sprintf(text, "%#x", buf_[index]);
+    std::cout << text << " ";
   }
-  
-  return output;
 }
