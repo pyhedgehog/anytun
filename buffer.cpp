@@ -30,6 +30,8 @@
 
 #include <stdexcept>
 #include <string>
+#include <iostream>
+#include <cstdio>
 
 #include "datatypes.h"
 #include "buffer.h"
@@ -163,3 +165,15 @@ Buffer::operator u_int8_t*() // just for write/read tun
   return buf_;
 }
 
+std::ostream& operator<<(std::ostream& output, const Buffer &src)
+{
+  char buf[10];
+
+  for( u_int32_t index = 0; index < src.getLength(); index++ )
+  {
+    std::sprintf(buf, "%#x", src[index]);
+    output << buf << " ";
+  }
+  
+  return output;
+}
