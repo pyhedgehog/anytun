@@ -7,4 +7,6 @@ sleep 5
 sleep 5
 ip route add 77.87.241.0/24 via 77.87.240.3 dev anytun0 
 ip link set anytun0 mtu 1400
+sleep 3
+/etc/init.d/snmpd restart
 exit 0
