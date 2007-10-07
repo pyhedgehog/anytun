@@ -1,0 +1,96 @@
+\section{Mutex Class Reference}
+\label{classMutex}\index{Mutex@{Mutex}}
+{\tt \#include $<$thread\-Utils.hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf Mutex} ()
+\item 
+{\bf $\sim$Mutex} ()
+\end{CompactItemize}
+\subsection*{Private Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf Mutex} (const {\bf Mutex} \&src)
+\item 
+void {\bf operator=} (const {\bf Mutex} \&src)
+\item 
+void {\bf lock} ()
+\item 
+void {\bf unlock} ()
+\end{CompactItemize}
+\subsection*{Private Attributes}
+\begin{CompactItemize}
+\item 
+pthread\_\-mutex\_\-t {\bf mutex}
+\end{CompactItemize}
+\subsection*{Friends}
+\begin{CompactItemize}
+\item 
+class {\bf Lock}
+\item 
+class {\bf Condition}
+\end{CompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Mutex@{Mutex}!Mutex@{Mutex}}
+\index{Mutex@{Mutex}!Mutex@{Mutex}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Mutex::Mutex ()\hspace{0.3cm}{\tt  [inline]}}\label{classMutex_593423d868daf926c7b0d63a833ae29a}
+
+
+\index{Mutex@{Mutex}!~Mutex@{$\sim$Mutex}}
+\index{~Mutex@{$\sim$Mutex}!Mutex@{Mutex}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Mutex::$\sim$Mutex ()\hspace{0.3cm}{\tt  [inline]}}\label{classMutex_c9e9182407f5f74892318607888e9be4}
+
+
+\index{Mutex@{Mutex}!Mutex@{Mutex}}
+\index{Mutex@{Mutex}!Mutex@{Mutex}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Mutex::Mutex (const {\bf Mutex} \& {\em src})\hspace{0.3cm}{\tt  [private]}}\label{classMutex_7f1ad3a125c7a02b2ca338240bd1d978}
+
+
+
+
+\subsection{Member Function Documentation}
+\index{Mutex@{Mutex}!operator=@{operator=}}
+\index{operator=@{operator=}!Mutex@{Mutex}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Mutex::operator= (const {\bf Mutex} \& {\em src})\hspace{0.3cm}{\tt  [private]}}\label{classMutex_030a11400d00ef97813c6b232a5e3f43}
+
+
+\index{Mutex@{Mutex}!lock@{lock}}
+\index{lock@{lock}!Mutex@{Mutex}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Mutex::lock ()\hspace{0.3cm}{\tt  [inline, private]}}\label{classMutex_d91be808bf0a60a16f10b897ec246d3a}
+
+
+\index{Mutex@{Mutex}!unlock@{unlock}}
+\index{unlock@{unlock}!Mutex@{Mutex}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Mutex::unlock ()\hspace{0.3cm}{\tt  [inline, private]}}\label{classMutex_546a5b797ba29959357586aa2b3740a8}
+
+
+
+
+\subsection{Friends And Related Function Documentation}
+\index{Mutex@{Mutex}!Lock@{Lock}}
+\index{Lock@{Lock}!Mutex@{Mutex}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}friend class {\bf Lock}\hspace{0.3cm}{\tt  [friend]}}\label{classMutex_5bf7608e05250fb524a1229bcf83ece3}
+
+
+\index{Mutex@{Mutex}!Condition@{Condition}}
+\index{Condition@{Condition}!Mutex@{Mutex}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}friend class {\bf Condition}\hspace{0.3cm}{\tt  [friend]}}\label{classMutex_0705c7682858f6dcf7fe85cba92f0a5c}
+
+
+
+
+\subsection{Member Data Documentation}
+\index{Mutex@{Mutex}!mutex@{mutex}}
+\index{mutex@{mutex}!Mutex@{Mutex}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}pthread\_\-mutex\_\-t {\bf Mutex::mutex}\hspace{0.3cm}{\tt  [private]}}\label{classMutex_8feb0b01916c1feedd1f0c0dcd74081b}
+
+
+
+
+The documentation for this class was generated from the following file:\begin{CompactItemize}
+\item 
+{\bf thread\-Utils.hpp}\end{CompactItemize}

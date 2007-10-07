@@ -1,0 +1,74 @@
+\section{Log\-String\-Builder Class Reference}
+\label{classLogStringBuilder}\index{LogStringBuilder@{LogStringBuilder}}
+{\tt \#include $<$log.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf Log\-String\-Builder} ({\bf Log\-String\-Builder} const \&src)
+\item 
+{\bf Log\-String\-Builder} ({\bf Log} \&l, int p)
+\item 
+{\bf $\sim$Log\-String\-Builder} ()
+\item 
+template$<$class T$>$ std::ostream \& {\bf operator$<$$<$} (T const \&value)
+\end{CompactItemize}
+\subsection*{Private Attributes}
+\begin{CompactItemize}
+\item 
+{\bf Log} \& {\bf log}
+\item 
+int {\bf prio}
+\item 
+std::stringstream {\bf stream}
+\end{CompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{LogStringBuilder@{Log\-String\-Builder}!LogStringBuilder@{LogStringBuilder}}
+\index{LogStringBuilder@{LogStringBuilder}!LogStringBuilder@{Log\-String\-Builder}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Log\-String\-Builder::Log\-String\-Builder ({\bf Log\-String\-Builder} const \& {\em src})}\label{classLogStringBuilder_5df8c8d7ab7615c8552de3d4d21d3417}
+
+
+\index{LogStringBuilder@{Log\-String\-Builder}!LogStringBuilder@{LogStringBuilder}}
+\index{LogStringBuilder@{LogStringBuilder}!LogStringBuilder@{Log\-String\-Builder}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Log\-String\-Builder::Log\-String\-Builder ({\bf Log} \& {\em l}, int {\em p})}\label{classLogStringBuilder_a9393394f93ca644c8a851fb8fe04e24}
+
+
+\index{LogStringBuilder@{Log\-String\-Builder}!~LogStringBuilder@{$\sim$LogStringBuilder}}
+\index{~LogStringBuilder@{$\sim$LogStringBuilder}!LogStringBuilder@{Log\-String\-Builder}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Log\-String\-Builder::$\sim$Log\-String\-Builder ()}\label{classLogStringBuilder_c63707864e0005008cc4a67d8dec9933}
+
+
+
+
+\subsection{Member Function Documentation}
+\index{LogStringBuilder@{Log\-String\-Builder}!operator<<@{operator$<$$<$}}
+\index{operator<<@{operator$<$$<$}!LogStringBuilder@{Log\-String\-Builder}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ std::ostream\& Log\-String\-Builder::operator$<$$<$ (T const \& {\em value})\hspace{0.3cm}{\tt  [inline]}}\label{classLogStringBuilder_9b4f26f5e64aacc172c0818073117e42}
+
+
+
+
+\subsection{Member Data Documentation}
+\index{LogStringBuilder@{Log\-String\-Builder}!log@{log}}
+\index{log@{log}!LogStringBuilder@{Log\-String\-Builder}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Log}\& {\bf Log\-String\-Builder::log}\hspace{0.3cm}{\tt  [private]}}\label{classLogStringBuilder_499c5b058df61e2215368592d21aacf1}
+
+
+\index{LogStringBuilder@{Log\-String\-Builder}!prio@{prio}}
+\index{prio@{prio}!LogStringBuilder@{Log\-String\-Builder}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf Log\-String\-Builder::prio}\hspace{0.3cm}{\tt  [private]}}\label{classLogStringBuilder_89d48a7590de117fec0b40c0babbaee5}
+
+
+\index{LogStringBuilder@{Log\-String\-Builder}!stream@{stream}}
+\index{stream@{stream}!LogStringBuilder@{Log\-String\-Builder}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::stringstream {\bf Log\-String\-Builder::stream}\hspace{0.3cm}{\tt  [private]}}\label{classLogStringBuilder_405447561d3d7337cc093dad6c6d81b5}
+
+
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+{\bf log.h}\item 
+{\bf log.cpp}\end{CompactItemize}

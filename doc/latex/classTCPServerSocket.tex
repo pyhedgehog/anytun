@@ -1,0 +1,88 @@
+\section{TCPServer\-Socket Class Reference}
+\label{classTCPServerSocket}\index{TCPServerSocket@{TCPServerSocket}}
+{\tt \#include $<$Practical\-Socket.h$>$}
+
+Inheritance diagram for TCPServer\-Socket::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classTCPServerSocket}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf TCPServer\-Socket} (unsigned short local\-Port, int queue\-Len=5)  throw (Socket\-Exception)
+\item 
+{\bf TCPServer\-Socket} (const string \&local\-Address, unsigned short local\-Port, int queue\-Len=5)  throw (Socket\-Exception)
+\item 
+{\bf TCPSocket} $\ast$ {\bf accept} ()  throw (Socket\-Exception)
+\end{CompactItemize}
+\subsection*{Private Member Functions}
+\begin{CompactItemize}
+\item 
+void {\bf set\-Listen} (int queue\-Len)  throw (Socket\-Exception)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+TCP socket class for servers 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{TCPServerSocket@{TCPServer\-Socket}!TCPServerSocket@{TCPServerSocket}}
+\index{TCPServerSocket@{TCPServerSocket}!TCPServerSocket@{TCPServer\-Socket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}TCPServer\-Socket::TCPServer\-Socket (unsigned short {\em local\-Port}, int {\em queue\-Len} = {\tt 5})  throw ({\bf Socket\-Exception})}\label{classTCPServerSocket_e559a3154527d09fe14a8e5ee1f53d7a}
+
+
+Construct a TCP socket for use with a server, accepting connections on the specified port on any interface \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em local\-Port}]local port of server socket, a value of zero will give a system-assigned unused port \item[{\em queue\-Len}]maximum queue length for outstanding connection requests (default 5) \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to create TCP server socket \end{description}
+\end{Desc}
+\index{TCPServerSocket@{TCPServer\-Socket}!TCPServerSocket@{TCPServerSocket}}
+\index{TCPServerSocket@{TCPServerSocket}!TCPServerSocket@{TCPServer\-Socket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}TCPServer\-Socket::TCPServer\-Socket (const string \& {\em local\-Address}, unsigned short {\em local\-Port}, int {\em queue\-Len} = {\tt 5})  throw ({\bf Socket\-Exception})}\label{classTCPServerSocket_3908fecb1b038f7c14fcc7726f54d01d}
+
+
+Construct a TCP socket for use with a server, accepting connections on the specified port on the interface specified by the given address \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em local\-Address}]local interface (address) of server socket \item[{\em local\-Port}]local port of server socket \item[{\em queue\-Len}]maximum queue length for outstanding connection requests (default 5) \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to create TCP server socket \end{description}
+\end{Desc}
+
+
+\subsection{Member Function Documentation}
+\index{TCPServerSocket@{TCPServer\-Socket}!accept@{accept}}
+\index{accept@{accept}!TCPServerSocket@{TCPServer\-Socket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf TCPSocket} $\ast$ TCPServer\-Socket::accept ()  throw ({\bf Socket\-Exception})}\label{classTCPServerSocket_1d161137e1b069de7a7bfc14d3f8212c}
+
+
+Blocks until a new connection is established on this socket or error \begin{Desc}
+\item[Returns:]new connection socket \end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if attempt to accept a new connection fails \end{description}
+\end{Desc}
+\index{TCPServerSocket@{TCPServer\-Socket}!setListen@{setListen}}
+\index{setListen@{setListen}!TCPServerSocket@{TCPServer\-Socket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void TCPServer\-Socket::set\-Listen (int {\em queue\-Len})  throw ({\bf Socket\-Exception})\hspace{0.3cm}{\tt  [private]}}\label{classTCPServerSocket_1f39a2e6721ab62d8875a234eb300bab}
+
+
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+{\bf Practical\-Socket.h}\item 
+{\bf Practical\-Socket.cpp}\end{CompactItemize}

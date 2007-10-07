@@ -1,0 +1,340 @@
+\section{Options Class Reference}
+\label{classOptions}\index{Options@{Options}}
+{\tt \#include $<$options.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf Options} ()
+\item 
+bool {\bf parse} (int argc, char $\ast$argv[$\,$])
+\item 
+void {\bf print\-Usage} ()
+\item 
+void {\bf print\-Options} ()
+\item 
+std::string {\bf get\-Progname} ()
+\item 
+{\bf Options} \& {\bf set\-Progname} (std::string p)
+\item 
+{\bf sender\_\-id\_\-t} {\bf get\-Sender\-Id} ()
+\item 
+{\bf Options} \& {\bf set\-Sender\-Id} ({\bf sender\_\-id\_\-t} s)
+\item 
+std::string {\bf get\-Local\-Addr} ()
+\item 
+{\bf Options} \& {\bf set\-Local\-Addr} (std::string l)
+\item 
+{\bf u\_\-int16\_\-t} {\bf get\-Local\-Port} ()
+\item 
+{\bf Options} \& {\bf set\-Local\-Port} ({\bf u\_\-int16\_\-t} l)
+\item 
+std::string {\bf get\-Remote\-Addr} ()
+\item 
+{\bf Options} \& {\bf set\-Remote\-Addr} (std::string r)
+\item 
+{\bf u\_\-int16\_\-t} {\bf get\-Remote\-Port} ()
+\item 
+{\bf Options} \& {\bf set\-Remote\-Port} ({\bf u\_\-int16\_\-t} r)
+\item 
+{\bf Options} \& {\bf set\-Remote\-Addr\-Port} (std::string addr, {\bf u\_\-int16\_\-t} port)
+\item 
+std::string {\bf get\-Dev\-Name} ()
+\item 
+{\bf Options} \& {\bf set\-Dev\-Name} (std::string d)
+\item 
+std::string {\bf get\-Dev\-Type} ()
+\item 
+{\bf Options} \& {\bf set\-Dev\-Type} (std::string d)
+\item 
+std::string {\bf get\-Ifconfig\-Param\-Local} ()
+\item 
+{\bf Options} \& {\bf set\-Ifconfig\-Param\-Local} (std::string i)
+\item 
+std::string {\bf get\-Ifconfig\-Param\-Remote\-Netmask} ()
+\item 
+{\bf Options} \& {\bf set\-Ifconfig\-Param\-Remote\-Netmask} (std::string i)
+\item 
+{\bf window\_\-size\_\-t} {\bf get\-Seq\-Window\-Size} ()
+\item 
+{\bf Options} \& {\bf set\-Seq\-Window\-Size} ({\bf window\_\-size\_\-t} s)
+\item 
+std::string {\bf get\-Cypher} ()
+\item 
+{\bf Options} \& {\bf set\-Cypher} (std::string c)
+\item 
+std::string {\bf get\-Auth\-Algo} ()
+\item 
+{\bf Options} \& {\bf set\-Auth\-Algo} (std::string a)
+\end{CompactItemize}
+\subsection*{Private Attributes}
+\begin{CompactItemize}
+\item 
+{\bf Mutex} {\bf mutex}
+\item 
+std::string {\bf progname\_\-}
+\item 
+{\bf sender\_\-id\_\-t} {\bf sender\_\-id\_\-}
+\item 
+std::string {\bf local\_\-addr\_\-}
+\item 
+{\bf u\_\-int16\_\-t} {\bf local\_\-port\_\-}
+\item 
+std::string {\bf remote\_\-addr\_\-}
+\item 
+{\bf u\_\-int16\_\-t} {\bf remote\_\-port\_\-}
+\item 
+std::string {\bf dev\_\-name\_\-}
+\item 
+std::string {\bf dev\_\-type\_\-}
+\item 
+std::string {\bf ifconfig\_\-param\_\-local\_\-}
+\item 
+std::string {\bf ifconfig\_\-param\_\-remote\_\-netmask\_\-}
+\item 
+{\bf window\_\-size\_\-t} {\bf seq\_\-window\_\-size\_\-}
+\item 
+std::string {\bf cypher\_\-}
+\item 
+std::string {\bf auth\_\-algo\_\-}
+\end{CompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Options@{Options}!Options@{Options}}
+\index{Options@{Options}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Options::Options ()}\label{classOptions_b72fb640172a6109e34c8a5366563753}
+
+
+
+
+\subsection{Member Function Documentation}
+\index{Options@{Options}!parse@{parse}}
+\index{parse@{parse}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}bool Options::parse (int {\em argc}, char $\ast$ {\em argv}[$\,$])}\label{classOptions_eef7f9799ffcc31221a54dc9ed3b3e81}
+
+
+\index{Options@{Options}!printUsage@{printUsage}}
+\index{printUsage@{printUsage}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Options::print\-Usage ()}\label{classOptions_5a64af47966f3c0a54a8c3a3385065e3}
+
+
+\index{Options@{Options}!printOptions@{printOptions}}
+\index{printOptions@{printOptions}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Options::print\-Options ()}\label{classOptions_cac40a32d05b48e49595d8d19cf8af47}
+
+
+\index{Options@{Options}!getProgname@{getProgname}}
+\index{getProgname@{getProgname}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Progname ()}\label{classOptions_af7b2ab27fc4b1a74ef89e9fdd0cfb22}
+
+
+\index{Options@{Options}!setProgname@{setProgname}}
+\index{setProgname@{setProgname}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Progname (std::string {\em p})}\label{classOptions_1267ce6d4b43ab9c0f8827c434b33b1b}
+
+
+\index{Options@{Options}!getSenderId@{getSenderId}}
+\index{getSenderId@{getSenderId}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sender\_\-id\_\-t} Options::get\-Sender\-Id ()}\label{classOptions_049d0dbe0f6ca10cc18d87924fb2322d}
+
+
+\index{Options@{Options}!setSenderId@{setSenderId}}
+\index{setSenderId@{setSenderId}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Sender\-Id ({\bf sender\_\-id\_\-t} {\em s})}\label{classOptions_d10f65b29130c7e31a332e22f77650b0}
+
+
+\index{Options@{Options}!getLocalAddr@{getLocalAddr}}
+\index{getLocalAddr@{getLocalAddr}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Local\-Addr ()}\label{classOptions_0b1ca05363913a66db8dcb829ebc21e2}
+
+
+\index{Options@{Options}!setLocalAddr@{setLocalAddr}}
+\index{setLocalAddr@{setLocalAddr}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Local\-Addr (std::string {\em l})}\label{classOptions_bf7ebb3ee98c6d31dd5c5b0732188de5}
+
+
+\index{Options@{Options}!getLocalPort@{getLocalPort}}
+\index{getLocalPort@{getLocalPort}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf u\_\-int16\_\-t} Options::get\-Local\-Port ()}\label{classOptions_44a66c61b99fc0d1a953493a3cd4dcab}
+
+
+\index{Options@{Options}!setLocalPort@{setLocalPort}}
+\index{setLocalPort@{setLocalPort}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Local\-Port ({\bf u\_\-int16\_\-t} {\em l})}\label{classOptions_a4b5b364bf2880fcbcd3fe059ccde7eb}
+
+
+\index{Options@{Options}!getRemoteAddr@{getRemoteAddr}}
+\index{getRemoteAddr@{getRemoteAddr}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Remote\-Addr ()}\label{classOptions_46343d900b4dd2ab8e0a7a2a9274e885}
+
+
+\index{Options@{Options}!setRemoteAddr@{setRemoteAddr}}
+\index{setRemoteAddr@{setRemoteAddr}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Remote\-Addr (std::string {\em r})}\label{classOptions_d0848af5b5e029a4ea14fe6fb82d3f46}
+
+
+\index{Options@{Options}!getRemotePort@{getRemotePort}}
+\index{getRemotePort@{getRemotePort}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf u\_\-int16\_\-t} Options::get\-Remote\-Port ()}\label{classOptions_4d2089d4216557810410f31ffa2dfc8b}
+
+
+\index{Options@{Options}!setRemotePort@{setRemotePort}}
+\index{setRemotePort@{setRemotePort}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Remote\-Port ({\bf u\_\-int16\_\-t} {\em r})}\label{classOptions_cbd3e9a4e230c2537d86127a092efd40}
+
+
+\index{Options@{Options}!setRemoteAddrPort@{setRemoteAddrPort}}
+\index{setRemoteAddrPort@{setRemoteAddrPort}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Remote\-Addr\-Port (std::string {\em addr}, {\bf u\_\-int16\_\-t} {\em port})}\label{classOptions_79249268d3b284f9e254f874cedeef41}
+
+
+\index{Options@{Options}!getDevName@{getDevName}}
+\index{getDevName@{getDevName}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Dev\-Name ()}\label{classOptions_acd35d4f958a4611ba10fc844583b744}
+
+
+\index{Options@{Options}!setDevName@{setDevName}}
+\index{setDevName@{setDevName}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Dev\-Name (std::string {\em d})}\label{classOptions_8217facd595355be2b4f1130179e3746}
+
+
+\index{Options@{Options}!getDevType@{getDevType}}
+\index{getDevType@{getDevType}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Dev\-Type ()}\label{classOptions_0762384e71fb10883a8fe245a389cee6}
+
+
+\index{Options@{Options}!setDevType@{setDevType}}
+\index{setDevType@{setDevType}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Dev\-Type (std::string {\em d})}\label{classOptions_d2a4cc3b2ecabba72396648a7a07cc29}
+
+
+\index{Options@{Options}!getIfconfigParamLocal@{getIfconfigParamLocal}}
+\index{getIfconfigParamLocal@{getIfconfigParamLocal}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Ifconfig\-Param\-Local ()}\label{classOptions_5354b737aa30d786c79f43547c78dc09}
+
+
+\index{Options@{Options}!setIfconfigParamLocal@{setIfconfigParamLocal}}
+\index{setIfconfigParamLocal@{setIfconfigParamLocal}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Ifconfig\-Param\-Local (std::string {\em i})}\label{classOptions_93e1367e5db67df81d2afac1ee5c6c73}
+
+
+\index{Options@{Options}!getIfconfigParamRemoteNetmask@{getIfconfigParamRemoteNetmask}}
+\index{getIfconfigParamRemoteNetmask@{getIfconfigParamRemoteNetmask}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Ifconfig\-Param\-Remote\-Netmask ()}\label{classOptions_ee9e8bcc21c6c8c81fc4ed79991d42d5}
+
+
+\index{Options@{Options}!setIfconfigParamRemoteNetmask@{setIfconfigParamRemoteNetmask}}
+\index{setIfconfigParamRemoteNetmask@{setIfconfigParamRemoteNetmask}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Ifconfig\-Param\-Remote\-Netmask (std::string {\em i})}\label{classOptions_d0760cecce7395f5022b921642674326}
+
+
+\index{Options@{Options}!getSeqWindowSize@{getSeqWindowSize}}
+\index{getSeqWindowSize@{getSeqWindowSize}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf window\_\-size\_\-t} Options::get\-Seq\-Window\-Size ()}\label{classOptions_893c688302a091bcf99cb327b23774fa}
+
+
+\index{Options@{Options}!setSeqWindowSize@{setSeqWindowSize}}
+\index{setSeqWindowSize@{setSeqWindowSize}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Seq\-Window\-Size ({\bf window\_\-size\_\-t} {\em s})}\label{classOptions_077dda754c64b01d6736aa4f7862ce6b}
+
+
+\index{Options@{Options}!getCypher@{getCypher}}
+\index{getCypher@{getCypher}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Cypher ()}\label{classOptions_71845d106fb9ccef0f8b682a125f4ffd}
+
+
+\index{Options@{Options}!setCypher@{setCypher}}
+\index{setCypher@{setCypher}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Cypher (std::string {\em c})}\label{classOptions_b3218cd91b41551042595b5216766c00}
+
+
+\index{Options@{Options}!getAuthAlgo@{getAuthAlgo}}
+\index{getAuthAlgo@{getAuthAlgo}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Auth\-Algo ()}\label{classOptions_ee7bd7127b7ab35e287fb479288e9641}
+
+
+\index{Options@{Options}!setAuthAlgo@{setAuthAlgo}}
+\index{setAuthAlgo@{setAuthAlgo}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Auth\-Algo (std::string {\em a})}\label{classOptions_c093c83be9a50c1dfd5170ff14b647c5}
+
+
+
+
+\subsection{Member Data Documentation}
+\index{Options@{Options}!mutex@{mutex}}
+\index{mutex@{mutex}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Mutex} {\bf Options::mutex}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_3effd9220086fd43e36884295f89bd7c}
+
+
+\index{Options@{Options}!progname_@{progname\_\-}}
+\index{progname_@{progname\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::progname\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_aed7d0eeae21d7d00eb35dccea48b9f3}
+
+
+\index{Options@{Options}!sender_id_@{sender\_\-id\_\-}}
+\index{sender_id_@{sender\_\-id\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sender\_\-id\_\-t} {\bf Options::sender\_\-id\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_f166d5f4f6fd17c761ac9a6d7e48d362}
+
+
+\index{Options@{Options}!local_addr_@{local\_\-addr\_\-}}
+\index{local_addr_@{local\_\-addr\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::local\_\-addr\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_d331507d07c87908a5b199a209a3e97e}
+
+
+\index{Options@{Options}!local_port_@{local\_\-port\_\-}}
+\index{local_port_@{local\_\-port\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf u\_\-int16\_\-t} {\bf Options::local\_\-port\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_744fc32e1b4f5c930251a8b0013f7f0a}
+
+
+\index{Options@{Options}!remote_addr_@{remote\_\-addr\_\-}}
+\index{remote_addr_@{remote\_\-addr\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::remote\_\-addr\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_af81d4d836e3ca1850b8b474d61944de}
+
+
+\index{Options@{Options}!remote_port_@{remote\_\-port\_\-}}
+\index{remote_port_@{remote\_\-port\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf u\_\-int16\_\-t} {\bf Options::remote\_\-port\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_8481cdc79ca8bde93af9b945838f4559}
+
+
+\index{Options@{Options}!dev_name_@{dev\_\-name\_\-}}
+\index{dev_name_@{dev\_\-name\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::dev\_\-name\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_3b094d71270549c85ca372f060bfe22c}
+
+
+\index{Options@{Options}!dev_type_@{dev\_\-type\_\-}}
+\index{dev_type_@{dev\_\-type\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::dev\_\-type\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_b0c850a5e29599156af92cf5b3ddff28}
+
+
+\index{Options@{Options}!ifconfig_param_local_@{ifconfig\_\-param\_\-local\_\-}}
+\index{ifconfig_param_local_@{ifconfig\_\-param\_\-local\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::ifconfig\_\-param\_\-local\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_fd0d76c7e1e2fa6fd9ee0538ff9124b0}
+
+
+\index{Options@{Options}!ifconfig_param_remote_netmask_@{ifconfig\_\-param\_\-remote\_\-netmask\_\-}}
+\index{ifconfig_param_remote_netmask_@{ifconfig\_\-param\_\-remote\_\-netmask\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::ifconfig\_\-param\_\-remote\_\-netmask\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_cd2c34152754ab7818ee4bfe3e1b9936}
+
+
+\index{Options@{Options}!seq_window_size_@{seq\_\-window\_\-size\_\-}}
+\index{seq_window_size_@{seq\_\-window\_\-size\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf window\_\-size\_\-t} {\bf Options::seq\_\-window\_\-size\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_d2a0398f717a96602f8c402db12699a5}
+
+
+\index{Options@{Options}!cypher_@{cypher\_\-}}
+\index{cypher_@{cypher\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::cypher\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_bba16365a15a6a87c90f85e143bebb5f}
+
+
+\index{Options@{Options}!auth_algo_@{auth\_\-algo\_\-}}
+\index{auth_algo_@{auth\_\-algo\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::auth\_\-algo\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_061ed690bdfa12bfc1094ca18293e97a}
+
+
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+{\bf options.h}\item 
+{\bf options.cpp}\end{CompactItemize}

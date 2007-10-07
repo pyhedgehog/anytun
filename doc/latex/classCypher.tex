@@ -1,0 +1,83 @@
+\section{Cypher Class Reference}
+\label{classCypher}\index{Cypher@{Cypher}}
+{\tt \#include $<$cypher.h$>$}
+
+Inheritance diagram for Cypher::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classCypher}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf Cypher} ()
+\item 
+virtual {\bf $\sim$Cypher} ()
+\item 
+void {\bf set\-Key} ({\bf Buffer} key)
+\item 
+void {\bf set\-Salt} ({\bf Buffer} salt)
+\item 
+void {\bf cypher} ({\bf Buffer} \&buf, {\bf seq\_\-nr\_\-t} seq\_\-nr, {\bf sender\_\-id\_\-t} sender\_\-id)
+\end{CompactItemize}
+\subsection*{Protected Member Functions}
+\begin{CompactItemize}
+\item 
+void {\bf exor} ({\bf Buffer} \&buf, const {\bf Buffer} \&bit\_\-stream)
+\item 
+virtual {\bf Buffer} {\bf get\-Bit\-Stream} ({\bf u\_\-int32\_\-t} length, {\bf seq\_\-nr\_\-t} seq\_\-nr, {\bf sender\_\-id\_\-t} sender\_\-id)=0
+\end{CompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Cypher@{Cypher}!Cypher@{Cypher}}
+\index{Cypher@{Cypher}!Cypher@{Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Cypher::Cypher ()\hspace{0.3cm}{\tt  [inline]}}\label{classCypher_5228228b0b2d83251ecce4516e87ddb1}
+
+
+\index{Cypher@{Cypher}!~Cypher@{$\sim$Cypher}}
+\index{~Cypher@{$\sim$Cypher}!Cypher@{Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}virtual Cypher::$\sim$Cypher ()\hspace{0.3cm}{\tt  [inline, virtual]}}\label{classCypher_70c94525f7bacb956cdd940fba7fb4c8}
+
+
+
+
+\subsection{Member Function Documentation}
+\index{Cypher@{Cypher}!setKey@{setKey}}
+\index{setKey@{setKey}!Cypher@{Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Cypher::set\-Key ({\bf Buffer} {\em key})\hspace{0.3cm}{\tt  [inline]}}\label{classCypher_7320b82d14391ab7d25271aa5114e190}
+
+
+
+
+Reimplemented in {\bf Aes\-Icm\-Cypher} \doxyref{}{p.}{classAesIcmCypher_605a38676ef12ad0b69628c5d53ef007}.\index{Cypher@{Cypher}!setSalt@{setSalt}}
+\index{setSalt@{setSalt}!Cypher@{Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Cypher::set\-Salt ({\bf Buffer} {\em salt})\hspace{0.3cm}{\tt  [inline]}}\label{classCypher_2546ef49e5ce8abe8062186d5f6b2ef8}
+
+
+
+
+Reimplemented in {\bf Aes\-Icm\-Cypher} \doxyref{}{p.}{classAesIcmCypher_6741487a9d6dfe3ae76bb168ed711259}.\index{Cypher@{Cypher}!cypher@{cypher}}
+\index{cypher@{cypher}!Cypher@{Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Cypher::cypher ({\bf Buffer} \& {\em buf}, {\bf seq\_\-nr\_\-t} {\em seq\_\-nr}, {\bf sender\_\-id\_\-t} {\em sender\_\-id})}\label{classCypher_1d51ce2235d38bded45f5e897be4435c}
+
+
+\index{Cypher@{Cypher}!exor@{exor}}
+\index{exor@{exor}!Cypher@{Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Cypher::exor ({\bf Buffer} \& {\em buf}, const {\bf Buffer} \& {\em bit\_\-stream})\hspace{0.3cm}{\tt  [protected]}}\label{classCypher_bf33a7a59ed1cdf711030236de6635b0}
+
+
+\index{Cypher@{Cypher}!getBitStream@{getBitStream}}
+\index{getBitStream@{getBitStream}!Cypher@{Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Buffer} Cypher::get\-Bit\-Stream ({\bf u\_\-int32\_\-t} {\em length}, {\bf seq\_\-nr\_\-t} {\em seq\_\-nr}, {\bf sender\_\-id\_\-t} {\em sender\_\-id})\hspace{0.3cm}{\tt  [protected, pure virtual]}}\label{classCypher_7ddf1bcd476978daa97148ec406d6483}
+
+
+
+
+Implemented in {\bf Null\-Cypher} \doxyref{}{p.}{classNullCypher_ca537adca8ea9af8b6f248df12ebcf36}, and {\bf Aes\-Icm\-Cypher} \doxyref{}{p.}{classAesIcmCypher_ebac1fbb9a4cb56411fcd45ca63f47a1}.
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+{\bf cypher.h}\item 
+{\bf cypher.cpp}\end{CompactItemize}

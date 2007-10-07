@@ -1,0 +1,68 @@
+\section{anytun.cpp File Reference}
+\label{anytun_8cpp}\index{anytun.cpp@{anytun.cpp}}
+{\tt \#include $<$iostream$>$}\par
+{\tt \#include $<$poll.h$>$}\par
+{\tt \#include \char`\"{}datatypes.h\char`\"{}}\par
+{\tt \#include \char`\"{}log.h\char`\"{}}\par
+{\tt \#include \char`\"{}buffer.h\char`\"{}}\par
+{\tt \#include \char`\"{}packet.h\char`\"{}}\par
+{\tt \#include \char`\"{}cypher.h\char`\"{}}\par
+{\tt \#include \char`\"{}key\-Derivation.h\char`\"{}}\par
+{\tt \#include \char`\"{}auth\-Algo.h\char`\"{}}\par
+{\tt \#include \char`\"{}signal\-Controller.h\char`\"{}}\par
+{\tt \#include \char`\"{}packet\-Source.h\char`\"{}}\par
+{\tt \#include \char`\"{}tun\-Device.h\char`\"{}}\par
+{\tt \#include \char`\"{}options.h\char`\"{}}\par
+{\tt \#include \char`\"{}seq\-Window.h\char`\"{}}\par
+\subsection*{Classes}
+\begin{CompactItemize}
+\item 
+struct {\bf Param}
+\end{CompactItemize}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define {\bf PAYLOAD\_\-TYPE\_\-TAP}~0x6558
+\item 
+\#define {\bf PAYLOAD\_\-TYPE\_\-TUN}~0x0800
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void $\ast$ {\bf sender} (void $\ast$p)
+\item 
+void $\ast$ {\bf receiver} (void $\ast$p)
+\item 
+int {\bf main} (int argc, char $\ast$argv[$\,$])
+\end{CompactItemize}
+
+
+\subsection{Define Documentation}
+\index{anytun.cpp@{anytun.cpp}!PAYLOAD_TYPE_TAP@{PAYLOAD\_\-TYPE\_\-TAP}}
+\index{PAYLOAD_TYPE_TAP@{PAYLOAD\_\-TYPE\_\-TAP}!anytun.cpp@{anytun.cpp}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PAYLOAD\_\-TYPE\_\-TAP~0x6558}\label{anytun_8cpp_f591627e223468579b78887ef91cb0ac}
+
+
+\index{anytun.cpp@{anytun.cpp}!PAYLOAD_TYPE_TUN@{PAYLOAD\_\-TYPE\_\-TUN}}
+\index{PAYLOAD_TYPE_TUN@{PAYLOAD\_\-TYPE\_\-TUN}!anytun.cpp@{anytun.cpp}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PAYLOAD\_\-TYPE\_\-TUN~0x0800}\label{anytun_8cpp_21c6078872dcc3914076daa2c1ec841a}
+
+
+
+
+\subsection{Function Documentation}
+\index{anytun.cpp@{anytun.cpp}!main@{main}}
+\index{main@{main}!anytun.cpp@{anytun.cpp}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int main (int {\em argc}, char $\ast$ {\em argv}[$\,$])}\label{anytun_8cpp_0ddf1224851353fc92bfbff6f499fa97}
+
+
+\index{anytun.cpp@{anytun.cpp}!receiver@{receiver}}
+\index{receiver@{receiver}!anytun.cpp@{anytun.cpp}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ receiver (void $\ast$ {\em p})}\label{anytun_8cpp_1a93139691e3d8cf8a996c973c5ca0ac}
+
+
+\index{anytun.cpp@{anytun.cpp}!sender@{sender}}
+\index{sender@{sender}!anytun.cpp@{anytun.cpp}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ sender (void $\ast$ {\em p})}\label{anytun_8cpp_0f2bdeb94d90f5229b9e904e592b24fd}
+
+

@@ -1,0 +1,116 @@
+\section{Aes\-Icm\-Cypher Class Reference}
+\label{classAesIcmCypher}\index{AesIcmCypher@{AesIcmCypher}}
+{\tt \#include $<$cypher.h$>$}
+
+Inheritance diagram for Aes\-Icm\-Cypher::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classAesIcmCypher}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf Aes\-Icm\-Cypher} ()
+\item 
+{\bf $\sim$Aes\-Icm\-Cypher} ()
+\item 
+void {\bf set\-Key} ({\bf Buffer} key)
+\item 
+void {\bf set\-Salt} ({\bf Buffer} salt)
+\end{CompactItemize}
+\subsection*{Static Public Attributes}
+\begin{CompactItemize}
+\item 
+static const std::string {\bf MIN\_\-GCRYPT\_\-VERSION}
+\item 
+static const {\bf u\_\-int32\_\-t} {\bf GCRYPT\_\-SEC\_\-MEM}
+\end{CompactItemize}
+\subsection*{Protected Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf Buffer} {\bf get\-Bit\-Stream} ({\bf u\_\-int32\_\-t} length, {\bf seq\_\-nr\_\-t} seq\_\-nr, {\bf sender\_\-id\_\-t} sender\_\-id)
+\end{CompactItemize}
+\subsection*{Protected Attributes}
+\begin{CompactItemize}
+\item 
+gcry\_\-cipher\_\-hd\_\-t {\bf cipher\_\-}
+\item 
+{\bf Buffer} {\bf salt\_\-}
+\end{CompactItemize}
+\subsection*{Static Private Attributes}
+\begin{CompactItemize}
+\item 
+static bool {\bf gcrypt\_\-initialized\_\-}
+\end{CompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{AesIcmCypher@{Aes\-Icm\-Cypher}!AesIcmCypher@{AesIcmCypher}}
+\index{AesIcmCypher@{AesIcmCypher}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Aes\-Icm\-Cypher::Aes\-Icm\-Cypher ()}\label{classAesIcmCypher_628abe54d9f3ac715dcaa0ae9ebf44bc}
+
+
+\index{AesIcmCypher@{Aes\-Icm\-Cypher}!~AesIcmCypher@{$\sim$AesIcmCypher}}
+\index{~AesIcmCypher@{$\sim$AesIcmCypher}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Aes\-Icm\-Cypher::$\sim$Aes\-Icm\-Cypher ()}\label{classAesIcmCypher_fdf9ab22374ffdad856f172eefacbd17}
+
+
+
+
+\subsection{Member Function Documentation}
+\index{AesIcmCypher@{Aes\-Icm\-Cypher}!setKey@{setKey}}
+\index{setKey@{setKey}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Aes\-Icm\-Cypher::set\-Key ({\bf Buffer} {\em key})}\label{classAesIcmCypher_605a38676ef12ad0b69628c5d53ef007}
+
+
+
+
+Reimplemented from {\bf Cypher} \doxyref{}{p.}{classCypher_7320b82d14391ab7d25271aa5114e190}.\index{AesIcmCypher@{Aes\-Icm\-Cypher}!setSalt@{setSalt}}
+\index{setSalt@{setSalt}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Aes\-Icm\-Cypher::set\-Salt ({\bf Buffer} {\em salt})}\label{classAesIcmCypher_6741487a9d6dfe3ae76bb168ed711259}
+
+
+
+
+Reimplemented from {\bf Cypher} \doxyref{}{p.}{classCypher_2546ef49e5ce8abe8062186d5f6b2ef8}.\index{AesIcmCypher@{Aes\-Icm\-Cypher}!getBitStream@{getBitStream}}
+\index{getBitStream@{getBitStream}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Buffer} Aes\-Icm\-Cypher::get\-Bit\-Stream ({\bf u\_\-int32\_\-t} {\em length}, {\bf seq\_\-nr\_\-t} {\em seq\_\-nr}, {\bf sender\_\-id\_\-t} {\em sender\_\-id})\hspace{0.3cm}{\tt  [protected, virtual]}}\label{classAesIcmCypher_ebac1fbb9a4cb56411fcd45ca63f47a1}
+
+
+
+
+Implements {\bf Cypher} \doxyref{}{p.}{classCypher_7ddf1bcd476978daa97148ec406d6483}.
+
+\subsection{Member Data Documentation}
+\index{AesIcmCypher@{Aes\-Icm\-Cypher}!MIN_GCRYPT_VERSION@{MIN\_\-GCRYPT\_\-VERSION}}
+\index{MIN_GCRYPT_VERSION@{MIN\_\-GCRYPT\_\-VERSION}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const std::string {\bf Aes\-Icm\-Cypher::MIN\_\-GCRYPT\_\-VERSION}\hspace{0.3cm}{\tt  [static]}}\label{classAesIcmCypher_605842d12379711d74401d0923b5d76e}
+
+
+\index{AesIcmCypher@{Aes\-Icm\-Cypher}!GCRYPT_SEC_MEM@{GCRYPT\_\-SEC\_\-MEM}}
+\index{GCRYPT_SEC_MEM@{GCRYPT\_\-SEC\_\-MEM}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const {\bf u\_\-int32\_\-t} {\bf Aes\-Icm\-Cypher::GCRYPT\_\-SEC\_\-MEM}\hspace{0.3cm}{\tt  [static]}}\label{classAesIcmCypher_4d1dea41b9745bca5a2d84fcefe3558c}
+
+
+\index{AesIcmCypher@{Aes\-Icm\-Cypher}!cipher_@{cipher\_\-}}
+\index{cipher_@{cipher\_\-}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}gcry\_\-cipher\_\-hd\_\-t {\bf Aes\-Icm\-Cypher::cipher\_\-}\hspace{0.3cm}{\tt  [protected]}}\label{classAesIcmCypher_d74a46baaee2e0755902d134274eac9a}
+
+
+\index{AesIcmCypher@{Aes\-Icm\-Cypher}!salt_@{salt\_\-}}
+\index{salt_@{salt\_\-}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Buffer} {\bf Aes\-Icm\-Cypher::salt\_\-}\hspace{0.3cm}{\tt  [protected]}}\label{classAesIcmCypher_a62620f7280574b142a0eb29880f5083}
+
+
+\index{AesIcmCypher@{Aes\-Icm\-Cypher}!gcrypt_initialized_@{gcrypt\_\-initialized\_\-}}
+\index{gcrypt_initialized_@{gcrypt\_\-initialized\_\-}!AesIcmCypher@{Aes\-Icm\-Cypher}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Aes\-Icm\-Cypher::gcrypt\_\-initialized\_\-}\hspace{0.3cm}{\tt  [static, private]}}\label{classAesIcmCypher_04da5690d9102c6b3fe5bf78a8827ac1}
+
+
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+{\bf cypher.h}\item 
+{\bf cypher.cpp}\end{CompactItemize}

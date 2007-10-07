@@ -1,0 +1,189 @@
+\section{UDPSocket Class Reference}
+\label{classUDPSocket}\index{UDPSocket@{UDPSocket}}
+{\tt \#include $<$Practical\-Socket.h$>$}
+
+Inheritance diagram for UDPSocket::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4cm]{classUDPSocket}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf UDPSocket} ()  throw (Socket\-Exception)
+\item 
+{\bf UDPSocket} (unsigned short local\-Port)  throw (Socket\-Exception)
+\item 
+{\bf UDPSocket} (const string \&local\-Address, unsigned short local\-Port)  throw (Socket\-Exception)
+\item 
+void {\bf disconnect} ()  throw (Socket\-Exception)
+\item 
+void {\bf send\-To} (const void $\ast$buffer, int buffer\-Len, const string \&foreign\-Address, unsigned short foreign\-Port)  throw (Socket\-Exception)
+\item 
+int {\bf recv\-From} (void $\ast$buffer, int buffer\-Len, string \&source\-Address, unsigned short \&source\-Port)  throw (Socket\-Exception)
+\item 
+void {\bf set\-Multicast\-TTL} (unsigned char multicast\-TTL)  throw (Socket\-Exception)
+\item 
+void {\bf join\-Group} (const string \&multicast\-Group)  throw (Socket\-Exception)
+\item 
+void {\bf leave\-Group} (const string \&multicast\-Group)  throw (Socket\-Exception)
+\end{CompactItemize}
+\subsection*{Private Member Functions}
+\begin{CompactItemize}
+\item 
+void {\bf set\-Broadcast} ()
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+UDP socket class 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{UDPSocket@{UDPSocket}!UDPSocket@{UDPSocket}}
+\index{UDPSocket@{UDPSocket}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}UDPSocket::UDPSocket ()  throw ({\bf Socket\-Exception})}\label{classUDPSocket_4f86f3023f5a08f6355802599a10e100}
+
+
+Construct a UDP socket \begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to create UDP socket \end{description}
+\end{Desc}
+\index{UDPSocket@{UDPSocket}!UDPSocket@{UDPSocket}}
+\index{UDPSocket@{UDPSocket}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}UDPSocket::UDPSocket (unsigned short {\em local\-Port})  throw ({\bf Socket\-Exception})}\label{classUDPSocket_14dcb55c4b60b12d4a7fff648cbb825f}
+
+
+Construct a UDP socket with the given local port \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em local\-Port}]local port \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to create UDP socket \end{description}
+\end{Desc}
+\index{UDPSocket@{UDPSocket}!UDPSocket@{UDPSocket}}
+\index{UDPSocket@{UDPSocket}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}UDPSocket::UDPSocket (const string \& {\em local\-Address}, unsigned short {\em local\-Port})  throw ({\bf Socket\-Exception})}\label{classUDPSocket_f19281c523f15ed30d7d78f09033713d}
+
+
+Construct a UDP socket with the given local port and address \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em local\-Address}]local address \item[{\em local\-Port}]local port \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to create UDP socket \end{description}
+\end{Desc}
+
+
+\subsection{Member Function Documentation}
+\index{UDPSocket@{UDPSocket}!disconnect@{disconnect}}
+\index{disconnect@{disconnect}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void UDPSocket::disconnect ()  throw ({\bf Socket\-Exception})}\label{classUDPSocket_7482e8e61cef160e1a7c0d6ac15c01be}
+
+
+Unset foreign address and port \begin{Desc}
+\item[Returns:]true if disassociation is successful \end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to disconnect UDP socket \end{description}
+\end{Desc}
+\index{UDPSocket@{UDPSocket}!sendTo@{sendTo}}
+\index{sendTo@{sendTo}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void UDPSocket::send\-To (const void $\ast$ {\em buffer}, int {\em buffer\-Len}, const string \& {\em foreign\-Address}, unsigned short {\em foreign\-Port})  throw ({\bf Socket\-Exception})}\label{classUDPSocket_41a3595e226f273953cbd38618af5d5b}
+
+
+Send the given buffer as a UDP datagram to the specified address/port \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em buffer}]buffer to be written \item[{\em buffer\-Len}]number of bytes to write \item[{\em foreign\-Address}]address (IP address or name) to send to \item[{\em foreign\-Port}]port number to send to \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]true if send is successful \end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to send datagram \end{description}
+\end{Desc}
+\index{UDPSocket@{UDPSocket}!recvFrom@{recvFrom}}
+\index{recvFrom@{recvFrom}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int UDPSocket::recv\-From (void $\ast$ {\em buffer}, int {\em buffer\-Len}, string \& {\em source\-Address}, unsigned short \& {\em source\-Port})  throw ({\bf Socket\-Exception})}\label{classUDPSocket_bcd5c064e2496bd8b1888fd4e1b68949}
+
+
+Read read up to buffer\-Len bytes data from this socket. The given buffer is where the data will be placed \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em buffer}]buffer to receive data \item[{\em buffer\-Len}]maximum number of bytes to receive \item[{\em source\-Address}]address of datagram source \item[{\em source\-Port}]port of data source \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]number of bytes received and -1 for error \end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to receive datagram \end{description}
+\end{Desc}
+\index{UDPSocket@{UDPSocket}!setMulticastTTL@{setMulticastTTL}}
+\index{setMulticastTTL@{setMulticastTTL}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void UDPSocket::set\-Multicast\-TTL (unsigned char {\em multicast\-TTL})  throw ({\bf Socket\-Exception})}\label{classUDPSocket_4dcfff33b45d1b84b5a602fc6f4a27f8}
+
+
+Set the multicast TTL \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em multicast\-TTL}]multicast TTL \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to set TTL \end{description}
+\end{Desc}
+\index{UDPSocket@{UDPSocket}!joinGroup@{joinGroup}}
+\index{joinGroup@{joinGroup}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void UDPSocket::join\-Group (const string \& {\em multicast\-Group})  throw ({\bf Socket\-Exception})}\label{classUDPSocket_1b20c1e8bd49a9bd9b53dd4f1c8d4c11}
+
+
+Join the specified multicast group \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em multicast\-Group}]multicast group address to join \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to join group \end{description}
+\end{Desc}
+\index{UDPSocket@{UDPSocket}!leaveGroup@{leaveGroup}}
+\index{leaveGroup@{leaveGroup}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void UDPSocket::leave\-Group (const string \& {\em multicast\-Group})  throw ({\bf Socket\-Exception})}\label{classUDPSocket_78835eaeca8a5ac039b4579c795e3640}
+
+
+Leave the specified multicast group \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em multicast\-Group}]multicast group address to leave \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to leave group \end{description}
+\end{Desc}
+\index{UDPSocket@{UDPSocket}!setBroadcast@{setBroadcast}}
+\index{setBroadcast@{setBroadcast}!UDPSocket@{UDPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void UDPSocket::set\-Broadcast ()\hspace{0.3cm}{\tt  [private]}}\label{classUDPSocket_316f08a017aa160643812f3c08734d27}
+
+
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+{\bf Practical\-Socket.h}\item 
+{\bf Practical\-Socket.cpp}\end{CompactItemize}

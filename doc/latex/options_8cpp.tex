@@ -1,0 +1,79 @@
+\section{options.cpp File Reference}
+\label{options_8cpp}\index{options.cpp@{options.cpp}}
+{\tt \#include $<$iostream$>$}\par
+{\tt \#include $<$string$>$}\par
+{\tt \#include $<$sstream$>$}\par
+{\tt \#include \char`\"{}datatypes.h\char`\"{}}\par
+{\tt \#include \char`\"{}options.h\char`\"{}}\par
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define {\bf PARSE\_\-BOOL\_\-PARAM}(SHORT, LONG, VALUE)
+\item 
+\#define {\bf PARSE\_\-INVERSE\_\-BOOL\_\-PARAM}(SHORT, LONG, VALUE)
+\item 
+\#define {\bf PARSE\_\-SCALAR\_\-PARAM}(SHORT, LONG, VALUE)
+\item 
+\#define {\bf PARSE\_\-SCALAR\_\-PARAM2}(SHORT, LONG, VALUE1, VALUE2)
+\end{CompactItemize}
+
+
+\subsection{Define Documentation}
+\index{options.cpp@{options.cpp}!PARSE_BOOL_PARAM@{PARSE\_\-BOOL\_\-PARAM}}
+\index{PARSE_BOOL_PARAM@{PARSE\_\-BOOL\_\-PARAM}!options.cpp@{options.cpp}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARSE\_\-BOOL\_\-PARAM(SHORT, LONG, VALUE)}\label{options_8cpp_b2c4e3c2031ae2187d3995f4b4848e10}
+
+
+\textbf{Value:}
+
+\begin{Code}\begin{verbatim}else if(str == SHORT || str == LONG)                 \
+      VALUE = true;
+\end{verbatim}\end{Code}
+\index{options.cpp@{options.cpp}!PARSE_INVERSE_BOOL_PARAM@{PARSE\_\-INVERSE\_\-BOOL\_\-PARAM}}
+\index{PARSE_INVERSE_BOOL_PARAM@{PARSE\_\-INVERSE\_\-BOOL\_\-PARAM}!options.cpp@{options.cpp}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARSE\_\-INVERSE\_\-BOOL\_\-PARAM(SHORT, LONG, VALUE)}\label{options_8cpp_0d965a5094bb6aa3a39c4ff7ea99a13f}
+
+
+\textbf{Value:}
+
+\begin{Code}\begin{verbatim}else if(str == SHORT || str == LONG)                 \
+      VALUE = false;
+\end{verbatim}\end{Code}
+\index{options.cpp@{options.cpp}!PARSE_SCALAR_PARAM@{PARSE\_\-SCALAR\_\-PARAM}}
+\index{PARSE_SCALAR_PARAM@{PARSE\_\-SCALAR\_\-PARAM}!options.cpp@{options.cpp}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARSE\_\-SCALAR\_\-PARAM(SHORT, LONG, VALUE)}\label{options_8cpp_8c39923ab70d37dd4ac5c17b7b41df93}
+
+
+\textbf{Value:}
+
+\begin{Code}\begin{verbatim}else if(str == SHORT || str == LONG)                 \
+    {                                                    \
+      if(argc < 1 || argv[i+1][0] == '-')                \
+        return false;                                    \
+      std::stringstream tmp;                             \
+      tmp << argv[i+1];                                  \
+      tmp >> VALUE;                                      \
+      argc--;                                            \
+      i++;                                               \
+    }
+\end{verbatim}\end{Code}
+\index{options.cpp@{options.cpp}!PARSE_SCALAR_PARAM2@{PARSE\_\-SCALAR\_\-PARAM2}}
+\index{PARSE_SCALAR_PARAM2@{PARSE\_\-SCALAR\_\-PARAM2}!options.cpp@{options.cpp}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARSE\_\-SCALAR\_\-PARAM2(SHORT, LONG, VALUE1, VALUE2)}\label{options_8cpp_ff99f765434c4a73e4b4b9f5d71022e2}
+
+
+\textbf{Value:}
+
+\begin{Code}\begin{verbatim}else if(str == SHORT || str == LONG)                 \
+    {                                                    \
+      if(argc < 2 ||                                     \
+         argv[i+1][0] == '-' || argv[i+2][0] == '-')     \
+        return false;                                    \
+      std::stringstream tmp;                             \
+      tmp << argv[i+1] << " " << argv[i+2];              \
+      tmp >> VALUE1;                                     \
+      tmp >> VALUE2;                                     \
+      argc-=2;                                           \
+      i+=2;                                              \
+    }
+\end{verbatim}\end{Code}

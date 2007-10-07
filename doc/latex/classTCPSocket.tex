@@ -1,0 +1,79 @@
+\section{TCPSocket Class Reference}
+\label{classTCPSocket}\index{TCPSocket@{TCPSocket}}
+{\tt \#include $<$Practical\-Socket.h$>$}
+
+Inheritance diagram for TCPSocket::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3cm]{classTCPSocket}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf TCPSocket} ()  throw (Socket\-Exception)
+\item 
+{\bf TCPSocket} (const string \&foreign\-Address, unsigned short foreign\-Port)  throw (Socket\-Exception)
+\end{CompactItemize}
+\subsection*{Private Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf TCPSocket} (int new\-Conn\-SD)
+\end{CompactItemize}
+\subsection*{Friends}
+\begin{CompactItemize}
+\item 
+class {\bf TCPServer\-Socket}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+TCP socket for communication with other TCP sockets 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{TCPSocket@{TCPSocket}!TCPSocket@{TCPSocket}}
+\index{TCPSocket@{TCPSocket}!TCPSocket@{TCPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}TCPSocket::TCPSocket ()  throw ({\bf Socket\-Exception})}\label{classTCPSocket_7a50427a401d1a6f3209d51818bad901}
+
+
+Construct a TCP socket with no connection \begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to create TCP socket \end{description}
+\end{Desc}
+\index{TCPSocket@{TCPSocket}!TCPSocket@{TCPSocket}}
+\index{TCPSocket@{TCPSocket}!TCPSocket@{TCPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}TCPSocket::TCPSocket (const string \& {\em foreign\-Address}, unsigned short {\em foreign\-Port})  throw ({\bf Socket\-Exception})}\label{classTCPSocket_7b246b66f6dc3246ab2777b771e5f917}
+
+
+Construct a TCP socket with a connection to the given foreign address and port \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em foreign\-Address}]foreign address (IP address or name) \item[{\em foreign\-Port}]foreign port \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Exceptions:]
+\begin{description}
+\item[{\em \doxyref{Socket\-Exception}{p.}{classSocketException}}]thrown if unable to create TCP socket \end{description}
+\end{Desc}
+\index{TCPSocket@{TCPSocket}!TCPSocket@{TCPSocket}}
+\index{TCPSocket@{TCPSocket}!TCPSocket@{TCPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}TCPSocket::TCPSocket (int {\em new\-Conn\-SD})\hspace{0.3cm}{\tt  [private]}}\label{classTCPSocket_4763ac3be0d7d5e143884bef45e351c5}
+
+
+
+
+\subsection{Friends And Related Function Documentation}
+\index{TCPSocket@{TCPSocket}!TCPServerSocket@{TCPServerSocket}}
+\index{TCPServerSocket@{TCPServerSocket}!TCPSocket@{TCPSocket}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}friend class {\bf TCPServer\-Socket}\hspace{0.3cm}{\tt  [friend]}}\label{classTCPSocket_e8bcdc0d25881a17b23e557296236fa9}
+
+
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+{\bf Practical\-Socket.h}\item 
+{\bf Practical\-Socket.cpp}\end{CompactItemize}

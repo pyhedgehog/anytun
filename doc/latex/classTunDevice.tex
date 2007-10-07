@@ -1,0 +1,150 @@
+\section{Tun\-Device Class Reference}
+\label{classTunDevice}\index{TunDevice@{TunDevice}}
+{\tt \#include $<$tun\-Device.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf Tun\-Device} (const char $\ast$dev, const char $\ast$dev\_\-type, const char $\ast$ifcfg\_\-lp, const char $\ast$ifcfg\_\-rnmp)
+\item 
+{\bf $\sim$Tun\-Device} ()
+\item 
+void {\bf open} ()
+\item 
+void {\bf close} ()
+\item 
+bool {\bf is\-Open} ()
+\item 
+short {\bf read} ({\bf Buffer} \&buf)
+\item 
+int {\bf write} ({\bf Buffer} \&buf)
+\item 
+char $\ast$ {\bf get\-Actual\-Name} ()
+\item 
+{\bf u\_\-int32\_\-t} {\bf get\-Type} ()
+\item 
+char $\ast$ {\bf get\-Type\-String} ()
+\end{CompactItemize}
+\subsection*{Static Public Attributes}
+\begin{CompactItemize}
+\item 
+static const {\bf u\_\-int32\_\-t} {\bf TYPE\_\-UNDEF} = 0
+\item 
+static const {\bf u\_\-int32\_\-t} {\bf TYPE\_\-TUN} = 1
+\item 
+static const {\bf u\_\-int32\_\-t} {\bf TYPE\_\-TAP} = 2
+\end{CompactItemize}
+\subsection*{Private Member Functions}
+\begin{CompactItemize}
+\item 
+void {\bf operator=} (const {\bf Tun\-Device} \&src)
+\item 
+{\bf Tun\-Device} (const {\bf Tun\-Device} \&src)
+\end{CompactItemize}
+\subsection*{Private Attributes}
+\begin{CompactItemize}
+\item 
+{\bf Mutex} {\bf io\_\-mutex\_\-}
+\item 
+tuntap $\ast$ {\bf dev\_\-}
+\end{CompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{TunDevice@{Tun\-Device}!TunDevice@{TunDevice}}
+\index{TunDevice@{TunDevice}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Tun\-Device::Tun\-Device (const char $\ast$ {\em dev}, const char $\ast$ {\em dev\_\-type}, const char $\ast$ {\em ifcfg\_\-lp}, const char $\ast$ {\em ifcfg\_\-rnmp})}\label{classTunDevice_d6914bd3a45e03ffe95676ac4420154a}
+
+
+\index{TunDevice@{Tun\-Device}!~TunDevice@{$\sim$TunDevice}}
+\index{~TunDevice@{$\sim$TunDevice}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Tun\-Device::$\sim$Tun\-Device ()}\label{classTunDevice_2c6196d270bf4d0e99ff4f860391faed}
+
+
+\index{TunDevice@{Tun\-Device}!TunDevice@{TunDevice}}
+\index{TunDevice@{TunDevice}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Tun\-Device::Tun\-Device (const {\bf Tun\-Device} \& {\em src})\hspace{0.3cm}{\tt  [private]}}\label{classTunDevice_4587b54228b4240334ad4614211df394}
+
+
+
+
+\subsection{Member Function Documentation}
+\index{TunDevice@{Tun\-Device}!open@{open}}
+\index{open@{open}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Tun\-Device::open ()}\label{classTunDevice_323ddcfd4ac60d0dbfe6ebb5bbb9a323}
+
+
+\index{TunDevice@{Tun\-Device}!close@{close}}
+\index{close@{close}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Tun\-Device::close ()}\label{classTunDevice_13986e13fe28da6c917293c40effb902}
+
+
+\index{TunDevice@{Tun\-Device}!isOpen@{isOpen}}
+\index{isOpen@{isOpen}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}bool Tun\-Device::is\-Open ()}\label{classTunDevice_f63f3331789f043e44eb435b78c815b2}
+
+
+\index{TunDevice@{Tun\-Device}!read@{read}}
+\index{read@{read}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}short Tun\-Device::read ({\bf Buffer} \& {\em buf})}\label{classTunDevice_553498887edc92f7b7e31e3bf04fb8fb}
+
+
+\index{TunDevice@{Tun\-Device}!write@{write}}
+\index{write@{write}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int Tun\-Device::write ({\bf Buffer} \& {\em buf})}\label{classTunDevice_958bc73a627cc5d404ed87204547134d}
+
+
+\index{TunDevice@{Tun\-Device}!getActualName@{getActualName}}
+\index{getActualName@{getActualName}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char $\ast$ Tun\-Device::get\-Actual\-Name ()}\label{classTunDevice_e02f8972f75b11b69280fba9b6649cab}
+
+
+\index{TunDevice@{Tun\-Device}!getType@{getType}}
+\index{getType@{getType}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf u\_\-int32\_\-t} Tun\-Device::get\-Type ()}\label{classTunDevice_b57512464007681dcc92820adb3deb0f}
+
+
+\index{TunDevice@{Tun\-Device}!getTypeString@{getTypeString}}
+\index{getTypeString@{getTypeString}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char $\ast$ Tun\-Device::get\-Type\-String ()}\label{classTunDevice_0cecbc6a7e58d294dd005e7d523173bd}
+
+
+\index{TunDevice@{Tun\-Device}!operator=@{operator=}}
+\index{operator=@{operator=}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Tun\-Device::operator= (const {\bf Tun\-Device} \& {\em src})\hspace{0.3cm}{\tt  [private]}}\label{classTunDevice_de33e9a7a951b43f2f7e24d8fe9c311e}
+
+
+
+
+\subsection{Member Data Documentation}
+\index{TunDevice@{Tun\-Device}!TYPE_UNDEF@{TYPE\_\-UNDEF}}
+\index{TYPE_UNDEF@{TYPE\_\-UNDEF}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const {\bf u\_\-int32\_\-t} {\bf Tun\-Device::TYPE\_\-UNDEF} = 0\hspace{0.3cm}{\tt  [static]}}\label{classTunDevice_ec146b27c7755747c1cc1511e4482875}
+
+
+\index{TunDevice@{Tun\-Device}!TYPE_TUN@{TYPE\_\-TUN}}
+\index{TYPE_TUN@{TYPE\_\-TUN}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const {\bf u\_\-int32\_\-t} {\bf Tun\-Device::TYPE\_\-TUN} = 1\hspace{0.3cm}{\tt  [static]}}\label{classTunDevice_ea416d7f03ef22bf1d166d33b47fd993}
+
+
+\index{TunDevice@{Tun\-Device}!TYPE_TAP@{TYPE\_\-TAP}}
+\index{TYPE_TAP@{TYPE\_\-TAP}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const {\bf u\_\-int32\_\-t} {\bf Tun\-Device::TYPE\_\-TAP} = 2\hspace{0.3cm}{\tt  [static]}}\label{classTunDevice_b4ce6b158bbe4fe051b6fea8cd3d6cd3}
+
+
+\index{TunDevice@{Tun\-Device}!io_mutex_@{io\_\-mutex\_\-}}
+\index{io_mutex_@{io\_\-mutex\_\-}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Mutex} {\bf Tun\-Device::io\_\-mutex\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classTunDevice_e130228e28996e644d2013089e704d4c}
+
+
+\index{TunDevice@{Tun\-Device}!dev_@{dev\_\-}}
+\index{dev_@{dev\_\-}!TunDevice@{Tun\-Device}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct tuntap$\ast$ {\bf Tun\-Device::dev\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classTunDevice_239c85381dfcf1776303778d1784df51}
+
+
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+{\bf tun\-Device.h}\item 
+{\bf tun\-Device.cpp}\end{CompactItemize}
