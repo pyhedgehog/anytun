@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 C++ = g++
 CCFLAGS = -g -Wall
 LD = g++
-LDFLAGS = -g -O2 -ldl -lpthread -lsrtp
+LDFLAGS = -g -O2 -ldl -lpthread -lsrtp -lgcrypt
 
 OPENVPNDEPS = openvpn/tun.o \
               openvpn/error.o \
@@ -93,3 +93,7 @@ anytun.o: anytun.cpp
 clean:
 	rm -f *.o
 	rm -f $(EXECUTABLE)
+
+doxygen:
+	doxygen Doxyfile
+
