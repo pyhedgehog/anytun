@@ -1,0 +1,15 @@
+Anycast services and routing
+
+How to build highly redundant and scaleable internet services with anycast
+
+
+Anycast like unicast or multicast is a special form of addressing on the internet. Two or more hosts share the same IP address, but only one of them gets the IP packets. Wich host recieves packages is usally determined by the routing protocol, so this might theoretically change after every packet.
+
+This adds many nice features, as it is possible to hot add and remove anycast hosts without reconfiguring any client using their services. When one anycast host fails, all it's traffic gets rerouted within seconds. So usally clients don't even recognise a server failure. Load balancing between the anycast hosts is automatically done by the routing protocol. So load balancing is based on best routing metric, which means the host with shortest path to the client is used. This leads to an optimal load balancing that serves all clients with minimum delay.
+
+Not every protocol can be used with anycast. Today mainly stateless protocols are used as anycast host services. However it is also possible to run more complex protocols between anycast and unicast hosts. The talk will discuss the design issues when building anycast host services. The secure anycast tunneling protocol (satp), will be presented as an example for a new anycast protocol. It allows to send encrypted data between any combination of unicast and anycast hosts. This may be used to build redundandt VPN clusters, but is also possible to use the protocol to build new services. On basis of a VOIP media relay a complex anycast design will be presented.
+
+On the internet a client cannot determine the difference between a normal multihomed IP address or an anycast IP address. Routing is done by BGP4. BGP bla.... Fine tuning, load banancing, failover whatever
+
+
+
