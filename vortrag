@@ -1,7 +1,13 @@
-Anycast services and routing
 
-How to build highly redundant and scaleable internet services with anycast
+Title: Anycast services and routing
 
+Subtitle: How to build highly redundant and scaleable internet services with anycast
+
+Abstract:
+
+The talk will give an overview on internet routing and anycast ip addressing. We'll show how anycast can be used to build scaleable and redundant network services and to protect against deny of service attacks.
+
+description:
 
 Anycast like unicast or multicast is a special form of addressing on the internet. Two or more hosts share the same IP address, but only one of them gets the IP packets. Wich host recieves packages is usally determined by the routing protocol, so this might theoretically change after every packet.
 
