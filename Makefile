@@ -37,6 +37,7 @@ OBJS = anytun.o \
        cypher.o \
        authAlgo.o \
 			 keyDerivation.o \
+			 connectionList.o \
        PracticalSocket.o \
        signalController.o \
        log.o \

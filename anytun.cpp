@@ -90,7 +90,7 @@ void* sender(void* p)
     param->c.setKey(tmp_key);
     param->c.setSalt(tmp_salt);
 
-    std::cout << "Send Package: seq: " << seq << std::endl << "sID: " <<  param->opt.getSenderId() << std::endl;
+    //std::cout << "Send Package: seq: " << seq << std::endl << "sID: " <<  param->opt.getSenderId() << std::endl;
     //std::cout << "Package dump: " << pack.getBuf() << std::endl;
 
     param->c.cypher(pack, seq, param->opt.getSenderId());
@@ -154,7 +154,7 @@ void* receiver(void* p)
     param->c.setSalt(tmp_salt);
     param->c.cypher(pack, seq, sid);
    
-    std::cout << "Received Package: seq: " << seq << std::endl << "sID: " << sid << std::endl;
+    //std::cout << "Received Package: seq: " << seq << std::endl << "sID: " << sid << std::endl;
     //std::cout << "Package dump: " << pack.getBuf() << std::endl;
 
     // check payload_type and remove it

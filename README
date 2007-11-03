@@ -2,6 +2,7 @@ Building
 ========
 
 * install libSRTP (as seen below)
+* install libgcrypt11-dev
 * ./configure
 * make
 
