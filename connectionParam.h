@@ -31,6 +31,12 @@
 #ifndef _CONNECTIONPARAM_H_
 #define _CONNECTIONPARAM_H_
 
+#include "options.h"
+#include "keyDerivation.h"
+#include "cypher.h"
+#include "authAlgo.h"
+#include "seqWindow.h"
+
 struct connection_param_t
 {
   Options& opt;

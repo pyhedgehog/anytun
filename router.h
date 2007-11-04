@@ -28,30 +28,26 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _CONNECTION_LIST_H
-#define _CONNECTION_LIST_H
-
-#include <map>
-#include <deque>
+#ifndef _ROUTER_H
+#define _ROUTER_H
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
 #include "connectionParam.h"
-#include "networkAddress.h"
+#include "connectionList.h"
 
-class ConnectionList
+class Router
 {
 public:
-	ConnectionList();
-	~ConnectionList();
-	void addConnection();
-	void clear();
+	Router();
+	~Router();
+	void addConnection(connection_param_t conn);
+	connection_param_t getRoute();
 
 private:
-  ConnectionList(const ConnectionList &s);
-  void operator=(const ConnectionList &s);
-	typedef std::map<NetworkAddress, connection_param_t> ConnectionMap;
-	ConnectionMap connections_;
+  Router(const Router &s);
+  void operator=(const Router &s);
+	ConnectionList con_list_;
   Mutex mutex_;
 };
 

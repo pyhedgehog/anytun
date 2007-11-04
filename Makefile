@@ -40,6 +40,7 @@ OBJS = anytun.o \
 			 connectionList.o \
 			 networkAddress.o \
        PracticalSocket.o \
+			 router.o \
        signalController.o \
        log.o \
        options.o \
