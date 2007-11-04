@@ -33,7 +33,7 @@
 
 #include "networkAddress.h"
 
-NetworkAddress::NetworkAddress():address_length_(0)
+NetworkAddress::NetworkAddress()
 {
 }
 
@@ -43,6 +43,17 @@ NetworkAddress::~NetworkAddress()
 
 void NetworkAddress::setNetworkAddress(const network_address_type_t type, const char * address )
 {
+	if (type==ipv4)
+	{
+		inet_pton(AF_INET, address, &ipv4_address_);
+	} else if (type==ipv6) {
+		inet_pton(AF_INET6, address, &ipv6_address_);
+	} else if (type==ethernet) {
+		//TODO
+	} else {
+		//TODO
+	}
+	network_address_type_ = type;
 }
 
 void NetworkAddress::getNetworkAddress(const char *)
@@ -55,5 +66,20 @@ network_address_type_t NetworkAddress::getNetworkAddressType()
 
 bool NetworkAddress::operator<(const NetworkAddress &right) const
 {
+	if (network_address_type_!=right.network_address_type_)
+		return false;
+	if (network_address_type_==ipv4)
+	{
+		return (ipv4_address_.s_addr < right.ipv4_address_.s_addr);
+	} else if (network_address_type_==ipv6) {
+		for(int i=0;i++;i<4)
+			if (ipv6_address_.s6_addr32[i]<right.ipv6_address_.s6_addr32[i])
+				return true;
+		return false;
+	} else if (network_address_type_==ethernet) {
+		//TODO
+	} else {
+		//TODO
+	}
 }
 

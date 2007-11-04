@@ -34,6 +34,10 @@
 #include "threadUtils.hpp"
 #include "datatypes.h"
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 enum network_address_type_t
 {
 	ipv4,
@@ -53,7 +57,9 @@ public:
 private:
   bool operator<(const NetworkAddress &s) const;
   Mutex mutex_;
-	uint8_t address_length_;
+	in_addr ipv4_address_;
+	in6_addr ipv6_address_;
+	uint64_t ethernet_address_;
 	network_address_type_t network_address_type_;
 };
 
