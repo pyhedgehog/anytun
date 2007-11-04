@@ -38,6 +38,7 @@ OBJS = anytun.o \
        authAlgo.o \
 			 keyDerivation.o \
 			 connectionList.o \
+			 networkAddress.o \
        PracticalSocket.o \
        signalController.o \
        log.o \

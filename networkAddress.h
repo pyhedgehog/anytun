@@ -28,30 +28,33 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _CONNECTION_LIST_H
-#define _CONNECTION_LIST_H
-
-#include <map>
-#include <deque>
+#ifndef _NETWORK_ADDRESS_H
+#define _NETWORK_ADDRESS_H
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
-#include "connectionParam.h"
 
-class ConnectionList
+enum network_address_type_t
+{
+	ipv4,
+	ipv6,
+	ethernet
+};
+
+class NetworkAddress
 {
 public:
-	ConnectionList();
-	~ConnectionList();
-	void addConnection();
-	void clear();
+	NetworkAddress();
+	~NetworkAddress();
+	void setNetworkAddress(const network_address_type_t type, const char * address );
+	void getNetworkAddress(const char *);
+	network_address_type_t getNetworkAddressType();
 
 private:
-  ConnectionList(const ConnectionList &s);
-  void operator=(const ConnectionList &s);
-	typedef std::map<NetworkAddress, connection_param_t> ConnectionMap;
-	ConnectionMap connections_;
+  bool operator<(const NetworkAddress &s) const;
   Mutex mutex_;
+	uint8_t address_length_;
+	network_address_type_t network_address_type_;
 };
 
 #endif
