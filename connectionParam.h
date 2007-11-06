@@ -39,12 +39,13 @@
 
 class ConnectionParam
 {
+public:
 	ConnectionParam(Options& opt,KeyDerivation& kd,Cypher& c,AuthAlgo& a,SeqWindow& seq);
-  Options& opt_;
-  KeyDerivation& kd_;
-  Cypher& c_;
-  AuthAlgo& a_;
-  SeqWindow& seq_;
+  const Options& opt_;
+  const KeyDerivation& kd_;
+  const Cypher& c_;
+  const AuthAlgo& a_;
+  const SeqWindow& seq_;
 };
 
 #endif

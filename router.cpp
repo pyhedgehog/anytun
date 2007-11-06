@@ -46,7 +46,7 @@ void Router::addConnection(ConnectionParam &conn,const std::string &name)
 	con_list_.addConnection(conn,name);
 }
 
-connection_param_t Router::getRoute()
+ConnectionParam Router::getRoute()
 {
   Lock lock(mutex_);
 

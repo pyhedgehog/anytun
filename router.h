@@ -42,7 +42,7 @@ public:
 	Router();
 	~Router();
 	void addConnection(ConnectionParam &conn,const std::string &name);
-	connection_param_t getRoute();
+	ConnectionParam getRoute();
 
 private:
   Router(const Router &s);

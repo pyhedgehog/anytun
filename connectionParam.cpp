@@ -30,6 +30,6 @@
 
 #include "connectionParam.h"
 
-ConnectionParam::ConnectionParam(Options& opt,KeyDerivation& kd,Cypher& c,AuthAlgo& a,SeqWindow& seq):opt_(opt),kd_(kd),c_(c),a_(a),seq_(seq)
+ConnectionParam::ConnectionParam(Options& opt,KeyDerivation& kd,Cypher& c,AuthAlgo& a,SeqWindow& seq) : opt_(opt),kd_(kd),c_(c),a_(a),seq_(seq)
 {
 }

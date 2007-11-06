@@ -31,6 +31,7 @@
 #ifndef _OPTIONS_H_
 #define _OPTIONS_H_
 
+#include "datatypes.h"
 #include "threadUtils.hpp"
 
 class Options
