@@ -41,9 +41,10 @@ ConnectionList::~ConnectionList()
 {
 }
 
-void ConnectionList::addConnection()
+void ConnectionList::addConnection(ConnectionParam &conn, const std::string &name)
 {
   Lock lock(mutex_);
+	connections_[name]=conn;
 }
 
 void ConnectionList::clear()

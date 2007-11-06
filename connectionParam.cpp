@@ -28,23 +28,8 @@
  * 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _CONNECTIONPARAM_H_
-#define _CONNECTIONPARAM_H_
+#include "connectionParam.h"
 
-#include "options.h"
-#include "keyDerivation.h"
-#include "cypher.h"
-#include "authAlgo.h"
-#include "seqWindow.h"
-
-class ConnectionParam
+ConnectionParam::ConnectionParam(Options& opt,KeyDerivation& kd,Cypher& c,AuthAlgo& a,SeqWindow& seq):opt_(opt),kd_(kd),c_(c),a_(a),seq_(seq)
 {
-	ConnectionParam(Options& opt,KeyDerivation& kd,Cypher& c,AuthAlgo& a,SeqWindow& seq);
-  Options& opt_;
-  KeyDerivation& kd_;
-  Cypher& c_;
-  AuthAlgo& a_;
-  SeqWindow& seq_;
-};
-
-#endif
+}

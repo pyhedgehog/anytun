@@ -44,13 +44,13 @@ class ConnectionList
 public:
 	ConnectionList();
 	~ConnectionList();
-	void addConnection();
+	void addConnection(ConnectionParam &conn, const std::string &name);
 	void clear();
 
 private:
   ConnectionList(const ConnectionList &s);
   void operator=(const ConnectionList &s);
-	typedef std::map<NetworkAddress, connection_param_t> ConnectionMap;
+	typedef std::map<std::string, ConnectionParam> ConnectionMap;
 	ConnectionMap connections_;
   Mutex mutex_;
 };
