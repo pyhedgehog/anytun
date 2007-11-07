@@ -44,7 +44,13 @@ ConnectionList::~ConnectionList()
 void ConnectionList::addConnection(ConnectionParam &conn, const std::string &name)
 {
   Lock lock(mutex_);
-//	connections_[name]=conn;
+
+  std::pair<ConnectionMap::iterator, bool> ret = connections_.insert(ConnectionMap::value_type(name, conn));
+  if(!ret.second)
+  {
+    connections_.erase(ret.first);
+    connections_.insert(ConnectionMap::value_type(name, conn));
+  }
 }
 
 void ConnectionList::clear()
