@@ -29,15 +29,15 @@
  */
 
 #include <stdexcept>
-#include <vector>
 #include <iostream>
+#include <string>
 
 #include "cypher.h"
 #include "keyDerivation.h"
 
 
 extern "C" {
-#include <srtp/crypto_kernel.h>
+#include <gcrypt.h>
 }
 
 void Cypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
@@ -65,129 +65,109 @@ Buffer NullCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t s
 }
 
 
+const char* AesIcmCypher::MIN_GCRYPT_VERSION = "1.2.3";
+bool AesIcmCypher::gcrypt_initialized_ = false;
+
+
+AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))
+{
+  gcry_error_t err;
+  if( !gcry_check_version( MIN_GCRYPT_VERSION ) )
+  {
+    std::cerr << "Invalid Version of libgcrypt, should be >= ";
+    std::cerr << MIN_GCRYPT_VERSION << std::endl;
+    return;
+  }
+
+  if( !gcrypt_initialized_ )
+  {
+    /* Allocate a pool of secure memory.  This also drops priviliges
+       on some systems. */
+    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
+    if( err )
+    {
+      std::cerr << "Failed to allocate " << GCRYPT_SEC_MEM << "bytes of secure memory: ";
+      std::cerr << gpg_strerror( err ) << std::endl;
+      return;
+    }
+    gcrypt_initialized_ = true;
+  }
+
+  /* Tell Libgcrypt that initialization has completed. */
+  err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
+  if( err )
+  {
+    std::cerr << "Failed to finish the initialization of libgcrypt";
+    std::cerr << gpg_strerror( err ) << std::endl;
+    return;
+  }
+
+  gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
+
+  std::cout << "Keysize: " << gcry_cipher_get_algo_keylen( GCRY_CIPHER_AES128 ) << std::endl;
+}
+
+
+AesIcmCypher::~AesIcmCypher()
+{
+  gcry_cipher_close( cipher_ );
+}
+
+
 void AesIcmCypher::setKey(Buffer key)
 {
-  key_ = key;
+  gcry_error_t err;
+  err = gcry_cipher_setkey( cipher_, key.getBuf(), 16 );
+  if( err )
+    std::cerr << "Failed to set cipher key: " << gpg_strerror( err ) << std::endl;
 }
 
 void AesIcmCypher::setSalt(Buffer salt)
 {
-  salt = salt;
+  salt_ = salt;
 }
 
 Buffer AesIcmCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
+  gcry_error_t err;
+
   Buffer buf(length);
-  extern cipher_type_t aes_icm;
-  err_status_t status = err_status_ok;
-  cipher_t* cipher = NULL;
-  v128_t iv, sid, seq, salt;
 
-  v128_set_to_zero(&iv);
-  v128_set_to_zero(&sid);
-  v128_set_to_zero(&seq);
-  v128_set_to_zero(&salt);
-
-  // allocate cipher
-  // FIXXME: why we do not can do this???
-//  status = cipher_type_alloc(&aes_icm, &cipher, key_.getLength());
-  status = cipher_type_alloc(&aes_icm, &cipher, 30);
-  if( status ) 
-    return Buffer(0);
-
-  // init cipher
-  status = cipher_init(cipher, key_.getBuf(), direction_any);
-  if( status )
-  {
-    cipher_dealloc(cipher);
-    return Buffer(0);
-  }
-
-  // set IV
-  //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
-  //  SRTP packet index i, and the SRTP session salting key k_s, as below.
-  //
-  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
-  // sizeof(k_s) = 112 bit, random
-
-  seq.v64[0] = seq_nr;
-  sid.v64[0] = sender_id;
-  v128_copy_octet_string(&salt, salt_.getBuf());
-  v128_left_shift(&salt, 16);
-  v128_left_shift(&sid, 64);
-  v128_left_shift(&seq, 16);
-
-  v128_xor(&iv, &salt, &sid);
-  v128_xor(&iv, &iv, &seq);
-
-  status = cipher_set_iv(cipher, &iv);
-  if( status )
-    cipher_dealloc(cipher);
-
-  status = cipher_output(cipher, buf, length);
-  status = cipher_dealloc(cipher);
-  return buf;
-}
-
-//
-//void AesIcmCypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
-//{
-//  extern cipher_type_t aes_icm;
-//  err_status_t status = err_status_ok;
-//  cipher_t* cipher = NULL;
-//  uint32_t length = 0;
-//  v128_t iv, sid, seq, salt;
-//
-//  v128_set_to_zero(&iv);
-//  v128_set_to_zero(&sid);
-//  v128_set_to_zero(&seq);
-//  v128_set_to_zero(&salt);
-//
-//  std::cout << "AesIcmCypher::cypher called" << std::endl;
-//  // allocate cipher
-//  // FIXXME: why we do not can do this???
-////  status = cipher_type_alloc(&aes_icm, &cipher, key_.getLength());
-//  status = cipher_type_alloc(&aes_icm, &cipher, 30);
-//  if( status ) 
-//    return;
-//
-//  // init cipher
-//  status = cipher_init(cipher, key_.getBuf(), direction_any);
-//  if( status )
-//  {
-//    cipher_dealloc(cipher);
-//    return;
-//  }
-//
 //  // set IV
 //  //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
 //  //  SRTP packet index i, and the SRTP session salting key k_s, as below.
 //  //
 //  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
 //  // sizeof(k_s) = 112 bit, random
-//
-////  iv.v32[0] ^= 0;
-////  iv.v32[1] ^= sender_id; 
-////  iv.v32[2] ^= (seq_nr >> 16);
-////  iv.v32[3] ^= (seq_nr << 16);
-//
-//  seq.v64[0] = seq_nr;
-//  sid.v64[0] = sender_id;
-//  v128_copy_octet_string(&salt, salt_.getBuf());
-//  v128_left_shift(&salt, 16);
-//  v128_left_shift(&sid, 64);
-//  v128_left_shift(&seq, 16);
-//
-//  v128_xor(&iv, &salt, &sid);
-//  v128_xor(&iv, &iv, &seq);
-//
-//  status = cipher_set_iv(cipher, &iv);
-//  if( status )
-//    cipher_dealloc(cipher);
-//
-//  length = buf.getLength();
-//  
-//  status = cipher_encrypt(cipher, buf, &length);
-//  status = cipher_dealloc(cipher);
-//}
-//
+
+  Buffer iv(16), seq, sid;
+
+  sid = sender_id;
+  seq = seq_nr;
+
+  iv = (salt_.leftByteShift(2) ^ sid.leftByteShift(8)) ^ sid.leftByteShift(2);
+
+  err = gcry_cipher_setiv( cipher_, iv.getBuf(), 0 );
+  if( err )
+  {
+    std::cerr << "Failed to set cipher IV: " << gpg_strerror( err ) << std::endl;
+    return Buffer(0);
+  }
+
+  err = gcry_cipher_reset( cipher_ );
+  if( err )
+  {
+    std::cerr << "Failed to reset cipher: " << gpg_strerror( err ) << std::endl;
+    return Buffer(0);
+  }
+
+  err = gcry_cipher_encrypt( cipher_, buf, buf.getLength(), 0, 0 );
+  if( err )
+  {
+    std::cerr << "Failed to generate cipher bitstream: " << gpg_strerror( err ) << std::endl;
+    return Buffer(0);
+  }
+
+  return buf;
+}
+

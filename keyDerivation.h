@@ -36,7 +36,7 @@
 
 
 extern "C" {
-  #include <srtp/crypto_kernel.h>
+  #include <gcrypt.h>
 }
 
 
@@ -52,16 +52,20 @@ public:
   KeyDerivation() : ld_kdr_(-1), cipher_(NULL) {};
   virtual ~KeyDerivation() {};
 
-  err_status_t init(Buffer key, Buffer salt);
-  err_status_t setLogKDRate(const uint8_t ld_rate);
-  err_status_t generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, uint32_t length);
-  err_status_t clear();
+  void init(Buffer key, Buffer salt);
+  void setLogKDRate(const u_int8_t ld_rate);
+  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length);
+  void clear();
+
 
 protected:
   int8_t ld_kdr_;     // ld(key_derivation_rate)
   Buffer salt_;
+  static const char* MIN_GCRYPT_VERSION;
 
-  cipher_t* cipher_;
+  gcry_cipher_hd_t cipher_;
 };
 
+
 #endif
+

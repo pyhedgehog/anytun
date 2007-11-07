@@ -53,7 +53,7 @@ public:
 
   char* getActualName();
   u_int32_t getType();
-  char* getTypeString();
+  const char* getTypeString();
 
 private:
   void operator=(const TunDevice &src);

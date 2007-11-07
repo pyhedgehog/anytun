@@ -31,82 +31,109 @@
 
 #include "keyDerivation.h"
 
+#include <stdexcept>
+#include <iostream>
+#include <string>
+
 extern "C" {
-#include <srtp/crypto_kernel.h>
+#include <gcrypt.h>
 }
 
-err_status_t KeyDerivation::init(Buffer key, Buffer salt)
+const char* KeyDerivation::MIN_GCRYPT_VERSION = "1.2.3";
+
+void KeyDerivation::init(Buffer key, Buffer salt)
 {
-  extern cipher_type_t aes_icm;
-  err_status_t status = err_status_ok;
+  gcry_error_t err;
+  if( !gcry_check_version( MIN_GCRYPT_VERSION ) )
+  {
+    std::cerr << "Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
+    return;
+  }
 
-  salt_ = salt;
+  /* Allocate a pool of 16k secure memory.  This also drops priviliges
+   *      on some systems. */
+  err = gcry_control(GCRYCTL_INIT_SECMEM, 16384, 0);
+  if( err )
+  {
+    std::cerr << "Failed to allocate 16k secure memory: " << gpg_strerror( err ) << std::endl;
+    return;
+  }
 
-  // allocate cipher
-  // FIXXME: why we do not can do this??
-//  status = cipher_type_alloc(&aes_icm, &cipher_, key.getLength());
-  status = cipher_type_alloc(&aes_icm, &cipher_, 30);
-  if( status )
-    return status;
+  /* Tell Libgcrypt that initialization has completed. */
+  err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
+  if( err )
+  {
+    std::cerr << "Failed to finish the initialization of libgcrypt" << gpg_strerror( err ) << std::endl;
+    return;
+  }
 
-  // init cipher
-  status = cipher_init(cipher_, key.getBuf(), direction_any);
-  if( status )
-    cipher_dealloc(cipher_);
+  err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
+  if( err )
+  {
+    std::cerr << "Failed to open cipher: " << gpg_strerror( err ) << std::endl;
+    return;
+  }
 
-  return status;
 }
 
-err_status_t KeyDerivation::setLogKDRate(const uint8_t log_rate)
+void KeyDerivation::setLogKDRate(const uint8_t log_rate)
 {
   if( log_rate < 49 )
-  {
     ld_kdr_ = log_rate;
-    return err_status_ok;
-  }
-  return err_status_bad_param;
 }
 
 
-err_status_t KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, uint32_t length)
+void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length)
 {
-  err_status_t status = err_status_ok;
-  v128_t iv, salt, key_id;
-  uint8_t r = 0;
+  gcry_error_t err;
+  u_int8_t r = 0;
+  Buffer iv(16);
 
-  v128_set_to_zero(&iv);
-  v128_set_to_zero(&salt);
-  v128_set_to_zero(&key_id);
+  u_int8_t tmp_key_id[16];
 
-  // look at: http://tools.ietf.org/html/rfc3711#section-4.3
+  // see at: http://tools.ietf.org/html/rfc3711#section-4.3
+  // *  Let r = index DIV key_derivation_rate (with DIV as defined above).
+  // *  Let key_id = <label> || r.
+  // *  Let x = key_id XOR master_salt, where key_id and master_salt are
+  //    aligned so that their least significant bits agree (right-
+  //    alignment).
+  //
+
   if( ld_kdr_ == -1 )    // means key_derivation_rate = 0
     r = 0;
   else
     // FIXXME: kdr can be greater than 2^32 (= 2^48)
     r = seq_nr / ( 0x01 << ld_kdr_ );
 
-  key_id.v32[0] = (label << 8);
-  key_id.v32[0] += r;
 
-  v128_copy_octet_string(&salt, salt_.getBuf());
-  v128_xor(&iv, &salt, &key_id);
 
-  status = cipher_set_iv(cipher_, &iv);
-  if( status )
+  // FIXXME: why i cant access key_id via operator []? 
+  for(u_int8_t i=0; i<sizeof(tmp_key_id); i++)
+    tmp_key_id[i] = 0x00;
+
+  tmp_key_id[0] = r; 
+  tmp_key_id[1] = label;
+
+  Buffer key_id(tmp_key_id, 16);
+
+  iv = key_id ^ salt_;
+
+  err = gcry_cipher_reset( cipher_ );
+  if( err )
   {
-    KeyDerivation::clear();
-    return status;
+    std::cerr << "Failed to reset cipher: " << gpg_strerror( err ) << std::endl;
   }
 
-  /* generate keystream output */
-  status = cipher_output(cipher_, key, length);
-
-  return status;
+  err = gcry_cipher_encrypt( cipher_, key, key.getLength(), 0, 0 );
+  if( err )
+  {
+    std::cerr << "Failed to generate cipher bitstream: " << gpg_strerror( err ) << std::endl;
+  }
 }
 
 
-err_status_t KeyDerivation::clear() 
+void KeyDerivation::clear() 
 {
-  return cipher_dealloc(cipher_);
+  gcry_cipher_close( cipher_ );
 }
 

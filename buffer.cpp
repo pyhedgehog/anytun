@@ -87,6 +87,43 @@ void Buffer::operator=(const Buffer &src)
     length_ = 0;
 }
 
+void Buffer::operator=(const seq_nr_t &src)
+{
+  if(buf_)
+    delete[] buf_;
+
+  length_ = sizeof(src);
+
+  buf_ = new u_int8_t[length_];
+
+  if( buf_ )
+  {
+    for( u_int32_t index = 0; index <= length_; index++ )
+      buf_[index] = (src>>index) & 0xFF;
+  }
+  else
+    length_ = 0;
+}
+
+
+void Buffer::operator=(const sender_id_t &src)
+{
+  if(buf_)
+    delete[] buf_;
+
+  length_ = sizeof(src);
+
+  buf_ = new u_int8_t[length_];
+
+  if( buf_ )
+  {
+    for( u_int32_t index = 0; index <= length_; index++ )
+      buf_[index] = (src>>index) & 0xFF;
+  }
+  else
+    length_ = 0;
+}
+
 u_int32_t Buffer::resizeFront(u_int32_t new_length)
 {
   if(length_ == new_length)
@@ -171,7 +208,42 @@ void Buffer::printHexDump() const
 
   for( u_int32_t index = 0; index < length_; index++ )
   {
-    std::sprintf(text, "%#x", buf_[index]);
+    std::sprintf(text, "%#4x", buf_[index]);
     std::cout << text << " ";
+    if( ((index+1) % 10) == 0 )
+      std::cout << std::endl;
   }
 }
+
+Buffer Buffer::operator^(const Buffer &xor_by) const
+{
+  Buffer res(length_);
+  if( xor_by.getLength() > length_ )
+    throw std::out_of_range("buffer::operator^ const");
+
+  for( u_int32_t index = 0; index < xor_by.getLength(); index++ )
+    res[index] = buf_[index] ^ xor_by[index];
+  
+  return res;
+}
+
+Buffer Buffer::leftByteShift(u_int32_t width) const
+{
+  Buffer res(length_+width);
+
+  for( u_int32_t index = 0; index < length_; index++ )
+    res[index+width] = buf_[index];
+
+  return res;
+}
+
+Buffer Buffer::rightByteShift(u_int32_t width) const
+{
+  Buffer res(length_);
+
+  for( u_int32_t index = 0; index < length_-width; index++ )
+    res[index] = buf_[index+width];
+
+  return res;
+}
+

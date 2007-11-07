@@ -31,8 +31,14 @@
 #ifndef _CYPHER_H_
 #define _CYPHER_H_
 
+
+
 #include "datatypes.h"
 #include "buffer.h"
+
+extern "C" {
+#include <gcrypt.h>
+}
 
 
 class Cypher
@@ -59,17 +65,22 @@ protected:
 class AesIcmCypher : public Cypher
 {
 public:
-  AesIcmCypher() : key_(Buffer(0)), salt_(Buffer(14)) {};
+  AesIcmCypher();
+  ~AesIcmCypher();
   void setKey(Buffer key);
   void setSalt(Buffer salt);
-//  void cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id);
+
+  static const char* MIN_GCRYPT_VERSION;
+  static const u_int32_t GCRYPT_SEC_MEM = 16384;    // 16k secure memory
 
 protected:
-  Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id); 
+  Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
+  gcry_cipher_hd_t cipher_;
+  Buffer salt_;
 
 private:
-  Buffer key_;
-  Buffer salt_;   // size: 112 bit
+  static bool gcrypt_initialized_;
 };
+
 
 #endif

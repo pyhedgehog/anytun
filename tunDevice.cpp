@@ -153,7 +153,7 @@ u_int32_t TunDevice::getType()
   return TYPE_UNDEF;
 }
 
-char* TunDevice::getTypeString()
+const char* TunDevice::getTypeString()
 {
   if(!dev_)
     return NULL;
