@@ -31,7 +31,7 @@
 #include "authAlgo.h"
 
 extern "C" {
-#include <srtp/crypto_kernel.h>
+#include <gcrypt.h>
 }
 
 
@@ -44,22 +44,7 @@ auth_tag_t NullAuthAlgo::calc(const Buffer& buf)
 // HMAC_SHA1
 auth_tag_t HmacAuthAlgo::calc(const Buffer& buf)
 {
-  extern auth_type_t hmac;
-  err_status_t status = err_status_ok;
-  auth_t *auth = NULL;
-
-  uint8_t key[] = {
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-    0x10, 0x11, 0x12, 0x13
-  };
-
-  // auth_type_alloc(auth_type, auth, key_len, out_len)
-  status = auth_type_alloc(&hmac, &auth, 94, 4);
-  status = auth_init(auth, key);
-
-  status = auth_dealloc(auth);
-
+//  gcry_md_hash_buffer(GCRY_MD_SHA1, ht, buf.getBuf(), buf.getLength());
   return 0;
 }
 

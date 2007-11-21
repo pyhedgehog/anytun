@@ -44,27 +44,32 @@ const char* KeyDerivation::MIN_GCRYPT_VERSION = "1.2.3";
 void KeyDerivation::init(Buffer key, Buffer salt)
 {
   gcry_error_t err;
-  if( !gcry_check_version( MIN_GCRYPT_VERSION ) )
-  {
-    std::cerr << "Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
-    return;
-  }
 
-  /* Allocate a pool of 16k secure memory.  This also drops priviliges
-   *      on some systems. */
-  err = gcry_control(GCRYCTL_INIT_SECMEM, 16384, 0);
-  if( err )
+  // No other library has already initialized libgcrypt.
+  if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
   {
-    std::cerr << "Failed to allocate 16k secure memory: " << gpg_strerror( err ) << std::endl;
-    return;
-  }
+    if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
+      std::cerr << "Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
+      return;
+    }
 
-  /* Tell Libgcrypt that initialization has completed. */
-  err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
-  if( err )
-  {
-    std::cerr << "Failed to finish the initialization of libgcrypt" << gpg_strerror( err ) << std::endl;
-    return;
+    /* Allocate a pool of 16k secure memory.  This also drops priviliges
+     *      on some systems. */
+    err = gcry_control(GCRYCTL_INIT_SECMEM, 16384, 0);
+    if( err )
+    {
+      std::cerr << "Failed to allocate 16k secure memory: " << gpg_strerror( err ) << std::endl;
+      return;
+    }
+
+    /* Tell Libgcrypt that initialization has completed. */
+    err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
+    if( err ) {
+      std::cerr << "Failed to finish the initialization of libgcrypt" << gpg_strerror( err ) << std::endl;
+      return;
+    } else {
+      std::cout << "KeyDerivation::init: libgcrypt init finished" << std::endl;
+    }
   }
 
   err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );

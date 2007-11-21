@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 C++ = g++
 CCFLAGS = -g -Wall
 LD = g++
-LDFLAGS = -g -Wall -O2 -ldl -lpthread -lsrtp -lgcrypt
+LDFLAGS = -g -Wall -O2 -ldl -lpthread -lgcrypt
 
 OPENVPNDEPS = openvpn/tun.o \
               openvpn/error.o \

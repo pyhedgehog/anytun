@@ -72,34 +72,34 @@ bool AesIcmCypher::gcrypt_initialized_ = false;
 AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))
 {
   gcry_error_t err;
-  if( !gcry_check_version( MIN_GCRYPT_VERSION ) )
-  {
-    std::cerr << "Invalid Version of libgcrypt, should be >= ";
-    std::cerr << MIN_GCRYPT_VERSION << std::endl;
-    return;
-  }
 
-  if( !gcrypt_initialized_ )
+  // No other library has already initialized libgcrypt.
+  if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
   {
+    if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
+      std::cerr << "Invalid Version of libgcrypt, should be >= ";
+      std::cerr << MIN_GCRYPT_VERSION << std::endl;
+      return;
+    }
+
     /* Allocate a pool of secure memory.  This also drops priviliges
        on some systems. */
     err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
-    if( err )
-    {
+    if( err ) {
       std::cerr << "Failed to allocate " << GCRYPT_SEC_MEM << "bytes of secure memory: ";
       std::cerr << gpg_strerror( err ) << std::endl;
       return;
     }
-    gcrypt_initialized_ = true;
-  }
 
-  /* Tell Libgcrypt that initialization has completed. */
-  err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
-  if( err )
-  {
-    std::cerr << "Failed to finish the initialization of libgcrypt";
-    std::cerr << gpg_strerror( err ) << std::endl;
-    return;
+    /* Tell Libgcrypt that initialization has completed. */
+    err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
+    if( err ) {
+      std::cerr << "Failed to finish the initialization of libgcrypt";
+      std::cerr << gpg_strerror( err ) << std::endl;
+      return;
+    } else {
+      std::cout << "AesIcmCypher::AesIcmCypher: libgcrypt init finished" << std::endl;
+    }
   }
 
   gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
