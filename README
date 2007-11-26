@@ -1,24 +1,7 @@
 Building
 ========
 
-* install libSRTP (as seen below)
 * install libgcrypt
 * install libgcrypt11-dev
 * ./configure
 * make
-
-
-Building and Installing libSRTP:
-===============================
-
-go to https://sourceforge.net/projects/srtp/ and grab the version 1.4.4 (e.g. http://puzzle.dl.sourceforge.net/sourceforge/srtp/srtp-1.4.4.tgz):
-
-Then on your computer decompress it:
-
-tar xzvf srtp-x.y.z.tgz
-cd srtp
-./configure
-make
-make install
-
-to install libsrtp.a under /usr/local/lib/
