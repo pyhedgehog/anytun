@@ -77,6 +77,7 @@ Options::Options()
   sender_id_ = 0;
   local_addr_ = "";
   local_port_ = 4444;
+  local_sync_port_ = 0;
   remote_addr_ = "";
   remote_port_ = 4444;
   dev_name_ = "tap";
@@ -105,6 +106,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_)
     PARSE_SCALAR_PARAM("-i","--interface", local_addr_)
     PARSE_SCALAR_PARAM("-p","--port", local_port_)
+    PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_port_)
     PARSE_SCALAR_PARAM("-r","--remote-host", remote_addr_)
     PARSE_SCALAR_PARAM("-o","--remote-port", remote_port_)
     PARSE_SCALAR_PARAM("-d","--dev", dev_name_)
@@ -126,7 +128,8 @@ void Options::printUsage()
 //  std::cout << "       [-f|--config] <file>                the config file" << std::endl;
   std::cout << "       [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
   std::cout << "       [-i|--interface] <interface>        local interface to bind to" << std::endl;
-  std::cout << "       [-p|--port] <port>                  local port to bind to" << std::endl;
+  std::cout << "       [-p|--port] <port>                  local anycast port to bind to" << std::endl;
+  std::cout << "       [-S|--sync-port] <port>             local unicast/sync port to bind to" << std::endl;
   std::cout << "       [-r|--remote-host] <hostname/ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
   std::cout << "       [-d|--dev] <name>                   device name" << std::endl;
@@ -145,6 +148,7 @@ void Options::printOptions()
   std::cout << "sender_id='" << sender_id_ << "'" << std::endl;
   std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
   std::cout << "local_port='" << local_port_ << "'" << std::endl;
+  std::cout << "local_sync_port='" << local_sync_port_ << "'" << std::endl;
   std::cout << "remote_addr='" << remote_addr_ << "'" << std::endl;
   std::cout << "remote_port='" << remote_port_ << "'" << std::endl;
   std::cout << "dev_name='" << dev_name_ << "'" << std::endl;
@@ -193,6 +197,19 @@ Options& Options::setLocalAddr(std::string l)
   return *this;
 }
 
+std::string Options::getLocalSyncAddr()
+{
+  Lock lock(mutex);
+  return local_sync_addr_;
+}
+
+Options& Options::setLocalSyncAddr(std::string l)
+{
+  Lock lock(mutex);
+  local_sync_addr_ = l;
+  return *this;
+}
+
 u_int16_t Options::getLocalPort()
 {
   return local_port_;
@@ -201,6 +218,17 @@ u_int16_t Options::getLocalPort()
 Options& Options::setLocalPort(u_int16_t l)
 {
   local_port_ = l;
+  return *this;
+}
+
+u_int16_t Options::getLocalSyncPort()
+{
+  return local_sync_port_;
+}
+
+Options& Options::setLocalSyncPort(u_int16_t l)
+{
+  local_sync_port_ = l;
   return *this;
 }
 

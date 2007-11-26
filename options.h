@@ -48,10 +48,14 @@ public:
   Options& setSenderId(sender_id_t s);
   std::string getLocalAddr();
   Options& setLocalAddr(std::string l);
+  std::string getLocalSyncAddr();
+  Options& setLocalSyncAddr(std::string l);
   u_int16_t getLocalPort();
   Options& setLocalPort(u_int16_t l);
   std::string getRemoteAddr();
   Options& setRemoteAddr(std::string r);
+  u_int16_t getLocalSyncPort();
+  Options& setLocalSyncPort(u_int16_t l);
   u_int16_t getRemotePort();
   Options& setRemotePort(u_int16_t r);
   Options& setRemoteAddrPort(std::string addr, u_int16_t port);
@@ -76,7 +80,9 @@ private:
   std::string progname_;
   sender_id_t sender_id_;
   std::string local_addr_;
+  std::string local_sync_addr_;
   u_int16_t local_port_;
+  u_int16_t local_sync_port_;
   std::string remote_addr_;
   u_int16_t remote_port_;
   std::string dev_name_;
