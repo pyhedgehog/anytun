@@ -1,9 +1,13 @@
 C = gcc
 CFLAGS = -g -Wall
+CFLAGS += -DSOCKETS_NAMESPACE=sockets
+CFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
 C++ = g++
 CCFLAGS = -g -Wall
+CCFLAGS += -DSOCKETS_NAMESPACE=sockets
+CCFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
 LD = g++
-LDFLAGS = -g -Wall -O2 -ldl -lpthread -lgcrypt
+LDFLAGS = -g -Wall -O2 -ldl -lpthread -lgcrypt -lssl
 
 OPENVPNDEPS = openvpn/tun.o \
               openvpn/error.o \
@@ -29,6 +33,17 @@ OPENVPNDEPS = openvpn/tun.o \
               openvpn/shaper.o \
               openvpn/fragment.o
 
+SOCKETDEPS = Sockets/libSockets.a
+
+#Sockets/TcpSocket.o \
+#             Sockets/Socket.o \
+#             Sockets/Thread.o \
+#             Sockets/SocketHandler.o \
+#             Sockets/Ipv4Address.o \
+#             Sockets/Mutex.o \
+#             Sockets/SSLInitializer.o
+
+
 OBJS = anytun.o \
        tunDevice.o \
        packetSource.o \
@@ -43,10 +58,12 @@ OBJS = anytun.o \
        PracticalSocket.o \
 			 router.o \
        signalController.o \
+       syncSocket.o \
        log.o \
        options.o \
        seqWindow.o \
-       $(OPENVPNDEPS) 
+       $(OPENVPNDEPS) \
+			 $(SOCKETDEPS)
 
 EXECUTABLE = anytun
 
@@ -74,6 +91,9 @@ authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 keyDerivation.o: keyDerivation.cpp keyDerivation.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncSocket.o: syncSocket.cpp syncSocket.h
 	$(C++) $(CCFLAGS) $< -c
 
 signalController.o: signalController.cpp signalController.h

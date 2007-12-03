@@ -1,7 +1,11 @@
+Dependencies
+============
+
+libgcrypt11-dev
+libssl-dev (Openssl)
+
 Building
 ========
 
-* install libgcrypt
-* install libgcrypt11-dev
 * ./configure
 * make
