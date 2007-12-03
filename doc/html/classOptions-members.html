@@ -31,6 +31,8 @@
   <tr class="memlist"><td><a class="el" href="classOptions.html#ee9e8bcc21c6c8c81fc4ed79991d42d5">getIfconfigParamRemoteNetmask</a>()</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#0b1ca05363913a66db8dcb829ebc21e2">getLocalAddr</a>()</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#44a66c61b99fc0d1a953493a3cd4dcab">getLocalPort</a>()</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classOptions.html#e614846f55efc3c84fcde4718156e544">getLocalSyncAddr</a>()</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classOptions.html#5ada1a8516ba353b5cf389d041ea75c9">getLocalSyncPort</a>()</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#af7b2ab27fc4b1a74ef89e9fdd0cfb22">getProgname</a>()</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#46343d900b4dd2ab8e0a7a2a9274e885">getRemoteAddr</a>()</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#4d2089d4216557810410f31ffa2dfc8b">getRemotePort</a>()</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
@@ -40,6 +42,8 @@
   <tr class="memlist"><td><a class="el" href="classOptions.html#cd2c34152754ab7818ee4bfe3e1b9936">ifconfig_param_remote_netmask_</a></td><td><a class="el" href="classOptions.html">Options</a></td><td><code> [private]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#d331507d07c87908a5b199a209a3e97e">local_addr_</a></td><td><a class="el" href="classOptions.html">Options</a></td><td><code> [private]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#744fc32e1b4f5c930251a8b0013f7f0a">local_port_</a></td><td><a class="el" href="classOptions.html">Options</a></td><td><code> [private]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classOptions.html#83aa9bb2387d4f988a2aab7653fc8786">local_sync_addr_</a></td><td><a class="el" href="classOptions.html">Options</a></td><td><code> [private]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classOptions.html#2fd9e6b23a64d3844c9318136b1e61da">local_sync_port_</a></td><td><a class="el" href="classOptions.html">Options</a></td><td><code> [private]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#3effd9220086fd43e36884295f89bd7c">mutex</a></td><td><a class="el" href="classOptions.html">Options</a></td><td><code> [private]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#b72fb640172a6109e34c8a5366563753">Options</a>()</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#eef7f9799ffcc31221a54dc9ed3b3e81">parse</a>(int argc, char *argv[])</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
@@ -58,13 +62,15 @@
   <tr class="memlist"><td><a class="el" href="classOptions.html#d0760cecce7395f5022b921642674326">setIfconfigParamRemoteNetmask</a>(std::string i)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#bf7ebb3ee98c6d31dd5c5b0732188de5">setLocalAddr</a>(std::string l)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#a4b5b364bf2880fcbcd3fe059ccde7eb">setLocalPort</a>(u_int16_t l)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classOptions.html#a6d319a0adbfce9a9e1c6131bce5c2f2">setLocalSyncAddr</a>(std::string l)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classOptions.html#7b2c8a681fd14ded0681eea7882fd3ec">setLocalSyncPort</a>(u_int16_t l)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#1267ce6d4b43ab9c0f8827c434b33b1b">setProgname</a>(std::string p)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#d0848af5b5e029a4ea14fe6fb82d3f46">setRemoteAddr</a>(std::string r)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#79249268d3b284f9e254f874cedeef41">setRemoteAddrPort</a>(std::string addr, u_int16_t port)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#cbd3e9a4e230c2537d86127a092efd40">setRemotePort</a>(u_int16_t r)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#d10f65b29130c7e31a332e22f77650b0">setSenderId</a>(sender_id_t s)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classOptions.html#077dda754c64b01d6736aa4f7862ce6b">setSeqWindowSize</a>(window_size_t s)</td><td><a class="el" href="classOptions.html">Options</a></td><td></td></tr>
-</table><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 7 23:43:50 2007 for anytun by&nbsp;
+</table><hr size="1"><address style="align: right;"><small>Generated on Tue Nov 27 14:11:51 2007 for anytun by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small></address>
 </body>

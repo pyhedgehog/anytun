@@ -25,6 +25,10 @@ std::string {\bf get\-Local\-Addr} ()
 \item 
 {\bf Options} \& {\bf set\-Local\-Addr} (std::string l)
 \item 
+std::string {\bf get\-Local\-Sync\-Addr} ()
+\item 
+{\bf Options} \& {\bf set\-Local\-Sync\-Addr} (std::string l)
+\item 
 {\bf u\_\-int16\_\-t} {\bf get\-Local\-Port} ()
 \item 
 {\bf Options} \& {\bf set\-Local\-Port} ({\bf u\_\-int16\_\-t} l)
@@ -32,6 +36,10 @@ std::string {\bf get\-Local\-Addr} ()
 std::string {\bf get\-Remote\-Addr} ()
 \item 
 {\bf Options} \& {\bf set\-Remote\-Addr} (std::string r)
+\item 
+{\bf u\_\-int16\_\-t} {\bf get\-Local\-Sync\-Port} ()
+\item 
+{\bf Options} \& {\bf set\-Local\-Sync\-Port} ({\bf u\_\-int16\_\-t} l)
 \item 
 {\bf u\_\-int16\_\-t} {\bf get\-Remote\-Port} ()
 \item 
@@ -78,7 +86,11 @@ std::string {\bf progname\_\-}
 \item 
 std::string {\bf local\_\-addr\_\-}
 \item 
+std::string {\bf local\_\-sync\_\-addr\_\-}
+\item 
 {\bf u\_\-int16\_\-t} {\bf local\_\-port\_\-}
+\item 
+{\bf u\_\-int16\_\-t} {\bf local\_\-sync\_\-port\_\-}
 \item 
 std::string {\bf remote\_\-addr\_\-}
 \item 
@@ -154,6 +166,16 @@ std::string {\bf auth\_\-algo\_\-}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Local\-Addr (std::string {\em l})}\label{classOptions_bf7ebb3ee98c6d31dd5c5b0732188de5}
 
 
+\index{Options@{Options}!getLocalSyncAddr@{getLocalSyncAddr}}
+\index{getLocalSyncAddr@{getLocalSyncAddr}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string Options::get\-Local\-Sync\-Addr ()}\label{classOptions_e614846f55efc3c84fcde4718156e544}
+
+
+\index{Options@{Options}!setLocalSyncAddr@{setLocalSyncAddr}}
+\index{setLocalSyncAddr@{setLocalSyncAddr}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Local\-Sync\-Addr (std::string {\em l})}\label{classOptions_a6d319a0adbfce9a9e1c6131bce5c2f2}
+
+
 \index{Options@{Options}!getLocalPort@{getLocalPort}}
 \index{getLocalPort@{getLocalPort}!Options@{Options}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf u\_\-int16\_\-t} Options::get\-Local\-Port ()}\label{classOptions_44a66c61b99fc0d1a953493a3cd4dcab}
@@ -172,6 +194,16 @@ std::string {\bf auth\_\-algo\_\-}
 \index{Options@{Options}!setRemoteAddr@{setRemoteAddr}}
 \index{setRemoteAddr@{setRemoteAddr}!Options@{Options}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Remote\-Addr (std::string {\em r})}\label{classOptions_d0848af5b5e029a4ea14fe6fb82d3f46}
+
+
+\index{Options@{Options}!getLocalSyncPort@{getLocalSyncPort}}
+\index{getLocalSyncPort@{getLocalSyncPort}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf u\_\-int16\_\-t} Options::get\-Local\-Sync\-Port ()}\label{classOptions_5ada1a8516ba353b5cf389d041ea75c9}
+
+
+\index{Options@{Options}!setLocalSyncPort@{setLocalSyncPort}}
+\index{setLocalSyncPort@{setLocalSyncPort}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Options} \& Options::set\-Local\-Sync\-Port ({\bf u\_\-int16\_\-t} {\em l})}\label{classOptions_7b2c8a681fd14ded0681eea7882fd3ec}
 
 
 \index{Options@{Options}!getRemotePort@{getRemotePort}}
@@ -282,9 +314,19 @@ std::string {\bf auth\_\-algo\_\-}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::local\_\-addr\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_d331507d07c87908a5b199a209a3e97e}
 
 
+\index{Options@{Options}!local_sync_addr_@{local\_\-sync\_\-addr\_\-}}
+\index{local_sync_addr_@{local\_\-sync\_\-addr\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}std::string {\bf Options::local\_\-sync\_\-addr\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_83aa9bb2387d4f988a2aab7653fc8786}
+
+
 \index{Options@{Options}!local_port_@{local\_\-port\_\-}}
 \index{local_port_@{local\_\-port\_\-}!Options@{Options}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf u\_\-int16\_\-t} {\bf Options::local\_\-port\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_744fc32e1b4f5c930251a8b0013f7f0a}
+
+
+\index{Options@{Options}!local_sync_port_@{local\_\-sync\_\-port\_\-}}
+\index{local_sync_port_@{local\_\-sync\_\-port\_\-}!Options@{Options}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf u\_\-int16\_\-t} {\bf Options::local\_\-sync\_\-port\_\-}\hspace{0.3cm}{\tt  [private]}}\label{classOptions_2fd9e6b23a64d3844c9318136b1e61da}
 
 
 \index{Options@{Options}!remote_addr_@{remote\_\-addr\_\-}}

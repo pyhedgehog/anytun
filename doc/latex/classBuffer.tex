@@ -23,6 +23,10 @@ virtual {\bf $\sim$Buffer} ()
 \item 
 void {\bf operator=} (const {\bf Buffer} \&src)
 \item 
+void {\bf operator=} (const {\bf seq\_\-nr\_\-t} \&src)
+\item 
+void {\bf operator=} (const {\bf sender\_\-id\_\-t} \&src)
+\item 
 virtual {\bf Buffer} {\bf operator$^\wedge$} (const {\bf Buffer} \&xor\_\-by) const 
 \item 
 virtual {\bf Buffer} {\bf left\-Byte\-Shift} ({\bf u\_\-int32\_\-t} width) const
@@ -58,10 +62,6 @@ void {\bf print\-Hex\-Dump} () const
 class {\bf Tun\-Device}
 \item 
 class {\bf UDPPacket\-Source}
-\item 
-class {\bf Aes\-Icm\-Cypher}
-\item 
-class {\bf Key\-Derivation}
 \end{CompactItemize}
 
 
@@ -97,6 +97,16 @@ class {\bf Key\-Derivation}
 \index{Buffer@{Buffer}!operator=@{operator=}}
 \index{operator=@{operator=}!Buffer@{Buffer}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Buffer::operator= (const {\bf Buffer} \& {\em src})}\label{classBuffer_14cec0d3bf4f3f1a4a9930a8c53eb43a}
+
+
+\index{Buffer@{Buffer}!operator=@{operator=}}
+\index{operator=@{operator=}!Buffer@{Buffer}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Buffer::operator= (const {\bf seq\_\-nr\_\-t} \& {\em src})}\label{classBuffer_b62dfbb5605a860aa63771f3b1c29b1e}
+
+
+\index{Buffer@{Buffer}!operator=@{operator=}}
+\index{operator=@{operator=}!Buffer@{Buffer}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Buffer::operator= (const {\bf sender\_\-id\_\-t} \& {\em src})}\label{classBuffer_b3bda89f495b3895a533155f593ab503}
 
 
 \index{Buffer@{Buffer}!operator^@{operator$^\wedge$}}
@@ -165,16 +175,6 @@ class {\bf Key\-Derivation}
 \index{Buffer@{Buffer}!UDPPacketSource@{UDPPacketSource}}
 \index{UDPPacketSource@{UDPPacketSource}!Buffer@{Buffer}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}friend class {\bf UDPPacket\-Source}\hspace{0.3cm}{\tt  [friend]}}\label{classBuffer_940a382a5e3a8622e6689e13dc453481}
-
-
-\index{Buffer@{Buffer}!AesIcmCypher@{AesIcmCypher}}
-\index{AesIcmCypher@{AesIcmCypher}!Buffer@{Buffer}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}friend class {\bf Aes\-Icm\-Cypher}\hspace{0.3cm}{\tt  [friend]}}\label{classBuffer_41d791e5b640813dea34c24c11056581}
-
-
-\index{Buffer@{Buffer}!KeyDerivation@{KeyDerivation}}
-\index{KeyDerivation@{KeyDerivation}!Buffer@{Buffer}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}friend class {\bf Key\-Derivation}\hspace{0.3cm}{\tt  [friend]}}\label{classBuffer_1d039eb05e29b8eeadca9b474bb6d49f}
 
 
 

@@ -22,7 +22,6 @@
   <tr class="memlist"><td><a class="el" href="classPacket.html#a7f8bb4bb127aad314eb0f0ef72447ed">addAuthTag</a>(auth_tag_t auth_tag)</td><td><a class="el" href="classPacket.html">Packet</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classPacket.html#2a682115c6802d0dd1ebbd3434a3a179">addHeader</a>(seq_nr_t seq_nr, sender_id_t sender_id)</td><td><a class="el" href="classPacket.html">Packet</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classPacket.html#40849ee3c59a84c3899c409ed392b477">addPayloadType</a>(payload_type_t payload_type)</td><td><a class="el" href="classPacket.html">Packet</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBuffer.html#41d791e5b640813dea34c24c11056581">AesIcmCypher</a> class</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td><code> [friend]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#e60240b77a315e6b3c2bf88592d0be48">buf_</a></td><td><a class="el" href="classBuffer.html">Buffer</a></td><td><code> [protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#e7ef2cd201190fde551dcb902627112b">Buffer</a>()</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#5c58aa9e491f709011408ee7837d57d0">Buffer</a>(u_int32_t length)</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td></td></tr>
@@ -38,12 +37,13 @@
   <tr class="memlist"><td><a class="el" href="classPacket.html#bfe50722f18687bb0691061fb0ccb0ff">hasAuthTag</a>() const</td><td><a class="el" href="classPacket.html">Packet</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classPacket.html#a004c01dd99179b0a08109dce5fc6b03">hasHeader</a>() const</td><td><a class="el" href="classPacket.html">Packet</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classPacket.html#c78b8af0dc7c7badf85e75db0de54800">hasPayloadType</a>() const</td><td><a class="el" href="classPacket.html">Packet</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBuffer.html#1d039eb05e29b8eeadca9b474bb6d49f">KeyDerivation</a> class</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td><code> [friend]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#13200a4925b1b3c08f99e09ccb6854a1">leftByteShift</a>(u_int32_t width) const</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#d3a779d2403b5183427f12554e2f51c3">length_</a></td><td><a class="el" href="classBuffer.html">Buffer</a></td><td><code> [protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classsatp_1_1SATP.html#e9e415324a6a9fbe14971c1ffd334139">name</a></td><td><a class="el" href="classsatp_1_1SATP.html">satp::SATP</a></td><td><code> [static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#dcf367d5f1b7fced7aa61bb919af7943">operator u_int8_t *</a>()</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#14cec0d3bf4f3f1a4a9930a8c53eb43a">operator=</a>(const Buffer &amp;src)</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBuffer.html#b62dfbb5605a860aa63771f3b1c29b1e">operator=</a>(const seq_nr_t &amp;src)</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBuffer.html#b3bda89f495b3895a533155f593ab503">operator=</a>(const sender_id_t &amp;src)</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#763882c627db10206f78b090556b00fa">operator[]</a>(u_int32_t index)</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#e5a9559862374ebd9dfcfc1204890497">operator[]</a>(u_int32_t index) const</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#d56159a415541fcff34ef8aed1eb7183">operator^</a>(const Buffer &amp;xor_by) const </td><td><a class="el" href="classBuffer.html">Buffer</a></td><td><code> [virtual]</code></td></tr>
@@ -65,7 +65,7 @@
   <tr class="memlist"><td><a class="el" href="classPacket.html#ce9e40180f64d44fe1d8da14ac9e5df2">withHeader</a>(bool b)</td><td><a class="el" href="classPacket.html">Packet</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classPacket.html#c7ecfc05376afd00af89cb328e194a1d">withPayloadType</a>(bool b)</td><td><a class="el" href="classPacket.html">Packet</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classBuffer.html#59b8743e4a5f731bdd0c4185c9ef263b">~Buffer</a>()</td><td><a class="el" href="classBuffer.html">Buffer</a></td><td><code> [virtual]</code></td></tr>
-</table><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 7 23:43:50 2007 for anytun by&nbsp;
+</table><hr size="1"><address style="align: right;"><small>Generated on Tue Nov 27 14:11:51 2007 for anytun by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small></address>
 </body>

@@ -60,55 +60,50 @@
 <a name="l00041"></a>00041 }
 <a name="l00042"></a>00042 
 <a name="l00043"></a>00043 
-<a name="l00044"></a>00044 <span class="preprocessor">#include &lt;string&gt;</span>
-<a name="l00045"></a>00045 
-<a name="l00046"></a><a class="code" href="classCypher.html">00046</a> <span class="keyword">class </span><a class="code" href="classCypher.html">Cypher</a>
-<a name="l00047"></a>00047 {
-<a name="l00048"></a>00048 <span class="keyword">public</span>:
-<a name="l00049"></a><a class="code" href="classCypher.html#5228228b0b2d83251ecce4516e87ddb1">00049</a>   <a class="code" href="classCypher.html#5228228b0b2d83251ecce4516e87ddb1">Cypher</a>() {};
-<a name="l00050"></a><a class="code" href="classCypher.html#70c94525f7bacb956cdd940fba7fb4c8">00050</a>   <span class="keyword">virtual</span> <a class="code" href="classCypher.html#70c94525f7bacb956cdd940fba7fb4c8">~Cypher</a>() {};
-<a name="l00051"></a>00051  
-<a name="l00052"></a><a class="code" href="classCypher.html#7320b82d14391ab7d25271aa5114e190">00052</a>   <span class="keywordtype">void</span> <a class="code" href="classCypher.html#7320b82d14391ab7d25271aa5114e190">setKey</a>(<a class="code" href="classBuffer.html">Buffer</a> key) {};
-<a name="l00053"></a><a class="code" href="classCypher.html#2546ef49e5ce8abe8062186d5f6b2ef8">00053</a>   <span class="keywordtype">void</span> <a class="code" href="classCypher.html#2546ef49e5ce8abe8062186d5f6b2ef8">setSalt</a>(<a class="code" href="classBuffer.html">Buffer</a> salt) {};
-<a name="l00054"></a>00054   <span class="keywordtype">void</span> <a class="code" href="classCypher.html#1d51ce2235d38bded45f5e897be4435c">cypher</a>(<a class="code" href="classBuffer.html">Buffer</a>&amp; buf, <a class="code" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> sender_id);
-<a name="l00055"></a>00055   
-<a name="l00056"></a>00056 <span class="keyword">protected</span>:
-<a name="l00057"></a>00057   <span class="keywordtype">void</span> <a class="code" href="classCypher.html#bf33a7a59ed1cdf711030236de6635b0">exor</a>(<a class="code" href="classBuffer.html">Buffer</a>&amp; buf, <span class="keyword">const</span> <a class="code" href="classBuffer.html">Buffer</a>&amp; bit_stream);
-<a name="l00058"></a>00058   <span class="keyword">virtual</span> <a class="code" href="classBuffer.html">Buffer</a> <a class="code" href="classCypher.html#7ddf1bcd476978daa97148ec406d6483">getBitStream</a>(<a class="code" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> length, <a class="code" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> sender_id) = 0;
-<a name="l00059"></a>00059 };
-<a name="l00060"></a>00060 
-<a name="l00061"></a><a class="code" href="classNullCypher.html">00061</a> <span class="keyword">class </span><a class="code" href="classNullCypher.html">NullCypher</a> : <span class="keyword">public</span> <a class="code" href="classCypher.html">Cypher</a>
-<a name="l00062"></a>00062 {
-<a name="l00063"></a>00063 <span class="keyword">protected</span>:
-<a name="l00064"></a>00064   <a class="code" href="classBuffer.html">Buffer</a> <a class="code" href="classNullCypher.html#ca537adca8ea9af8b6f248df12ebcf36">getBitStream</a>(<a class="code" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> length, <a class="code" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> sender_id);
-<a name="l00065"></a>00065 };
-<a name="l00066"></a>00066 
-<a name="l00067"></a><a class="code" href="classAesIcmCypher.html">00067</a> <span class="keyword">class </span><a class="code" href="classAesIcmCypher.html">AesIcmCypher</a> : <span class="keyword">public</span> <a class="code" href="classCypher.html">Cypher</a>
-<a name="l00068"></a>00068 {
-<a name="l00069"></a>00069 <span class="keyword">public</span>:
-<a name="l00070"></a>00070   <a class="code" href="classAesIcmCypher.html#628abe54d9f3ac715dcaa0ae9ebf44bc">AesIcmCypher</a>();
-<a name="l00071"></a>00071   <a class="code" href="classAesIcmCypher.html#fdf9ab22374ffdad856f172eefacbd17">~AesIcmCypher</a>();
-<a name="l00072"></a>00072   <span class="keywordtype">void</span> <a class="code" href="classAesIcmCypher.html#605a38676ef12ad0b69628c5d53ef007">setKey</a>(<a class="code" href="classBuffer.html">Buffer</a> key);
-<a name="l00073"></a>00073   <span class="keywordtype">void</span> <a class="code" href="classAesIcmCypher.html#6741487a9d6dfe3ae76bb168ed711259">setSalt</a>(<a class="code" href="classBuffer.html">Buffer</a> salt);
-<a name="l00074"></a>00074 
-<a name="l00075"></a><a class="code" href="classAesIcmCypher.html#605842d12379711d74401d0923b5d76e">00075</a>   <span class="keyword">static</span> <span class="keyword">const</span> std::string <a class="code" href="classAesIcmCypher.html#605842d12379711d74401d0923b5d76e">MIN_GCRYPT_VERSION</a>;
-<a name="l00076"></a><a class="code" href="classAesIcmCypher.html#4d1dea41b9745bca5a2d84fcefe3558c">00076</a>   <span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> <a class="code" href="classAesIcmCypher.html#4d1dea41b9745bca5a2d84fcefe3558c">GCRYPT_SEC_MEM</a>;
-<a name="l00077"></a>00077 
-<a name="l00078"></a>00078 <span class="keyword">protected</span>:
-<a name="l00079"></a>00079   <a class="code" href="classBuffer.html">Buffer</a> <a class="code" href="classAesIcmCypher.html#ebac1fbb9a4cb56411fcd45ca63f47a1">getBitStream</a>(<a class="code" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> length, <a class="code" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> sender_id);
-<a name="l00080"></a><a class="code" href="classAesIcmCypher.html#d74a46baaee2e0755902d134274eac9a">00080</a>   gcry_cipher_hd_t <a class="code" href="classAesIcmCypher.html#d74a46baaee2e0755902d134274eac9a">cipher_</a>;
-<a name="l00081"></a><a class="code" href="classAesIcmCypher.html#a62620f7280574b142a0eb29880f5083">00081</a>   <a class="code" href="classBuffer.html">Buffer</a> <a class="code" href="classAesIcmCypher.html#a62620f7280574b142a0eb29880f5083">salt_</a>;
-<a name="l00082"></a>00082 
-<a name="l00083"></a>00083 <span class="keyword">private</span>:
-<a name="l00084"></a><a class="code" href="classAesIcmCypher.html#04da5690d9102c6b3fe5bf78a8827ac1">00084</a>   <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="classAesIcmCypher.html#04da5690d9102c6b3fe5bf78a8827ac1">gcrypt_initialized_</a>;
-<a name="l00085"></a>00085 };
-<a name="l00086"></a>00086 
-<a name="l00087"></a>00087 <span class="keyword">const</span> std::string <a class="code" href="classAesIcmCypher.html#605842d12379711d74401d0923b5d76e">AesIcmCypher::MIN_GCRYPT_VERSION</a> = <span class="stringliteral">"1.2.3"</span>;
-<a name="l00088"></a>00088 <span class="keywordtype">bool</span> <a class="code" href="classAesIcmCypher.html#04da5690d9102c6b3fe5bf78a8827ac1">AesIcmCypher::gcrypt_initialized_</a> = <span class="keyword">false</span>;
-<a name="l00089"></a>00089 <span class="keyword">const</span> <a class="code" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> <a class="code" href="classAesIcmCypher.html#4d1dea41b9745bca5a2d84fcefe3558c">AesIcmCypher::GCRYPT_SEC_MEM</a> = 16384; <span class="comment">// 16k secure memory</span>
-<a name="l00090"></a>00090 
-<a name="l00091"></a>00091 <span class="preprocessor">#endif</span>
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 7 23:43:49 2007 for anytun by&nbsp;
+<a name="l00044"></a><a class="code" href="classCypher.html">00044</a> <span class="keyword">class </span><a class="code" href="classCypher.html">Cypher</a>
+<a name="l00045"></a>00045 {
+<a name="l00046"></a>00046 <span class="keyword">public</span>:
+<a name="l00047"></a><a class="code" href="classCypher.html#5228228b0b2d83251ecce4516e87ddb1">00047</a>   <a class="code" href="classCypher.html#5228228b0b2d83251ecce4516e87ddb1">Cypher</a>() {};
+<a name="l00048"></a><a class="code" href="classCypher.html#70c94525f7bacb956cdd940fba7fb4c8">00048</a>   <span class="keyword">virtual</span> <a class="code" href="classCypher.html#70c94525f7bacb956cdd940fba7fb4c8">~Cypher</a>() {};
+<a name="l00049"></a>00049  
+<a name="l00050"></a><a class="code" href="classCypher.html#7320b82d14391ab7d25271aa5114e190">00050</a>   <span class="keywordtype">void</span> <a class="code" href="classCypher.html#7320b82d14391ab7d25271aa5114e190">setKey</a>(<a class="code" href="classBuffer.html">Buffer</a> key) {};
+<a name="l00051"></a><a class="code" href="classCypher.html#2546ef49e5ce8abe8062186d5f6b2ef8">00051</a>   <span class="keywordtype">void</span> <a class="code" href="classCypher.html#2546ef49e5ce8abe8062186d5f6b2ef8">setSalt</a>(<a class="code" href="classBuffer.html">Buffer</a> salt) {};
+<a name="l00052"></a>00052   <span class="keywordtype">void</span> <a class="code" href="classCypher.html#1d51ce2235d38bded45f5e897be4435c">cypher</a>(<a class="code" href="classBuffer.html">Buffer</a>&amp; buf, <a class="code" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> sender_id);
+<a name="l00053"></a>00053   
+<a name="l00054"></a>00054 <span class="keyword">protected</span>:
+<a name="l00055"></a>00055   <span class="keywordtype">void</span> <a class="code" href="classCypher.html#bf33a7a59ed1cdf711030236de6635b0">exor</a>(<a class="code" href="classBuffer.html">Buffer</a>&amp; buf, <span class="keyword">const</span> <a class="code" href="classBuffer.html">Buffer</a>&amp; bit_stream);
+<a name="l00056"></a>00056   <span class="keyword">virtual</span> <a class="code" href="classBuffer.html">Buffer</a> <a class="code" href="classCypher.html#7ddf1bcd476978daa97148ec406d6483">getBitStream</a>(<a class="code" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> length, <a class="code" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> sender_id) = 0;
+<a name="l00057"></a>00057 };
+<a name="l00058"></a>00058 
+<a name="l00059"></a><a class="code" href="classNullCypher.html">00059</a> <span class="keyword">class </span><a class="code" href="classNullCypher.html">NullCypher</a> : <span class="keyword">public</span> <a class="code" href="classCypher.html">Cypher</a>
+<a name="l00060"></a>00060 {
+<a name="l00061"></a>00061 <span class="keyword">protected</span>:
+<a name="l00062"></a>00062   <a class="code" href="classBuffer.html">Buffer</a> <a class="code" href="classNullCypher.html#ca537adca8ea9af8b6f248df12ebcf36">getBitStream</a>(<a class="code" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> length, <a class="code" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> sender_id);
+<a name="l00063"></a>00063 };
+<a name="l00064"></a>00064 
+<a name="l00065"></a><a class="code" href="classAesIcmCypher.html">00065</a> <span class="keyword">class </span><a class="code" href="classAesIcmCypher.html">AesIcmCypher</a> : <span class="keyword">public</span> <a class="code" href="classCypher.html">Cypher</a>
+<a name="l00066"></a>00066 {
+<a name="l00067"></a>00067 <span class="keyword">public</span>:
+<a name="l00068"></a>00068   <a class="code" href="classAesIcmCypher.html#628abe54d9f3ac715dcaa0ae9ebf44bc">AesIcmCypher</a>();
+<a name="l00069"></a>00069   <a class="code" href="classAesIcmCypher.html#fdf9ab22374ffdad856f172eefacbd17">~AesIcmCypher</a>();
+<a name="l00070"></a>00070   <span class="keywordtype">void</span> <a class="code" href="classAesIcmCypher.html#605a38676ef12ad0b69628c5d53ef007">setKey</a>(<a class="code" href="classBuffer.html">Buffer</a> key);
+<a name="l00071"></a>00071   <span class="keywordtype">void</span> <a class="code" href="classAesIcmCypher.html#6741487a9d6dfe3ae76bb168ed711259">setSalt</a>(<a class="code" href="classBuffer.html">Buffer</a> salt);
+<a name="l00072"></a>00072 
+<a name="l00073"></a><a class="code" href="classAesIcmCypher.html#a51dfb2f03f214c03b5b45f84279023f">00073</a>   <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="classAesIcmCypher.html#a51dfb2f03f214c03b5b45f84279023f">MIN_GCRYPT_VERSION</a>;
+<a name="l00074"></a><a class="code" href="classAesIcmCypher.html#4d1dea41b9745bca5a2d84fcefe3558c">00074</a>   <span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> <a class="code" href="classAesIcmCypher.html#4d1dea41b9745bca5a2d84fcefe3558c">GCRYPT_SEC_MEM</a> = 16384;    <span class="comment">// 16k secure memory</span>
+<a name="l00075"></a>00075 
+<a name="l00076"></a>00076 <span class="keyword">protected</span>:
+<a name="l00077"></a>00077   <a class="code" href="classBuffer.html">Buffer</a> <a class="code" href="classAesIcmCypher.html#ebac1fbb9a4cb56411fcd45ca63f47a1">getBitStream</a>(<a class="code" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> length, <a class="code" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> sender_id);
+<a name="l00078"></a><a class="code" href="classAesIcmCypher.html#d74a46baaee2e0755902d134274eac9a">00078</a>   gcry_cipher_hd_t <a class="code" href="classAesIcmCypher.html#d74a46baaee2e0755902d134274eac9a">cipher_</a>;
+<a name="l00079"></a><a class="code" href="classAesIcmCypher.html#a62620f7280574b142a0eb29880f5083">00079</a>   <a class="code" href="classBuffer.html">Buffer</a> <a class="code" href="classAesIcmCypher.html#a62620f7280574b142a0eb29880f5083">salt_</a>;
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081 <span class="keyword">private</span>:
+<a name="l00082"></a><a class="code" href="classAesIcmCypher.html#04da5690d9102c6b3fe5bf78a8827ac1">00082</a>   <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="classAesIcmCypher.html#04da5690d9102c6b3fe5bf78a8827ac1">gcrypt_initialized_</a>;
+<a name="l00083"></a>00083 };
+<a name="l00084"></a>00084 
+<a name="l00085"></a>00085 
+<a name="l00086"></a>00086 <span class="preprocessor">#endif</span>
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Tue Nov 27 14:11:51 2007 for anytun by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small></address>
 </body>

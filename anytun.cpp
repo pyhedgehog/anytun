@@ -109,6 +109,15 @@ void* sender(void* p)
   pthread_exit(NULL);
 }
 
+void* sync_receiver(void* p)
+{
+	Param* param = reinterpret_cast<Param*>(p);
+
+	while(1)
+	{
+	}
+}
+
 void* receiver(void* p)
 {
   Param* param = reinterpret_cast<Param*>(p);  

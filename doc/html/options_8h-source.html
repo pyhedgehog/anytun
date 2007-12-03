@@ -50,64 +50,71 @@
 <a name="l00031"></a>00031 <span class="preprocessor">#ifndef _OPTIONS_H_</span>
 <a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#define _OPTIONS_H_</span>
 <a name="l00033"></a>00033 <span class="preprocessor"></span>
-<a name="l00034"></a>00034 <span class="preprocessor">#include "<a class="code" href="threadUtils_8hpp.html">threadUtils.hpp</a>"</span>
-<a name="l00035"></a>00035 
-<a name="l00036"></a><a class="code" href="classOptions.html">00036</a> <span class="keyword">class </span><a class="code" href="classOptions.html">Options</a>
-<a name="l00037"></a>00037 {
-<a name="l00038"></a>00038 <span class="keyword">public</span>:
-<a name="l00039"></a>00039   <a class="code" href="classOptions.html#b72fb640172a6109e34c8a5366563753">Options</a>();
-<a name="l00040"></a>00040   <span class="keywordtype">bool</span> <a class="code" href="classOptions.html#eef7f9799ffcc31221a54dc9ed3b3e81">parse</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>* argv[]);
-<a name="l00041"></a>00041   <span class="keywordtype">void</span> <a class="code" href="classOptions.html#5a64af47966f3c0a54a8c3a3385065e3">printUsage</a>();
-<a name="l00042"></a>00042   <span class="keywordtype">void</span> <a class="code" href="classOptions.html#cac40a32d05b48e49595d8d19cf8af47">printOptions</a>();
-<a name="l00043"></a>00043 
-<a name="l00044"></a>00044   std::string <a class="code" href="classOptions.html#af7b2ab27fc4b1a74ef89e9fdd0cfb22">getProgname</a>();
-<a name="l00045"></a>00045   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#1267ce6d4b43ab9c0f8827c434b33b1b">setProgname</a>(std::string p);
-<a name="l00046"></a>00046   <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> <a class="code" href="classOptions.html#049d0dbe0f6ca10cc18d87924fb2322d">getSenderId</a>();
-<a name="l00047"></a>00047   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#d10f65b29130c7e31a332e22f77650b0">setSenderId</a>(<a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> s);
-<a name="l00048"></a>00048   std::string <a class="code" href="classOptions.html#0b1ca05363913a66db8dcb829ebc21e2">getLocalAddr</a>();
-<a name="l00049"></a>00049   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#bf7ebb3ee98c6d31dd5c5b0732188de5">setLocalAddr</a>(std::string l);
-<a name="l00050"></a>00050   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#44a66c61b99fc0d1a953493a3cd4dcab">getLocalPort</a>();
-<a name="l00051"></a>00051   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#a4b5b364bf2880fcbcd3fe059ccde7eb">setLocalPort</a>(<a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> l);
-<a name="l00052"></a>00052   std::string <a class="code" href="classOptions.html#46343d900b4dd2ab8e0a7a2a9274e885">getRemoteAddr</a>();
-<a name="l00053"></a>00053   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#d0848af5b5e029a4ea14fe6fb82d3f46">setRemoteAddr</a>(std::string r);
-<a name="l00054"></a>00054   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#4d2089d4216557810410f31ffa2dfc8b">getRemotePort</a>();
-<a name="l00055"></a>00055   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#cbd3e9a4e230c2537d86127a092efd40">setRemotePort</a>(<a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> r);
-<a name="l00056"></a>00056   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#79249268d3b284f9e254f874cedeef41">setRemoteAddrPort</a>(std::string addr, <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> port);
-<a name="l00057"></a>00057   std::string <a class="code" href="classOptions.html#acd35d4f958a4611ba10fc844583b744">getDevName</a>();
-<a name="l00058"></a>00058   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#8217facd595355be2b4f1130179e3746">setDevName</a>(std::string d);
-<a name="l00059"></a>00059   std::string <a class="code" href="classOptions.html#0762384e71fb10883a8fe245a389cee6">getDevType</a>();
-<a name="l00060"></a>00060   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#d2a4cc3b2ecabba72396648a7a07cc29">setDevType</a>(std::string d);
-<a name="l00061"></a>00061   std::string <a class="code" href="classOptions.html#5354b737aa30d786c79f43547c78dc09">getIfconfigParamLocal</a>();
-<a name="l00062"></a>00062   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#93e1367e5db67df81d2afac1ee5c6c73">setIfconfigParamLocal</a>(std::string i);
-<a name="l00063"></a>00063   std::string <a class="code" href="classOptions.html#ee9e8bcc21c6c8c81fc4ed79991d42d5">getIfconfigParamRemoteNetmask</a>();
-<a name="l00064"></a>00064   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#d0760cecce7395f5022b921642674326">setIfconfigParamRemoteNetmask</a>(std::string i);
-<a name="l00065"></a>00065   <a class="code" href="datatypes_8h.html#0246b9fac0b861d94e0e4cc9ae2e5070">window_size_t</a> <a class="code" href="classOptions.html#893c688302a091bcf99cb327b23774fa">getSeqWindowSize</a>();
-<a name="l00066"></a>00066   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#077dda754c64b01d6736aa4f7862ce6b">setSeqWindowSize</a>(<a class="code" href="datatypes_8h.html#0246b9fac0b861d94e0e4cc9ae2e5070">window_size_t</a> s);
-<a name="l00067"></a>00067   std::string <a class="code" href="classOptions.html#71845d106fb9ccef0f8b682a125f4ffd">getCypher</a>();
-<a name="l00068"></a>00068   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#b3218cd91b41551042595b5216766c00">setCypher</a>(std::string c);
-<a name="l00069"></a>00069   std::string <a class="code" href="classOptions.html#ee7bd7127b7ab35e287fb479288e9641">getAuthAlgo</a>();
-<a name="l00070"></a>00070   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#c093c83be9a50c1dfd5170ff14b647c5">setAuthAlgo</a>(std::string a);
-<a name="l00071"></a>00071 
-<a name="l00072"></a>00072 <span class="keyword">private</span>:
-<a name="l00073"></a><a class="code" href="classOptions.html#3effd9220086fd43e36884295f89bd7c">00073</a>   <a class="code" href="classMutex.html">Mutex</a> <a class="code" href="classOptions.html#3effd9220086fd43e36884295f89bd7c">mutex</a>;
-<a name="l00074"></a>00074 
-<a name="l00075"></a><a class="code" href="classOptions.html#aed7d0eeae21d7d00eb35dccea48b9f3">00075</a>   std::string <a class="code" href="classOptions.html#aed7d0eeae21d7d00eb35dccea48b9f3">progname_</a>;
-<a name="l00076"></a><a class="code" href="classOptions.html#f166d5f4f6fd17c761ac9a6d7e48d362">00076</a>   <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> <a class="code" href="classOptions.html#f166d5f4f6fd17c761ac9a6d7e48d362">sender_id_</a>;
-<a name="l00077"></a><a class="code" href="classOptions.html#d331507d07c87908a5b199a209a3e97e">00077</a>   std::string <a class="code" href="classOptions.html#d331507d07c87908a5b199a209a3e97e">local_addr_</a>;
-<a name="l00078"></a><a class="code" href="classOptions.html#744fc32e1b4f5c930251a8b0013f7f0a">00078</a>   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#744fc32e1b4f5c930251a8b0013f7f0a">local_port_</a>;
-<a name="l00079"></a><a class="code" href="classOptions.html#af81d4d836e3ca1850b8b474d61944de">00079</a>   std::string <a class="code" href="classOptions.html#af81d4d836e3ca1850b8b474d61944de">remote_addr_</a>;
-<a name="l00080"></a><a class="code" href="classOptions.html#8481cdc79ca8bde93af9b945838f4559">00080</a>   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#8481cdc79ca8bde93af9b945838f4559">remote_port_</a>;
-<a name="l00081"></a><a class="code" href="classOptions.html#3b094d71270549c85ca372f060bfe22c">00081</a>   std::string <a class="code" href="classOptions.html#3b094d71270549c85ca372f060bfe22c">dev_name_</a>;
-<a name="l00082"></a><a class="code" href="classOptions.html#b0c850a5e29599156af92cf5b3ddff28">00082</a>   std::string <a class="code" href="classOptions.html#b0c850a5e29599156af92cf5b3ddff28">dev_type_</a>;
-<a name="l00083"></a><a class="code" href="classOptions.html#fd0d76c7e1e2fa6fd9ee0538ff9124b0">00083</a>   std::string <a class="code" href="classOptions.html#fd0d76c7e1e2fa6fd9ee0538ff9124b0">ifconfig_param_local_</a>;
-<a name="l00084"></a><a class="code" href="classOptions.html#cd2c34152754ab7818ee4bfe3e1b9936">00084</a>   std::string <a class="code" href="classOptions.html#cd2c34152754ab7818ee4bfe3e1b9936">ifconfig_param_remote_netmask_</a>;
-<a name="l00085"></a><a class="code" href="classOptions.html#d2a0398f717a96602f8c402db12699a5">00085</a>   <a class="code" href="datatypes_8h.html#0246b9fac0b861d94e0e4cc9ae2e5070">window_size_t</a> <a class="code" href="classOptions.html#d2a0398f717a96602f8c402db12699a5">seq_window_size_</a>;
-<a name="l00086"></a><a class="code" href="classOptions.html#bba16365a15a6a87c90f85e143bebb5f">00086</a>   std::string <a class="code" href="classOptions.html#bba16365a15a6a87c90f85e143bebb5f">cypher_</a>;
-<a name="l00087"></a><a class="code" href="classOptions.html#061ed690bdfa12bfc1094ca18293e97a">00087</a>   std::string <a class="code" href="classOptions.html#061ed690bdfa12bfc1094ca18293e97a">auth_algo_</a>;
-<a name="l00088"></a>00088 };
-<a name="l00089"></a>00089 
-<a name="l00090"></a>00090 <span class="preprocessor">#endif</span>
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 7 23:43:49 2007 for anytun by&nbsp;
+<a name="l00034"></a>00034 <span class="preprocessor">#include "<a class="code" href="datatypes_8h.html">datatypes.h</a>"</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include "<a class="code" href="threadUtils_8hpp.html">threadUtils.hpp</a>"</span>
+<a name="l00036"></a>00036 
+<a name="l00037"></a><a class="code" href="classOptions.html">00037</a> <span class="keyword">class </span><a class="code" href="classOptions.html">Options</a>
+<a name="l00038"></a>00038 {
+<a name="l00039"></a>00039 <span class="keyword">public</span>:
+<a name="l00040"></a>00040   <a class="code" href="classOptions.html#b72fb640172a6109e34c8a5366563753">Options</a>();
+<a name="l00041"></a>00041   <span class="keywordtype">bool</span> <a class="code" href="classOptions.html#eef7f9799ffcc31221a54dc9ed3b3e81">parse</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>* argv[]);
+<a name="l00042"></a>00042   <span class="keywordtype">void</span> <a class="code" href="classOptions.html#5a64af47966f3c0a54a8c3a3385065e3">printUsage</a>();
+<a name="l00043"></a>00043   <span class="keywordtype">void</span> <a class="code" href="classOptions.html#cac40a32d05b48e49595d8d19cf8af47">printOptions</a>();
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045   std::string <a class="code" href="classOptions.html#af7b2ab27fc4b1a74ef89e9fdd0cfb22">getProgname</a>();
+<a name="l00046"></a>00046   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#1267ce6d4b43ab9c0f8827c434b33b1b">setProgname</a>(std::string p);
+<a name="l00047"></a>00047   <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> <a class="code" href="classOptions.html#049d0dbe0f6ca10cc18d87924fb2322d">getSenderId</a>();
+<a name="l00048"></a>00048   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#d10f65b29130c7e31a332e22f77650b0">setSenderId</a>(<a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> s);
+<a name="l00049"></a>00049   std::string <a class="code" href="classOptions.html#0b1ca05363913a66db8dcb829ebc21e2">getLocalAddr</a>();
+<a name="l00050"></a>00050   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#bf7ebb3ee98c6d31dd5c5b0732188de5">setLocalAddr</a>(std::string l);
+<a name="l00051"></a>00051   std::string <a class="code" href="classOptions.html#e614846f55efc3c84fcde4718156e544">getLocalSyncAddr</a>();
+<a name="l00052"></a>00052   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#a6d319a0adbfce9a9e1c6131bce5c2f2">setLocalSyncAddr</a>(std::string l);
+<a name="l00053"></a>00053   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#44a66c61b99fc0d1a953493a3cd4dcab">getLocalPort</a>();
+<a name="l00054"></a>00054   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#a4b5b364bf2880fcbcd3fe059ccde7eb">setLocalPort</a>(<a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> l);
+<a name="l00055"></a>00055   std::string <a class="code" href="classOptions.html#46343d900b4dd2ab8e0a7a2a9274e885">getRemoteAddr</a>();
+<a name="l00056"></a>00056   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#d0848af5b5e029a4ea14fe6fb82d3f46">setRemoteAddr</a>(std::string r);
+<a name="l00057"></a>00057   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#5ada1a8516ba353b5cf389d041ea75c9">getLocalSyncPort</a>();
+<a name="l00058"></a>00058   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#7b2c8a681fd14ded0681eea7882fd3ec">setLocalSyncPort</a>(<a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> l);
+<a name="l00059"></a>00059   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#4d2089d4216557810410f31ffa2dfc8b">getRemotePort</a>();
+<a name="l00060"></a>00060   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#cbd3e9a4e230c2537d86127a092efd40">setRemotePort</a>(<a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> r);
+<a name="l00061"></a>00061   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#79249268d3b284f9e254f874cedeef41">setRemoteAddrPort</a>(std::string addr, <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> port);
+<a name="l00062"></a>00062   std::string <a class="code" href="classOptions.html#acd35d4f958a4611ba10fc844583b744">getDevName</a>();
+<a name="l00063"></a>00063   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#8217facd595355be2b4f1130179e3746">setDevName</a>(std::string d);
+<a name="l00064"></a>00064   std::string <a class="code" href="classOptions.html#0762384e71fb10883a8fe245a389cee6">getDevType</a>();
+<a name="l00065"></a>00065   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#d2a4cc3b2ecabba72396648a7a07cc29">setDevType</a>(std::string d);
+<a name="l00066"></a>00066   std::string <a class="code" href="classOptions.html#5354b737aa30d786c79f43547c78dc09">getIfconfigParamLocal</a>();
+<a name="l00067"></a>00067   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#93e1367e5db67df81d2afac1ee5c6c73">setIfconfigParamLocal</a>(std::string i);
+<a name="l00068"></a>00068   std::string <a class="code" href="classOptions.html#ee9e8bcc21c6c8c81fc4ed79991d42d5">getIfconfigParamRemoteNetmask</a>();
+<a name="l00069"></a>00069   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#d0760cecce7395f5022b921642674326">setIfconfigParamRemoteNetmask</a>(std::string i);
+<a name="l00070"></a>00070   <a class="code" href="datatypes_8h.html#0246b9fac0b861d94e0e4cc9ae2e5070">window_size_t</a> <a class="code" href="classOptions.html#893c688302a091bcf99cb327b23774fa">getSeqWindowSize</a>();
+<a name="l00071"></a>00071   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#077dda754c64b01d6736aa4f7862ce6b">setSeqWindowSize</a>(<a class="code" href="datatypes_8h.html#0246b9fac0b861d94e0e4cc9ae2e5070">window_size_t</a> s);
+<a name="l00072"></a>00072   std::string <a class="code" href="classOptions.html#71845d106fb9ccef0f8b682a125f4ffd">getCypher</a>();
+<a name="l00073"></a>00073   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#b3218cd91b41551042595b5216766c00">setCypher</a>(std::string c);
+<a name="l00074"></a>00074   std::string <a class="code" href="classOptions.html#ee7bd7127b7ab35e287fb479288e9641">getAuthAlgo</a>();
+<a name="l00075"></a>00075   <a class="code" href="classOptions.html">Options</a>&amp; <a class="code" href="classOptions.html#c093c83be9a50c1dfd5170ff14b647c5">setAuthAlgo</a>(std::string a);
+<a name="l00076"></a>00076 
+<a name="l00077"></a>00077 <span class="keyword">private</span>:
+<a name="l00078"></a><a class="code" href="classOptions.html#3effd9220086fd43e36884295f89bd7c">00078</a>   <a class="code" href="classMutex.html">Mutex</a> <a class="code" href="classOptions.html#3effd9220086fd43e36884295f89bd7c">mutex</a>;
+<a name="l00079"></a>00079 
+<a name="l00080"></a><a class="code" href="classOptions.html#aed7d0eeae21d7d00eb35dccea48b9f3">00080</a>   std::string <a class="code" href="classOptions.html#aed7d0eeae21d7d00eb35dccea48b9f3">progname_</a>;
+<a name="l00081"></a><a class="code" href="classOptions.html#f166d5f4f6fd17c761ac9a6d7e48d362">00081</a>   <a class="code" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> <a class="code" href="classOptions.html#f166d5f4f6fd17c761ac9a6d7e48d362">sender_id_</a>;
+<a name="l00082"></a><a class="code" href="classOptions.html#d331507d07c87908a5b199a209a3e97e">00082</a>   std::string <a class="code" href="classOptions.html#d331507d07c87908a5b199a209a3e97e">local_addr_</a>;
+<a name="l00083"></a><a class="code" href="classOptions.html#83aa9bb2387d4f988a2aab7653fc8786">00083</a>   std::string <a class="code" href="classOptions.html#83aa9bb2387d4f988a2aab7653fc8786">local_sync_addr_</a>;
+<a name="l00084"></a><a class="code" href="classOptions.html#744fc32e1b4f5c930251a8b0013f7f0a">00084</a>   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#744fc32e1b4f5c930251a8b0013f7f0a">local_port_</a>;
+<a name="l00085"></a><a class="code" href="classOptions.html#2fd9e6b23a64d3844c9318136b1e61da">00085</a>   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#2fd9e6b23a64d3844c9318136b1e61da">local_sync_port_</a>;
+<a name="l00086"></a><a class="code" href="classOptions.html#af81d4d836e3ca1850b8b474d61944de">00086</a>   std::string <a class="code" href="classOptions.html#af81d4d836e3ca1850b8b474d61944de">remote_addr_</a>;
+<a name="l00087"></a><a class="code" href="classOptions.html#8481cdc79ca8bde93af9b945838f4559">00087</a>   <a class="code" href="datatypes_8h.html#3aa89f830bb876725b238e6a2a67a809">u_int16_t</a> <a class="code" href="classOptions.html#8481cdc79ca8bde93af9b945838f4559">remote_port_</a>;
+<a name="l00088"></a><a class="code" href="classOptions.html#3b094d71270549c85ca372f060bfe22c">00088</a>   std::string <a class="code" href="classOptions.html#3b094d71270549c85ca372f060bfe22c">dev_name_</a>;
+<a name="l00089"></a><a class="code" href="classOptions.html#b0c850a5e29599156af92cf5b3ddff28">00089</a>   std::string <a class="code" href="classOptions.html#b0c850a5e29599156af92cf5b3ddff28">dev_type_</a>;
+<a name="l00090"></a><a class="code" href="classOptions.html#fd0d76c7e1e2fa6fd9ee0538ff9124b0">00090</a>   std::string <a class="code" href="classOptions.html#fd0d76c7e1e2fa6fd9ee0538ff9124b0">ifconfig_param_local_</a>;
+<a name="l00091"></a><a class="code" href="classOptions.html#cd2c34152754ab7818ee4bfe3e1b9936">00091</a>   std::string <a class="code" href="classOptions.html#cd2c34152754ab7818ee4bfe3e1b9936">ifconfig_param_remote_netmask_</a>;
+<a name="l00092"></a><a class="code" href="classOptions.html#d2a0398f717a96602f8c402db12699a5">00092</a>   <a class="code" href="datatypes_8h.html#0246b9fac0b861d94e0e4cc9ae2e5070">window_size_t</a> <a class="code" href="classOptions.html#d2a0398f717a96602f8c402db12699a5">seq_window_size_</a>;
+<a name="l00093"></a><a class="code" href="classOptions.html#bba16365a15a6a87c90f85e143bebb5f">00093</a>   std::string <a class="code" href="classOptions.html#bba16365a15a6a87c90f85e143bebb5f">cypher_</a>;
+<a name="l00094"></a><a class="code" href="classOptions.html#061ed690bdfa12bfc1094ca18293e97a">00094</a>   std::string <a class="code" href="classOptions.html#061ed690bdfa12bfc1094ca18293e97a">auth_algo_</a>;
+<a name="l00095"></a>00095 };
+<a name="l00096"></a>00096 
+<a name="l00097"></a>00097 <span class="preprocessor">#endif</span>
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Tue Nov 27 14:11:51 2007 for anytun by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small></address>
 </body>

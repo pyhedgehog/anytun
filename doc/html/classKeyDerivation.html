@@ -29,14 +29,11 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#5f03e97de1a041f6012d1fcfabf13773">init</a> (<a class="el" href="classBuffer.html">Buffer</a> key, <a class="el" href="classBuffer.html">Buffer</a> salt)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">err_status_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#1c6d7a055b6b5b88076e15218f936663">setLogKDRate</a> (const uint8_t ld_rate)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#b055afc0de04a6e32631e42f09b32e63">setLogKDRate</a> (const <a class="el" href="datatypes_8h.html#40a40c6e9649a4e3806e76fef247d241">u_int8_t</a> ld_rate)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">err_status_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#025e21ecdd0389b768eaa61fed660c86">generate</a> (<a class="el" href="keyDerivation_8h.html#4829fcd87054af9b3ced79bbac1ce1eb">satp_prf_label</a> label, <a class="el" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="el" href="classBuffer.html">Buffer</a> &amp;key, uint32_t length)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#6d319febcad73d199fe8773ae614f70a">generate</a> (<a class="el" href="keyDerivation_8h.html#4829fcd87054af9b3ced79bbac1ce1eb">satp_prf_label</a> label, <a class="el" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> seq_nr, <a class="el" href="classBuffer.html">Buffer</a> &amp;key, <a class="el" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> length)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#8d8c405ee7c3753b4807b36a8cbe537a">clear</a> ()</td></tr>
-
-<tr><td colspan="2"><br><h2>Static Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static const std::string&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#9aaf24245f7dec6e68fc24541abce94b">MIN_GCRYPT_VERSION</a></td></tr>
 
 <tr><td colspan="2"><br><h2>Protected Attributes</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="datatypes_8h.html#ef44329758059c91c76d334e8fc09700">int8_t</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#426dcd34d3b60191a3db55dd970eeb17">ld_kdr_</a></td></tr>
@@ -44,6 +41,9 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="classBuffer.html">Buffer</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#52e057f1085920a61ea44c5c9936865c">salt_</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">gcry_cipher_hd_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#6b7dd9a922de96a8f76cf6c453adab28">cipher_</a></td></tr>
+
+<tr><td colspan="2"><br><h2>Static Protected Attributes</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static const char *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKeyDerivation.html#2091534e962a9d0f7b3b034150d33333">MIN_GCRYPT_VERSION</a></td></tr>
 
 </table>
 <hr><h2>Constructor &amp; Destructor Documentation</h2>
@@ -115,14 +115,14 @@
 
 </div>
 </div><p>
-<a class="anchor" name="1c6d7a055b6b5b88076e15218f936663"></a><!-- doxytag: member="KeyDerivation::setLogKDRate" ref="1c6d7a055b6b5b88076e15218f936663" args="(const uint8_t ld_rate)" -->
+<a class="anchor" name="b055afc0de04a6e32631e42f09b32e63"></a><!-- doxytag: member="KeyDerivation::setLogKDRate" ref="b055afc0de04a6e32631e42f09b32e63" args="(const u_int8_t ld_rate)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">err_status_t KeyDerivation::setLogKDRate           </td>
+          <td class="memname">void KeyDerivation::setLogKDRate           </td>
           <td>(</td>
-          <td class="paramtype">const uint8_t&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="datatypes_8h.html#40a40c6e9649a4e3806e76fef247d241">u_int8_t</a>&nbsp;</td>
           <td class="paramname"> <em>ld_rate</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td width="100%"></td>
@@ -135,12 +135,12 @@
 
 </div>
 </div><p>
-<a class="anchor" name="025e21ecdd0389b768eaa61fed660c86"></a><!-- doxytag: member="KeyDerivation::generate" ref="025e21ecdd0389b768eaa61fed660c86" args="(satp_prf_label label, seq_nr_t seq_nr, Buffer &amp;key, uint32_t length)" -->
+<a class="anchor" name="6d319febcad73d199fe8773ae614f70a"></a><!-- doxytag: member="KeyDerivation::generate" ref="6d319febcad73d199fe8773ae614f70a" args="(satp_prf_label label, seq_nr_t seq_nr, Buffer &amp;key, u_int32_t length)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">err_status_t KeyDerivation::generate           </td>
+          <td class="memname">void KeyDerivation::generate           </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="keyDerivation_8h.html#4829fcd87054af9b3ced79bbac1ce1eb">satp_prf_label</a>&nbsp;</td>
           <td class="paramname"> <em>label</em>, </td>
@@ -160,7 +160,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramtype"><a class="el" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a>&nbsp;</td>
           <td class="paramname"> <em>length</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -196,21 +196,6 @@
 </div>
 </div><p>
 <hr><h2>Member Data Documentation</h2>
-<a class="anchor" name="9aaf24245f7dec6e68fc24541abce94b"></a><!-- doxytag: member="KeyDerivation::MIN_GCRYPT_VERSION" ref="9aaf24245f7dec6e68fc24541abce94b" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::string <a class="el" href="classKeyDerivation.html#9aaf24245f7dec6e68fc24541abce94b">KeyDerivation::MIN_GCRYPT_VERSION</a><code> [static]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
 <a class="anchor" name="426dcd34d3b60191a3db55dd970eeb17"></a><!-- doxytag: member="KeyDerivation::ld_kdr_" ref="426dcd34d3b60191a3db55dd970eeb17" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -241,6 +226,21 @@
 
 </div>
 </div><p>
+<a class="anchor" name="2091534e962a9d0f7b3b034150d33333"></a><!-- doxytag: member="KeyDerivation::MIN_GCRYPT_VERSION" ref="2091534e962a9d0f7b3b034150d33333" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * <a class="el" href="classKeyDerivation.html#2091534e962a9d0f7b3b034150d33333">KeyDerivation::MIN_GCRYPT_VERSION</a><code> [static, protected]</code>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="6b7dd9a922de96a8f76cf6c453adab28"></a><!-- doxytag: member="KeyDerivation::cipher_" ref="6b7dd9a922de96a8f76cf6c453adab28" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -258,7 +258,7 @@
 </div><p>
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="keyDerivation_8h-source.html">keyDerivation.h</a><li><a class="el" href="keyDerivation_8cpp.html">keyDerivation.cpp</a></ul>
-<hr size="1"><address style="align: right;"><small>Generated on Sun Oct 7 23:43:50 2007 for anytun by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Tue Nov 27 14:11:51 2007 for anytun by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small></address>
 </body>

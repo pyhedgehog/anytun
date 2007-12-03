@@ -11,16 +11,11 @@ virtual {\bf $\sim$Key\-Derivation} ()
 \item 
 void {\bf init} ({\bf Buffer} key, {\bf Buffer} salt)
 \item 
-err\_\-status\_\-t {\bf set\-Log\-KDRate} (const uint8\_\-t ld\_\-rate)
+void {\bf set\-Log\-KDRate} (const {\bf u\_\-int8\_\-t} ld\_\-rate)
 \item 
-err\_\-status\_\-t {\bf generate} ({\bf satp\_\-prf\_\-label} label, {\bf seq\_\-nr\_\-t} seq\_\-nr, {\bf Buffer} \&key, uint32\_\-t length)
+void {\bf generate} ({\bf satp\_\-prf\_\-label} label, {\bf seq\_\-nr\_\-t} seq\_\-nr, {\bf Buffer} \&key, {\bf u\_\-int32\_\-t} length)
 \item 
 void {\bf clear} ()
-\end{CompactItemize}
-\subsection*{Static Public Attributes}
-\begin{CompactItemize}
-\item 
-static const std::string {\bf MIN\_\-GCRYPT\_\-VERSION}
 \end{CompactItemize}
 \subsection*{Protected Attributes}
 \begin{CompactItemize}
@@ -30,6 +25,11 @@ static const std::string {\bf MIN\_\-GCRYPT\_\-VERSION}
 {\bf Buffer} {\bf salt\_\-}
 \item 
 gcry\_\-cipher\_\-hd\_\-t {\bf cipher\_\-}
+\end{CompactItemize}
+\subsection*{Static Protected Attributes}
+\begin{CompactItemize}
+\item 
+static const char $\ast$ {\bf MIN\_\-GCRYPT\_\-VERSION}
 \end{CompactItemize}
 
 
@@ -54,12 +54,12 @@ gcry\_\-cipher\_\-hd\_\-t {\bf cipher\_\-}
 
 \index{KeyDerivation@{Key\-Derivation}!setLogKDRate@{setLogKDRate}}
 \index{setLogKDRate@{setLogKDRate}!KeyDerivation@{Key\-Derivation}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}err\_\-status\_\-t Key\-Derivation::set\-Log\-KDRate (const uint8\_\-t {\em ld\_\-rate})}\label{classKeyDerivation_1c6d7a055b6b5b88076e15218f936663}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Key\-Derivation::set\-Log\-KDRate (const {\bf u\_\-int8\_\-t} {\em ld\_\-rate})}\label{classKeyDerivation_b055afc0de04a6e32631e42f09b32e63}
 
 
 \index{KeyDerivation@{Key\-Derivation}!generate@{generate}}
 \index{generate@{generate}!KeyDerivation@{Key\-Derivation}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}err\_\-status\_\-t Key\-Derivation::generate ({\bf satp\_\-prf\_\-label} {\em label}, {\bf seq\_\-nr\_\-t} {\em seq\_\-nr}, {\bf Buffer} \& {\em key}, uint32\_\-t {\em length})}\label{classKeyDerivation_025e21ecdd0389b768eaa61fed660c86}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Key\-Derivation::generate ({\bf satp\_\-prf\_\-label} {\em label}, {\bf seq\_\-nr\_\-t} {\em seq\_\-nr}, {\bf Buffer} \& {\em key}, {\bf u\_\-int32\_\-t} {\em length})}\label{classKeyDerivation_6d319febcad73d199fe8773ae614f70a}
 
 
 \index{KeyDerivation@{Key\-Derivation}!clear@{clear}}
@@ -70,11 +70,6 @@ gcry\_\-cipher\_\-hd\_\-t {\bf cipher\_\-}
 
 
 \subsection{Member Data Documentation}
-\index{KeyDerivation@{Key\-Derivation}!MIN_GCRYPT_VERSION@{MIN\_\-GCRYPT\_\-VERSION}}
-\index{MIN_GCRYPT_VERSION@{MIN\_\-GCRYPT\_\-VERSION}!KeyDerivation@{Key\-Derivation}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const std::string {\bf Key\-Derivation::MIN\_\-GCRYPT\_\-VERSION}\hspace{0.3cm}{\tt  [static]}}\label{classKeyDerivation_9aaf24245f7dec6e68fc24541abce94b}
-
-
 \index{KeyDerivation@{Key\-Derivation}!ld_kdr_@{ld\_\-kdr\_\-}}
 \index{ld_kdr_@{ld\_\-kdr\_\-}!KeyDerivation@{Key\-Derivation}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf int8\_\-t} {\bf Key\-Derivation::ld\_\-kdr\_\-}\hspace{0.3cm}{\tt  [protected]}}\label{classKeyDerivation_426dcd34d3b60191a3db55dd970eeb17}
@@ -83,6 +78,11 @@ gcry\_\-cipher\_\-hd\_\-t {\bf cipher\_\-}
 \index{KeyDerivation@{Key\-Derivation}!salt_@{salt\_\-}}
 \index{salt_@{salt\_\-}!KeyDerivation@{Key\-Derivation}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf Buffer} {\bf Key\-Derivation::salt\_\-}\hspace{0.3cm}{\tt  [protected]}}\label{classKeyDerivation_52e057f1085920a61ea44c5c9936865c}
+
+
+\index{KeyDerivation@{Key\-Derivation}!MIN_GCRYPT_VERSION@{MIN\_\-GCRYPT\_\-VERSION}}
+\index{MIN_GCRYPT_VERSION@{MIN\_\-GCRYPT\_\-VERSION}!KeyDerivation@{Key\-Derivation}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const char $\ast$ {\bf Key\-Derivation::MIN\_\-GCRYPT\_\-VERSION}\hspace{0.3cm}{\tt  [static, protected]}}\label{classKeyDerivation_2091534e962a9d0f7b3b034150d33333}
 
 
 \index{KeyDerivation@{Key\-Derivation}!cipher_@{cipher\_\-}}

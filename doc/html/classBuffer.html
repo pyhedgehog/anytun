@@ -41,6 +41,10 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBuffer.html#14cec0d3bf4f3f1a4a9930a8c53eb43a">operator=</a> (const <a class="el" href="classBuffer.html">Buffer</a> &amp;src)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBuffer.html#b62dfbb5605a860aa63771f3b1c29b1e">operator=</a> (const <a class="el" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> &amp;src)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBuffer.html#b3bda89f495b3895a533155f593ab503">operator=</a> (const <a class="el" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> &amp;src)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="classBuffer.html">Buffer</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBuffer.html#d56159a415541fcff34ef8aed1eb7183">operator^</a> (const <a class="el" href="classBuffer.html">Buffer</a> &amp;xor_by) const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="classBuffer.html">Buffer</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBuffer.html#13200a4925b1b3c08f99e09ccb6854a1">leftByteShift</a> (<a class="el" href="datatypes_8h.html#1382fcaa92d837ce7c0961788c8243d7">u_int32_t</a> width) const</td></tr>
@@ -72,10 +76,6 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBuffer.html#51b494563d277beb4740f86c519f30fb">TunDevice</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBuffer.html#940a382a5e3a8622e6689e13dc453481">UDPPacketSource</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">class&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBuffer.html#41d791e5b640813dea34c24c11056581">AesIcmCypher</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">class&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBuffer.html#1d039eb05e29b8eeadca9b474bb6d49f">KeyDerivation</a></td></tr>
 
 </table>
 <hr><h2>Constructor &amp; Destructor Documentation</h2>
@@ -195,6 +195,46 @@
           <td class="memname">void Buffer::operator=           </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classBuffer.html">Buffer</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>src</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="b62dfbb5605a860aa63771f3b1c29b1e"></a><!-- doxytag: member="Buffer::operator=" ref="b62dfbb5605a860aa63771f3b1c29b1e" args="(const seq_nr_t &amp;src)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Buffer::operator=           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="datatypes_8h.html#317be74a3176b4149a817241bd69f9b2">seq_nr_t</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>src</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="b3bda89f495b3895a533155f593ab503"></a><!-- doxytag: member="Buffer::operator=" ref="b3bda89f495b3895a533155f593ab503" args="(const sender_id_t &amp;src)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Buffer::operator=           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="datatypes_8h.html#c8be006c348a522ae126f67f7b2aaf4e">sender_id_t</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>src</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td width="100%"></td>
@@ -454,36 +494,6 @@
 
 </div>
 </div><p>
-<a class="anchor" name="41d791e5b640813dea34c24c11056581"></a><!-- doxytag: member="Buffer::AesIcmCypher" ref="41d791e5b640813dea34c24c11056581" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">friend class <a class="el" href="classAesIcmCypher.html">AesIcmCypher</a><code> [friend]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="1d039eb05e29b8eeadca9b474bb6d49f"></a><!-- doxytag: member="Buffer::KeyDerivation" ref="1d039eb05e29b8eeadca9b474bb6d49f" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">friend class <a class="el" href="classKeyDerivation.html">KeyDerivation</a><code> [friend]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
 <hr><h2>Member Data Documentation</h2>
 <a class="anchor" name="e60240b77a315e6b3c2bf88592d0be48"></a><!-- doxytag: member="Buffer::buf_" ref="e60240b77a315e6b3c2bf88592d0be48" args="" -->
 <div class="memitem">
@@ -517,7 +527,7 @@
 </div><p>
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="buffer_8h-source.html">buffer.h</a><li><a class="el" href="buffer_8cpp.html">buffer.cpp</a></ul>
-<hr size="1"><address style="align: right;"><small>Generated on Sun Oct 7 23:43:50 2007 for anytun by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Tue Nov 27 14:11:51 2007 for anytun by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small></address>
 </body>
