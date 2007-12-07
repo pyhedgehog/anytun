@@ -30,6 +30,6 @@
 
 #include "connectionParam.h"
 
-ConnectionParam::ConnectionParam(Options& opt,KeyDerivation& kd,Cypher& c,AuthAlgo& a,SeqWindow& seq) : opt_(opt),kd_(kd),c_(c),a_(a),seq_(seq)
+ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq, std::string remote_host, u_int16_t remote_port) : kd_(kd),seq_(seq),remote_host_(remote_host), remote_port_(remote_port)
 {
 }

@@ -44,6 +44,7 @@
 #include "tunDevice.h"
 #include "options.h"
 #include "seqWindow.h"
+#include "connectionList.h"
 
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0800
@@ -52,16 +53,39 @@ struct Param
 {
   Options& opt;
   TunDevice& dev;
-  KeyDerivation& kd;
-  Cypher& c;
-  AuthAlgo& a;
   PacketSource& src;
-  SeqWindow& seq;
+	ConnectionList& cl;
 };
+
+void createConnection(const std::string & remote_host , u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize)
+{
+
+	SeqWindow seq(seqSize);
+
+  uint8_t key[] = {
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+    'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+    'q', 'r', 's', 't'
+  };
+
+  uint8_t salt[] = {
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+    'i', 'j', 'k', 'l', 'm', 'n'
+  };
+
+
+  KeyDerivation kd;
+  kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
+	ConnectionParam connparam (  kd,  seq, remote_host,  remote_port);
+	cl.addConnection(connparam,std::string("default"));
+}
 
 void* sender(void* p)
 {
   Param* param = reinterpret_cast<Param*>(p);
+	//TODO make Cypher selectable with command line option
+	NullCypher c;
+  NullAuthAlgo a;
 
   seq_nr_t seq = 0;
   while(1)
@@ -72,9 +96,9 @@ void* sender(void* p)
     int len = param->dev.read(pack);
     pack.resizeBack(len);
 
-    if(param->opt.getRemoteAddr() == "")
+    if( param->cl.empty())
       continue;
-
+		ConnectionParam conn = param->cl.getConnection();
     // add payload type
     if(param->dev.getType() == TunDevice::TYPE_TUN)
       pack.addPayloadType(PAYLOAD_TYPE_TUN);
@@ -85,22 +109,22 @@ void* sender(void* p)
 
     // cypher the packet
     Buffer tmp_key(16), tmp_salt(14);
-    param->kd.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
-    param->kd.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
-    param->c.setKey(tmp_key);
-    param->c.setSalt(tmp_salt);
+    conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
+    conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
+    c.setKey(tmp_key);
+    c.setSalt(tmp_salt);
 
     //std::cout << "Send Package: seq: " << seq << std::endl << "sID: " <<  param->opt.getSenderId() << std::endl;
     //std::cout << "Package dump: " << pack.getBuf() << std::endl;
 
-    param->c.cypher(pack, seq, param->opt.getSenderId());
+    c.cypher(pack, seq, param->opt.getSenderId());
 
     // add header to packet
     pack.addHeader(seq, param->opt.getSenderId());
     seq++;
 
     // calc auth_tag and add it to the packet
-    auth_tag_t at = param->a.calc(pack);
+    auth_tag_t at = a.calc(pack);
     pack.addAuthTag(at);
 
     // send it out to remote host
@@ -121,6 +145,8 @@ void* sync_receiver(void* p)
 void* receiver(void* p)
 {
   Param* param = reinterpret_cast<Param*>(p);  
+  NullCypher c;
+  NullAuthAlgo a;
   
   while(1)
   {
@@ -137,31 +163,33 @@ void* receiver(void* p)
     // check auth_tag and remove it
     auth_tag_t at = pack.getAuthTag();
     pack.removeAuthTag();
-    if(at != param->a.calc(pack))
+    if(at != a.calc(pack))
       continue;
 
     // autodetect peer
-//    if(param->opt.getRemoteAddr() == "")
-//    {
-      param->opt.setRemoteAddrPort(remote_host, remote_port);
+		// TODO fixme, IP might change!!!
+    if(param->opt.getRemoteAddr() == "" && param->cl.empty())
+		{
+			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize());
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
-//    }
+		}
+		ConnectionParam conn = param->cl.getConnection();
 
     sid = pack.getSenderId();
     seq = pack.getSeqNr();
     // compare sender_id and seq with window
-    if(param->seq.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
+    if(conn.seq_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
       continue;
-    param->seq.addSeqNr(pack.getSenderId(), pack.getSeqNr());
+    conn.seq_.addSeqNr(pack.getSenderId(), pack.getSeqNr());
     pack.removeHeader();
 
     // decypher the packet
     Buffer tmp_key(16), tmp_salt(14);
-    param->kd.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
-    param->kd.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
-    param->c.setKey(tmp_key);
-    param->c.setSalt(tmp_salt);
-    param->c.cypher(pack, seq, sid);
+    conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
+    conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
+    c.setKey(tmp_key);
+    c.setSalt(tmp_salt);
+    c.cypher(pack, seq, sid);
    
     //std::cout << "Received Package: seq: " << seq << std::endl << "sID: " << sid << std::endl;
     //std::cout << "Package dump: " << pack.getBuf() << std::endl;
@@ -193,33 +221,19 @@ int main(int argc, char* argv[])
   sig.init();
   std::string dev_type(opt.getDevType()); 
   TunDevice dev(opt.getDevName().c_str(), dev_type=="" ? NULL : dev_type.c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
-  SeqWindow seq(opt.getSeqWindowSize());
 
-  uint8_t key[] = {
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-    'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-    'q', 'r', 's', 't'
-  };
-
-  uint8_t salt[] = {
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-    'i', 'j', 'k', 'l', 'm', 'n'
-  };
-
-
-  KeyDerivation kd;
-  kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
-
-  NullCypher c;
-//  AesIcmCypher c;
-  NullAuthAlgo a;
   PacketSource* src;
   if(opt.getLocalAddr() == "")
     src = new UDPPacketSource(opt.getLocalPort());
   else
     src = new UDPPacketSource(opt.getLocalAddr(), opt.getLocalPort());
 
-  struct Param p = {opt, dev, kd, c, a, *src, seq};
+	ConnectionList cl;
+
+	if(opt.getRemoteAddr() != "")
+		createConnection(opt.getRemoteAddr(),opt.getRemotePort(),cl,opt.getSeqWindowSize());
+
+  struct Param p = {opt, dev, *src, cl};
     
   std::cout << "dev created (opened)" << std::endl;
   std::cout << "dev opened - actual name is '" << p.dev.getActualName() << "'" << std::endl;
@@ -241,3 +255,4 @@ int main(int argc, char* argv[])
 
   return ret;
 }
+

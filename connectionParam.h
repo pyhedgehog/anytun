@@ -40,12 +40,11 @@
 class ConnectionParam
 {
 public:
-	ConnectionParam(Options& opt, KeyDerivation& kd, Cypher& c, AuthAlgo& a, SeqWindow& seq);
-  Options& opt_;
+	ConnectionParam( KeyDerivation& kd, SeqWindow& seq, std::string remote_host, u_int16_t remote_port);
   KeyDerivation& kd_;
-  Cypher& c_;
-  AuthAlgo& a_;
   SeqWindow& seq_;
+  std::string remote_host_;
+  u_int16_t remote_port_;
 };
 
 #endif

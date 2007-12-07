@@ -53,7 +53,21 @@ void ConnectionList::addConnection(ConnectionParam &conn, const std::string &nam
   }
 }
 
+ConnectionParam & ConnectionList::getConnection()
+{
+	Lock lock(mutex_);
+	ConnectionMap::iterator it = connections_.begin();
+	return it->second;
+}
+
 void ConnectionList::clear()
 {
   Lock lock(mutex_);
+	connections_.clear();
+}
+
+bool ConnectionList::empty()
+{
+  Lock lock(mutex_);
+	return connections_.empty();
 }

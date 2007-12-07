@@ -45,6 +45,8 @@ public:
 	ConnectionList();
 	~ConnectionList();
 	void addConnection(ConnectionParam &conn, const std::string &name);
+	ConnectionParam & getConnection();
+	bool empty();
 	void clear();
 
 private:
