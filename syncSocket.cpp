@@ -35,3 +35,13 @@ void SyncSocket::OnAccept()
 	Send("\n");
 }
 
+//void StatusSocket::InitSSLServer()
+//{
+//	InitializeContext("server.pem", "keypwd", SSLv23_method());
+//}
+//
+//
+//void StatusSocket::Init()
+//{
+//	EnableSSL();
+//}

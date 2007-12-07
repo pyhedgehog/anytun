@@ -17,7 +17,9 @@ public:
 
 	bool OnConnectRetry();
 	void OnReconnect();
+//	void Init();
 
+//	void InitSSLServer();
 //private:
 //	ResumeSocket2& operator=(const ResumeSocket2& ) { return *this; } // assignment operator
 };
