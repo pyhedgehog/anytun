@@ -37,6 +37,12 @@
 #include "threadUtils.hpp"
 #include "datatypes.h"
 
+namespace boost {
+  namespace serialization {
+    class access;
+  }
+}
+
 class SeqWindow
 {
 public:
@@ -55,6 +61,9 @@ public:
 private:
   SeqWindow(const SeqWindow &s);
   void operator=(const SeqWindow &s);
+
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version);
 
   window_size_t window_size_;
   Mutex mutex_;

@@ -111,6 +111,18 @@ options.o: options.cpp options.h
 seqWindow.o: seqWindow.cpp seqWindow.h
 	$(C++) $(CCFLAGS) $< -c
 
+connectionList.o: connectionList.cpp connectionList.h
+	$(C++) $(CCFLAGS) $< -c
+
+connectionParam.o: connectionParam.cpp connectionParam.h
+	$(C++) $(CCFLAGS) $< -c
+
+networkAddress.o: networkAddress.cpp networkAddress.h
+	$(C++) $(CCFLAGS) $< -c
+
+router.o: router.cpp router.h
+	$(C++) $(CCFLAGS) $< -c
+
 anytun.o: anytun.cpp
 	$(C++) $(CCFLAGS) $< -c
 

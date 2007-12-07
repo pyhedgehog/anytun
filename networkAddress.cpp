@@ -62,6 +62,7 @@ void NetworkAddress::getNetworkAddress(const char *)
 
 network_address_type_t NetworkAddress::getNetworkAddressType()
 {
+	return network_address_type_;
 }
 
 bool NetworkAddress::operator<(const NetworkAddress &right) const
@@ -72,7 +73,7 @@ bool NetworkAddress::operator<(const NetworkAddress &right) const
 	{
 		return (ipv4_address_.s_addr < right.ipv4_address_.s_addr);
 	} else if (network_address_type_==ipv6) {
-		for(int i=0;i++;i<4)
+		for(int i=0;i<4;i++)
 			if (ipv6_address_.s6_addr32[i]<right.ipv6_address_.s6_addr32[i])
 				return true;
 		return false;
@@ -81,5 +82,6 @@ bool NetworkAddress::operator<(const NetworkAddress &right) const
 	} else {
 		//TODO
 	}
+	return false;
 }
 

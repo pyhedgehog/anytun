@@ -47,6 +47,12 @@ typedef enum {
   label_satp_salt        = 0x02,
 } satp_prf_label;
 
+namespace boost {
+  namespace serialization {
+    class access;
+  }
+}
+
 class KeyDerivation
 {
 public:

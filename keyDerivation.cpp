@@ -142,3 +142,9 @@ void KeyDerivation::clear()
   gcry_cipher_close( cipher_ );
 }
 
+template<class Archive>
+void KeyDerivation::serialize(Archive & ar, const unsigned int version)
+{
+	ar & ld_kdr_;
+	ar & salt_;
+}
