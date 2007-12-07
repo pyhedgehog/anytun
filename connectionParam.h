@@ -37,6 +37,12 @@
 #include "authAlgo.h"
 #include "seqWindow.h"
 
+namespace boost {
+  namespace serialization {
+    class access;
+  }
+}
+
 class ConnectionParam
 {
 public:
@@ -45,6 +51,10 @@ public:
   SeqWindow& seq_;
   std::string remote_host_;
   u_int16_t remote_port_;
+private:
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version);
 };
 
 #endif

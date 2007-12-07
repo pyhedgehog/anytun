@@ -36,6 +36,12 @@
 class TunDevice;
 class UDPPacketSource;
 
+namespace boost {
+	namespace serialization {
+		class access;
+	}
+}
+
 class Buffer
 {
 public:
@@ -70,7 +76,10 @@ protected:
 
   u_int8_t *buf_;
   u_int32_t length_;
-
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version);
 };
 
 #endif

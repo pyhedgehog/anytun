@@ -33,8 +33,7 @@
 
 #include "datatypes.h"
 #include "buffer.h"
-//#include <boost/archive/text_oarchive.hpp>
-//#include <boost/archive/text_iarchive.hpp>
+
 
 
 extern "C" {
@@ -60,11 +59,7 @@ public:
   void clear();
 private:
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-  {
-     ar & ld_kdr_;
-		 ar & salt_;
-  }
+	void serialize(Archive & ar, const unsigned int version);
 
 protected:
   int8_t ld_kdr_;     // ld(key_derivation_rate)

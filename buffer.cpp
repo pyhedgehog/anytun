@@ -32,7 +32,8 @@
 #include <string>
 #include <cstdio>
 #include <iostream>
-
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 #include "datatypes.h"
 #include "buffer.h"
 
@@ -245,5 +246,12 @@ Buffer Buffer::rightByteShift(u_int32_t width) const
     res[index] = buf_[index+width];
 
   return res;
+}
+
+template<class Archive>
+void Buffer::serialize(Archive & ar, const unsigned int version)
+{
+		ar & length_;
+		ar & buf_;
 }
 
