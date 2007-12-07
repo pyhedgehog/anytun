@@ -3,6 +3,8 @@ Dependencies
 
 libgcrypt11-dev
 libssl-dev (Openssl)
+libboost-serialization-dev
+libboost-dev
 
 Building
 ========

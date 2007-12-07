@@ -67,7 +67,7 @@ OBJS = anytun.o \
 
 EXECUTABLE = anytun
 
-all: $(EXECUTABLE) doxygen
+all: $(EXECUTABLE)
 
 anytun: $(OBJS)
 	$(LD) $(OBJS) -o $@ $(LDFLAGS)

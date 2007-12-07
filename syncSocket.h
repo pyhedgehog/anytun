@@ -4,7 +4,9 @@
 #include "Sockets/TcpSocket.h"
 #include "Sockets/ISocketHandler.h"
 
-using namespace sockets;
+#ifdef SOCKETS_NAMESPACE
+using namespace SOCKETS_NAMESPACE;
+#endif // SOCKETS_NAMESPACE
 
 class SyncSocket : public TcpSocket
 {
