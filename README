@@ -1,13 +1,24 @@
 Dependencies
 ============
 
+build-essential
 libgcrypt11-dev
 libssl-dev (Openssl)
 libboost-serialization-dev
 libboost-dev
 
-Building
+Installation
 ========
 
-* ./configure
-* make
+Getting the source via subversion:
+----------------------------------
+svn co http://anytun.org/svn/anytun/
+
+Building from source
+--------------------
+cd anytun
+./configure
+cd Sockets
+make
+cd ..
+make
