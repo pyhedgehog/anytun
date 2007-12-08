@@ -28,52 +28,22 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _PACKET_H_
-#define _PACKET_H_
-
+#include <stdexcept>
 #include "datatypes.h"
-#include "buffer.h"
 #include "authTag.h"
 
-class Packet : public Buffer
+AuthTag::AuthTag()
 {
-public:
-  Packet();
-  Packet(u_int32_t length);
-  Packet(const Buffer &src);
-  
-  bool hasHeader() const;
-  Packet& withHeader(bool b);
-  seq_nr_t getSeqNr() const;
-  sender_id_t getSenderId() const;
-  Packet& addHeader(seq_nr_t seq_nr, sender_id_t sender_id);
-  Packet& removeHeader();
-  Packet& setSeqNr(seq_nr_t seq_nr);
-  Packet& setSenderId(sender_id_t sender_id);
-                       
-  bool hasPayloadType() const;
-  Packet& withPayloadType(bool b);
-  payload_type_t getPayloadType() const;  
-  Packet& addPayloadType(payload_type_t payload_type);
-  Packet& removePayloadType();
-  
-  bool hasAuthTag() const;
-  Packet& withAuthTag(bool b);
-  AuthTag getAuthTag() const;
-  Packet& addAuthTag(AuthTag auth_tag);
-  Packet& removeAuthTag();                     
+}
 
-private:
-  struct HeaderStruct
-  {
-    seq_nr_t seq_nr;
-    sender_id_t sender_id;
-  }__attribute__((__packed__));
-  bool has_header_;
-  bool has_payload_type_;
-  bool has_auth_tag_;
-  // FIXXMEE: remove hardcoded authtag-size
-  static const u_int32_t AUTHTAG_SIZE = 10;
-};
+AuthTag::AuthTag(u_int32_t length) : Buffer(length)
+{
+}
 
-#endif
+AuthTag::AuthTag(const Buffer &src) : Buffer(src)
+{
+}
+
+AuthTag::AuthTag(u_int8_t* data, u_int32_t length) : Buffer(data, length)
+{
+}

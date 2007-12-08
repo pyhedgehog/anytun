@@ -32,7 +32,7 @@
 #define _AUTHALGO_H_
 
 #include "datatypes.h"
-#include "buffer.h"
+#include "authTag.h"
 
 class AuthAlgo
 {
@@ -40,13 +40,13 @@ public:
   AuthAlgo() {};
   virtual ~AuthAlgo() {};
 
-  virtual auth_tag_t calc(const Buffer& buf) = 0;
+  virtual AuthTag calc(const Buffer& buf) = 0;
 };
 
 class NullAuthAlgo : public AuthAlgo
 {
 public:
-  auth_tag_t calc(const Buffer& buf);
+  AuthTag calc(const Buffer& buf);
 };
 
 
@@ -54,7 +54,7 @@ public:
 class HmacAuthAlgo : public AuthAlgo
 {
 public:
-  auth_tag_t calc(const Buffer& buf);
+  AuthTag calc(const Buffer& buf);
 };
 
 #endif

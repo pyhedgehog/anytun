@@ -51,8 +51,7 @@ public:
   virtual ~Buffer();
   Buffer(const Buffer &src);
   void operator=(const Buffer &src);
-  void operator=(const seq_nr_t &src);
-  void operator=(const sender_id_t &src);
+  bool operator==(const Buffer &cmp) const;
 
   // math operations to calculate IVs and keys
   virtual Buffer operator^(const Buffer &xor_by) const;
@@ -71,8 +70,8 @@ public:
 protected:
   friend class TunDevice;
   friend class UDPPacketSource;
-//  friend class AesIcmCypher;
-//  friend class KeyDerivation;   // 
+  friend class AesIcmCypher;
+  friend class KeyDerivation;   // 
 
   u_int8_t *buf_;
   u_int32_t length_;

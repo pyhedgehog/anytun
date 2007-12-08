@@ -51,6 +51,7 @@ OBJS = anytun.o \
        packet.o \
        cypher.o \
        authAlgo.o \
+			 authTag.o \
 			 keyDerivation.o \
 			 connectionList.o \
 			 connectionParam.o \
@@ -88,6 +89,9 @@ cypher.o: cypher.cpp cypher.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
+	$(C++) $(CCFLAGS) $< -c
+
+authTag.o: authTag.cpp authTag.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 keyDerivation.o: keyDerivation.cpp keyDerivation.h

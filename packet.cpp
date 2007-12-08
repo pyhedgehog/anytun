@@ -30,10 +30,13 @@
 
 #include <stdexcept>
 #include <arpa/inet.h>
+#include <cstdio>       // for std::memcpy
 
 #include "datatypes.h"
+#include "authTag.h"
 
 #include "packet.h"
+
 
 Packet::Packet()
 {
@@ -165,7 +168,7 @@ payload_type_t Packet::getPayloadType() const
     return 0;
 
   if((!has_auth_tag_ && length_ < sizeof(payload_type_t)) ||
-     (has_auth_tag_ && length_ < (sizeof(payload_type_t) + sizeof(auth_tag_t))))
+     (has_auth_tag_ && length_ < (sizeof(payload_type_t) + AUTHTAG_SIZE)))
     return 0;
 
   payload_type_t* payload_type;
@@ -173,7 +176,7 @@ payload_type_t Packet::getPayloadType() const
   if(!has_auth_tag_)  
     payload_type = reinterpret_cast<payload_type_t*>(buf_ + length_ - sizeof(payload_type_t));
   else
-    payload_type = reinterpret_cast<payload_type_t*>(buf_ + length_ - sizeof(payload_type_t) - sizeof(auth_tag_t));
+    payload_type = reinterpret_cast<payload_type_t*>(buf_ + length_ - sizeof(payload_type_t) - AUTHTAG_SIZE);
   return PAYLOAD_TYPE_T_NTOH(*payload_type);
 }
 
@@ -221,7 +224,7 @@ bool Packet::hasAuthTag() const
 
 Packet& Packet::withAuthTag(bool b)
 {
-  if(b && length_ >= sizeof(auth_tag_t))
+  if(b && length_ >= AUTHTAG_SIZE)
     has_auth_tag_ = true;
   else
     has_auth_tag_ = false;
@@ -229,32 +232,37 @@ Packet& Packet::withAuthTag(bool b)
   return *this;
 }  
 
-auth_tag_t Packet::getAuthTag() const
+AuthTag Packet::getAuthTag() const
 {
   if(!has_auth_tag_)
-    return 0;
+    return AuthTag(0);
 
-  if(length_ < sizeof(auth_tag_t))
-    return 0;
+  if(length_ < AUTHTAG_SIZE)
+    return AuthTag(0);
 
-  auth_tag_t* auth_tag;
-  auth_tag = reinterpret_cast<auth_tag_t*>(buf_ + length_ - sizeof(auth_tag_t));
-  return AUTH_TAG_T_NTOH(*auth_tag);
+  //AuthTag* auth_tag;
+  //auth_tag = reinterpret_cast<AuthTag*>(buf_ + length_ - AUTHTAG_SIZE);
+  //return AUTH_TAG_T_NTOH(*auth_tag);
+  AuthTag auth_tag;
+  auth_tag = AuthTag(buf_ + length_ - AUTHTAG_SIZE, AUTHTAG_SIZE);
+  return auth_tag;
 }
 
-Packet& Packet::addAuthTag(auth_tag_t auth_tag)
+Packet& Packet::addAuthTag(AuthTag auth_tag)
 {
   if(!has_auth_tag_)
   {
-    u_int32_t new_length = length_ + sizeof(auth_tag_t);
+    u_int32_t new_length = length_ + auth_tag.getLength();
     if(new_length > resizeBack(new_length))
       return *this;
 
     has_auth_tag_ = true;
   }
-  auth_tag_t* auth_tag_ptr;
-  auth_tag_ptr = reinterpret_cast<auth_tag_t*>(buf_ + length_ - sizeof(auth_tag_t));
-  *auth_tag_ptr = AUTH_TAG_T_HTON(auth_tag);
+
+  AuthTag* auth_tag_ptr;
+  auth_tag_ptr = reinterpret_cast<AuthTag*>(buf_ + length_ - auth_tag.getLength());
+  std::memcpy(auth_tag_ptr, auth_tag.getBuf(), auth_tag.getLength());
+
   return *this;
 }
 
@@ -263,10 +271,11 @@ Packet& Packet::removeAuthTag()
   if(!has_auth_tag_)
     return *this;
 
-  if(length_ >= sizeof(auth_tag_t))
-    resizeBack(length_ - sizeof(auth_tag_t));
+  if(length_ >= AUTHTAG_SIZE)
+    resizeBack(length_ - AUTHTAG_SIZE);
 
   has_auth_tag_ = false;
   
   return *this;
 }
+

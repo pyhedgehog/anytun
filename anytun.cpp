@@ -39,6 +39,7 @@
 #include "cypher.h"
 #include "keyDerivation.h"
 #include "authAlgo.h"
+//#include "authTag.h"
 #include "signalController.h"
 #include "packetSource.h"
 #include "tunDevice.h"
@@ -76,7 +77,8 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 
   KeyDerivation kd;
   kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
-	ConnectionParam connparam (  kd,  seq, remote_host,  remote_port);
+  std::cout << "anytun.cpp: crateConnection called" << std::endl;
+	ConnectionParam connparam ( kd,  seq, remote_host,  remote_port);
 	cl.addConnection(connparam,std::string("default"));
 }
 
@@ -85,7 +87,8 @@ void* sender(void* p)
   Param* param = reinterpret_cast<Param*>(p);
 	//TODO make Cypher selectable with command line option
 	NullCypher c;
-  NullAuthAlgo a;
+//  AesIcmCypher c;
+//  NullAuthAlgo a;
 
   seq_nr_t seq = 0;
   while(1)
@@ -123,10 +126,13 @@ void* sender(void* p)
     pack.addHeader(seq, param->opt.getSenderId());
     seq++;
 
-    // calc auth_tag and add it to the packet
-    auth_tag_t at = a.calc(pack);
-    pack.addAuthTag(at);
-
+//    // calc auth_tag and add it to the packet
+//    AuthTag at = a.calc(pack);
+//    if(at != AuthTag(0)) {
+//      //auth_tag_t at = a.calc(pack);
+//      pack.addAuthTag(at);
+//    }
+//
     // send it out to remote host
     param->src.send(pack, param->opt.getRemoteAddr(), param->opt.getRemotePort());
   }
@@ -146,7 +152,8 @@ void* receiver(void* p)
 {
   Param* param = reinterpret_cast<Param*>(p);  
   NullCypher c;
-  NullAuthAlgo a;
+//  AesIcmCypher c;
+//  NullAuthAlgo a;
   
   while(1)
   {
@@ -158,13 +165,14 @@ void* receiver(void* p)
     // read packet from socket
     u_int32_t len = param->src.recv(pack, remote_host, remote_port);
     pack.resizeBack(len);
-    pack.withPayloadType(true).withHeader(true).withAuthTag(true);
+//    pack.withPayloadType(true).withHeader(true).withAuthTag(true);
+    pack.withPayloadType(true).withHeader(true).withAuthTag(false);
 
-    // check auth_tag and remove it
-    auth_tag_t at = pack.getAuthTag();
-    pack.removeAuthTag();
-    if(at != a.calc(pack))
-      continue;
+//    // check auth_tag and remove it
+//    AuthTag at = pack.getAuthTag();
+//    pack.removeAuthTag();
+//    if(at != a.calc(pack))
+//      continue;
 
     // autodetect peer
 		// TODO fixme, IP might change!!!

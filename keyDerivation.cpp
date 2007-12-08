@@ -53,14 +53,17 @@ void KeyDerivation::init(Buffer key, Buffer salt)
       return;
     }
 
-    /* Allocate a pool of 16k secure memory.  This also drops priviliges
-     *      on some systems. */
-    err = gcry_control(GCRYCTL_INIT_SECMEM, 16384, 0);
-    if( err )
-    {
-      std::cerr << "Failed to allocate 16k secure memory: " << gpg_strerror( err ) << std::endl;
-      return;
-    }
+    // do NOT allocate a pool of secure memory!
+    // this is NOT thread safe!
+
+//    /* Allocate a pool of 16k secure memory.  This also drops priviliges
+//     *      on some systems. */
+//    err = gcry_control(GCRYCTL_INIT_SECMEM, 16384, 0);
+//    if( err )
+//    {
+//      std::cerr << "Failed to allocate 16k secure memory: " << gpg_strerror( err ) << std::endl;
+//      return;
+//    }
 
     /* Tell Libgcrypt that initialization has completed. */
     err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
@@ -79,6 +82,8 @@ void KeyDerivation::init(Buffer key, Buffer salt)
     return;
   }
 
+  salt_ = salt;
+  initialized_ = true;
 }
 
 void KeyDerivation::setLogKDRate(const uint8_t log_rate)
@@ -96,6 +101,11 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
 
   u_int8_t tmp_key_id[16];
 
+  if(!initialized_) {
+    std::cout << "ERROR: keyderivation::generate: keyderivation not initialized yet!" << std::endl;
+    return;
+  }
+
   // see at: http://tools.ietf.org/html/rfc3711#section-4.3
   // *  Let r = index DIV key_derivation_rate (with DIV as defined above).
   // *  Let key_id = <label> || r.
@@ -109,7 +119,6 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
   else
     // FIXXME: kdr can be greater than 2^32 (= 2^48)
     r = seq_nr / ( 0x01 << ld_kdr_ );
-
 
 
   // FIXXME: why i cant access key_id via operator []? 
@@ -129,7 +138,8 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
     std::cerr << "Failed to reset cipher: " << gpg_strerror( err ) << std::endl;
   }
 
-  err = gcry_cipher_encrypt( cipher_, key, key.getLength(), 0, 0 );
+  err = gcry_cipher_encrypt( cipher_, key, length, 0, 0 );
+ 
   if( err )
   {
     std::cerr << "Failed to generate cipher bitstream: " << gpg_strerror( err ) << std::endl;

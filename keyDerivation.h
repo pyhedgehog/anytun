@@ -56,7 +56,7 @@ namespace boost {
 class KeyDerivation
 {
 public:
-  KeyDerivation() : ld_kdr_(-1), cipher_(NULL) {};
+  KeyDerivation() : ld_kdr_(-1), cipher_(NULL), initialized_(false) {};
   virtual ~KeyDerivation() {};
 
   void init(Buffer key, Buffer salt);
@@ -73,6 +73,7 @@ protected:
   static const char* MIN_GCRYPT_VERSION;
 
   gcry_cipher_hd_t cipher_;
+  bool initialized_;
 };
 
 

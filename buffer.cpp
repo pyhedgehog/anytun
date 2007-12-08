@@ -88,42 +88,19 @@ void Buffer::operator=(const Buffer &src)
     length_ = 0;
 }
 
-void Buffer::operator=(const seq_nr_t &src)
+
+
+bool Buffer::operator==(const Buffer &cmp) const
 {
-  if(buf_)
-    delete[] buf_;
+  if(length_ != cmp.length_)
+    return false;
 
-  length_ = sizeof(src);
+  if(!std::memcmp(buf_, cmp.buf_, length_))
+    return true;
 
-  buf_ = new u_int8_t[length_];
-
-  if( buf_ )
-  {
-    for( u_int32_t index = 0; index <= length_; index++ )
-      buf_[index] = (src>>index) & 0xFF;
-  }
-  else
-    length_ = 0;
+  return false;
 }
 
-
-void Buffer::operator=(const sender_id_t &src)
-{
-  if(buf_)
-    delete[] buf_;
-
-  length_ = sizeof(src);
-
-  buf_ = new u_int8_t[length_];
-
-  if( buf_ )
-  {
-    for( u_int32_t index = 0; index <= length_; index++ )
-      buf_[index] = (src>>index) & 0xFF;
-  }
-  else
-    length_ = 0;
-}
 
 u_int32_t Buffer::resizeFront(u_int32_t new_length)
 {

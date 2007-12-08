@@ -35,17 +35,26 @@ extern "C" {
 }
 
 
-auth_tag_t NullAuthAlgo::calc(const Buffer& buf)
+AuthTag NullAuthAlgo::calc(const Buffer& buf)
 {
-  return 0;
+  return AuthTag(0);
 }
 
 
 // HMAC_SHA1
-auth_tag_t HmacAuthAlgo::calc(const Buffer& buf)
+AuthTag HmacAuthAlgo::calc(const Buffer& buf)
 {
-//  gcry_md_hash_buffer(GCRY_MD_SHA1, ht, buf.getBuf(), buf.getLength());
-  return 0;
+  gcry_error_t err;
+  gcry_md_hd_t ctx;
+  Buffer hmac;  //80bit
+
+  err = gcry_md_open( &ctx, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC );
+  //gcry_md_setkey( ctx, key, keylen );
+  gcry_md_write( ctx, static_cast<Buffer>(buf).getBuf(), buf.getLength() );
+  gcry_md_final( ctx );
+  hmac = Buffer(gcry_md_read( ctx, 0 ), 10);
+  gcry_md_close( ctx );
+  return hmac;
 }
 
 
