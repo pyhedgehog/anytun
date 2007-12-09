@@ -182,7 +182,7 @@ void* receiver(void* p)
 			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize());
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
 		}
-		ConnectionParam conn = param->cl.getConnection();
+/*		ConnectionParam conn = param->cl.getConnection();
 
     sid = pack.getSenderId();
     seq = pack.getSeqNr();
@@ -202,7 +202,7 @@ void* receiver(void* p)
    
     //std::cout << "Received Package: seq: " << seq << std::endl << "sID: " << sid << std::endl;
     //std::cout << "Package dump: " << pack.getBuf() << std::endl;
-
+*/
     // check payload_type and remove it
     if((param->dev.getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
        (param->dev.getType() == TunDevice::TYPE_TAP && pack.getPayloadType() != PAYLOAD_TYPE_TAP))
