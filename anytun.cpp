@@ -111,7 +111,7 @@ void* sender(void* p)
       pack.addPayloadType(0);
 
     // cypher the packet
-    Buffer tmp_key(16), tmp_salt(14);
+/*    Buffer tmp_key(16), tmp_salt(14);
 		//TODO fix key derivation!
     //conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
     //conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
@@ -123,7 +123,7 @@ void* sender(void* p)
 
     c.cypher(pack, seq, param->opt.getSenderId());
 
-    // add header to packet
+*/    // add header to packet
     pack.addHeader(seq, param->opt.getSenderId());
     seq++;
 
