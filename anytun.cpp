@@ -231,8 +231,8 @@ void* receiver(void* p)
 		// this should be done by keymanagement anyway
     if(param->opt.getRemoteAddr() == "" && param->cl.empty())
 		{
-			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize());
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
+			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize());
 		}
 
 		//TODO Add multi connection support here
@@ -245,13 +245,14 @@ void* receiver(void* p)
 		//TODO add command line option to turn this off
 		if (remote_host != conn.remote_host_ || remote_port != conn.remote_port_)
 		{
+      cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host ip changed " << remote_host << ":" << remote_port;
 			conn.remote_host_=remote_host;
 			conn.remote_port_=remote_port;
 		}	
 
 		//Replay Protection
-		if (!checkPacketSeqNr(pack,conn))
-			continue;
+		//if (!checkPacketSeqNr(pack,conn))
+		//	continue;
 		pack.removeHeader();
 
 		if (!decryptPacket(pack, c, conn))
