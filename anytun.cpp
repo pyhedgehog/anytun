@@ -74,42 +74,17 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
     'i', 'j', 'k', 'l', 'm', 'n'
   };
 
-
+	seq_nr_t seq_nr_=0;
   KeyDerivation kd;
   //kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
-	ConnectionParam connparam ( kd,  seq, remote_host,  remote_port);
+	ConnectionParam connparam ( kd,  seq, seq_nr_, remote_host,  remote_port);
 	cl.addConnection(connparam,std::string("default"));
 }
 
-void* sender(void* p)
+
+void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
 {
-  Param* param = reinterpret_cast<Param*>(p);
-	//TODO make Cypher selectable with command line option
-	NullCypher c;
-//  AesIcmCypher c;
-//  NullAuthAlgo a;
-
-  seq_nr_t seq = 0;
-  while(1)
-  {
-    Packet pack(1600); // fix me... mtu size
-
-    // read packet from device
-    int len = param->dev.read(pack);
-    pack.resizeBack(len);
-
-    if( param->cl.empty())
-      continue;
-		ConnectionParam conn = param->cl.getConnection();
-    // add payload type
-    if(param->dev.getType() == TunDevice::TYPE_TUN)
-      pack.addPayloadType(PAYLOAD_TYPE_TUN);
-    else if(param->dev.getType() == TunDevice::TYPE_TAP)
-      pack.addPayloadType(PAYLOAD_TYPE_TAP);
-    else 
-      pack.addPayloadType(0);
-
     // cypher the packet
 /*    Buffer tmp_key(16), tmp_salt(14);
 		//TODO fix key derivation!
@@ -125,8 +100,31 @@ void* sender(void* p)
     c.cypher(pack, seq, param->opt.getSenderId());
 
 */    // add header to packet
-    pack.addHeader(seq, param->opt.getSenderId());
-    seq++;
+	
+}
+
+bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
+{
+	u_int16_t sid = pack.getSenderId();
+	u_int16_t seq = pack.getSeqNr();
+/*
+    // decypher the packet
+    Buffer tmp_key(16), tmp_salt(14);
+    //conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
+    //conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
+    c.setKey(tmp_key);
+    c.setSalt(tmp_salt);
+    c.cypher(pack, seq, sid);
+   
+    //cLog.msg(Log::PRIO_NOTICE) << "Received Package: seq: " << seq;
+		//cLog.msg(Log::PRIO_NOTICE) << "sID: " << sid;
+    //cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
+*/
+	return true;
+}
+
+void addPacketAuthTag(Packet & pack, Cypher & c, ConnectionParam & conn)
+{
 
 //    // calc auth_tag and add it to the packet
 //    AuthTag at = a.calc(pack);
@@ -136,6 +134,63 @@ void* sender(void* p)
 //    }
 //
     // send it out to remote host
+}
+
+bool checkPacketAuthTag(Packet & pack, Cypher & c, ConnectionParam & conn)
+{
+//    // check auth_tag and remove it
+//    AuthTag at = pack.getAuthTag();
+    pack.removeAuthTag();
+  //return at == a.calc(pack);
+	return true;
+}
+
+bool checkPacketSeqNr(Packet & pack,ConnectionParam & conn)
+{
+	u_int16_t sid = pack.getSenderId();
+	u_int16_t seq = pack.getSeqNr();
+	// compare sender_id and seq with window
+	if(conn.seq_window_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
+		return false;
+	conn.seq_window_.addSeqNr(pack.getSenderId(), pack.getSeqNr());
+	return true;
+}
+
+void* sender(void* p)
+{
+  Param* param = reinterpret_cast<Param*>(p);
+	//TODO make Cypher selectable with command line option
+	NullCypher c;
+//  AesIcmCypher c;
+//  NullAuthAlgo a;
+
+  while(1)
+  {
+		//TODO make pack global, reduce dynamic memory!
+    Packet pack(1600); // fix me... mtu size
+		
+    // read packet from device
+    int len = param->dev.read(pack);
+		//TODO remove, no dynamic memory resizing
+    pack.resizeBack(len);
+
+    if( param->cl.empty())
+      continue;
+		ConnectionParam conn = param->cl.getConnection();
+    // add payload type
+    if(param->dev.getType() == TunDevice::TYPE_TUN)
+      pack.addPayloadType(PAYLOAD_TYPE_TUN);
+    else if(param->dev.getType() == TunDevice::TYPE_TAP)
+      pack.addPayloadType(PAYLOAD_TYPE_TAP);
+    else 
+      pack.addPayloadType(0);
+
+		encryptPacket(pack, c, conn);
+
+    pack.addHeader(conn.seq_nr_, param->opt.getSenderId());
+    conn.seq_nr_++;
+
+		addPacketAuthTag(pack, c, conn);
     param->src.send(pack, conn.remote_host_, conn.remote_port_);
   }
   pthread_exit(NULL);
@@ -170,42 +225,27 @@ void* receiver(void* p)
 //    pack.withPayloadType(true).withHeader(true).withAuthTag(true);
     pack.withPayloadType(true).withHeader(true).withAuthTag(false);
 
-//    // check auth_tag and remove it
-//    AuthTag at = pack.getAuthTag();
-    pack.removeAuthTag();
-//    if(at != a.calc(pack))
-//      continue;
 
     // autodetect peer
 		// TODO fixme, IP might change!!!
+		// TODO check auth tag first
     if(param->opt.getRemoteAddr() == "" && param->cl.empty())
 		{
 			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize());
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
 		}
-/*		ConnectionParam conn = param->cl.getConnection();
 
-    sid = pack.getSenderId();
-    seq = pack.getSeqNr();
-    // compare sender_id and seq with window
-    if(conn.seq_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
-      continue;
-    conn.seq_.addSeqNr(pack.getSenderId(), pack.getSeqNr());
-*/
-	pack.removeHeader();
-/*
-    // decypher the packet
-    Buffer tmp_key(16), tmp_salt(14);
-    //conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
-    //conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
-    c.setKey(tmp_key);
-    c.setSalt(tmp_salt);
-    c.cypher(pack, seq, sid);
-   
-    //cLog.msg(Log::PRIO_NOTICE) << "Received Package: seq: " << seq;
-		//cLog.msg(Log::PRIO_NOTICE) << "sID: " << sid;
-    //cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
-*/
+		ConnectionParam conn = param->cl.getConnection();
+
+		if (!checkPacketAuthTag(pack, c, conn))
+			continue;
+
+		if (!checkPacketSeqNr(pack,conn))
+			continue;
+		pack.removeHeader();
+
+		if (!decryptPacket(pack, c, conn))
+			continue;
     // check payload_type and remove it
     if((param->dev.getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
        (param->dev.getType() == TunDevice::TYPE_TAP && pack.getPayloadType() != PAYLOAD_TYPE_TAP))

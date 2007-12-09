@@ -32,7 +32,7 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
-ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq, std::string remote_host, u_int16_t remote_port) : kd_(kd),seq_(seq),remote_host_(remote_host), remote_port_(remote_port)
+ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq_window,seq_nr_t seq_nr, std::string remote_host, u_int16_t remote_port) : kd_(kd),seq_window_(seq_window),seq_nr_(seq_nr),remote_host_(remote_host), remote_port_(remote_port)
 {
 }
 
@@ -40,7 +40,8 @@ template<class Archive>
 void ConnectionParam::serialize(Archive & ar, const unsigned int version)
 {
 		ar & kd_;
-		ar & seq_;
+		ar & seq_window_;
+		ar & seq_nr_;
 		ar & remote_host_;
 		ar & remote_port_;
 }

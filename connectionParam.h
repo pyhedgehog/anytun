@@ -46,9 +46,10 @@ namespace boost {
 class ConnectionParam
 {
 public:
-	ConnectionParam( KeyDerivation& kd, SeqWindow& seq, std::string remote_host, u_int16_t remote_port);
+	ConnectionParam( KeyDerivation& kd, SeqWindow& seq_window,seq_nr_t seq_nr_, std::string remote_host, u_int16_t remote_port);
   KeyDerivation& kd_;
-  SeqWindow& seq_;
+  SeqWindow& seq_window_;
+	seq_nr_t seq_nr_;
   std::string remote_host_;
   u_int16_t remote_port_;
 private:
