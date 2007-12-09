@@ -77,7 +77,7 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 
   KeyDerivation kd;
   //kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
-  std::cout << "anytun.cpp: crateConnection called" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( kd,  seq, remote_host,  remote_port);
 	cl.addConnection(connparam,std::string("default"));
 }
@@ -118,8 +118,9 @@ void* sender(void* p)
     c.setKey(tmp_key);
     c.setSalt(tmp_salt);
 
-    //std::cout << "Send Package: seq: " << seq << std::endl << "sID: " <<  param->opt.getSenderId() << std::endl;
-    //std::cout << "Package dump: " << pack.getBuf() << std::endl;
+    //cLog.msg(Log::PRIO_NOTICE) << "Send Package: seq: " << seq;
+		//cLog.msg(Log::PRIO_NOTICE) << "sID: " <<  param->opt.getSenderId();
+    //cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
 
     c.cypher(pack, seq, param->opt.getSenderId());
 
@@ -201,8 +202,9 @@ void* receiver(void* p)
     c.setSalt(tmp_salt);
     c.cypher(pack, seq, sid);
    
-    //std::cout << "Received Package: seq: " << seq << std::endl << "sID: " << sid << std::endl;
-    //std::cout << "Package dump: " << pack.getBuf() << std::endl;
+    //cLog.msg(Log::PRIO_NOTICE) << "Received Package: seq: " << seq;
+		//cLog.msg(Log::PRIO_NOTICE) << "sID: " << sid;
+    //cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
 */
     // check payload_type and remove it
     if((param->dev.getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
@@ -245,9 +247,9 @@ int main(int argc, char* argv[])
 
   struct Param p = {opt, dev, *src, cl};
     
-  std::cout << "dev created (opened)" << std::endl;
-  std::cout << "dev opened - actual name is '" << p.dev.getActualName() << "'" << std::endl;
-  std::cout << "dev type is '" << p.dev.getTypeString() << "'" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
+  cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
+  cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << p.dev.getTypeString() << "'";
   
   pthread_t senderThread;
   pthread_create(&senderThread, NULL, sender, &p);  
