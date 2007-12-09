@@ -255,8 +255,8 @@ void* receiver(void* p)
 		}	
 
 		//Replay Protection
-		if (!checkPacketSeqNr(pack,conn))
-			continue;
+		//if (!checkPacketSeqNr(pack,conn))
+		//	continue;
 		pack.removeHeader();
 
 		if (!decryptPacket(pack, c, conn))
