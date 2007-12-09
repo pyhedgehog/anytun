@@ -76,7 +76,7 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 
 
   KeyDerivation kd;
-  kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
+  //kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   std::cout << "anytun.cpp: crateConnection called" << std::endl;
 	ConnectionParam connparam ( kd,  seq, remote_host,  remote_port);
 	cl.addConnection(connparam,std::string("default"));
@@ -112,8 +112,9 @@ void* sender(void* p)
 
     // cypher the packet
     Buffer tmp_key(16), tmp_salt(14);
-    conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
-    conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
+		//TODO fix key derivation!
+    //conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
+    //conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
     c.setKey(tmp_key);
     c.setSalt(tmp_salt);
 
@@ -193,8 +194,8 @@ void* receiver(void* p)
 
     // decypher the packet
     Buffer tmp_key(16), tmp_salt(14);
-    conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
-    conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
+    //conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
+    //conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
     c.setKey(tmp_key);
     c.setSalt(tmp_salt);
     c.cypher(pack, seq, sid);
