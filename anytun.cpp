@@ -135,7 +135,7 @@ void* sender(void* p)
 //    }
 //
     // send it out to remote host
-    param->src.send(pack, param->opt.getRemoteAddr(), param->opt.getRemotePort());
+    param->src.send(pack, conn.remote_host_, conn.remote_port_);
   }
   pthread_exit(NULL);
 }
