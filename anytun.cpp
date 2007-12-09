@@ -227,19 +227,29 @@ void* receiver(void* p)
 
 
     // autodetect peer
-		// TODO fixme, IP might change!!!
 		// TODO check auth tag first
+		// this should be done by keymanagement anyway
     if(param->opt.getRemoteAddr() == "" && param->cl.empty())
 		{
 			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize());
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
 		}
 
+		//TODO Add multi connection support here
 		ConnectionParam conn = param->cl.getConnection();
 
 		if (!checkPacketAuthTag(pack, c, conn))
 			continue;
 
+		//Allow dynamic IP changes 
+		//TODO add command line option to turn this off
+		if (remote_host != conn.remote_host_ || remote_port != conn.remote_port_)
+		{
+			conn.remote_host_=remote_host;
+			conn.remote_port_=remote_port;
+		}	
+
+		//Replay Protection
 		if (!checkPacketSeqNr(pack,conn))
 			continue;
 		pack.removeHeader();
