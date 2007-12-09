@@ -151,7 +151,11 @@ bool checkPacketSeqNr(Packet & pack,ConnectionParam & conn)
 	u_int16_t seq = pack.getSeqNr();
 	// compare sender_id and seq with window
 	if(conn.seq_window_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
+	{
+		cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_host_<<":"<< conn.remote_port_<< " seq:"<<pack.getSeqNr() << " sid: "<<pack.getSenderId();
 		return false;
+	}
+
 	conn.seq_window_.addSeqNr(pack.getSenderId(), pack.getSeqNr());
 	return true;
 }
@@ -251,8 +255,8 @@ void* receiver(void* p)
 		}	
 
 		//Replay Protection
-		//if (!checkPacketSeqNr(pack,conn))
-		//	continue;
+		if (!checkPacketSeqNr(pack,conn))
+			continue;
 		pack.removeHeader();
 
 		if (!decryptPacket(pack, c, conn))
