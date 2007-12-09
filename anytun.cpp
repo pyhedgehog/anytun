@@ -171,7 +171,7 @@ void* receiver(void* p)
 
 //    // check auth_tag and remove it
 //    AuthTag at = pack.getAuthTag();
-//    pack.removeAuthTag();
+    pack.removeAuthTag();
 //    if(at != a.calc(pack))
 //      continue;
 
@@ -190,8 +190,9 @@ void* receiver(void* p)
     if(conn.seq_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
       continue;
     conn.seq_.addSeqNr(pack.getSenderId(), pack.getSeqNr());
-    pack.removeHeader();
-
+*/
+	pack.removeHeader();
+/*
     // decypher the packet
     Buffer tmp_key(16), tmp_salt(14);
     //conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
