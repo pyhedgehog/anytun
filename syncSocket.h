@@ -3,6 +3,7 @@
 
 #include "Sockets/TcpSocket.h"
 #include "Sockets/ISocketHandler.h"
+#include "connectionList.h"
 
 #ifdef SOCKETS_NAMESPACE
 using namespace SOCKETS_NAMESPACE;
@@ -11,7 +12,7 @@ using namespace SOCKETS_NAMESPACE;
 class SyncSocket : public TcpSocket
 {
 public:
-	SyncSocket(ISocketHandler& );
+	SyncSocket(ISocketHandler&,ConnectionList & );
 
 	void OnAccept();
 
@@ -20,7 +21,8 @@ public:
 //	void Init();
 
 //	void InitSSLServer();
-//private:
+private:
+	ConnectionList & cl_;
 //	ResumeSocket2& operator=(const ResumeSocket2& ) { return *this; } // assignment operator
 };
 
