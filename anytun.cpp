@@ -68,16 +68,16 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 
 	SeqWindow seq(seqSize);
 
-  uint8_t key[] = {
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-    'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-    'q', 'r', 's', 't'
-  };
+//   uint8_t key[] = {
+//     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+//     'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+//     'q', 'r', 's', 't'
+//   };
 
-  uint8_t salt[] = {
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-    'i', 'j', 'k', 'l', 'm', 'n'
-  };
+//   uint8_t salt[] = {
+//     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+//     'i', 'j', 'k', 'l', 'm', 'n'
+//   };
 
 	seq_nr_t seq_nr_=0;
   KeyDerivation kd;
@@ -110,8 +110,8 @@ void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
 
 bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
 {
-	u_int16_t sid = pack.getSenderId();
-	u_int16_t seq = pack.getSeqNr();
+// 	u_int16_t sid = pack.getSenderId();
+// 	u_int16_t seq = pack.getSeqNr();
 /*
     // decypher the packet
     Buffer tmp_key(16), tmp_salt(14);
@@ -152,8 +152,8 @@ bool checkPacketAuthTag(Packet & pack, Cypher & c, ConnectionParam & conn)
 
 bool checkPacketSeqNr(Packet & pack,ConnectionParam & conn)
 {
-	u_int16_t sid = pack.getSenderId();
-	u_int16_t seq = pack.getSeqNr();
+// 	u_int16_t sid = pack.getSenderId();
+// 	u_int16_t seq = pack.getSeqNr();
 	// compare sender_id and seq with window
 	if(conn.seq_window_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
 	{
@@ -236,7 +236,7 @@ void* receiver(void* p)
   {
     string remote_host;
     u_int16_t remote_port;
-    u_int16_t sid = 0, seq = 0;
+        //    u_int16_t sid = 0, seq = 0;
     Packet pack(1600);  // fix me... mtu size
 
     // read packet from socket

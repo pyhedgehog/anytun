@@ -33,7 +33,7 @@
 
 #include "router.h"
 
-Router::Router()
+Router::Router(ConnectionList& cl) : con_list_(cl)
 {
 }
 
@@ -49,5 +49,5 @@ void Router::addConnection(ConnectionParam &conn,const std::string &name)
 ConnectionParam Router::getRoute()
 {
   Lock lock(mutex_);
-
+  return con_list_.getConnection();
 }

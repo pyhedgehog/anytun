@@ -39,7 +39,7 @@
 class Router
 {
 public:
-	Router();
+	Router(ConnectionList& cl);
 	~Router();
 	void addConnection(ConnectionParam &conn,const std::string &name);
 	ConnectionParam getRoute();
@@ -47,7 +47,7 @@ public:
 private:
   Router(const Router &s);
   void operator=(const Router &s);
-	ConnectionList con_list_;
+	ConnectionList& con_list_;
   Mutex mutex_;
 };
 

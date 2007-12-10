@@ -1,12 +1,14 @@
-
-#include "Sockets/Utility.h"
-#include "syncSocket.h"
-//#include <boost/archive/text_oarchive.hpp>
-//#include <boost/archive/text_iarchive.hpp>
 #include <sstream>
 #include <iostream>
 #include <string>
-#include "connectionParam.h"
+
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
+
+//#include "connectionParam.h"
+#include "Sockets/Utility.h"
+#include "syncSocket.h"
 
 SyncSocket::SyncSocket(ISocketHandler& h,ConnectionList & cl)
 :TcpSocket(h),cl_(cl)
@@ -42,7 +44,7 @@ void SyncSocket::OnAccept()
 	std::ostringstream sout;
 //	boost::archive::text_oarchive oa(sout);
 	ConnectionParam conn = cl_.getConnection();
-	// oa << conn;
+//  oa << conn;
 	Send(sout.str()+"\n");
 }
 

@@ -61,8 +61,8 @@ public:
 	/** Constructor.
 		\param h ISocketHandler reference
 		\param use_creator Optional use of creator (default true) */
-	SyncListenSocket(ISocketHandler& h, Y & y,bool use_creator = true) : Socket(h), m_depth(0), m_creator(NULL),y_(y)
-	,m_bHasCreate(false)
+	SyncListenSocket(ISocketHandler& h, Y & y,bool use_creator = true) : Socket(h), m_depth(0), m_creator(NULL),
+                                                                       m_bHasCreate(false),y_(y)
 	{
 		if (use_creator)
 		{
