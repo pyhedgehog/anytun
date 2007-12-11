@@ -65,7 +65,7 @@ private:
 	void serialize(Archive & ar, const unsigned int version)
 	{
 	  ar & ld_kdr_;
-	  //ar & salt_;
+	  ar & salt_;
 	}
 
 protected:

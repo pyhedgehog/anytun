@@ -48,7 +48,8 @@ private:
 	void serialize(Archive & ar, const unsigned int version)
 	{
     ar & length_;
-    ar & buf_;
+		for(u_int32_t i = 0; i < length_; i++)
+				ar & buf_[i];
 	}
 };
 
