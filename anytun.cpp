@@ -83,7 +83,7 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = new KeyDerivation;
-//  kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
+  kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
 	cl.addConnection(connparam,std::string("default"));
@@ -94,13 +94,14 @@ void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn, void* p)
 {
   Param* param = reinterpret_cast<Param*>(p);
   // cypher the packet
-  //Buffer tmp_key(16), tmp_salt(14);
+  Buffer tmp_key(16), tmp_salt(14);
   //TODO fix key derivation!
-//  conn.kd_.generate(label_satp_encryption, conn.seq_nr_, tmp_key, tmp_key.getLength());
-//  conn.kd_.generate(label_satp_salt, conn.seq_nr_, tmp_salt, tmp_salt.getLength());
 
-  Buffer tmp_key(key, sizeof(key));
-  Buffer tmp_salt(salt, sizeof(salt));
+  conn.kd_.generate(label_satp_encryption, conn.seq_nr_, tmp_key, tmp_key.getLength());
+  conn.kd_.generate(label_satp_salt, conn.seq_nr_, tmp_salt, tmp_salt.getLength());
+
+//  Buffer tmp_key(key, sizeof(key));
+//  Buffer tmp_salt(salt, sizeof(salt));
 
   c.setKey(tmp_key);
   c.setSalt(tmp_salt);
@@ -120,12 +121,12 @@ bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
   pack.removeHeader();
 
   // decypher the packet
-  //Buffer tmp_key(16), tmp_salt(14);
-//  conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
-//  conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
+  Buffer tmp_key(16), tmp_salt(14);
+  conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
+  conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
 
-  Buffer tmp_key(key, sizeof(key));
-  Buffer tmp_salt(salt, sizeof(salt));
+//  Buffer tmp_key(key, sizeof(key));
+//  Buffer tmp_salt(salt, sizeof(salt));
 
   c.setKey(tmp_key);
   c.setSalt(tmp_salt);
