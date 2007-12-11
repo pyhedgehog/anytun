@@ -48,6 +48,7 @@ public:
   void operator=(const Mpi &src);
   void operator=(long unsigned int);
   Mpi operator+(const Mpi &b) const;
+  Mpi operator+(const long unsigned int &b) const;
   Mpi operator^(const Mpi &b) const;
   Mpi operator*(const unsigned long int n) const;
 

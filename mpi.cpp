@@ -74,6 +74,13 @@ Mpi Mpi::operator+(const Mpi &b) const
   return res;
 }
 
+Mpi Mpi::operator+(const long unsigned int &b) const
+{
+  Mpi res;
+  gcry_mpi_add_ui(res.val_, val_, b);
+  return res;
+}
+
 Mpi Mpi::operator*(const unsigned long int n) const
 {
   Mpi res;
