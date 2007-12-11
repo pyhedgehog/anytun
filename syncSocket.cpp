@@ -37,17 +37,17 @@ void SyncSocket::OnReconnect()
 
 void SyncSocket::OnAccept()
 {
-	Send( Utility::GetLocalHostname() + "\n");
-	Send( Utility::GetLocalAddress() + "\n");
-	Send("Number of sockets in list : " + Utility::l2string(Handler().GetCount()) + "\n");
-	Send("\n");
+//	Send( Utility::GetLocalHostname() + "\n");
+//	Send( Utility::GetLocalAddress() + "\n");
+//	Send("Number of sockets in list : " + Utility::l2string(Handler().GetCount()) + "\n");
+//	Send("\n");
 	if( ! cl_.empty())
 	{
 		std::ostringstream sout;
 		boost::archive::text_oarchive oa(sout);
 		const ConnectionParam conn = cl_.getConnection();
 		oa << conn;
-		Send(sout.str()+"\n");
+		Send(sout.str());
 	}
 }
 
