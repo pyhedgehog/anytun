@@ -37,8 +37,9 @@
 #include <gcrypt.h>
 
 
-Mpi::Mpi() : val_(NULL)
+Mpi::Mpi()
 {
+  val_ = gcry_mpi_new(1);
 }
 
 Mpi::Mpi(u_int8_t length)
