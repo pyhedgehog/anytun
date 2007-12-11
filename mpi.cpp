@@ -127,14 +127,17 @@ void Mpi::clearHighBit(u_int32_t n)
   gcry_mpi_clear_highbit( val_, n );
 }
 
-Buffer Mpi::getBuf() const
+Buffer Mpi::getBuf(u_int32_t min_len) const
 {
   u_int32_t len = 0, written = 0;
   len = gcry_mpi_get_nbits( val_ );
 
   Buffer res(static_cast<u_int32_t>(len/8)+1);
 
-  gcry_mpi_print( GCRYMPI_FMT_STD, res, len, &written, val_ );
+  if(res.getLength() < min_len)
+    res.resizeBack(min_len);
+
+  gcry_mpi_print( GCRYMPI_FMT_STD, res, res.getLength(), &written, val_ );
   return res;
 }
 
