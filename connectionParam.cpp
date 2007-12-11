@@ -34,13 +34,3 @@ ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq_window,seq_nr
 {
 }
 
-template<class Archive>
-void ConnectionParam::serialize(Archive & ar, const unsigned int version)
-{
-		ar & kd_;
-		ar & seq_window_;
-		ar & seq_nr_;
-		ar & remote_host_;
-		ar & remote_port_;
-}
-

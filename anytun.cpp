@@ -66,22 +66,21 @@ struct Param
 	ConnectionList& cl;
 };
 
+uint8_t key[] = {
+ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+ 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+ 'q', 'r', 's', 't'
+};
+
+uint8_t salt[] = {
+ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+ 'i', 'j', 'k', 'l', 'm', 'n'
+};
+
 void createConnection(const std::string & remote_host , u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize)
 {
 
 	SeqWindow seq(seqSize);
-
-   uint8_t key[] = {
-     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-     'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-     'q', 'r', 's', 't'
-   };
-
-   uint8_t salt[] = {
-     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-     'i', 'j', 'k', 'l', 'm', 'n'
-   };
-
 	seq_nr_t seq_nr_=0;
   KeyDerivation kd;
 //  kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
@@ -99,18 +98,6 @@ void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn, void* p)
   //TODO fix key derivation!
 //  conn.kd_.generate(label_satp_encryption, conn.seq_nr_, tmp_key, tmp_key.getLength());
 //  conn.kd_.generate(label_satp_salt, conn.seq_nr_, tmp_salt, tmp_salt.getLength());
-
-
-   uint8_t key[] = {
-     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-     'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-     'q', 'r', 's', 't'
-   };
-
-   uint8_t salt[] = {
-     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-     'i', 'j', 'k', 'l', 'm', 'n'
-   };
 
   Buffer tmp_key(key, sizeof(key));
   Buffer tmp_salt(salt, sizeof(salt));
@@ -134,19 +121,6 @@ bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
   //Buffer tmp_key(16), tmp_salt(14);
 //  conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
 //  conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
-
-
-
-   uint8_t key[] = {
-     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-     'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-     'q', 'r', 's', 't'
-   };
-
-   uint8_t salt[] = {
-     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-     'i', 'j', 'k', 'l', 'm', 'n'
-   };
 
   Buffer tmp_key(key, sizeof(key));
   Buffer tmp_salt(salt, sizeof(salt));

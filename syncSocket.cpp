@@ -42,9 +42,9 @@ void SyncSocket::OnAccept()
 	Send("Number of sockets in list : " + Utility::l2string(Handler().GetCount()) + "\n");
 	Send("\n");
 	std::ostringstream sout;
-//	boost::archive::text_oarchive oa(sout);
-	ConnectionParam conn = cl_.getConnection();
-//  oa << conn;
+	boost::archive::text_oarchive oa(sout);
+	const ConnectionParam conn = cl_.getConnection();
+  oa << conn;
 	Send(sout.str()+"\n");
 }
 

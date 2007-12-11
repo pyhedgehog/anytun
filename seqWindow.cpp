@@ -89,10 +89,3 @@ void SeqWindow::clear()
   sender_.clear();
 }
 
-template<class Archive>
-void SeqWindow::serialize(Archive & ar, const unsigned int version)
-{
-	ar & window_size_;
-	//TODO: Do not sync complete Sender Map!
-	ar & sender_;
-}

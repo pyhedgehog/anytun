@@ -53,7 +53,14 @@ public:
 private:
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version);
+  void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & kd_;
+    ar & seq_window_;
+    ar & seq_nr_;
+    ar & remote_host_;
+    ar & remote_port_;
+	}
 };
 
 #endif

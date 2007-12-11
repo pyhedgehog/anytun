@@ -53,12 +53,22 @@ public:
   void clear(sender_id_t sender);
   void clear();
 
+
 private:
   SeqWindow(const SeqWindow &s);
   void operator=(const SeqWindow &s);
 
+	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version);
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		//unsigned int serial = (unsigned int) window_size_;
+		//window_size_t serial = (window_size_t) window_size_;
+  	ar & window_size_;
+  	//TODO: Do not sync complete Sender Map!
+  	// ar & sender_;
+  }
+ 
 
   window_size_t window_size_;
   Mutex mutex_;

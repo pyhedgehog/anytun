@@ -28,17 +28,5 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdexcept>
-#include <string>
-#include <cstdio>
-#include <iostream>
-#include "datatypes.h"
 #include "syncBuffer.h"
-
-template<class Archive>
-void SyncBuffer::serialize(Archive & ar, const unsigned int version)
-{
-		ar & length_;
-		ar & buf_;
-}
 
