@@ -82,7 +82,7 @@ void KeyDerivation::init(Buffer key, Buffer salt)
     return;
   }
 
-  salt_ = salt;
+  salt_ = SyncBuffer(salt);
   initialized_ = true;
 }
 

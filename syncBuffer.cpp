@@ -28,47 +28,17 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _BUFFER_H_
-#define _BUFFER_H_
-
+#include <stdexcept>
+#include <string>
+#include <cstdio>
+#include <iostream>
 #include "datatypes.h"
+#include "syncBuffer.h"
 
-class TunDevice;
-class UDPPacketSource;
-
-class Buffer
+template<class Archive>
+void SyncBuffer::serialize(Archive & ar, const unsigned int version)
 {
-public:
-  Buffer();
-  Buffer(u_int32_t length);
-  Buffer(u_int8_t* data, u_int32_t length);
-  virtual ~Buffer();
-  Buffer(const Buffer &src);
-  void operator=(const Buffer &src);
-  bool operator==(const Buffer &cmp) const;
+		ar & length_;
+		ar & buf_;
+}
 
-  // math operations to calculate IVs and keys
-  virtual Buffer operator^(const Buffer &xor_by) const;
-  virtual Buffer leftByteShift(u_int32_t width) const;
-  virtual Buffer rightByteShift(u_int32_t width) const;
-
-  u_int32_t resizeFront(u_int32_t new_length);
-  u_int32_t resizeBack(u_int32_t new_length);
-  u_int32_t getLength() const;
-  u_int8_t* getBuf();
-  u_int8_t& operator[](u_int32_t index);
-  u_int8_t operator[](u_int32_t index) const;
-  void printHexDump() const;
-
-  operator u_int8_t*(); // just for write/read tun and packetSource
-protected:
-  friend class TunDevice;
-  friend class UDPPacketSource;
-  friend class AesIcmCypher;
-  friend class KeyDerivation;   // 
-
-  u_int8_t *buf_;
-  u_int32_t length_;
-};
-
-#endif

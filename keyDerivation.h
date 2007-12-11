@@ -33,7 +33,10 @@
 
 #include "datatypes.h"
 #include "buffer.h"
+#include "syncBuffer.h"
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 
 extern "C" {
@@ -47,11 +50,6 @@ typedef enum {
   label_satp_salt        = 0x02,
 } satp_prf_label;
 
-namespace boost {
-  namespace serialization {
-    class access;
-  }
-}
 
 class KeyDerivation
 {
@@ -69,7 +67,7 @@ private:
 
 protected:
   int8_t ld_kdr_;     // ld(key_derivation_rate)
-  Buffer salt_;
+  SyncBuffer salt_;
   static const char* MIN_GCRYPT_VERSION;
 
   gcry_cipher_hd_t cipher_;

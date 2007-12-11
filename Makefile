@@ -48,6 +48,7 @@ OBJS = anytun.o \
        tunDevice.o \
        packetSource.o \
        buffer.o \
+       syncBuffer.o \
        packet.o \
        cypher.o \
        authAlgo.o \
@@ -80,6 +81,9 @@ packetSource.o: packetSource.cpp packetSource.h
 	$(C++) $(CCFLAGS) $< -c
 
 buffer.o: buffer.cpp buffer.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncBuffer.o: syncBuffer.cpp syncBuffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 packet.o: packet.cpp packet.h buffer.h

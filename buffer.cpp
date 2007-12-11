@@ -225,10 +225,3 @@ Buffer Buffer::rightByteShift(u_int32_t width) const
   return res;
 }
 
-template<class Archive>
-void Buffer::serialize(Archive & ar, const unsigned int version)
-{
-		ar & length_;
-		ar & buf_;
-}
-

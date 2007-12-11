@@ -37,11 +37,8 @@
 #include "authAlgo.h"
 #include "seqWindow.h"
 
-namespace boost {
-  namespace serialization {
-    class access;
-  }
-}
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 class ConnectionParam
 {

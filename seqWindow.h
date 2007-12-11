@@ -33,15 +33,10 @@
 
 #include <map>
 #include <deque>
-
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 #include "threadUtils.hpp"
 #include "datatypes.h"
-
-namespace boost {
-  namespace serialization {
-    class access;
-  }
-}
 
 class SeqWindow
 {
