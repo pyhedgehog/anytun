@@ -101,7 +101,7 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
   gcry_error_t err;
 
   Mpi r;
-  Mpi key_id;
+  Mpi key_id(128);
   Mpi iv(128);
 
   // see at: http://tools.ietf.org/html/rfc3711#section-4.3
@@ -118,7 +118,7 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
     // FIXXME: kdr can be greater than 2^32 (= 2^48)
     r = static_cast<long unsigned int>(seq_nr / ( 0x01 << ld_kdr_ ));
 
-  r.rShift(8);
+  r = r.mul2exp(8);
   key_id = r + Mpi(static_cast<long unsigned int>(label));
 
   Mpi salt = Mpi(salt_.getBuf(), salt_.getLength());
@@ -127,7 +127,6 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
   err = gcry_cipher_reset( cipher_ );
   if( err ) 
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror( err );
-
   
   err = gcry_cipher_setiv( cipher_ , iv.getBuf().getBuf(), iv.getBuf().getLength());
   if( err )

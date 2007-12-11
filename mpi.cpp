@@ -55,6 +55,7 @@ Mpi::Mpi(const u_int8_t * src, u_int32_t len)
 {
   gcry_mpi_scan( &val_, GCRYMPI_FMT_STD, src, len, NULL );
 }
+
 void Mpi::operator=(const Mpi &src)
 {
   val_ = gcry_mpi_copy(src.val_);
@@ -72,18 +73,27 @@ Mpi Mpi::operator+(const Mpi &b) const
   return res;
 }
 
+Mpi Mpi::operator*(const unsigned long int n) const
+{
+  Mpi res;
+  gcry_mpi_mul_ui(res.val_, val_, n);
+  return res;
+}
+
 Mpi Mpi::operator^(const Mpi &b) const
 {
-  u_int32_t len = 0;
+  u_int32_t a_len=0, b_len=0;
+  Mpi res;
 
-  Mpi res(gcry_mpi_get_nbits(val_));
+  a_len = gcry_mpi_get_nbits(val_);
+  b_len = gcry_mpi_get_nbits(b.val_);
 
-  if(gcry_mpi_get_nbits(val_) != gcry_mpi_get_nbits(b.val_))
-    throw std::length_error("mpi::operator^ const");
+  if(a_len>=b_len)
+    res = Mpi(*this);
+  else
+    res = Mpi(b);
 
-  len = gcry_mpi_get_nbits(val_);
-
-  for(u_int32_t i=0; i<len; i++) {
+  for(u_int32_t i=0; i<a_len && i<b_len; i++) {
     if(gcry_mpi_test_bit(val_, i) ^ gcry_mpi_test_bit(b.val_, i))
       gcry_mpi_set_bit(res.val_, i);
   }
@@ -93,6 +103,13 @@ Mpi Mpi::operator^(const Mpi &b) const
 void Mpi::rShift(u_int8_t n)
 {
   gcry_mpi_rshift(val_, val_, n);
+}
+
+Mpi Mpi::mul2exp(u_int32_t e) const
+{
+  Mpi res;
+  gcry_mpi_mul_2exp( res.val_, val_, e );
+  return res;
 }
 
 Buffer Mpi::getBuf() const

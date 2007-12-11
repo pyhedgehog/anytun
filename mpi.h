@@ -49,8 +49,10 @@ public:
   void operator=(long unsigned int);
   Mpi operator+(const Mpi &b) const;
   Mpi operator^(const Mpi &b) const;
+  Mpi operator*(const unsigned long int n) const;
 
-  void rShift(u_int8_t n);
+  void rShift(u_int8_t n);            // LSB on the right side!
+  Mpi mul2exp(u_int32_t e) const;     // value * 2^e
   Buffer getBuf() const;
   u_int32_t getLen() const;
  
