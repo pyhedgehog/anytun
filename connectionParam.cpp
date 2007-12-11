@@ -34,3 +34,6 @@ ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq_window,seq_nr
 {
 }
 
+ConnectionParam::ConnectionParam(const ConnectionParam & src) : kd_(src.kd_),seq_window_(src.seq_window_),seq_nr_(src.seq_nr_),remote_host_(src.remote_host_), remote_port_(src.remote_port_)
+{
+}

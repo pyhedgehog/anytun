@@ -49,8 +49,8 @@ public:
 	seq_nr_t seq_nr_;
   std::string remote_host_;
   u_int16_t remote_port_;
+	ConnectionParam(const ConnectionParam & src);
 private:
-//	ConnectionParam(const ConnectionParam & src);
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
