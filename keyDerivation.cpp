@@ -129,14 +129,11 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
   Mpi salt = Mpi(salt_.getBuf(), salt_.getLength());
   iv = key_id ^ salt;
 
-  std::cout << "KeyDerivation::generate: r_len: "<< r.getLen() << std::endl;
-  std::cout << "KeyDerivation::generate: key_id_len: "<< key_id.getLen() << std::endl;
-  std::cout << "KeyDerivation::generate: salt_len: "<< salt.getLen() << std::endl;
-  std::cout << "KeyDerivation::generate: iv_len: "<< iv.getLen() << std::endl;
-
   err = gcry_cipher_reset( cipher_ );
   if( err ) 
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror( err );
+
+  iv.clearHighBit(129);  
   
   err = gcry_cipher_setiv( cipher_ , iv.getBuf().getBuf(), iv.getBuf().getLength());
   if( err )

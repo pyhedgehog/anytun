@@ -108,6 +108,8 @@ Mpi Mpi::operator^(const Mpi &b) const
   return res;
 }
 
+// bit manipulation
+
 void Mpi::rShift(u_int8_t n)
 {
   gcry_mpi_rshift(val_, val_, n);
@@ -118,6 +120,11 @@ Mpi Mpi::mul2exp(u_int32_t e) const
   Mpi res;
   gcry_mpi_mul_2exp( res.val_, val_, e );
   return res;
+}
+
+void Mpi::clearHighBit(u_int32_t n)
+{
+  gcry_mpi_clear_highbit( val_, n );
 }
 
 Buffer Mpi::getBuf() const
