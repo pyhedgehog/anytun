@@ -54,6 +54,7 @@ OBJS = anytun.o \
        authAlgo.o \
 			 authTag.o \
 			 keyDerivation.o \
+			 mpi.o \
 			 connectionList.o \
 			 connectionParam.o \
 			 networkAddress.o \
@@ -99,6 +100,9 @@ authTag.o: authTag.cpp authTag.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 keyDerivation.o: keyDerivation.cpp keyDerivation.h
+	$(C++) $(CCFLAGS) $< -c
+
+mpi.o: mpi.cpp mpi.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncSocket.o: syncSocket.cpp syncSocket.h

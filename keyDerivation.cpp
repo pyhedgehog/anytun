@@ -29,27 +29,30 @@
  */
 
 
+#include "log.h"
 #include "keyDerivation.h"
+#include "mpi.h"
+#include "threadUtils.hpp"
 
 #include <stdexcept>
 #include <iostream>
 #include <string>
 
-extern "C" {
 #include <gcrypt.h>
-}
+
 
 const char* KeyDerivation::MIN_GCRYPT_VERSION = "1.2.3";
 
 void KeyDerivation::init(Buffer key, Buffer salt)
 {
+  Lock lock(mutex_);
   gcry_error_t err;
 
   // No other library has already initialized libgcrypt.
   if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
   {
     if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
-      std::cerr << "Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
+      cLog.msg(Log::PRIO_ERR) << "Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
       return;
     }
 
@@ -68,43 +71,38 @@ void KeyDerivation::init(Buffer key, Buffer salt)
     /* Tell Libgcrypt that initialization has completed. */
     err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
     if( err ) {
-      std::cerr << "Failed to finish the initialization of libgcrypt" << gpg_strerror( err ) << std::endl;
+      cLog.msg(Log::PRIO_ERR) << "Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
       return;
     } else {
-      std::cout << "KeyDerivation::init: libgcrypt init finished" << std::endl;
+      cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation::init: libgcrypt init finished";
     }
   }
 
   err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
-  if( err )
-  {
-    std::cerr << "Failed to open cipher: " << gpg_strerror( err ) << std::endl;
+  if( err ) {
+    cLog.msg(Log::PRIO_ERR) << "Failed to open cipher: " << gpg_strerror( err );
     return;
   }
 
   salt_ = SyncBuffer(salt);
-  initialized_ = true;
 }
 
 void KeyDerivation::setLogKDRate(const uint8_t log_rate)
 {
+  Lock lock(mutex_);
   if( log_rate < 49 )
     ld_kdr_ = log_rate;
 }
 
 
-void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length)
+void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length) 
 {
+  Lock lock(mutex_);
   gcry_error_t err;
-  u_int8_t r = 0;
-  Buffer iv(16);
 
-  u_int8_t tmp_key_id[16];
-
-  if(!initialized_) {
-    std::cout << "ERROR: keyderivation::generate: keyderivation not initialized yet!" << std::endl;
-    return;
-  }
+  Mpi r;
+  Mpi key_id;
+  Mpi iv(128);
 
   // see at: http://tools.ietf.org/html/rfc3711#section-4.3
   // *  Let r = index DIV key_derivation_rate (with DIV as defined above).
@@ -118,37 +116,33 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
     r = 0;
   else
     // FIXXME: kdr can be greater than 2^32 (= 2^48)
-    r = seq_nr / ( 0x01 << ld_kdr_ );
+    r = static_cast<long unsigned int>(seq_nr / ( 0x01 << ld_kdr_ ));
 
+  r.rShift(8);
+  key_id = r + Mpi(static_cast<long unsigned int>(label));
 
-  // FIXXME: why i cant access key_id via operator []? 
-  for(u_int8_t i=0; i<sizeof(tmp_key_id); i++)
-    tmp_key_id[i] = 0x00;
-
-  tmp_key_id[0] = r; 
-  tmp_key_id[1] = label;
-
-  Buffer key_id(tmp_key_id, 16);
-
-  iv = key_id ^ salt_;
+  Mpi salt = Mpi(salt_.getBuf(), salt_.getLength());
+  iv = key_id ^ salt;
 
   err = gcry_cipher_reset( cipher_ );
+  if( err ) 
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror( err );
+
+  
+  err = gcry_cipher_setiv( cipher_ , iv.getBuf().getBuf(), iv.getBuf().getLength());
   if( err )
-  {
-    std::cerr << "Failed to reset cipher: " << gpg_strerror( err ) << std::endl;
-  }
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set IV: " << gpg_strerror( err );
 
   err = gcry_cipher_encrypt( cipher_, key, length, 0, 0 );
  
-  if( err )
-  {
-    std::cerr << "Failed to generate cipher bitstream: " << gpg_strerror( err ) << std::endl;
-  }
+  if( err ) 
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror( err );
 }
 
 
 void KeyDerivation::clear() 
 {
+  Lock lock(mutex_);
   gcry_cipher_close( cipher_ );
 }
 

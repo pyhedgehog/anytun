@@ -28,49 +28,91 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _KEYDERIVATION_H_
-#define _KEYDERIVATION_H_
+#include "mpi.h"
 
 #include "datatypes.h"
-#include "buffer.h"
-#include "threadUtils.hpp"
-#include "syncBuffer.h"
+#include "cypher.h"
 
+#include <stdexcept>
 #include <gcrypt.h>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
 
 
-typedef enum {
-  label_satp_encryption  = 0x00,
-  label_satp_msg_auth    = 0x01,
-  label_satp_salt        = 0x02,
-} satp_prf_label;
-
-
-class KeyDerivation
+Mpi::Mpi() : val_(NULL)
 {
-public:
-  KeyDerivation() : ld_kdr_(-1), cipher_(NULL) {};
-  virtual ~KeyDerivation() {};
+}
 
-  void init(Buffer key, Buffer salt);
-  void setLogKDRate(const u_int8_t ld_rate);
-  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length);
-  void clear();
-private:
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version);
+Mpi::Mpi(u_int8_t length)
+{
+  val_ = gcry_mpi_new(length);
+}
 
-protected:
-  int8_t ld_kdr_;     // ld(key_derivation_rate)
-  SyncBuffer salt_;
-  static const char* MIN_GCRYPT_VERSION;
+Mpi::Mpi(const Mpi &src)
+{
+  val_ = gcry_mpi_copy(src.val_);
+}
 
-  gcry_cipher_hd_t cipher_;
-  Mutex mutex_;
-};
+Mpi::Mpi(const u_int8_t * src, u_int32_t len)
+{
+  gcry_mpi_scan( &val_, GCRYMPI_FMT_STD, src, len, NULL );
+}
+void Mpi::operator=(const Mpi &src)
+{
+  val_ = gcry_mpi_copy(src.val_);
+}
 
+void Mpi::operator=(const long unsigned int src)
+{
+  gcry_mpi_set_ui(val_, src);
+}
 
-#endif
+Mpi Mpi::operator+(const Mpi &b) const
+{
+  Mpi res;
+  gcry_mpi_add(res.val_, val_, b.val_);
+  return res;
+}
+
+Mpi Mpi::operator^(const Mpi &b) const
+{
+  u_int32_t len = 0;
+
+  Mpi res(gcry_mpi_get_nbits(val_));
+
+  if(gcry_mpi_get_nbits(val_) != gcry_mpi_get_nbits(b.val_))
+    throw std::length_error("mpi::operator^ const");
+
+  len = gcry_mpi_get_nbits(val_);
+
+  for(u_int32_t i=0; i<len; i++) {
+    if(gcry_mpi_test_bit(val_, i) ^ gcry_mpi_test_bit(b.val_, i))
+      gcry_mpi_set_bit(res.val_, i);
+  }
+  return res;
+}
+
+void Mpi::rShift(u_int8_t n)
+{
+  gcry_mpi_rshift(val_, val_, n);
+}
+
+Buffer Mpi::getBuf() const
+{
+  u_int32_t len = 0, written = 0;
+  len = gcry_mpi_get_nbits( val_ );
+
+  Buffer res(static_cast<u_int32_t>(len/8)+1);
+
+  gcry_mpi_print( GCRYMPI_FMT_STD, res, len, &written, val_ );
+  return res;
+}
+
+u_int32_t Mpi::getLen() const
+{
+  return gcry_mpi_get_nbits( val_ );
+}
+
+Mpi::~Mpi()
+{
+  gcry_mpi_release( val_ );
+}
 

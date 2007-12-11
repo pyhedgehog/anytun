@@ -30,6 +30,8 @@
 
 #include <iostream>
 #include <poll.h>
+#include <gcrypt.h>
+#include <errno.h>
 
 #include "datatypes.h"
 
@@ -55,6 +57,7 @@
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0800
 
+
 struct Param
 {
   Options& opt;
@@ -68,64 +71,62 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 
 	SeqWindow seq(seqSize);
 
-//   uint8_t key[] = {
-//     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-//     'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-//     'q', 'r', 's', 't'
-//   };
+   uint8_t key[] = {
+     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+     'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+     'q', 'r', 's', 't'
+   };
 
-//   uint8_t salt[] = {
-//     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-//     'i', 'j', 'k', 'l', 'm', 'n'
-//   };
+   uint8_t salt[] = {
+     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+     'i', 'j', 'k', 'l', 'm', 'n'
+   };
 
 	seq_nr_t seq_nr_=0;
   KeyDerivation kd;
-  //kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
+  kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( kd,  seq, seq_nr_, remote_host,  remote_port);
 	cl.addConnection(connparam,std::string("default"));
 }
 
 
-void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
+void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn, void* p)
 {
-    // cypher the packet
-/*    Buffer tmp_key(16), tmp_salt(14);
-		//TODO fix key derivation!
-    //conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
-    //conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
-    c.setKey(tmp_key);
-    c.setSalt(tmp_salt);
+  Param* param = reinterpret_cast<Param*>(p);
+  // cypher the packet
+  Buffer tmp_key(16), tmp_salt(14);
+  //TODO fix key derivation!
+  conn.kd_.generate(label_satp_encryption, conn.seq_nr_, tmp_key, tmp_key.getLength());
+  conn.kd_.generate(label_satp_salt, conn.seq_nr_, tmp_salt, tmp_salt.getLength());
+  c.setKey(tmp_key);
+  c.setSalt(tmp_salt);
 
-    //cLog.msg(Log::PRIO_NOTICE) << "Send Package: seq: " << seq;
-		//cLog.msg(Log::PRIO_NOTICE) << "sID: " <<  param->opt.getSenderId();
-    //cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
+  cLog.msg(Log::PRIO_NOTICE) << "Send Package: seq: " << conn.seq_nr_;
+  cLog.msg(Log::PRIO_NOTICE) << "sID: " <<  param->opt.getSenderId();
+  cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
 
-    c.cypher(pack, seq, param->opt.getSenderId());
-
-*/    // add header to packet
-	
+  c.cypher(pack, conn.seq_nr_, param->opt.getSenderId());
 }
 
 bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
 {
-// 	u_int16_t sid = pack.getSenderId();
-// 	u_int16_t seq = pack.getSeqNr();
-/*
-    // decypher the packet
-    Buffer tmp_key(16), tmp_salt(14);
-    //conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
-    //conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
-    c.setKey(tmp_key);
-    c.setSalt(tmp_salt);
-    c.cypher(pack, seq, sid);
-   
-    //cLog.msg(Log::PRIO_NOTICE) << "Received Package: seq: " << seq;
-		//cLog.msg(Log::PRIO_NOTICE) << "sID: " << sid;
-    //cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
-*/
-	return true;
+  u_int16_t sid = pack.getSenderId();
+  u_int16_t seq = pack.getSeqNr();
+
+  // decypher the packet
+  Buffer tmp_key(16), tmp_salt(14);
+  conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
+  conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
+  c.setKey(tmp_key);
+  c.setSalt(tmp_salt);
+  c.cypher(pack, seq, sid);
+
+  cLog.msg(Log::PRIO_NOTICE) << "Received Package: seq: " << seq;
+  cLog.msg(Log::PRIO_NOTICE) << "sID: " << sid;
+  cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
+
+  return true;
 }
 
 void addPacketAuthTag(Packet & pack, Cypher & c, ConnectionParam & conn)
@@ -194,7 +195,7 @@ void* sender(void* p)
     else 
       pack.addPayloadType(0);
 
-		encryptPacket(pack, c, conn);
+		encryptPacket(pack, c, conn, param);
 
     pack.addHeader(conn.seq_nr_, param->opt.getSenderId());
     conn.seq_nr_++;
@@ -242,7 +243,6 @@ void* receiver(void* p)
     // read packet from socket
     u_int32_t len = param->src.recv(pack, remote_host, remote_port);
     pack.resizeBack(len);
-//    pack.withPayloadType(true).withHeader(true).withAuthTag(true);
     pack.withPayloadType(true).withHeader(true).withAuthTag(false);
 
 
@@ -289,6 +289,10 @@ void* receiver(void* p)
   pthread_exit(NULL);
 }
 
+extern "C" {
+GCRY_THREAD_OPTION_PTHREAD_IMPL;
+}
+
 int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
@@ -315,13 +319,16 @@ int main(int argc, char* argv[])
 
 	if(opt.getRemoteAddr() != "")
 		createConnection(opt.getRemoteAddr(),opt.getRemotePort(),cl,opt.getSeqWindowSize());
+  
 
   struct Param p = {opt, dev, *src, cl};
     
   cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
   cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
   cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << p.dev.getTypeString() << "'";
-  
+
+  gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread );
+
   pthread_t senderThread;
   pthread_create(&senderThread, NULL, sender, &p);  
   pthread_t receiverThread;

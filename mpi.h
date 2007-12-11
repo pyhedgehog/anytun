@@ -28,48 +28,36 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _BUFFER_H_
-#define _BUFFER_H_
+#ifndef _MPI_H_
+#define _MPI_H_
 
 #include "datatypes.h"
+#include "buffer.h"
 
-class TunDevice;
-class UDPPacketSource;
+#include <gcrypt.h>
 
-class Buffer
+
+class Mpi
 {
 public:
-  Buffer();
-  Buffer(u_int32_t length);
-  Buffer(u_int8_t* data, u_int32_t length);
-  virtual ~Buffer();
-  Buffer(const Buffer &src);
-  void operator=(const Buffer &src);
-  bool operator==(const Buffer &cmp) const;
+  Mpi();
+  virtual ~Mpi();
+  Mpi(u_int8_t length);
+  Mpi(const Mpi &src);
+  Mpi(const u_int8_t * src, u_int32_t len);
+  void operator=(const Mpi &src);
+  void operator=(long unsigned int);
+  Mpi operator+(const Mpi &b) const;
+  Mpi operator^(const Mpi &b) const;
 
-  // math operations to calculate IVs and keys
-  virtual Buffer operator^(const Buffer &xor_by) const;
-  virtual Buffer leftByteShift(u_int32_t width) const;
-  virtual Buffer rightByteShift(u_int32_t width) const;
-
-  u_int32_t resizeFront(u_int32_t new_length);
-  u_int32_t resizeBack(u_int32_t new_length);
-  u_int32_t getLength() const;
-  u_int8_t* getBuf();
-  u_int8_t& operator[](u_int32_t index);
-  u_int8_t operator[](u_int32_t index) const;
-  void printHexDump() const;
-
-  operator u_int8_t*(); // just for write/read tun and packetSource
+  void rShift(u_int8_t n);
+  Buffer getBuf() const;
+  u_int32_t getLen() const;
+ 
 protected:
-  friend class TunDevice;
-  friend class UDPPacketSource;
-  friend class AesIcmCypher;
-  friend class KeyDerivation;   //
-  friend class Mpi;
-
-  u_int8_t *buf_;
-  u_int32_t length_;
+  gcry_mpi_t val_;
 };
+
+
 
 #endif
