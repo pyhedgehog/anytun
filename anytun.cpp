@@ -107,7 +107,7 @@ void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn, void* p)
 
   cLog.msg(Log::PRIO_NOTICE) << "Send Package: seq: " << conn.seq_nr_;
   cLog.msg(Log::PRIO_NOTICE) << "sID: " <<  param->opt.getSenderId();
-  cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
+  cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getHexDump();
 
   c.cypher(pack, conn.seq_nr_, param->opt.getSenderId());
 }
@@ -132,7 +132,7 @@ bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
 
   cLog.msg(Log::PRIO_NOTICE) << "Received Package: seq: " << seq;
   cLog.msg(Log::PRIO_NOTICE) << "sID: " << sid;
-  cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getBuf();
+  cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getHexDump();
 
   return true;
 }

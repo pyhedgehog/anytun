@@ -32,6 +32,7 @@
 #define _BUFFER_H_
 
 #include "datatypes.h"
+#include <string>
 
 class TunDevice;
 class UDPPacketSource;
@@ -58,7 +59,7 @@ public:
   u_int8_t* getBuf();
   u_int8_t& operator[](u_int32_t index);
   u_int8_t operator[](u_int32_t index) const;
-  void printHexDump() const;
+  std::string getHexDump() const;
 
   operator u_int8_t*(); // just for write/read tun and packetSource
 protected:

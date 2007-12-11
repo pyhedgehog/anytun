@@ -180,17 +180,20 @@ Buffer::operator u_int8_t*() // just for write/read tun
   return buf_;
 }
 
-void Buffer::printHexDump() const
+std::string Buffer::getHexDump() const
 {
   char text[10];
+  std::string ret = "";
 
   for( u_int32_t index = 0; index < length_; index++ )
   {
     std::sprintf(text, "%#4x", buf_[index]);
-    std::cout << text << " ";
+    ret += text;
+    ret += "";
     if( ((index+1) % 10) == 0 )
-      std::cout << std::endl;
+      ret += '\n';
   }
+  return ret;
 }
 
 Buffer Buffer::operator^(const Buffer &xor_by) const
