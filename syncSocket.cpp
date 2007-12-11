@@ -41,11 +41,14 @@ void SyncSocket::OnAccept()
 	Send( Utility::GetLocalAddress() + "\n");
 	Send("Number of sockets in list : " + Utility::l2string(Handler().GetCount()) + "\n");
 	Send("\n");
-	std::ostringstream sout;
-	boost::archive::text_oarchive oa(sout);
-	const ConnectionParam conn = cl_.getConnection();
-  oa << conn;
-	Send(sout.str()+"\n");
+	if( ! cl_.empty())
+	{
+		std::ostringstream sout;
+		boost::archive::text_oarchive oa(sout);
+		const ConnectionParam conn = cl_.getConnection();
+		oa << conn;
+		Send(sout.str()+"\n");
+	}
 }
 
 //void StatusSocket::InitSSLServer()
