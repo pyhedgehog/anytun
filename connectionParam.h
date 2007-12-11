@@ -47,10 +47,10 @@ public:
   KeyDerivation& kd_;
   SeqWindow& seq_window_;
 	seq_nr_t seq_nr_;
-  sender_id_t sennder_id_;
   std::string remote_host_;
   u_int16_t remote_port_;
 private:
+//	ConnectionParam(const ConnectionParam & src);
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)

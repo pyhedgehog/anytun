@@ -34,23 +34,23 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include "buffer.h"
+#include <iostream>
+#include "datatypes.h"
 
 class SyncBuffer : public Buffer
 {
 public:
-		SyncBuffer() : Buffer(){};
-		SyncBuffer(u_int32_t length) : Buffer(length){};
-		SyncBuffer(Buffer b): Buffer(b) {};
-		SyncBuffer(u_int8_t* data, u_int32_t length): Buffer(data,length) {};
+		SyncBuffer() : Buffer(){  std::cout << " SyncBuffer() -> Length: " << length_ << std::endl;};
+		SyncBuffer(u_int32_t length) : Buffer(length){ std::cout << "SyncBuffer(u_int32_t length) Length: " << length_ << std::endl; };
+		SyncBuffer(Buffer b): Buffer(b) {std::cout << " SyncBuffer(Buffer b) " << length_ <<  std::endl;};
+		SyncBuffer(u_int8_t* data, u_int32_t length): Buffer(data,length) { std::cout << "SyncBuffer(u_int8_t* data, u_int32_t length)-> Length: "<< length_ << std::endl;};
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		u_int32_t ll = length_+1;
-    ar & ll;
+		std::cout << "Length: " << length_ << std::endl;
     ar & length_;
-    ar & ll;
 		//for(u_int32_t i = 0; i < length_; i++)
 		//		ar & (*this)[i];
 	}
