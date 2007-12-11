@@ -31,7 +31,7 @@
 #include <iostream>
 #include <poll.h>
 #include <gcrypt.h>
-#include <errno.h>
+#include <cerrno>
 
 #include "datatypes.h"
 
