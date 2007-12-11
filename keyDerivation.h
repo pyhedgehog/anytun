@@ -58,6 +58,7 @@ public:
   void setLogKDRate(const u_int8_t ld_rate);
   void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length);
   void clear();
+	u_int32_t bufferGetLength() const;
 
 private:
 	KeyDerivation(const KeyDerivation & src);

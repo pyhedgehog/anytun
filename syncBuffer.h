@@ -40,20 +40,19 @@
 class SyncBuffer : public Buffer
 {
 public:
-		SyncBuffer() : Buffer(){  std::cout << " SyncBuffer() -> Length: " << length_ << std::endl;};
-		SyncBuffer(u_int32_t length) : Buffer(length){ std::cout << "SyncBuffer(u_int32_t length) Length: " << length_ << std::endl; };
-		SyncBuffer(Buffer b): Buffer(b) {std::cout << " SyncBuffer(Buffer b) " << length_ <<  std::endl;};
-		SyncBuffer(u_int8_t* data, u_int32_t length): Buffer(data,length) { std::cout << "SyncBuffer(u_int8_t* data, u_int32_t length)-> Length: "<< length_ << std::endl;};
-		SyncBuffer(const SyncBuffer & src) : Buffer(src) {std::cout << " SyncBuffer(const SyncBuffer & src)-> Length: "<< length_ << std::endl;};
+		SyncBuffer() : Buffer(){};
+		SyncBuffer(u_int32_t length) : Buffer(length){};
+		SyncBuffer(Buffer b): Buffer(b) {};
+		SyncBuffer(u_int8_t* data, u_int32_t length): Buffer(data,length) {};
+		SyncBuffer(const SyncBuffer & src) : Buffer(src) {};
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		std::cout << "Length: " << length_ << std::endl;
     ar & length_;
-		//for(u_int32_t i = 0; i < length_; i++)
-		//		ar & (*this)[i];
+		for(u_int32_t i = 0; i < length_; i++)
+			ar & (*this)[i];
 	}
 };
 

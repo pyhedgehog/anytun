@@ -80,12 +80,12 @@ uint8_t salt[] = {
 void createConnection(const std::string & remote_host , u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize)
 {
 
-	SeqWindow seq(seqSize);
+	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
-  KeyDerivation kd;
+  KeyDerivation * kd = new KeyDerivation;
 //  kd.init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
-	ConnectionParam connparam ( kd,  seq, seq_nr_, remote_host,  remote_port);
+	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
 	cl.addConnection(connparam,std::string("default"));
 }
 

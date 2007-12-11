@@ -149,3 +149,8 @@ void KeyDerivation::clear()
   Lock lock(mutex_);
   gcry_cipher_close( cipher_ );
 }
+
+u_int32_t KeyDerivation::bufferGetLength() const
+{
+	return salt_.getLength();
+}
