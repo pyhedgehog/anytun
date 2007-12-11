@@ -52,26 +52,26 @@ void KeyDerivation::init(Buffer key, Buffer salt)
   if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
   {
     if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
-      cLog.msg(Log::PRIO_ERR) << "Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
       return;
     }
 
     // do NOT allocate a pool of secure memory!
     // this is NOT thread safe!
 
-//    /* Allocate a pool of 16k secure memory.  This also drops priviliges
-//     *      on some systems. */
-//    err = gcry_control(GCRYCTL_INIT_SECMEM, 16384, 0);
-//    if( err )
-//    {
-//      std::cerr << "Failed to allocate 16k secure memory: " << gpg_strerror( err ) << std::endl;
-//      return;
-//    }
+    //    /* Allocate a pool of 16k secure memory.  This also drops priviliges
+    //     *      on some systems. */
+    //    err = gcry_control(GCRYCTL_INIT_SECMEM, 16384, 0);
+    //    if( err )
+    //    {
+    //      std::cerr << "Failed to allocate 16k secure memory: " << gpg_strerror( err ) << std::endl;
+    //      return;
+    //    }
 
     /* Tell Libgcrypt that initialization has completed. */
     err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
     if( err ) {
-      cLog.msg(Log::PRIO_ERR) << "Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
       return;
     } else {
       cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation::init: libgcrypt init finished";
@@ -80,9 +80,14 @@ void KeyDerivation::init(Buffer key, Buffer salt)
 
   err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "Failed to open cipher: " << gpg_strerror( err );
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to open cipher: " << gpg_strerror( err );
     return;
   }
+
+  // FIXXME: hardcoded keysize!
+  err = gcry_cipher_setkey( cipher_, key.getBuf(), 16 );
+  if( err )
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to set cipher key: " << gpg_strerror( err );
 
   salt_ = SyncBuffer(salt);
 }

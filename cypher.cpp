@@ -32,14 +32,14 @@
 #include <iostream>
 #include <string>
 #include <cstdio>
+#include <gcrypt.h>
 
 #include "cypher.h"
 #include "keyDerivation.h"
+#include "mpi.h"
+#include "log.h"
 
 
-extern "C" {
-#include <gcrypt.h>
-}
 
 void Cypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
 {
@@ -78,37 +78,32 @@ AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))
   if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
   {
     if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
-      std::cerr << "Invalid Version of libgcrypt, should be >= ";
-      std::cerr << MIN_GCRYPT_VERSION << std::endl;
+      cLog.msg(Log::PRIO_ERR) << "Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
       return;
     }
 
-      // do NOT allocate a pool of secure memory!
-      // this is NOT thread safe!
-
-//    /* Allocate a pool of secure memory.  This also drops priviliges
-//       on some systems. */
-//    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
-//    if( err ) {
-//      std::cerr << "Failed to allocate " << GCRYPT_SEC_MEM << "bytes of secure memory: ";
-//      std::cerr << gpg_strerror( err ) << std::endl;
-//      return;
-//    }
+    // do NOT allocate a pool of secure memory!
+    // this is NOT thread safe!
+    //    /* Allocate a pool of secure memory.  This also drops priviliges
+    //       on some systems. */
+    //    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
+    //    if( err ) {
+    //      std::cerr << "Failed to allocate " << GCRYPT_SEC_MEM << "bytes of secure memory: ";
+    //      std::cerr << gpg_strerror( err ) << std::endl;
+    //      return;
+    //    }
 
     /* Tell Libgcrypt that initialization has completed. */
     err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
     if( err ) {
-      std::cerr << "Failed to finish the initialization of libgcrypt";
-      std::cerr << gpg_strerror( err ) << std::endl;
+      cLog.msg(Log::PRIO_CRIT) << "AesIcmCypher::AesIcmCypher: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
       return;
-//    } else {
-//      std::cout << "AesIcmCypher::AesIcmCypher: libgcrypt init finished" << std::endl;
+    } else {
+      cLog.msg(Log::PRIO_NOTICE) << "AesIcmCypher::AesIcmCypher: libgcrypt init finished";
     }
   }
 
   gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
-
-//  std::cout << "Keysize: " << gcry_cipher_get_algo_keylen( GCRY_CIPHER_AES128 ) << std::endl;
 }
 
 
@@ -121,16 +116,14 @@ AesIcmCypher::~AesIcmCypher()
 void AesIcmCypher::setKey(Buffer key)
 {
   gcry_error_t err;
+  // FIXXME: hardcoded keysize
   err = gcry_cipher_setkey( cipher_, key.getBuf(), 16 );
   if( err )
-    std::cerr << "Failed to set cipher key: " << gpg_strerror( err ) << std::endl;
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCypher::setKey: Failed to set cipher key: " << gpg_strerror( err );
 }
 
 void AesIcmCypher::setSalt(Buffer salt)
 {
-//  std::cout << "AesIcmCypher::setSalt" << std::endl;
-//  salt.printHexDump();
-//  std::cout << std::endl;
   salt_ = salt;
 }
 
@@ -140,50 +133,35 @@ Buffer AesIcmCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t
 
   Buffer buf(length);
 
-//  // set IV
-//  //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
-//  //  SRTP packet index i, and the SRTP session salting key k_s, as below.
-//  //
-//  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
-//  // sizeof(k_s) = 112 bit, random
+  //  // set IV
+  //  //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
+  //  //  SRTP packet index i, and the SRTP session salting key k_s, as below.
+  //  //
+  //  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
+  //  // sizeof(k_s) = 112 bit, random
 
+  Mpi iv(128);
+  Mpi salt = Mpi(salt_.getBuf(), salt_.getLength());
+  Mpi sid = sender_id;
+  Mpi seq = seq_nr;
 
-  u_int8_t iv[16];
-  std::memset(iv, 0, 16);   //initalize iv
+  iv = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16);
 
-  // apply salt:
-  std::memcpy(&iv[2], salt_.getBuf(), 14);
-
-//  std::cout << "salt:" << std::endl;
-//  salt_.printHexDump();
-//  std::cout << std::endl;
-
-  // apply sender id:
-  for(u_int8_t index = 0; index < sizeof(sender_id); index++)
-    iv[index+8] = iv[index+8] ^ ((sender_id>>index) & 0xFF);
-
-  // apply seq nr:
-  for(u_int8_t index = 0; index < sizeof(seq_nr); index++)
-    iv[index+2] = iv[index+2] ^ ((seq_nr>>index) & 0xFF);
-
-  err = gcry_cipher_setiv( cipher_, iv, 16 );
-  if( err )
-  {
-    std::cerr << "Failed to set cipher IV: " << gpg_strerror( err ) << std::endl;
+  err = gcry_cipher_setiv( cipher_, iv.getBuf().getBuf(), 16 );
+  if( err ) {
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to set cipher IV: " << gpg_strerror( err );
     return Buffer(0);
   }
 
   err = gcry_cipher_reset( cipher_ );
-  if( err )
-  {
-    std::cerr << "Failed to reset cipher: " << gpg_strerror( err ) << std::endl;
+  if( err ) {
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to reset cipher: " << gpg_strerror( err );
     return Buffer(0);
   }
 
   err = gcry_cipher_encrypt( cipher_, buf, buf.getLength(), 0, 0 );
-  if( err )
-  {
-    std::cerr << "Failed to generate cipher bitstream: " << gpg_strerror( err ) << std::endl;
+  if( err ) {
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to generate cipher bitstream: " << gpg_strerror( err );
     return Buffer(0);
   }
 
