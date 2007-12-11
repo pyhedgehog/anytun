@@ -290,7 +290,7 @@ void* receiver(void* p)
 		}
 
 		//TODO Add multi connection support here
-		ConnectionParam conn = param->cl.getConnection();
+		ConnectionParam & conn = param->cl.getConnection();
 
 		if (!checkPacketAuthTag(pack, c, conn))
 			continue;
