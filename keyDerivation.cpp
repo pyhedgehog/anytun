@@ -97,7 +97,7 @@ void KeyDerivation::setLogKDRate(const uint8_t log_rate)
 
 void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length) 
 {
-  Lock lock(mutex_);
+  ////Lock lock(mutex_);
   gcry_error_t err;
 
   Mpi r;
