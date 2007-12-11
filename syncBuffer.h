@@ -47,9 +47,12 @@ private:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
+		u_int32_t ll = length_+1;
+    ar & ll;
     ar & length_;
-		for(u_int32_t i = 0; i < length_; i++)
-				ar & buf_[i];
+    ar & ll;
+		//for(u_int32_t i = 0; i < length_; i++)
+		//		ar & (*this)[i];
 	}
 };
 

@@ -194,7 +194,7 @@ void* sender(void* p)
 
     if( param->cl.empty())
       continue;
-		ConnectionParam conn = param->cl.getConnection();
+		ConnectionParam & conn = param->cl.getConnection();
     // add payload type
     if(param->dev.getType() == TunDevice::TYPE_TUN)
       pack.addPayloadType(PAYLOAD_TYPE_TUN);

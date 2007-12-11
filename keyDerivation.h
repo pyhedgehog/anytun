@@ -51,7 +51,7 @@ typedef enum {
 class KeyDerivation
 {
 public:
-  KeyDerivation() : ld_kdr_(-1), cipher_(NULL) {};
+  KeyDerivation() : ld_kdr_(-1), salt_(0), cipher_(NULL) {};
   virtual ~KeyDerivation() {};
 
   void init(Buffer key, Buffer salt);
