@@ -106,7 +106,7 @@ void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn, void* p)
   c.setSalt(tmp_salt);
 
   cLog.msg(Log::PRIO_NOTICE) << "Send Package: seq: " << conn.seq_nr_ 
-                             << "sID: " << param->opt.getSenderId();
+                             << ", sID: " << param->opt.getSenderId();
   //cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getHexDump();
 
   c.cypher(pack, conn.seq_nr_, param->opt.getSenderId());
@@ -117,6 +117,8 @@ bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
   u_int16_t sid = pack.getSenderId();
   u_int16_t seq = pack.getSeqNr();
 
+  pack.removeHeader();
+
   // decypher the packet
   //Buffer tmp_key(16), tmp_salt(14);
 //  conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
@@ -124,7 +126,6 @@ bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
 
   Buffer tmp_key(key, sizeof(key));
   Buffer tmp_salt(salt, sizeof(salt));
-
 
   c.setKey(tmp_key);
   c.setSalt(tmp_salt);
@@ -281,7 +282,6 @@ void* receiver(void* p)
 		//Replay Protection
 		//if (!checkPacketSeqNr(pack,conn))
 		//	continue;
-		pack.removeHeader();
 
 		if (!decryptPacket(pack, c, conn))
 			continue;

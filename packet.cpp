@@ -29,6 +29,7 @@
  */
 
 #include <stdexcept>
+#include <iostream>
 #include <arpa/inet.h>
 #include <cstdio>       // for std::memcpy
 
