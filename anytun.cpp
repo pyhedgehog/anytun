@@ -204,8 +204,8 @@ void* sender(void* p)
 {
   Param* param = reinterpret_cast<Param*>(p);
 	//TODO make Cypher selectable with command line option
-	NullCypher c;
-//  AesIcmCypher c;
+//	NullCypher c;
+  AesIcmCypher c;
 //  NullAuthAlgo a;
 
   while(1)
@@ -263,8 +263,8 @@ void* syncReceiver(void* p )
 void* receiver(void* p)
 {
   Param* param = reinterpret_cast<Param*>(p);  
-  NullCypher c;
-//  AesIcmCypher c;
+//  NullCypher c;
+  AesIcmCypher c;
 //  NullAuthAlgo a;
   
   while(1)
