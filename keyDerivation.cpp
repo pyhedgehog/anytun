@@ -133,7 +133,9 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
   if( err ) 
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror( err );
 
-  err = gcry_cipher_setiv( cipher_ , iv.getBuf(16), 16);
+  u_int8_t *iv_buf = iv.getNewBuf(16);
+  err = gcry_cipher_setiv( cipher_ , iv_buf, 16);
+  delete[] iv_buf;
   if( err )
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set IV: " << gpg_strerror( err );
 

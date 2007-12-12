@@ -29,10 +29,10 @@
  */
 
 #include "authAlgo.h"
+#include "log.h"
+#include "buffer.h"
 
-extern "C" {
 #include <gcrypt.h>
-}
 
 
 AuthTag NullAuthAlgo::calc(const Buffer& buf)
@@ -40,20 +40,56 @@ AuthTag NullAuthAlgo::calc(const Buffer& buf)
   return AuthTag(0);
 }
 
+const char* Sha1AuthAlgo::MIN_GCRYPT_VERSION = "1.2.3";
 
 // HMAC_SHA1
-AuthTag HmacAuthAlgo::calc(const Buffer& buf)
+Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
 {
   gcry_error_t err;
-  gcry_md_hd_t ctx;
+  // No other library has already initialized libgcrypt.
+  if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
+  {
+    if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
+      cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::Sha1AuthAlgo: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
+      return;
+    }
+    /* Tell Libgcrypt that initialization has completed. */
+    err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
+    if( err ) {
+      cLog.msg(Log::PRIO_CRIT) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
+      return;
+    } else {
+      cLog.msg(Log::PRIO_DEBUG) << "Sha1AuthAlgo::Sha1AuthAlgo: libgcrypt init finished";
+    }
+  }
+  err = gcry_md_open( &ctx_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC );
+  if( err )
+    cLog.msg(Log::PRIO_CRIT) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to open message digest algo";
+}
+
+Sha1AuthAlgo::~Sha1AuthAlgo()
+{
+  gcry_md_close( ctx_ );
+  cLog.msg(Log::PRIO_DEBUG) << "Sha1AuthAlgo::~Sha1AuthAlgo: closed hmac handler";
+}
+
+void Sha1AuthAlgo::setKey(Buffer key)
+{
+  gcry_error_t err;
+  err = gcry_md_setkey( ctx_, key.getBuf(), key.getLength() );
+  if( err )
+    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set cipher key: " << gpg_strerror( err );
+}
+
+
+AuthTag Sha1AuthAlgo::calc(const Buffer& buf)
+{
+  // gcry_error_t err;
   Buffer hmac;  //80bit
 
-  err = gcry_md_open( &ctx, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC );
-  //gcry_md_setkey( ctx, key, keylen );
-  gcry_md_write( ctx, static_cast<Buffer>(buf).getBuf(), buf.getLength() );
-  gcry_md_final( ctx );
-  hmac = Buffer(gcry_md_read( ctx, 0 ), 10);
-  gcry_md_close( ctx );
+  gcry_md_write( ctx_, static_cast<Buffer>(buf).getBuf(), buf.getLength() );
+  gcry_md_final( ctx_ );
+  hmac = Buffer(gcry_md_read( ctx_, 0 ), 10);
   return hmac;
 }
 

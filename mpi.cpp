@@ -127,7 +127,7 @@ void Mpi::clearHighBit(u_int32_t n)
   gcry_mpi_clear_highbit( val_, n );
 }
 
-u_int8_t* Mpi::getBuf(u_int32_t buf_len) const
+u_int8_t* Mpi::getNewBuf(u_int32_t buf_len) const
 {
   // u_int32_t len = 0;
   u_int32_t written = 0;

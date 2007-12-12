@@ -37,6 +37,11 @@
 #include <gcrypt.h>
 
 
+/**
+ * This class is a wrapper for the libgcrypt multi precision integer library.
+ *
+ */
+
 class Mpi
 {
 public:
@@ -52,10 +57,23 @@ public:
   Mpi operator^(const Mpi &b) const;
   Mpi operator*(const unsigned long int n) const;
 
+  /**
+   * shift the bits to the right 
+   * (LSB on the right side)
+   * @param n number of bits to shift
+   */
   void rShift(u_int8_t n);            // LSB on the right side!
   Mpi mul2exp(u_int32_t e) const;     // value * 2^e
   void clearHighBit(u_int32_t n);
-  u_int8_t *getBuf(u_int32_t buf_len) const;
+
+  /**
+   * returns a new[] u_int8_t* buffer with the MPI value in the 
+   * GCRYMPI_FMT_STD (2-complement stored without a length header).
+   * you have to delete it by hand with delete[]!
+   * @param buf_len size of the new buffer that is returned
+   * @return a byte buffer of size buf_len
+   */
+  u_int8_t *getNewBuf(u_int32_t buf_len) const;
   u_int32_t getLen() const;
  
 protected:

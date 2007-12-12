@@ -65,10 +65,7 @@ Buffer NullCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t s
   return buf;
 }
 
-
 const char* AesIcmCypher::MIN_GCRYPT_VERSION = "1.2.3";
-bool AesIcmCypher::gcrypt_initialized_ = false;
-
 
 AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))
 {
@@ -78,7 +75,7 @@ AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))
   if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
   {
     if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
-      cLog.msg(Log::PRIO_ERR) << "Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
+      cLog.msg(Log::PRIO_ERR) << "AesIcmCypher::AesIcmCypher: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
       return;
     }
 
@@ -99,17 +96,20 @@ AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))
       cLog.msg(Log::PRIO_CRIT) << "AesIcmCypher::AesIcmCypher: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
       return;
     } else {
-      cLog.msg(Log::PRIO_NOTICE) << "AesIcmCypher::AesIcmCypher: libgcrypt init finished";
+      cLog.msg(Log::PRIO_DEBUG) << "AesIcmCypher::AesIcmCypher: libgcrypt init finished";
     }
   }
 
   gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
+  if( err )
+    cLog.msg(Log::PRIO_CRIT) << "AesIcmCypher::AesIcmCypher: Failed to open cypher";
 }
 
 
 AesIcmCypher::~AesIcmCypher()
 {
   gcry_cipher_close( cipher_ );
+  cLog.msg(Log::PRIO_DEBUG) << "AesIcmCypher::~AesIcmCypher: closed cipher";
 }
 
 
@@ -147,7 +147,9 @@ Buffer AesIcmCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t
 
   iv = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16);
 
-  err = gcry_cipher_setiv( cipher_, iv.getBuf(16), 16 );
+  u_int8_t *iv_buf = iv.getNewBuf(16);
+  err = gcry_cipher_setiv( cipher_, iv_buf, 16 );
+  delete[] iv_buf;
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to set cipher IV: " << gpg_strerror( err );
     return Buffer(0);

@@ -31,8 +31,11 @@
 #ifndef _AUTHALGO_H_
 #define _AUTHALGO_H_
 
-#include "datatypes.h"
 #include "authTag.h"
+#include "datatypes.h"
+#include "buffer.h"
+
+#include <gcrypt.h>
 
 class AuthAlgo
 {
@@ -51,10 +54,16 @@ public:
 
 
 // HMAC_SHA1
-class HmacAuthAlgo : public AuthAlgo
+class Sha1AuthAlgo : public AuthAlgo
 {
 public:
+  Sha1AuthAlgo();
+  ~Sha1AuthAlgo();
+  void setKey(Buffer key);
   AuthTag calc(const Buffer& buf);
+protected:
+  static const char* MIN_GCRYPT_VERSION;
+  gcry_md_hd_t ctx_;
 };
 
 #endif
