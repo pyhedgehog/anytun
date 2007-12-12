@@ -51,6 +51,13 @@ void SyncSocket::OnAccept()
 	}
 }
 
+void SyncSocket::OnRawData(const char *buf,size_t len)
+{
+	for(size_t index=0;index<len;index++)
+	{
+		std::cout << buf[index];
+	}
+}
 //void StatusSocket::InitSSLServer()
 //{
 //	InitializeContext("server.pem", "keypwd", SSLv23_method());

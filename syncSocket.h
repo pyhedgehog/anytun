@@ -18,6 +18,7 @@ public:
 
 	bool OnConnectRetry();
 	void OnReconnect();
+	void OnRawData(const char *buf,size_t len);
 //	void Init();
 
 //	void InitSSLServer();
