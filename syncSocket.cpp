@@ -49,21 +49,20 @@ void SyncSocket::OnAccept()
 		boost::archive::text_oarchive oa(sout);
 		const ConnectionParam conn = cl_.getConnection();
 		oa << conn;
-		Send(sout.str()+"\n");
+		Send(sout.str());
 	}
 }
 
-//void SyncSocket::OnRawData(const char *buf,size_t len)
-void SyncSocket::OnLine(const std::string& line)
+void SyncSocket::OnRawData(const char *buf,size_t len)
+//void SyncSocket::OnLine(const std::string& line)
 {
-//	std::cout << "recieved sync inforamtaion:"<< std::endl;
-//	for(size_t index=0;index<len;index++)
-//	{
-//		std::cout << buf[index];
-//	}
-	std::cout << line <<  std::endl;
-	std::istringstream iss;
-	iss.str(line);
+	std::stringstream iss;
+	std::cout << "recieved sync inforamtaion:"<< std::endl;
+	for(size_t index=0;index<len;index++)
+	{
+		std::cout << buf[index];
+		iss << buf[index];
+	}
 	boost::archive::text_iarchive ia(iss);
   SeqWindow * seq= new SeqWindow(0);
   seq_nr_t seq_nr_=0;
