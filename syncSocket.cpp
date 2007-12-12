@@ -68,7 +68,7 @@ void SyncSocket::OnLine(const std::string& line)
   SeqWindow * seq= new SeqWindow(0);
   seq_nr_t seq_nr_=0;
   KeyDerivation * kd = new KeyDerivation;
-  kd->init(::Buffer(), ::Buffer());
+  kd->init(::Buffer(20), ::Buffer(14));
   ConnectionParam conn ( (*kd),  (*seq), seq_nr_, "",  0);
 	ia >> conn;
   std::cout << "sync connection remote host " << conn.remote_host_ << ":" << conn.remote_port_ << std::endl;
