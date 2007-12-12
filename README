@@ -22,3 +22,21 @@ cd Sockets
 make
 cd ..
 make
+
+
+Errors:
+-------
+
+Note: Cannot open TUN/TAP dev /dev/net/tun: No such file or directory (errno=2)
+Cannot open TUN/TAP dev /dev/anytun0: No such file or directory (errno=2)
+
+Solution: Enabling tun/tap device
+------------------------------------
+
+modprobe tun
+cd /dev
+./MAKEDEV tun
+
+edit /etc/modules and add the line
+tun
+to load the module automatically
