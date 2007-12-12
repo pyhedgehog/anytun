@@ -53,10 +53,12 @@ void SyncSocket::OnAccept()
 
 void SyncSocket::OnRawData(const char *buf,size_t len)
 {
+	std::cout << "recieved sync inforamtaion:"<< std::endl;
 	for(size_t index=0;index<len;index++)
 	{
 		std::cout << buf[index];
 	}
+	std::cout << std::endl;
 }
 //void StatusSocket::InitSSLServer()
 //{
