@@ -31,6 +31,7 @@
 #include "authAlgo.h"
 #include "log.h"
 #include "buffer.h"
+#include "threadUtils.hpp"
 
 #include <gcrypt.h>
 
@@ -45,6 +46,7 @@ const char* Sha1AuthAlgo::MIN_GCRYPT_VERSION = "1.2.3";
 // HMAC_SHA1
 Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
 {
+  Lock lock(mutex_);
   gcry_error_t err;
   // No other library has already initialized libgcrypt.
   if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
@@ -69,12 +71,14 @@ Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
 
 Sha1AuthAlgo::~Sha1AuthAlgo()
 {
+  Lock lock(mutex_);
   gcry_md_close( ctx_ );
   cLog.msg(Log::PRIO_DEBUG) << "Sha1AuthAlgo::~Sha1AuthAlgo: closed hmac handler";
 }
 
 void Sha1AuthAlgo::setKey(Buffer key)
 {
+  Lock lock(mutex_);
   gcry_error_t err;
   err = gcry_md_setkey( ctx_, key.getBuf(), key.getLength() );
   if( err )
@@ -84,12 +88,16 @@ void Sha1AuthAlgo::setKey(Buffer key)
 
 AuthTag Sha1AuthAlgo::calc(const Buffer& buf)
 {
+  Lock lock(mutex_);
   // gcry_error_t err;
-  Buffer hmac;  //80bit
+  Buffer hmac(10);      // 10byte
+  gcry_mpi_t tmp = gcry_mpi_new(160);   // 20byte
 
   gcry_md_write( ctx_, static_cast<Buffer>(buf).getBuf(), buf.getLength() );
   gcry_md_final( ctx_ );
-  hmac = Buffer(gcry_md_read( ctx_, 0 ), 10);
+  gcry_mpi_scan( &tmp, GCRYMPI_FMT_STD, gcry_md_read(ctx_, 0), 20, NULL );
+  gcry_mpi_clear_highbit( tmp, 81 );    // truncate hmac from 20byte to 10byte
+  gcry_mpi_print( GCRYMPI_FMT_STD, hmac, hmac.getLength(), NULL, tmp );
   return hmac;
 }
 

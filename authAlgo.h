@@ -34,6 +34,7 @@
 #include "authTag.h"
 #include "datatypes.h"
 #include "buffer.h"
+#include "threadUtils.hpp"
 
 #include <gcrypt.h>
 
@@ -64,6 +65,7 @@ public:
 protected:
   static const char* MIN_GCRYPT_VERSION;
   gcry_md_hd_t ctx_;
+  Mutex mutex_;
 };
 
 #endif
