@@ -223,10 +223,8 @@ void* syncReceiver(void* p )
 	SOCKETS_NAMESPACE::SocketHandler h;
 	SyncListenSocket<SyncSocket,ConnectionList> l(h,param->cl);
 
-	if (l.Bind(23))
-	{
-		exit(-1);
-	}
+	if (l.Bind(param->opt.getLocalSyncPort()))
+		return(NULL);
 	Utility::ResolveLocal(); // resolve local hostname
 	h.Add(&l);
 	h.Select(1,0);
@@ -342,17 +340,20 @@ int main(int argc, char* argv[])
   pthread_create(&senderThread, NULL, sender, &p);  
   pthread_t receiverThread;
   pthread_create(&receiverThread, NULL, receiver, &p);  
-  pthread_t syncReceiverThread;
-  pthread_create(&syncReceiverThread, NULL, syncReceiver, &p);  
+	pthread_t syncReceiverThread;
+	if ( opt.getLocalSyncPort())
+		pthread_create(&syncReceiverThread, NULL, syncReceiver, &p);  
 
   int ret = sig.run();
 
   pthread_cancel(senderThread);
   pthread_cancel(receiverThread);  
-  pthread_cancel(syncReceiverThread);  
+	if ( opt.getLocalSyncPort())
+	  pthread_cancel(syncReceiverThread);  
   pthread_join(senderThread, NULL);
   pthread_join(receiverThread, NULL);
-  pthread_join(syncReceiverThread, NULL);
+	if ( opt.getLocalSyncPort())
+	  pthread_join(syncReceiverThread, NULL);
 
   delete src;
 
