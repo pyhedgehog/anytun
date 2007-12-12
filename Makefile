@@ -147,3 +147,6 @@ clean:
 doxygen:
 	doxygen Doxyfile
 
+ctags:
+	ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .
+
