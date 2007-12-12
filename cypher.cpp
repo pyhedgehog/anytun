@@ -147,7 +147,7 @@ Buffer AesIcmCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t
 
   iv = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16);
 
-  err = gcry_cipher_setiv( cipher_, iv.getBuf().getBuf(), 16 );
+  err = gcry_cipher_setiv( cipher_, iv.getBuf(16), 16 );
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to set cipher IV: " << gpg_strerror( err );
     return Buffer(0);

@@ -55,7 +55,7 @@ public:
   void rShift(u_int8_t n);            // LSB on the right side!
   Mpi mul2exp(u_int32_t e) const;     // value * 2^e
   void clearHighBit(u_int32_t n);
-  Buffer getBuf(u_int32_t min_len=0) const;
+  u_int8_t *getBuf(u_int32_t buf_len) const;
   u_int32_t getLen() const;
  
 protected:
