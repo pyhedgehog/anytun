@@ -56,7 +56,7 @@ void SyncSocket::OnAccept()
 void SyncSocket::OnRawData(const char *buf,size_t len)
 //void SyncSocket::OnLine(const std::string& line)
 {
-	return();
+	return;
 	std::stringstream iss;
 	std::cout << "recieved sync inforamtaion:"<< std::endl;
 	for(size_t index=0;index<len;index++)
