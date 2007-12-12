@@ -78,6 +78,8 @@ Options::Options()
   local_addr_ = "";
   local_port_ = 4444;
   local_sync_port_ = 0;
+  remote_sync_port_ = 0;
+  remote_sync_addr_ = "";
   remote_addr_ = "";
   remote_port_ = 4444;
   dev_name_ = "tap";
@@ -107,6 +109,8 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-i","--interface", local_addr_)
     PARSE_SCALAR_PARAM("-p","--port", local_port_)
     PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_port_)
+    PARSE_SCALAR_PARAM("-R","--remote-sync-host", remote_sync_addr_)
+    PARSE_SCALAR_PARAM("-O","--remote-sync-port", remote_sync_port_)
     PARSE_SCALAR_PARAM("-r","--remote-host", remote_addr_)
     PARSE_SCALAR_PARAM("-o","--remote-port", remote_port_)
     PARSE_SCALAR_PARAM("-d","--dev", dev_name_)
@@ -130,10 +134,12 @@ void Options::printUsage()
   std::cout << "       [-i|--interface] <interface>        local interface to bind to" << std::endl;
   std::cout << "       [-p|--port] <port>                  local anycast port to bind to" << std::endl;
   std::cout << "       [-S|--sync-port] <port>             local unicast/sync port to bind to" << std::endl;
-  std::cout << "       [-r|--remote-host] <hostname/ip>    remote host" << std::endl;
+  std::cout << "       [-R|--remote-sync-host] <hostname|ip>    remote unicast/sync host" << std::endl;
+  std::cout << "       [-O|--remote-sync-port] <port>      remote unicast/sync port to bind to" << std::endl;
+  std::cout << "       [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
   std::cout << "       [-d|--dev] <name>                   device name" << std::endl;
-  std::cout << "       [-t|--type] <tun|tap>                   device type" << std::endl;
+  std::cout << "       [-t|--type] <tun|tap>               device type" << std::endl;
   std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
@@ -149,6 +155,8 @@ void Options::printOptions()
   std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
   std::cout << "local_port='" << local_port_ << "'" << std::endl;
   std::cout << "local_sync_port='" << local_sync_port_ << "'" << std::endl;
+  std::cout << "remote_sync_port='" << remote_sync_port_ << "'" << std::endl;
+  std::cout << "remote_sync_addr='" << remote_sync_addr_ << "'" << std::endl;
   std::cout << "remote_addr='" << remote_addr_ << "'" << std::endl;
   std::cout << "remote_port='" << remote_port_ << "'" << std::endl;
   std::cout << "dev_name='" << dev_name_ << "'" << std::endl;
@@ -229,6 +237,30 @@ u_int16_t Options::getLocalSyncPort()
 Options& Options::setLocalSyncPort(u_int16_t l)
 {
   local_sync_port_ = l;
+  return *this;
+}
+
+u_int16_t Options::getRemoteSyncPort()
+{
+  return remote_sync_port_;
+}
+
+Options& Options::setRemoteSyncPort(u_int16_t l)
+{
+  remote_sync_port_ = l;
+  return *this;
+}
+
+std::string Options::getRemoteSyncAddr()
+{
+  Lock lock(mutex);
+  return remote_sync_addr_;
+}
+
+Options& Options::setRemoteSyncAddr(std::string r)
+{
+  Lock lock(mutex);
+  remote_sync_addr_ = r;
   return *this;
 }
 

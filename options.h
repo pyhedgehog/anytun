@@ -50,6 +50,10 @@ public:
   Options& setLocalAddr(std::string l);
   std::string getLocalSyncAddr();
   Options& setLocalSyncAddr(std::string l);
+  std::string getRemoteSyncAddr();
+  Options& setRemoteSyncAddr(std::string l);
+  u_int16_t getRemoteSyncPort();
+  Options& setRemoteSyncPort(u_int16_t l);
   u_int16_t getLocalPort();
   Options& setLocalPort(u_int16_t l);
   std::string getRemoteAddr();
@@ -83,6 +87,8 @@ private:
   std::string local_sync_addr_;
   u_int16_t local_port_;
   u_int16_t local_sync_port_;
+  std::string remote_sync_addr_;
+  u_int16_t remote_sync_port_;
   std::string remote_addr_;
   u_int16_t remote_port_;
   std::string dev_name_;

@@ -216,7 +216,23 @@ void* sender(void* p)
   pthread_exit(NULL);
 }
 
-void* syncReceiver(void* p )
+void* syncConnector(void* p )
+{
+	Param* param = reinterpret_cast<Param*>(p);
+
+	SocketHandler h;
+	SyncSocket sock(h,param->cl);
+	//	sock.EnableSSL();
+	sock.Open( param->opt.getRemoteSyncAddr(), param->opt.getRemoteSyncPort());
+	h.Add(&sock);
+	while (h.GetCount())
+	{
+		h.Select();
+	}
+  pthread_exit(NULL);
+}
+
+void* syncListener(void* p )
 {
 	Param* param = reinterpret_cast<Param*>(p);
 
@@ -224,7 +240,7 @@ void* syncReceiver(void* p )
 	SyncListenSocket<SyncSocket,ConnectionList> l(h,param->cl);
 
 	if (l.Bind(param->opt.getLocalSyncPort()))
-		return(NULL);
+		pthread_exit(NULL);
 	Utility::ResolveLocal(); // resolve local hostname
 	h.Add(&l);
 	h.Select(1,0);
@@ -340,20 +356,27 @@ int main(int argc, char* argv[])
   pthread_create(&senderThread, NULL, sender, &p);  
   pthread_t receiverThread;
   pthread_create(&receiverThread, NULL, receiver, &p);  
-	pthread_t syncReceiverThread;
+	pthread_t syncListenerThread;
+	pthread_t syncConnectorThread;
 	if ( opt.getLocalSyncPort())
-		pthread_create(&syncReceiverThread, NULL, syncReceiver, &p);  
+		pthread_create(&syncListenerThread, NULL, syncListener, &p);  
+	if ( opt.getRemoteSyncPort() && opt.getRemoteSyncAddr() != "")
+		pthread_create(&syncConnectorThread, NULL, syncConnector, &p);  
 
   int ret = sig.run();
 
   pthread_cancel(senderThread);
   pthread_cancel(receiverThread);  
 	if ( opt.getLocalSyncPort())
-	  pthread_cancel(syncReceiverThread);  
+	  pthread_cancel(syncListenerThread);  
+	if ( opt.getRemoteSyncPort() && opt.getRemoteSyncAddr() != "")
+	  pthread_cancel(syncConnectorThread);  
   pthread_join(senderThread, NULL);
   pthread_join(receiverThread, NULL);
 	if ( opt.getLocalSyncPort())
-	  pthread_join(syncReceiverThread, NULL);
+	  pthread_join(syncListenerThread, NULL);
+	if ( opt.getRemoteSyncPort() && opt.getRemoteSyncAddr() != "")
+	  pthread_join(syncConnectorThread, NULL);
 
   delete src;
 
