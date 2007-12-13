@@ -50,6 +50,7 @@ OBJS = anytun.o \
        buffer.o \
        syncBuffer.o \
        packet.o \
+			 plainPacket.o \
        cypher.o \
        authAlgo.o \
 			 authTag.o \
@@ -89,6 +90,9 @@ syncBuffer.o: syncBuffer.cpp syncBuffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 packet.o: packet.cpp packet.h buffer.h
+	$(C++) $(CCFLAGS) $< -c
+
+plainPacket.o: plainPacket.cpp plainPacket.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 cypher.o: cypher.cpp cypher.h buffer.h 
