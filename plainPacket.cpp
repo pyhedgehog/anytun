@@ -31,7 +31,6 @@
 #include <stdexcept>
 #include <iostream>
 #include <arpa/inet.h>
-#include <cstdio>       // for std::memcpy
 
 #include "datatypes.h"
 
@@ -44,7 +43,7 @@ PlainPacket::~PlainPacket()
   buf_ = reinterpret_cast<u_int8_t*>(payload_type_);
 }
 
-PlainPacket::PlainPacket(u_int32_t max_payload_length) : Buffer(payload_length + sizeof(payload_type_t))
+PlainPacket::PlainPacket(u_int32_t max_payload_length) : Buffer(max_payload_length + sizeof(payload_type_t))
 {
   payload_type_ = reinterpret_cast<payload_type_t*>(buf_);
   buf_ = buf_ + sizeof(payload_type_t);
