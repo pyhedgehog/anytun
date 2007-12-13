@@ -1,5 +1,5 @@
-#ifndef _SYNCSOCKET_H
-#define _SYNCSOCKET_H
+#ifndef _SYNCCLIENTSOCKET_H
+#define _SYNCCLIENTSOCKET_H
 
 #include "Sockets/TcpSocket.h"
 #include "Sockets/ISocketHandler.h"
@@ -9,15 +9,14 @@
 using namespace SOCKETS_NAMESPACE;
 #endif // SOCKETS_NAMESPACE
 
-class SyncSocket : public TcpSocket
+class SyncClientSocket : public TcpSocket
 {
 public:
-	SyncSocket(ISocketHandler&,ConnectionList & );
+	SyncClientSocket(ISocketHandler&,ConnectionList & );
 
-	void OnAccept();
-//	void Init();
-
-//	void InitSSLServer();
+	bool OnConnectRetry();
+	void OnReconnect();
+	void OnRawData(const char *buf,size_t len);
 private:
 	ConnectionList & cl_;
 };

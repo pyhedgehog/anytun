@@ -53,6 +53,7 @@
 #include "syncListenSocket.h"
 
 #include "syncSocket.h"
+#include "syncClientSocket.h"
 
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0800
@@ -221,7 +222,7 @@ void* syncConnector(void* p )
 	Param* param = reinterpret_cast<Param*>(p);
 
 	SocketHandler h;
-	SyncSocket sock(h,param->cl);
+	SyncClientSocket sock(h,param->cl);
 	//	sock.EnableSSL();
 	sock.Open( param->opt.getRemoteSyncAddr(), param->opt.getRemoteSyncPort());
 	h.Add(&sock);
