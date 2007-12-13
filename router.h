@@ -41,7 +41,7 @@ class Router
 public:
 	Router(ConnectionList& cl);
 	~Router();
-	void addConnection(ConnectionParam &conn,const std::string &name);
+	void addConnection(ConnectionParam &conn,u_int16_t mux);
 	ConnectionParam getRoute();
 
 private:

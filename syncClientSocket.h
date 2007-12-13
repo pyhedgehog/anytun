@@ -4,6 +4,7 @@
 #include "Sockets/TcpSocket.h"
 #include "Sockets/ISocketHandler.h"
 #include "connectionList.h"
+#include "syncCommand.h"
 
 #ifdef SOCKETS_NAMESPACE
 using namespace SOCKETS_NAMESPACE;

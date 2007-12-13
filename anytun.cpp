@@ -90,7 +90,7 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
-	cl.addConnection(connparam,std::string("default"));
+	cl.addConnection(connparam,0);
 }
 
 
@@ -192,7 +192,11 @@ void* sender(void* p)
 
     if( param->cl.empty())
       continue;
-		ConnectionParam & conn = param->cl.getConnection();
+		//TODO replace 0 with mux
+		ConnectionMap::iterator cit = param->cl.getConnection(0);
+		if(cit!=param->cl.getEnd())
+			continue;
+		ConnectionParam & conn = cit->second;
     // add payload type
     if(param->dev.getType() == TunDevice::TYPE_TUN)
       pack.addPayloadType(PAYLOAD_TYPE_TUN);
@@ -276,7 +280,7 @@ void* receiver(void* p)
 		}
 
 		//TODO Add multi connection support here
-		ConnectionParam & conn = param->cl.getConnection();
+		ConnectionParam & conn = param->cl.getConnection(0)->second;
 
 		if (!checkPacketAuthTag(pack, c, conn))
 			continue;

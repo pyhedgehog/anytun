@@ -41,22 +41,43 @@ ConnectionList::~ConnectionList()
 {
 }
 
-void ConnectionList::addConnection(ConnectionParam &conn, const std::string &name)
+void ConnectionList::addConnection(ConnectionParam &conn, u_int16_t mux )
 {
   Lock lock(mutex_);
 
-  std::pair<ConnectionMap::iterator, bool> ret = connections_.insert(ConnectionMap::value_type(name, conn));
+  std::pair<ConnectionMap::iterator, bool> ret = connections_.insert(ConnectionMap::value_type(mux, conn));
   if(!ret.second)
   {
     connections_.erase(ret.first);
-    connections_.insert(ConnectionMap::value_type(name, conn));
+    connections_.insert(ConnectionMap::value_type(mux, conn));
   }
 }
 
-ConnectionParam & ConnectionList::getConnection()
+const ConnectionMap::iterator ConnectionList::getEnd()
+{
+	return connections_.end();
+}
+
+const ConnectionMap::iterator ConnectionList::getConnection(u_int16_t mux)
 {
 	Lock lock(mutex_);
-	ConnectionMap::iterator it = connections_.begin();
+	ConnectionMap::iterator it = connections_.find(mux);
+	return it;
+}
+
+
+ConnectionParam & ConnectionList::getOrNewConnection(u_int16_t mux)
+{
+	Lock lock(mutex_);
+	ConnectionMap::iterator it = connections_.find(mux);
+	if(it!=connections_.end())
+		return it->second;
+  SeqWindow * seq= new SeqWindow(0);
+  seq_nr_t seq_nr_=0;
+  KeyDerivation * kd = new KeyDerivation;
+  ConnectionParam conn ( (*kd),  (*seq), seq_nr_, "",  0);
+	connections_.insert(ConnectionMap::value_type(mux, conn));
+	it = connections_.find(mux);
 	return it->second;
 }
 

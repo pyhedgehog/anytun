@@ -49,6 +49,7 @@ OBJS = anytun.o \
        packetSource.o \
        buffer.o \
        syncBuffer.o \
+       syncCommand.o \
        packet.o \
 			 plainPacket.o \
        cypher.o \
@@ -111,6 +112,9 @@ mpi.o: mpi.cpp mpi.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncSocket.o: syncSocket.cpp syncSocket.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncCommand.o: syncCommand.cpp syncCommand.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncClientSocket.o: syncClientSocket.cpp syncClientSocket.h

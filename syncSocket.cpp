@@ -9,6 +9,7 @@
 //#include "connectionParam.h"
 #include "Sockets/Utility.h"
 #include "syncSocket.h"
+#include "syncCommand.h"
 #include "buffer.h"
 //#include "log.h"
 
@@ -30,8 +31,8 @@ void SyncSocket::OnAccept()
 	{
 		std::ostringstream sout;
 		boost::archive::text_oarchive oa(sout);
-		const ConnectionParam conn = cl_.getConnection();
-		oa << conn;
+		const SyncCommand scom(cl_,0);
+		oa << scom;
 		Send(sout.str());
 	}
 }

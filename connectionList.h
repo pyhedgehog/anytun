@@ -38,21 +38,23 @@
 #include "datatypes.h"
 #include "connectionParam.h"
 #include "networkAddress.h"
+typedef std::map<u_int16_t, ConnectionParam> ConnectionMap;
 
 class ConnectionList
 {
 public:
 	ConnectionList();
 	~ConnectionList();
-	void addConnection(ConnectionParam &conn, const std::string &name);
-	ConnectionParam & getConnection();
+	void addConnection(ConnectionParam &conn, u_int16_t mux);
+	const ConnectionMap::iterator getConnection(u_int16_t mux);
+	const ConnectionMap::iterator getEnd();
+	ConnectionParam & getOrNewConnection(u_int16_t mux);
 	bool empty();
 	void clear();
 
 private:
   ConnectionList(const ConnectionList &s);
   void operator=(const ConnectionList &s);
-	typedef std::map<std::string, ConnectionParam> ConnectionMap;
 	ConnectionMap connections_;
   Mutex mutex_;
 };

@@ -41,13 +41,13 @@ Router::~Router()
 {
 }
 
-void Router::addConnection(ConnectionParam &conn,const std::string &name)
+void Router::addConnection(ConnectionParam &conn,u_int16_t mux)
 {
-	con_list_.addConnection(conn,name);
+	con_list_.addConnection(conn,mux);
 }
 
 ConnectionParam Router::getRoute()
 {
   Lock lock(mutex_);
-  return con_list_.getConnection();
+  return con_list_.getConnection(0)->second;
 }
