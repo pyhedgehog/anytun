@@ -42,7 +42,6 @@ void SyncClientSocket::OnReconnect()
 void SyncClientSocket::OnRawData(const char *buf,size_t len)
 //void SyncClientSocket::OnLine(const std::string& line)
 {
-	return;
 	std::stringstream iss;
 	std::cout << "recieved sync inforamtaion:"<< std::endl;
 	for(size_t index=0;index<len;index++)
