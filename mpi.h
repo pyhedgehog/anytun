@@ -38,7 +38,8 @@
 
 
 /**
- * This class is a wrapper for the libgcrypt multi precision integer library.
+ * This class is a wrapper for the libgcrypt multi precision integer library [1].<br>
+ * [1] http://www.gnupg.org/documentation/manuals/gcrypt/MPI-library.html
  *
  */
 
@@ -68,7 +69,7 @@ public:
 
   /**
    * returns a new[] u_int8_t* buffer with the MPI value in the 
-   * GCRYMPI_FMT_STD (2-complement stored without a length header).
+   * GCRYMPI_FMT_STD (2-complement stored without a length header).<br>
    * you have to delete it by hand with delete[]!
    * @param buf_len size of the new buffer that is returned
    * @return a byte buffer of size buf_len

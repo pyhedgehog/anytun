@@ -54,12 +54,19 @@ public:
 };
 
 
-// HMAC_SHA1
+/**
+ * HMAC SHA1 Auth Tag Generator Class
+ */
+
 class Sha1AuthAlgo : public AuthAlgo
 {
 public:
   Sha1AuthAlgo();
   ~Sha1AuthAlgo();
+
+  /**
+   *
+   */
   void setKey(Buffer key);
   AuthTag calc(const Buffer& buf);
 protected:

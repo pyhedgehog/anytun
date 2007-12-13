@@ -58,6 +58,9 @@
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0800
 
+#define SESSION_KEYLEN_AUTH 20
+#define SESSION_KEYLEN_ENCR 16
+#define SESSION_KEYLEN_SALT 14
 
 struct Param
 {
@@ -95,17 +98,12 @@ void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn, void* p)
 {
   Param* param = reinterpret_cast<Param*>(p);
   // cypher the packet
-  Buffer tmp_key(16), tmp_salt(14);
-  //TODO fix key derivation!
+  Buffer session_key(SESSION_KEYLEN_ENCR), session_salt(SESSION_KEYLEN_SALT);
+  conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key, session_key.getLength());
+  conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt, session_salt.getLength());
 
-  conn.kd_.generate(label_satp_encryption, conn.seq_nr_, tmp_key, tmp_key.getLength());
-  conn.kd_.generate(label_satp_salt, conn.seq_nr_, tmp_salt, tmp_salt.getLength());
-
-//  Buffer tmp_key(key, sizeof(key));
-//  Buffer tmp_salt(salt, sizeof(salt));
-
-  c.setKey(tmp_key);
-  c.setSalt(tmp_salt);
+  c.setKey(session_key);
+  c.setSalt(session_salt);
 
   cLog.msg(Log::PRIO_NOTICE) << "Send Package: seq: " << conn.seq_nr_ 
                              << ", sID: " << param->opt.getSenderId();
@@ -122,15 +120,12 @@ bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
   pack.removeHeader();
 
   // decypher the packet
-  Buffer tmp_key(16), tmp_salt(14);
-  conn.kd_.generate(label_satp_encryption, seq, tmp_key, tmp_key.getLength());
-  conn.kd_.generate(label_satp_salt, seq, tmp_salt, tmp_salt.getLength());
+  Buffer session_key(SESSION_KEYLEN_SALT), session_salt(SESSION_KEYLEN_SALT);
+  conn.kd_.generate(LABEL_SATP_ENCRYPTION, seq, session_key, session_key.getLength());
+  conn.kd_.generate(LABEL_SATP_SALT, seq, session_salt, session_salt.getLength());
 
-//  Buffer tmp_key(key, sizeof(key));
-//  Buffer tmp_salt(salt, sizeof(salt));
-
-  c.setKey(tmp_key);
-  c.setSalt(tmp_salt);
+  c.setKey(session_key);
+  c.setSalt(session_salt);
   c.cypher(pack, seq, sid);
 
   cLog.msg(Log::PRIO_NOTICE) << "Received Package: seq: " << seq 

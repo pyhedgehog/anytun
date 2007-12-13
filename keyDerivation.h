@@ -42,9 +42,9 @@
 
 
 typedef enum {
-  label_satp_encryption  = 0x00,
-  label_satp_msg_auth    = 0x01,
-  label_satp_salt        = 0x02,
+  LABEL_SATP_ENCRYPTION  = 0x00,
+  LABEL_SATP_MSG_AUTH    = 0x01,
+  LABEL_SATP_SALT        = 0x02,
 } satp_prf_label;
 
 

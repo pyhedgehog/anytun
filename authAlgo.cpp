@@ -31,6 +31,7 @@
 #include "authAlgo.h"
 #include "log.h"
 #include "buffer.h"
+#include "authTag.h"
 #include "threadUtils.hpp"
 
 #include <gcrypt.h>
@@ -90,7 +91,7 @@ AuthTag Sha1AuthAlgo::calc(const Buffer& buf)
 {
   Lock lock(mutex_);
   // gcry_error_t err;
-  Buffer hmac(10);      // 10byte
+  AuthTag hmac(10);      // 10byte
   gcry_mpi_t tmp = gcry_mpi_new(160);   // 20byte
 
   gcry_md_write( ctx_, static_cast<Buffer>(buf).getBuf(), buf.getLength() );
