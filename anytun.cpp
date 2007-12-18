@@ -194,7 +194,7 @@ void* sender(void* p)
       continue;
 		//TODO replace 0 with mux
 		ConnectionMap::iterator cit = param->cl.getConnection(0);
-		if(cit!=param->cl.getEnd())
+		if(cit==param->cl.getEnd())
 			continue;
 		ConnectionParam & conn = cit->second;
     // add payload type
