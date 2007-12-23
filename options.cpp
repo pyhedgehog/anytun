@@ -29,6 +29,7 @@
  */
 
 #include <iostream>
+#include <queue>
 #include <string>
 #include <sstream>
 
@@ -70,6 +71,19 @@
       i+=2;                                              \
     }
 
+#define PARSE_SCALAR_CSLIST(SHORT, LONG, LIST) \
+    else if(str == SHORT || str == LONG)                 \
+    {                                                    \
+      if(argc < 1 || argv[i+1][0] == '-')                \
+        return false;                                    \
+      std::stringstream tmp;                             \
+      tmp << argv[i+1];                                  \
+    	std::string tmp_line;                              \
+		  getline(tmp,tmp_line,',');                         \
+		  LIST.push(tmp_line);                               \
+      argc--;                                            \
+      i++;                                               \
+    }
 
 Options::Options()
 {
@@ -97,7 +111,7 @@ bool Options::parse(int argc, char* argv[])
 
   progname_ = argv[0];
   argc--;
-
+  std::queue<std::string> host_port_queue;
   for(int i=1; argc > 0; ++i)
   {
     std::string str(argv[i]);
@@ -119,9 +133,21 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
     PARSE_SCALAR_PARAM("-c","--cypher", cypher_)
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
+		PARSE_SCALAR_CSLIST("-M","--sync-hosts", host_port_queue)
     else 
       return false;
   }
+	while(!host_port_queue.empty())
+	{
+		std::stringstream tmp_stream(host_port_queue.front());
+		std::string host;
+		u_int16_t port;
+		getline(tmp_stream,host,':');
+		if(!tmp_stream.good())
+			return false;
+		tmp_stream >> port;
+		host_port_queue.pop();
+	}
   return true;
 }
 

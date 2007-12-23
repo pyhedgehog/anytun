@@ -296,6 +296,7 @@ void* receiver(void* p)
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host ip changed " << remote_host << ":" << remote_port;
 			conn.remote_host_=remote_host;
 			conn.remote_port_=remote_port;
+			param->queue.push(SyncCommand(param->cl,0));
 		}	
 
 		//Replay Protection
