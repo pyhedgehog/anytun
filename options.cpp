@@ -76,11 +76,13 @@
     {                                                    \
       if(argc < 1 || argv[i+1][0] == '-')                \
         return false;                                    \
-      std::stringstream tmp;                             \
-      tmp << argv[i+1];                                  \
-    	std::string tmp_line;                              \
-		  getline(tmp,tmp_line,',');                         \
-		  LIST.push(tmp_line);                               \
+      std::stringstream tmp(argv[i+1]);                  \
+			while (tmp.good())                                 \
+			{                                                  \
+				std::string tmp_line;                            \
+				getline(tmp,tmp_line,',');                       \
+				LIST.push(tmp_line);                             \
+			}                                                  \
       argc--;                                            \
       i++;                                               \
     }
@@ -140,13 +142,13 @@ bool Options::parse(int argc, char* argv[])
 	while(!host_port_queue.empty())
 	{
 		std::stringstream tmp_stream(host_port_queue.front());
-		std::string host;
-		u_int16_t port;
-		getline(tmp_stream,host,':');
+		OptionConnectTo oct;
+		getline(tmp_stream,oct.host,':');
 		if(!tmp_stream.good())
 			return false;
-		tmp_stream >> port;
+		tmp_stream >> oct.port;
 		host_port_queue.pop();
+		connect_to_.push_back(oct);
 	}
   return true;
 }
@@ -158,10 +160,10 @@ void Options::printUsage()
 //  std::cout << "       [-f|--config] <file>                the config file" << std::endl;
   std::cout << "       [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
   std::cout << "       [-i|--interface] <interface>        local interface to bind to" << std::endl;
-  std::cout << "       [-p|--port] <port>                  local anycast port to bind to" << std::endl;
-  std::cout << "       [-S|--sync-port] <port>             local unicast/sync port to bind to" << std::endl;
-  std::cout << "       [-R|--remote-sync-host] <hostname|ip>    remote unicast/sync host" << std::endl;
-  std::cout << "       [-O|--remote-sync-port] <port>      remote unicast/sync port to bind to" << std::endl;
+  std::cout << "       [-p|--port] <port>                  local anycast(data) port to bind to" << std::endl;
+  std::cout << "       [-S|--sync-port] <port>             local unicast(sync) port to bind to" << std::endl;
+  std::cout << "       [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]"<< std::endl;
+	std::cout << "                                           remote hosts to sync with" << std::endl;
   std::cout << "       [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
   std::cout << "       [-d|--dev] <name>                   device name" << std::endl;
@@ -181,8 +183,6 @@ void Options::printOptions()
   std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
   std::cout << "local_port='" << local_port_ << "'" << std::endl;
   std::cout << "local_sync_port='" << local_sync_port_ << "'" << std::endl;
-  std::cout << "remote_sync_port='" << remote_sync_port_ << "'" << std::endl;
-  std::cout << "remote_sync_addr='" << remote_sync_addr_ << "'" << std::endl;
   std::cout << "remote_addr='" << remote_addr_ << "'" << std::endl;
   std::cout << "remote_port='" << remote_port_ << "'" << std::endl;
   std::cout << "dev_name='" << dev_name_ << "'" << std::endl;
@@ -200,11 +200,18 @@ std::string Options::getProgname()
   return progname_;
 }
 
+
 Options& Options::setProgname(std::string p)
 {
   Lock lock(mutex);
   progname_ = p;
   return *this;
+}
+
+ConnectToList Options::getConnectTo()
+{
+  Lock lock(mutex);
+	return connect_to_;
 }
 
 sender_id_t Options::getSenderId()

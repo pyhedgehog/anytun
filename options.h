@@ -33,6 +33,15 @@
 
 #include "datatypes.h"
 #include "threadUtils.hpp"
+#include <list>
+
+typedef struct OptionConnectTo
+{
+  std::string host;
+	uint16_t port;
+};
+
+typedef std::list<OptionConnectTo>  ConnectToList;
 
 class Options
 {
@@ -77,10 +86,12 @@ public:
   Options& setCypher(std::string c);
   std::string getAuthAlgo();
   Options& setAuthAlgo(std::string a);
+	ConnectToList getConnectTo();
 
 private:
   Mutex mutex;
 
+	ConnectToList connect_to_;
   std::string progname_;
   sender_id_t sender_id_;
   std::string local_addr_;

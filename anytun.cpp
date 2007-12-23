@@ -57,21 +57,14 @@
 #include "syncClientSocket.h"
 #include "syncCommand.h"
 
+#include "threadParam.h"
+
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0800
 
 #define SESSION_KEYLEN_AUTH 20
 #define SESSION_KEYLEN_ENCR 16
 #define SESSION_KEYLEN_SALT 14
-
-struct Param
-{
-  Options& opt;
-  TunDevice& dev;
-  PacketSource& src;
-	ConnectionList& cl;
-	SyncQueue & queue;
-};
 
 uint8_t key[] = {
  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
@@ -100,7 +93,7 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 
 void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn, void* p)
 {
-  Param* param = reinterpret_cast<Param*>(p);
+  ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
   // cypher the packet
   Buffer session_key(SESSION_KEYLEN_ENCR), session_salt(SESSION_KEYLEN_SALT);
   conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key, session_key.getLength());
@@ -178,7 +171,7 @@ bool checkPacketSeqNr(Packet & pack,ConnectionParam & conn)
 
 void* sender(void* p)
 {
-  Param* param = reinterpret_cast<Param*>(p);
+  ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 	//TODO make Cypher selectable with command line option
 //	NullCypher c;
   AesIcmCypher c;
@@ -222,12 +215,12 @@ void* sender(void* p)
 
 void* syncConnector(void* p )
 {
-	Param* param = reinterpret_cast<Param*>(p);
+	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
 	SocketHandler h;
 	SyncClientSocket sock(h,param->cl);
 	//	sock.EnableSSL();
-	sock.Open( param->opt.getRemoteSyncAddr(), param->opt.getRemoteSyncPort());
+	sock.Open( param->connto.host, param->connto.port);
 	h.Add(&sock);
 	while (h.GetCount())
 	{
@@ -238,7 +231,7 @@ void* syncConnector(void* p )
 
 void* syncListener(void* p )
 {
-	Param* param = reinterpret_cast<Param*>(p);
+	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
 	SyncSocketHandler h(param->queue);
 	SyncListenSocket<SyncSocket,ConnectionList> l(h,param->cl);
@@ -256,7 +249,7 @@ void* syncListener(void* p )
 
 void* receiver(void* p)
 {
-  Param* param = reinterpret_cast<Param*>(p);  
+  ThreadParam* param = reinterpret_cast<ThreadParam*>(p);  
 //  NullCypher c;
   AesIcmCypher c;
 //  NullAuthAlgo a;
@@ -344,14 +337,14 @@ int main(int argc, char* argv[])
     src = new UDPPacketSource(opt.getLocalAddr(), opt.getLocalPort());
 
 	ConnectionList cl;
-
+	ConnectToList connect_to = opt.getConnectTo();
 	SyncQueue queue;
 
 	if(opt.getRemoteAddr() != "")
 		createConnection(opt.getRemoteAddr(),opt.getRemotePort(),cl,opt.getSeqWindowSize(), queue);
   
 
-  struct Param p = {opt, dev, *src, cl, queue};
+  ThreadParam p(opt, dev, *src, cl, queue,*(new OptionConnectTo()));
     
   cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
   cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
@@ -364,26 +357,34 @@ int main(int argc, char* argv[])
   pthread_t receiverThread;
   pthread_create(&receiverThread, NULL, receiver, &p);  
 	pthread_t syncListenerThread;
-	pthread_t syncConnectorThread;
+
 	if ( opt.getLocalSyncPort())
 		pthread_create(&syncListenerThread, NULL, syncListener, &p);  
-	if ( opt.getRemoteSyncPort() && opt.getRemoteSyncAddr() != "")
-		pthread_create(&syncConnectorThread, NULL, syncConnector, &p);  
 
-  int ret = sig.run();
+	std::list<pthread_t> connectThreads;
+	for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) 
+	{ 
+	 connectThreads.push_back(pthread_t());
+	 ThreadParam * point = new ThreadParam(opt, dev, *src, cl, queue,*it);
+	 pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
+	}
+  
+	int ret = sig.run();
 
   pthread_cancel(senderThread);
   pthread_cancel(receiverThread);  
 	if ( opt.getLocalSyncPort())
 	  pthread_cancel(syncListenerThread);  
-	if ( opt.getRemoteSyncPort() && opt.getRemoteSyncAddr() != "")
-	  pthread_cancel(syncConnectorThread);  
+	for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)
+		pthread_cancel(*it);
+
   pthread_join(senderThread, NULL);
   pthread_join(receiverThread, NULL);
 	if ( opt.getLocalSyncPort())
 	  pthread_join(syncListenerThread, NULL);
-	if ( opt.getRemoteSyncPort() && opt.getRemoteSyncAddr() != "")
-	  pthread_join(syncConnectorThread, NULL);
+
+	for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)
+	  pthread_join(*it, NULL);
 
   delete src;
 
