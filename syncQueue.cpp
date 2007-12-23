@@ -31,7 +31,24 @@
 #include "threadUtils.hpp"
 #include "datatypes.h"
 
+#include <sstream>
+#include <iostream>
+#include <string>
+
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
+
 #include "syncQueue.h"
+void SyncQueue::push(const SyncCommand & scom )
+{
+	std::ostringstream sout;
+	boost::archive::text_oarchive oa(sout);
+	oa << scom;
+
+  Lock lock(mutex_);
+	queue_.push(sout.str());
+}
 
 void SyncQueue::push(const std::string & str )
 {

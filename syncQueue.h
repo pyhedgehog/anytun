@@ -34,6 +34,8 @@
 #include <deque>
 #include <queue>
 
+#include "syncCommand.h"
+
 #include "threadUtils.hpp"
 #include "datatypes.h"
 
@@ -44,6 +46,7 @@ public:
 	~SyncQueue() {};
 
 	void push(const std::string & );
+	void push(const SyncCommand & );
 	std::string pop();
 	bool empty();
 

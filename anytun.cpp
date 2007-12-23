@@ -55,6 +55,7 @@
 
 #include "syncSocket.h"
 #include "syncClientSocket.h"
+#include "syncCommand.h"
 
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0800
@@ -83,7 +84,7 @@ uint8_t salt[] = {
  'i', 'j', 'k', 'l', 'm', 'n'
 };
 
-void createConnection(const std::string & remote_host , u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize)
+void createConnection(const std::string & remote_host , u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue)
 {
 
 	SeqWindow * seq= new SeqWindow(seqSize);
@@ -93,6 +94,7 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
 	cl.addConnection(connparam,0);
+	queue.push(SyncCommand(cl,0));
 }
 
 
@@ -278,7 +280,7 @@ void* receiver(void* p)
     if(param->opt.getRemoteAddr() == "" && param->cl.empty())
 		{
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
-			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize());
+			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize(),param->queue);
 		}
 
 		//TODO Add multi connection support here
@@ -342,10 +344,11 @@ int main(int argc, char* argv[])
 
 	ConnectionList cl;
 
-	if(opt.getRemoteAddr() != "")
-		createConnection(opt.getRemoteAddr(),opt.getRemotePort(),cl,opt.getSeqWindowSize());
-  
 	SyncQueue queue;
+
+	if(opt.getRemoteAddr() != "")
+		createConnection(opt.getRemoteAddr(),opt.getRemotePort(),cl,opt.getSeqWindowSize(), queue);
+  
 
   struct Param p = {opt, dev, *src, cl, queue};
     
