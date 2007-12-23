@@ -30,7 +30,8 @@ int SyncSocketHandler::Select(long sec,long usec)
 			Socket *p = (*it).second;
 			TcpSocket *p3 = dynamic_cast<TcpSocket *>(p);
 			//SyncListenSocket<SyncSocket,ConnectionList> *p4 = dynamic_cast<SyncListenSocket<SyncSocket,ConnectionList> *>(p);
-			p3->Send(sendstr);
+			if (p3)
+				p3->Send(sendstr);
 		}
 	}
 	return SocketHandler::Select(sec,usec);
