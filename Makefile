@@ -64,7 +64,9 @@ OBJS = anytun.o \
 			 router.o \
        signalController.o \
        syncSocket.o \
+       syncSocketHandler.o \
        syncClientSocket.o \
+       syncQueue.o \
        log.o \
        options.o \
        seqWindow.o \
@@ -114,10 +116,16 @@ mpi.o: mpi.cpp mpi.h
 syncSocket.o: syncSocket.cpp syncSocket.h
 	$(C++) $(CCFLAGS) $< -c
 
+syncSocketHandler.o: syncSocketHandler.cpp syncSocketHandler.h
+	$(C++) $(CCFLAGS) $< -c
+
 syncCommand.o: syncCommand.cpp syncCommand.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncClientSocket.o: syncClientSocket.cpp syncClientSocket.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncQueue.o: syncQueue.cpp syncQueue.h
 	$(C++) $(CCFLAGS) $< -c
 
 signalController.o: signalController.cpp signalController.h

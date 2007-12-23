@@ -49,7 +49,8 @@
 #include "seqWindow.h"
 #include "connectionList.h"
 
-#include "Sockets/SocketHandler.h"
+#include "syncQueue.h"
+#include "syncSocketHandler.h"
 #include "syncListenSocket.h"
 
 #include "syncSocket.h"
@@ -68,6 +69,7 @@ struct Param
   TunDevice& dev;
   PacketSource& src;
 	ConnectionList& cl;
+	SyncQueue & queue;
 };
 
 uint8_t key[] = {
@@ -236,7 +238,7 @@ void* syncListener(void* p )
 {
 	Param* param = reinterpret_cast<Param*>(p);
 
-	SOCKETS_NAMESPACE::SocketHandler h;
+	SyncSocketHandler h(param->queue);
 	SyncListenSocket<SyncSocket,ConnectionList> l(h,param->cl);
 
 	if (l.Bind(param->opt.getLocalSyncPort()))
@@ -343,8 +345,9 @@ int main(int argc, char* argv[])
 	if(opt.getRemoteAddr() != "")
 		createConnection(opt.getRemoteAddr(),opt.getRemotePort(),cl,opt.getSeqWindowSize());
   
+	SyncQueue queue;
 
-  struct Param p = {opt, dev, *src, cl};
+  struct Param p = {opt, dev, *src, cl, queue};
     
   cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
   cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
