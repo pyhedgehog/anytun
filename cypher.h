@@ -31,14 +31,10 @@
 #ifndef _CYPHER_H_
 #define _CYPHER_H_
 
-
-
 #include "datatypes.h"
 #include "buffer.h"
 
-extern "C" {
 #include <gcrypt.h>
-}
 
 
 class Cypher
@@ -49,17 +45,16 @@ public:
  
   void setKey(Buffer key) {};
   void setSalt(Buffer salt) {};
-  void cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id);
-  
-protected:
-  void exor(Buffer& buf, const Buffer& bit_stream);
-  virtual Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) = 0;
+  virtual void cypher(Buffer& in, Buffer& out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) {};
 };
 
 class NullCypher : public Cypher
 {
+public:
+  NullCypher() {};
+  ~NullCypher() {};
 protected:
-  Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
+  void cypher(Buffer& in, Buffer& out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
 };
 
 class AesIcmCypher : public Cypher
@@ -69,17 +64,14 @@ public:
   ~AesIcmCypher();
   void setKey(Buffer key);
   void setSalt(Buffer salt);
+  void cypher(Buffer& in, Buffer& out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
 
   static const char* MIN_GCRYPT_VERSION;
   static const u_int32_t GCRYPT_SEC_MEM = 16384;    // 16k secure memory
 
 protected:
-  Buffer getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
   gcry_cipher_hd_t cipher_;
   Buffer salt_;
-
-private:
-  static bool gcrypt_initialized_;
 };
 
 

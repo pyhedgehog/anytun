@@ -30,18 +30,20 @@
 
 #include <iostream>
 #include <poll.h>
-#include <gcrypt.h>
-#include <cerrno>
+
+#include <gcrypt.h>   // for thread safe libgcrypt initialisation
+#include <cerrno>     // for ENOMEM
 
 #include "datatypes.h"
 
 #include "log.h"
 #include "buffer.h"
-#include "packet.h"
+#include "plainPacket.h"
+#include "encryptedPacket.h"
 #include "cypher.h"
 #include "keyDerivation.h"
 #include "authAlgo.h"
-//#include "authTag.h"
+#include "authTag.h"
 #include "signalController.h"
 #include "packetSource.h"
 #include "tunDevice.h"
@@ -91,73 +93,21 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 }
 
 
-void encryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn, void* p)
+void addPacketAuthTag(EncryptedPacket& pack, AuthAlgo& a, ConnectionParam& conn)
 {
-  ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
-  // cypher the packet
-  Buffer session_key(SESSION_KEYLEN_ENCR), session_salt(SESSION_KEYLEN_SALT);
-  conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key, session_key.getLength());
-  conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt, session_salt.getLength());
-
-  c.setKey(session_key);
-  c.setSalt(session_salt);
-
-  cLog.msg(Log::PRIO_NOTICE) << "Send Package: seq: " << conn.seq_nr_ 
-                             << ", sID: " << param->opt.getSenderId();
-  //cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getHexDump();
-
-  c.cypher(pack, conn.seq_nr_, param->opt.getSenderId());
+  AuthTag at = a.calc(pack);
+  pack.setAuthTag( at );
 }
 
-bool decryptPacket(Packet & pack, Cypher & c, ConnectionParam & conn)
+bool checkPacketAuthTag(EncryptedPacket& pack, AuthAlgo& a, ConnectionParam & conn)
 {
-  u_int16_t sid = pack.getSenderId();
-  u_int16_t seq = pack.getSeqNr();
-
-  pack.removeHeader();
-
-  // decypher the packet
-  Buffer session_key(SESSION_KEYLEN_SALT), session_salt(SESSION_KEYLEN_SALT);
-  conn.kd_.generate(LABEL_SATP_ENCRYPTION, seq, session_key, session_key.getLength());
-  conn.kd_.generate(LABEL_SATP_SALT, seq, session_salt, session_salt.getLength());
-
-  c.setKey(session_key);
-  c.setSalt(session_salt);
-  c.cypher(pack, seq, sid);
-
-  cLog.msg(Log::PRIO_NOTICE) << "Received Package: seq: " << seq 
-                             << ", sID: " << sid;
-  //cLog.msg(Log::PRIO_NOTICE) << "Package dump: " << pack.getHexDump();
-
-  return true;
+  // check auth_tag and remove it
+  AuthTag at = pack.getAuthTag();
+  return (at == a.calc(pack));
 }
 
-void addPacketAuthTag(Packet & pack, Cypher & c, ConnectionParam & conn)
+bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)
 {
-
-//    // calc auth_tag and add it to the packet
-//    AuthTag at = a.calc(pack);
-//    if(at != AuthTag(0)) {
-//      //auth_tag_t at = a.calc(pack);
-//      pack.addAuthTag(at);
-//    }
-//
-    // send it out to remote host
-}
-
-bool checkPacketAuthTag(Packet & pack, Cypher & c, ConnectionParam & conn)
-{
-//    // check auth_tag and remove it
-//    AuthTag at = pack.getAuthTag();
-    pack.removeAuthTag();
-  //return at == a.calc(pack);
-	return true;
-}
-
-bool checkPacketSeqNr(Packet & pack,ConnectionParam & conn)
-{
-// 	u_int16_t sid = pack.getSenderId();
-// 	u_int16_t seq = pack.getSeqNr();
 	// compare sender_id and seq with window
 	if(conn.seq_window_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
 	{
@@ -173,42 +123,53 @@ void* sender(void* p)
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 	//TODO make Cypher selectable with command line option
-//	NullCypher c;
   AesIcmCypher c;
-//  NullAuthAlgo a;
+  Sha1AuthAlgo a;
 
+  //TODO make pack global, reduce dynamic memory!
+  PlainPacket plain_packet(1600); // TODO: fix me... mtu size
+  EncryptedPacket packet(1600);
+
+  Buffer session_key(SESSION_KEYLEN_ENCR), session_salt(SESSION_KEYLEN_SALT);
+
+  //TODO replace mux
+  u_int16_t mux = 0;
   while(1)
   {
-		//TODO make pack global, reduce dynamic memory!
-    Packet pack(1600); // fix me... mtu size
-		
+    packet.setLength( packet.getSize() );
+    plain_packet.setLength( plain_packet.getSize() );
+
     // read packet from device
-    int len = param->dev.read(pack);
-		//TODO remove, no dynamic memory resizing
-    pack.resizeBack(len);
+    u_int32_t len = param->dev.read(plain_packet);
+    plain_packet.setLength(len);
 
     if( param->cl.empty())
       continue;
-		//TODO replace 0 with mux
-		ConnectionMap::iterator cit = param->cl.getConnection(0);
+		ConnectionMap::iterator cit = param->cl.getConnection(mux);
 		if(cit==param->cl.getEnd())
 			continue;
 		ConnectionParam & conn = cit->second;
+
     // add payload type
     if(param->dev.getType() == TunDevice::TYPE_TUN)
-      pack.addPayloadType(PAYLOAD_TYPE_TUN);
+      plain_packet.setPayloadType(PAYLOAD_TYPE_TUN);
     else if(param->dev.getType() == TunDevice::TYPE_TAP)
-      pack.addPayloadType(PAYLOAD_TYPE_TAP);
+      plain_packet.setPayloadType(PAYLOAD_TYPE_TAP);
     else 
-      pack.addPayloadType(0);
+      plain_packet.setPayloadType(0);
 
-		encryptPacket(pack, c, conn, param);
+    // encrypt packet
+    conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key, session_key.getLength());
+    conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt, session_salt.getLength());
+    c.setKey(session_key);
+    c.setSalt(session_salt);
+    c.cypher(packet, plain_packet, plain_packet.getLength(), conn.seq_nr_, param->opt.getSenderId());
 
-    pack.addHeader(conn.seq_nr_, param->opt.getSenderId());
+    packet.setHeader(conn.seq_nr_, param->opt.getSenderId(), mux);
     conn.seq_nr_++;
 
-		addPacketAuthTag(pack, c, conn);
-    param->src.send(pack, conn.remote_host_, conn.remote_port_);
+		addPacketAuthTag(packet, a, conn);
+    param->src.send(packet, conn.remote_host_, conn.remote_port_);
   }
   pthread_exit(NULL);
 }
@@ -250,22 +211,24 @@ void* syncListener(void* p )
 void* receiver(void* p)
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);  
-//  NullCypher c;
   AesIcmCypher c;
-//  NullAuthAlgo a;
-  
+  Sha1AuthAlgo a;
+
+  EncryptedPacket packet(1600);     // TODO: dynamic mtu size
+  PlainPacket plain_packet(1600);
+  Buffer session_key(SESSION_KEYLEN_SALT), session_salt(SESSION_KEYLEN_SALT);
+
   while(1)
   {
     string remote_host;
     u_int16_t remote_port;
-        //    u_int16_t sid = 0, seq = 0;
-    Packet pack(1600);  // fix me... mtu size
+    packet.setLength( packet.getSize() );
+    plain_packet.setLength( plain_packet.getSize() );
+    //    u_int16_t sid = 0, seq = 0;
 
     // read packet from socket
-    u_int32_t len = param->src.recv(pack, remote_host, remote_port);
-    pack.resizeBack(len);
-    pack.withPayloadType(true).withHeader(true).withAuthTag(false);
-
+    u_int32_t len = param->src.recv(packet, remote_host, remote_port);
+    packet.setLength(len);
 
     // autodetect peer
 		// TODO check auth tag first
@@ -279,7 +242,7 @@ void* receiver(void* p)
 		//TODO Add multi connection support here
 		ConnectionParam & conn = param->cl.getConnection(0)->second;
 
-		if (!checkPacketAuthTag(pack, c, conn))
+		if(!checkPacketAuthTag(packet, a, conn))
 			continue;
 
 		//Allow dynamic IP changes 
@@ -292,23 +255,29 @@ void* receiver(void* p)
 			param->queue.push(SyncCommand(param->cl,0));
 		}	
 
-		//Replay Protection
-		if (!checkPacketSeqNr(pack,conn))
+		// Replay Protection
+		if (!checkPacketSeqNr(packet, conn))
 			continue;
 
-		if (!decryptPacket(pack, c, conn))
-			continue;
-    // check payload_type and remove it
-    if((param->dev.getType() == TunDevice::TYPE_TUN && pack.getPayloadType() != PAYLOAD_TYPE_TUN) ||
-       (param->dev.getType() == TunDevice::TYPE_TAP && pack.getPayloadType() != PAYLOAD_TYPE_TAP))
-      continue;
-    pack.removePayloadType();
+    // decypher the packet
+    conn.kd_.generate(LABEL_SATP_ENCRYPTION, packet.getSeqNr(), session_key, session_key.getLength());
+    conn.kd_.generate(LABEL_SATP_SALT, packet.getSeqNr(), session_salt, session_salt.getLength());
+    c.setKey(session_key);
+    c.setSalt(session_salt);
+    c.cypher(plain_packet, packet, packet.getLength(), packet.getSeqNr(), packet.getSenderId());
     
+    // check payload_type and remove it
+    if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||
+       (param->dev.getType() == TunDevice::TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
+      continue;
+
     // write it on the device
-    param->dev.write(pack);
+    param->dev.write(plain_packet);
   }
   pthread_exit(NULL);
 }
+
+
 
 extern "C" {
 GCRY_THREAD_OPTION_PTHREAD_IMPL;

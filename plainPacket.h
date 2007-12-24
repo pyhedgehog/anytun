@@ -46,24 +46,52 @@ public:
   ~PlainPacket();
 
   /**
-   * Packet Constructor
-   * @param max_payload_length Payload Length
+   * Packet constructor
+   * @param max_payload_length maximum payload length
    */
   PlainPacket(u_int32_t max_payload_length);
 
+  /**
+   * Get the payload type
+   * @return the id of the payload type 
+   */
   payload_type_t getPayloadType() const;
+
+  /**
+   * Set the payload type
+   * @param payload_type payload type id
+   */
   void setPayloadType(payload_type_t payload_type);
 
-//  bool hasPayloadType() const;
-//  Packet& withPayloadType(bool b);
-//  payload_type_t getPayloadType() const;  
-//  Packet& addPayloadType(payload_type_t payload_type);
-//  Packet& removePayloadType();
-  
+  /**
+   * Set the real payload length
+   * @param length the real payload length
+   */
+  void setRealPayloadLengt(u_int32_t length);
+
+  /**
+   * Get the real payload length
+   * @return the real length of the payload
+   */
+  u_int32_t getRealPayloadLength();
+
+  /**
+   * Set the length of the payload
+   * @param length length of the payload
+   */
+  void setLength(u_int32_t length);
+
+  /**
+   * Get the size of the allocated memory for the payload
+   * @return maximum size of payload
+   */
+  u_int32_t getSize() const; 
+
 private:
   PlainPacket();
   PlainPacket(const PlainPacket &src);
   payload_type_t* payload_type_;
+  u_int32_t size_;
 };
 
 #endif

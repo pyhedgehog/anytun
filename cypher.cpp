@@ -35,34 +35,19 @@
 #include <gcrypt.h>
 
 #include "cypher.h"
-#include "keyDerivation.h"
 #include "mpi.h"
 #include "log.h"
 
 
 
-void Cypher::cypher(Buffer& buf, seq_nr_t seq_nr, sender_id_t sender_id)
-{
-  Buffer stream = getBitStream(buf.getLength(), seq_nr, sender_id);
-  exor(buf, stream);
-}
-
-void Cypher::exor(Buffer& buf, const Buffer& bit_stream)
+void NullCypher::cypher(Buffer& out, Buffer& in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
   try
   {
-    for(u_int32_t i; i<buf.getLength(); ++i)
-      buf[i] ^= bit_stream[i];
+    for(u_int32_t i; i<length; ++i)
+      out[i] = in[i];
   }
   catch(std::out_of_range& o) {}
-}
-
-Buffer NullCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
-{
-  Buffer buf(length);
-  for(u_int32_t i; i<length; ++i)
-    buf[i] = 0;
-  return buf;
 }
 
 const char* AesIcmCypher::MIN_GCRYPT_VERSION = "1.2.3";
@@ -127,18 +112,17 @@ void AesIcmCypher::setSalt(Buffer salt)
   salt_ = salt;
 }
 
-Buffer AesIcmCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
+void AesIcmCypher::cypher(Buffer& out, Buffer& in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
   gcry_error_t err;
 
-  Buffer buf(length);
-
-  //  // set IV
+  // set the IV
+  //==========================================================================
   //  //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
   //  //  SRTP packet index i, and the SRTP session salting key k_s, as below.
   //  //
   //  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
-  //  // sizeof(k_s) = 112 bit, random
+  //  //  sizeof(k_s) = 112 bit, random
 
   Mpi iv(128);
   Mpi salt = Mpi(salt_.getBuf(), salt_.getLength());
@@ -152,21 +136,19 @@ Buffer AesIcmCypher::getBitStream(u_int32_t length, seq_nr_t seq_nr, sender_id_t
   delete[] iv_buf;
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to set cipher IV: " << gpg_strerror( err );
-    return Buffer(0);
+    return;
   }
 
   err = gcry_cipher_reset( cipher_ );
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to reset cipher: " << gpg_strerror( err );
-    return Buffer(0);
+    return;
   }
 
-  err = gcry_cipher_encrypt( cipher_, buf, buf.getLength(), 0, 0 );
+  err = gcry_cipher_encrypt( cipher_, out, out.getLength(), in, in.getLength() );
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to generate cipher bitstream: " << gpg_strerror( err );
-    return Buffer(0);
+    return;
   }
-
-  return buf;
 }
 

@@ -52,6 +52,7 @@ OBJS = anytun.o \
        syncCommand.o \
        packet.o \
 			 plainPacket.o \
+			 encryptedPacket.o \
        cypher.o \
        authAlgo.o \
 			 authTag.o \
@@ -96,6 +97,9 @@ packet.o: packet.cpp packet.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 plainPacket.o: plainPacket.cpp plainPacket.h buffer.h
+	$(C++) $(CCFLAGS) $< -c
+
+encryptedPacket.o: encryptedPacket.cpp encryptedPacket.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 cypher.o: cypher.cpp cypher.h buffer.h 

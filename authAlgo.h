@@ -44,7 +44,7 @@ public:
   AuthAlgo() {};
   virtual ~AuthAlgo() {};
 
-  virtual AuthTag calc(const Buffer& buf) = 0;
+  virtual AuthTag calc(const Buffer& buf) { return AuthTag(0); };
 };
 
 class NullAuthAlgo : public AuthAlgo
@@ -65,9 +65,16 @@ public:
   ~Sha1AuthAlgo();
 
   /**
-   *
+   * set the key for the auth algo
+   * @param key key for hmac sha1 calculation
    */
   void setKey(Buffer key);
+
+  /**
+   * calculate the sha1 hmac
+   * @param buf buffer for message digest
+   * @return sha1 hmac
+   */
   AuthTag calc(const Buffer& buf);
 protected:
   static const char* MIN_GCRYPT_VERSION;

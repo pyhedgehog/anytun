@@ -44,6 +44,7 @@ AuthTag NullAuthAlgo::calc(const Buffer& buf)
 
 const char* Sha1AuthAlgo::MIN_GCRYPT_VERSION = "1.2.3";
 
+
 // HMAC_SHA1
 Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
 {

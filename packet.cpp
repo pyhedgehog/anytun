@@ -46,11 +46,12 @@ Packet::Packet()
   has_auth_tag_ = false;                
 }
 
-Packet::Packet(u_int32_t length) : Buffer(length)
+Packet::Packet(u_int32_t payload_length) 
+        : Buffer(payload_length + sizeof(struct HeaderStruct) + sizeof(payload_type_t) + AUTHTAG_SIZE)
 {
   has_header_ = false;
   has_payload_type_ = false;
-  has_auth_tag_ = false;                
+  has_auth_tag_ = false;
 }
 
 Packet::Packet(const Buffer &src) : Buffer(src)

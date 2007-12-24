@@ -34,6 +34,11 @@
 #include "datatypes.h"
 #include "buffer.h"
 
+
+/**
+ * Authtag class
+ */
+
 class AuthTag : public Buffer
 {
 public:

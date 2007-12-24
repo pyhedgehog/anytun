@@ -39,7 +39,12 @@ class Packet : public Buffer
 {
 public:
   Packet();
-  Packet(u_int32_t length);
+
+  /**
+   * Packet Constructor
+   * @param payload_length Payload Length
+   */
+  Packet(u_int32_t payload_length);
   Packet(const Buffer &src);
   
   bool hasHeader() const;
@@ -72,7 +77,11 @@ private:
   bool has_header_;
   bool has_payload_type_;
   bool has_auth_tag_;
-  // FIXXMEE: remove hardcoded authtag-size
+
+  struct HeaderStruct* header_;
+  payload_type_t* payload_type_;
+  AuthTag* auth_tag_;
+
   static const u_int32_t AUTHTAG_SIZE = 10;
 };
 
