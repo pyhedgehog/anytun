@@ -66,7 +66,7 @@ public:
 
   /**
    * set the key for the auth algo
-   * @param key key for hmac sha1 calculation
+   * @param key key for hmac calculation
    */
   void setKey(Buffer key);
 

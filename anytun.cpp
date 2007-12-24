@@ -130,7 +130,7 @@ void* sender(void* p)
   PlainPacket plain_packet(1600); // TODO: fix me... mtu size
   EncryptedPacket packet(1600);
 
-  Buffer session_key(SESSION_KEYLEN_ENCR), session_salt(SESSION_KEYLEN_SALT);
+  Buffer session_key(SESSION_KEYLEN_ENCR), session_salt(SESSION_KEYLEN_SALT), session_auth_key(SESSION_KEYLEN_AUTH);
 
   //TODO replace mux
   u_int16_t mux = 0;
@@ -161,6 +161,8 @@ void* sender(void* p)
     // encrypt packet
     conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key, session_key.getLength());
     conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt, session_salt.getLength());
+    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key, session_auth_key.getLength());
+    
     c.setKey(session_key);
     c.setSalt(session_salt);
     c.cypher(packet, plain_packet, plain_packet.getLength(), conn.seq_nr_, param->opt.getSenderId());
@@ -168,6 +170,7 @@ void* sender(void* p)
     packet.setHeader(conn.seq_nr_, param->opt.getSenderId(), mux);
     conn.seq_nr_++;
 
+    a.setKey(session_auth_key);
 		addPacketAuthTag(packet, a, conn);
     param->src.send(packet, conn.remote_host_, conn.remote_port_);
   }
@@ -216,7 +219,7 @@ void* receiver(void* p)
 
   EncryptedPacket packet(1600);     // TODO: dynamic mtu size
   PlainPacket plain_packet(1600);
-  Buffer session_key(SESSION_KEYLEN_SALT), session_salt(SESSION_KEYLEN_SALT);
+  Buffer session_key(SESSION_KEYLEN_SALT), session_salt(SESSION_KEYLEN_SALT), session_auth_key(SESSION_KEYLEN_AUTH);
 
   while(1)
   {
@@ -242,6 +245,8 @@ void* receiver(void* p)
 		//TODO Add multi connection support here
 		ConnectionParam & conn = param->cl.getConnection(0)->second;
 
+    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key, session_auth_key.getLength());
+    a.setKey( session_auth_key );
 		if(!checkPacketAuthTag(packet, a, conn))
 			continue;
 
@@ -259,7 +264,7 @@ void* receiver(void* p)
 		if (!checkPacketSeqNr(packet, conn))
 			continue;
 
-    // decypher the packet
+    // decrypt packet
     conn.kd_.generate(LABEL_SATP_ENCRYPTION, packet.getSeqNr(), session_key, session_key.getLength());
     conn.kd_.generate(LABEL_SATP_SALT, packet.getSeqNr(), session_salt, session_salt.getLength());
     c.setKey(session_key);
