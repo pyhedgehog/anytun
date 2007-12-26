@@ -36,6 +36,7 @@
 #include "cypher.h"
 #include "authAlgo.h"
 #include "seqWindow.h"
+#include "threadUtils.hpp"
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -51,10 +52,13 @@ public:
   u_int16_t remote_port_;
 	ConnectionParam(const ConnectionParam & src);
 private:
+//TODO check if this is ok
+	Mutex mutex_;
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
 	{
+		Lock lock(mutex_);
 		ar & kd_;
     ar & seq_window_;
     ar & seq_nr_;

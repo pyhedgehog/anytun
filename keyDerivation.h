@@ -66,6 +66,7 @@ private:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
+		Lock lock(mutex_);
 	  ar & ld_kdr_;
 	  ar & salt_;
 	}

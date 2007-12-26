@@ -89,7 +89,8 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
 	cl.addConnection(connparam,0);
-	queue.push(SyncCommand(cl,0));
+	SyncCommand sc (cl,0);
+	queue.push(sc);
 }
 
 
@@ -257,7 +258,8 @@ void* receiver(void* p)
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host ip changed " << remote_host << ":" << remote_port;
 			conn.remote_host_=remote_host;
 			conn.remote_port_=remote_port;
-			param->queue.push(SyncCommand(param->cl,0));
+			SyncCommand sc (param->cl,0);
+			param->queue.push(sc);
 		}	
 
 		// Replay Protection
@@ -361,6 +363,7 @@ int main(int argc, char* argv[])
 	  pthread_join(*it, NULL);
 
   delete src;
+	delete &p.connto;
 
   return ret;
 }

@@ -36,6 +36,7 @@
 #include "buffer.h"
 #include <iostream>
 #include "datatypes.h"
+#include "threadUtils.hpp"
 
 class SyncBuffer : public Buffer
 {
@@ -46,10 +47,13 @@ public:
 		SyncBuffer(u_int8_t* data, u_int32_t length): Buffer(data,length) {};
 		SyncBuffer(const SyncBuffer & src) : Buffer(src) {};
 private:
+//TODO check if this is ok
+//  Mutex mutex_;
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
+//		Lock lock(mutex_);
     ar & length_;
 		for(u_int32_t i = 0; i < length_; i++)
 			ar & (*this)[i];

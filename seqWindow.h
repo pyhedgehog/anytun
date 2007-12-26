@@ -55,6 +55,10 @@ public:
 
 
 private:
+  window_size_t window_size_;
+  Mutex mutex_;
+  SenderMap sender_;
+
   SeqWindow(const SeqWindow &s);
   void operator=(const SeqWindow &s);
 
@@ -62,6 +66,7 @@ private:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
+		Lock lock(mutex_);
 		//unsigned int serial = (unsigned int) window_size_;
 		//window_size_t serial = (window_size_t) window_size_;
   	ar & window_size_;
@@ -70,9 +75,6 @@ private:
   }
  
 
-  window_size_t window_size_;
-  Mutex mutex_;
-  SenderMap sender_;
 };
 
 #endif
