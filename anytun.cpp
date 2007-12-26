@@ -127,7 +127,6 @@ void* sender(void* p)
   AesIcmCypher c;
   Sha1AuthAlgo a;
 
-  //TODO make pack global, reduce dynamic memory!
   PlainPacket plain_packet(1600); // TODO: fix me... mtu size
   EncryptedPacket packet(1600);
 
