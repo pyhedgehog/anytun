@@ -1,0 +1,21 @@
+This package have been packaged by Jean-Francois Dive <jef@debian.org> as 
+isakmpd.  The upstream source of isakmpd can be found at www.openbsd.org
+
+This package is now maintained by Jochen Friedrich <jochen@scram.de>
+
+- This package links against openssl.
+- This package include linux kernel include files for interface definition
+  purposes. This should mean that GPL does not apply for this distribution.
+- This package include libdes from the openbsd tree which have the same 
+  license as openssl, please refer to the following license statement for details.
+
+This is isakmpd, a BSD-licensed ISAKMP/Oakley (a.k.a. IKE)
+implementation.  It's written by Niklas Hallqvist and Niels Provos,
+funded by Ericsson Radio Systems AB.  Isakmpd's home is in the
+OpenBSD main source tree under src/sbin/isakmpd.  Look at
+http://www.openbsd.org/ for details on how to get OpenBSD source.
+
+The isakmpd license is the BSD license, please refer to 
+/usr/share/common-license/BSD for details. The few code modification in isakmpd
+(linux support) are authored by Jean-Francois Dive and Jochen Friedrich 
+and are release on the same license as isakmpd itself.

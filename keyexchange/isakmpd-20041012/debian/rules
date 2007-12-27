@@ -1,0 +1,73 @@
+#!/usr/bin/make -f
+
+export DH_COMPAT := 5
+
+b := $(CURDIR)/debian/isakmpd
+
+arrange: arrange-stamp
+arrange-stamp: install
+	dh_testdir
+	touch arrange-stamp
+
+binary: binary-stamp
+binary-stamp: binary-indep binary-arch
+	dh_testdir
+	touch binary-stamp
+
+binary-arch: binary-arch-stamp
+binary-arch-stamp: arrange
+	dh_testdir
+	dh_testroot
+	dh_installdocs -n DESIGN-NOTES QUESTIONS README README.PKI TO-DO $(CURDIR)/debian/README.Debian x509v3.cnf
+	cp $(CURDIR)/samples/*.conf $(b)/usr/share/doc/isakmpd/samples/
+	cp $(CURDIR)/samples/VPN-east.conf $(b)/etc/isakmpd/isakmpd.conf
+	cp $(CURDIR)/samples/policy $(b)/etc/isakmpd/isakmpd.policy
+	cp $(CURDIR)/isakmpd $(b)/usr/sbin/
+	cp $(CURDIR)/apps/certpatch/certpatch $(b)/usr/bin
+	cp $(CURDIR)/debian/isakmpd.lintian $(b)/usr/share/lintian/overrides/isakmpd
+	dh_installman isakmpd.8 isakmpd.conf.5 isakmpd.policy.5 apps/certpatch/certpatch.8
+	dh_installinit
+	dh_installchangelogs $(CURDIR)/debian/ChangeLog upstream
+	dh_compress
+	dh_fixperms
+	find $(b)/etc/isakmpd -type d | xargs chmod 0700
+	find $(b)/etc/isakmpd -type f | xargs chmod 0600
+	dh_strip
+	dh_installdeb
+	dh_perl
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+	touch binary-arch-stamp
+
+binary-indep: binary-indep-stamp
+binary-indep-stamp: arrange
+	dh_testdir
+	touch binary-indep-stamp
+
+build: build-stamp
+build-stamp: config
+	dh_testdir
+	$(MAKE)
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	$(MAKE) clean
+	dh_clean arrange-stamp binary-stamp binary-arch-stamp binary-indep-stamp build-stamp config-stamp install-stamp 
+	find $(CURDIR) -type f -name ".depend" | xargs rm -f
+
+config: config-stamp
+config-stamp:
+	dh_testdir
+	touch config-stamp
+
+install: install-stamp
+install-stamp: build
+	dh_testdir
+	dh_installdirs
+	touch install-stamp
+
+.PHONY: arrange binary binary-arch binary-indep build clean config install
