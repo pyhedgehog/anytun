@@ -8,6 +8,23 @@
 #include <string.h>
 #include "sysdep.h"
 
+#include "cert.h"
+#include "conf.h"
+#include "exchange.h"
+#include "ipsec.h"
+#include "ipsec_num.h"
+#include "key.h"
+#include "log.h"
+#include "pf_key_v2.h"
+#include "sa.h"
+#include "timer.h"
+#include "transport.h"
+#include "util.h"
+
+#include <sys/socket.h>
+#include <netdb.h>
+
+
 int	anytun_key_socket;
 
 void     anytun_key_connection_check(char * conn)
@@ -21,6 +38,52 @@ return 0;
 
 int      anytun_key_enable_sa(struct sa *sa, struct sa *isakmp_sa)
 {
+  struct ipsec_sa *isa = sa->data;
+  struct sockaddr *dst, *src;
+	char            idsrc[256], iddst[256];
+//  int             error;
+//  struct proto   *proto = TAILQ_FIRST(&sa->protos);
+//  int             sidtype = 0, didtype = 0;
+//  size_t          sidlen = 0, didlen = 0;
+//  u_int8_t       *sid = 0, *did = 0;
+
+  sa->transport->vtbl->get_dst(sa->transport, &dst);
+  sa->transport->vtbl->get_src(sa->transport, &src);
+  if (getnameinfo(src, sysdep_sa_len(src), idsrc, sizeof idsrc, NULL, 0,
+      NI_NUMERICHOST) != 0) {
+    log_print("udp_decode_ids: getnameinfo () failed for 'src'");
+    strlcpy(idsrc, "<error>", 256);
+  }
+  if (getnameinfo(dst, sysdep_sa_len(dst), iddst, sizeof iddst, NULL, 0,
+      NI_NUMERICHOST) != 0) {
+    log_print("udp_decode_ids: getnameinfo () failed for 'dst'");
+    strlcpy(iddst, "<error>", 256);
+  }
+
+	printf( "anytun src: %s dst: %s\n", idsrc, iddst);
+
+//struct ipsec_sa {
+//  /* Phase 1.  */
+//  u_int8_t        hash;
+//  size_t          skeyid_len;
+//  u_int8_t       *skeyid_d;
+//  u_int8_t       *skeyid_a;
+//  u_int16_t       prf_type;
+//
+//  /* Phase 2.  */
+//  u_int16_t       group_desc;
+//
+//  /* Tunnel parameters.  These are in network byte order.  */
+//  struct sockaddr *src_net;
+//  struct sockaddr *src_mask;
+//  struct sockaddr *dst_net;
+//  struct sockaddr *dst_mask;
+//  u_int8_t        tproto;
+//  u_int16_t       sport;
+//  u_int16_t       dport;
+//};
+
+
 return 0;
 }
 
