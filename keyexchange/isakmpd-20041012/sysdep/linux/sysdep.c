@@ -43,6 +43,11 @@
 #include <linux/pfkeyv2.h>
 #include <linux/ipsec.h>
 
+#ifdef USE_ANYTUN_KEY
+#include "anytun_key.h"
+#define KEY_API(x) anytun_key_##x
+#endif
+
 #ifdef USE_PF_KEY_V2
 #include "pf_key_v2.h"
 #define KEY_API(x) pf_key_v2_##x

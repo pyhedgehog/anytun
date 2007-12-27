@@ -1,211 +1,321 @@
 app.o: app.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- app.h log.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  app.h log.h
 attribute.o: attribute.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- attribute.h conf.h log.h isakmp.h isakmp_fld.h field.h isakmp_num.h \
- constants.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  attribute.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  log.h isakmp.h isakmp_fld.h field.h isakmp_num.h constants.h util.h
 cert.o: cert.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- isakmp_num.h constants.h log.h cert.h
-connection.o: connection.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- conf.h connection.h doi.h ipsec.h ipsec_doi.h ipsec_fld.h field.h \
- ipsec_num.h constants.h isakmp.h isakmp_fld.h isakmp_num.h log.h \
- timer.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  isakmp_num.h constants.h log.h cert.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  x509.h libcrypto.h policy.h
+connection.o: connection.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  conf.h connection.h doi.h ipsec.h ipsec_doi.h ipsec_fld.h field.h \
+  ipsec_num.h constants.h isakmp_cfg.h isakmp.h isakmp_fld.h isakmp_num.h \
+  log.h timer.h util.h
 constants.o: constants.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- constants.h
-conf.o: conf.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- app.h conf.h log.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  constants.h
+conf.o: conf.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  app.h conf.h log.h monitor.h util.h
 cookie.o: cookie.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- cookie.h exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h \
- field.h isakmp_num.h hash.h transport.h message.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  cookie.h exchange.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  exchange_num.h constants.h isakmp.h isakmp_fld.h field.h isakmp_num.h \
+  hash.h transport.h message.h util.h
 crypto.o: crypto.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- crypto.h log.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  crypto.h /usr/include/openssl/des.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/blf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/cast.h \
+  log.h
 dh.o: dh.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- math_group.h dh.h log.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  math_group.h dh.h log.h
 doi.o: doi.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- doi.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  doi.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h
 exchange.o: exchange.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- cert.h conf.h connection.h constants.h cookie.h crypto.h doi.h \
- exchange.h exchange_num.h isakmp.h isakmp_fld.h field.h isakmp_num.h \
- ipsec_num.h libcrypto.h log.h message.h timer.h transport.h ipsec.h \
- ipsec_doi.h ipsec_fld.h sa.h util.h key.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  cert.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  conf.h connection.h constants.h cookie.h crypto.h \
+  /usr/include/openssl/des.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/blf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/cast.h \
+  doi.h exchange.h exchange_num.h isakmp.h isakmp_fld.h field.h \
+  isakmp_num.h ipsec_num.h isakmp_cfg.h libcrypto.h log.h message.h \
+  timer.h transport.h ipsec.h ipsec_doi.h ipsec_fld.h sa.h util.h key.h
 exchange_num.o: exchange_num.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- constants.h exchange_num.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  constants.h exchange_num.h
 field.o: field.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- constants.h field.h log.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  constants.h field.h log.h util.h
 gmp_util.o: gmp_util.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- gmp_util.h math_mp.h
-hash.o: hash.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- hash.h log.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  gmp_util.h math_mp.h
+hash.o: hash.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/md5.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/sha1.h \
+  sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  hash.h log.h
 if.o: if.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- log.h if.h
-ike_auth.o: ike_auth.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- cert.h conf.h constants.h exchange.h exchange_num.h isakmp.h \
- isakmp_fld.h field.h isakmp_num.h gmp_util.h math_mp.h hash.h \
- ike_auth.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h libcrypto.h \
- log.h message.h prf.h transport.h util.h key.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  log.h monitor.h if.h
+ike_auth.o: ike_auth.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/policy.h sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  cert.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  conf.h constants.h exchange.h exchange_num.h isakmp.h isakmp_fld.h \
+  field.h isakmp_num.h gmp_util.h math_mp.h hash.h ike_auth.h ipsec.h \
+  ipsec_doi.h ipsec_fld.h ipsec_num.h isakmp_cfg.h libcrypto.h log.h \
+  message.h monitor.h prf.h transport.h util.h key.h x509.h
 ike_main_mode.o: ike_main_mode.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- attribute.h conf.h constants.h crypto.h dh.h doi.h exchange.h \
- exchange_num.h isakmp.h isakmp_fld.h field.h isakmp_num.h hash.h \
- ike_auth.h ike_main_mode.h ike_phase_1.h ipsec.h ipsec_doi.h \
- ipsec_fld.h ipsec_num.h log.h math_group.h message.h prf.h sa.h \
- transport.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  attribute.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  constants.h crypto.h /usr/include/openssl/des.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/blf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/cast.h \
+  dh.h doi.h exchange.h exchange_num.h isakmp.h isakmp_fld.h field.h \
+  isakmp_num.h hash.h ike_auth.h ike_main_mode.h ike_phase_1.h ipsec.h \
+  ipsec_doi.h ipsec_fld.h ipsec_num.h isakmp_cfg.h log.h math_group.h \
+  message.h prf.h sa.h transport.h util.h
 ike_phase_1.o: ike_phase_1.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- attribute.h conf.h constants.h crypto.h dh.h doi.h exchange.h \
- exchange_num.h isakmp.h isakmp_fld.h field.h isakmp_num.h hash.h \
- ike_auth.h ike_phase_1.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h \
- log.h math_group.h message.h prf.h sa.h transport.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  attribute.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  constants.h crypto.h /usr/include/openssl/des.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/blf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/cast.h \
+  dh.h doi.h dpd.h exchange.h exchange_num.h isakmp.h isakmp_fld.h \
+  field.h isakmp_num.h hash.h ike_auth.h ike_phase_1.h ipsec.h \
+  ipsec_doi.h ipsec_fld.h ipsec_num.h isakmp_cfg.h log.h math_group.h \
+  message.h nat_traversal.h prf.h sa.h transport.h util.h
 ike_quick_mode.o: ike_quick_mode.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- attribute.h conf.h connection.h dh.h doi.h exchange.h exchange_num.h \
- constants.h isakmp.h isakmp_fld.h field.h isakmp_num.h hash.h \
- ike_quick_mode.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h log.h \
- math_group.h message.h policy.h prf.h sa.h transport.h util.h key.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  attribute.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  connection.h dh.h doi.h exchange.h exchange_num.h constants.h isakmp.h \
+  isakmp_fld.h field.h isakmp_num.h hash.h ike_quick_mode.h ipsec.h \
+  ipsec_doi.h ipsec_fld.h ipsec_num.h isakmp_cfg.h log.h math_group.h \
+  message.h policy.h prf.h sa.h transport.h util.h key.h x509.h \
+  libcrypto.h
 init.o: init.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- app.h cert.h conf.h connection.h doi.h exchange.h exchange_num.h \
- constants.h isakmp.h isakmp_fld.h field.h isakmp_num.h init.h ipsec.h \
- ipsec_doi.h ipsec_fld.h ipsec_num.h isakmp_doi.h libcrypto.h log.h \
- math_group.h sa.h timer.h transport.h message.h udp.h ui.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  app.h cert.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  conf.h connection.h doi.h exchange.h exchange_num.h constants.h \
+  isakmp.h isakmp_fld.h field.h isakmp_num.h init.h ipsec.h ipsec_doi.h \
+  ipsec_fld.h ipsec_num.h isakmp_cfg.h isakmp_doi.h libcrypto.h log.h \
+  math_group.h monitor.h sa.h timer.h transport.h message.h virtual.h \
+  udp.h ui.h util.h policy.h nat_traversal.h udp_encap.h
 ipsec.o: ipsec.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- attribute.h conf.h constants.h crypto.h dh.h doi.h exchange.h \
- exchange_num.h isakmp.h isakmp_fld.h field.h isakmp_num.h hash.h \
- ike_aggressive.h ike_auth.h ike_main_mode.h ike_quick_mode.h ipsec.h \
- ipsec_doi.h ipsec_fld.h ipsec_num.h isakmp_cfg.h log.h math_group.h \
- message.h prf.h sa.h timer.h transport.h util.h x509.h libcrypto.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  attribute.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  constants.h crypto.h /usr/include/openssl/des.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/blf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/cast.h \
+  dh.h doi.h dpd.h exchange.h exchange_num.h isakmp.h isakmp_fld.h \
+  field.h isakmp_num.h hash.h ike_aggressive.h ike_auth.h ike_main_mode.h \
+  ike_quick_mode.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h \
+  isakmp_cfg.h log.h math_group.h message.h nat_traversal.h prf.h sa.h \
+  timer.h transport.h util.h x509.h libcrypto.h
 ipsec_fld.o: ipsec_fld.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- constants.h field.h ipsec_fld.h isakmp_num.h ipsec_num.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  constants.h field.h ipsec_fld.h isakmp_num.h ipsec_num.h
 ipsec_num.o: ipsec_num.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- constants.h ipsec_num.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  constants.h ipsec_num.h
 isakmpd.o: isakmpd.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- app.h conf.h connection.h init.h libcrypto.h log.h sa.h isakmp.h \
- isakmp_fld.h field.h isakmp_num.h constants.h timer.h transport.h \
- message.h udp.h ui.h util.h cert.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  app.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  connection.h init.h libcrypto.h log.h monitor.h sa.h isakmp.h \
+  isakmp_fld.h field.h isakmp_num.h constants.h timer.h transport.h \
+  message.h udp.h ui.h util.h cert.h policy.h
 isakmp_doi.o: isakmp_doi.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- doi.h exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h \
- field.h isakmp_num.h isakmp_doi.h ipsec.h ipsec_doi.h ipsec_fld.h \
- ipsec_num.h log.h message.h sa.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  doi.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h field.h \
+  isakmp_num.h isakmp_doi.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h \
+  isakmp_cfg.h log.h message.h sa.h util.h
 isakmp_fld.o: isakmp_fld.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- constants.h field.h isakmp_fld.h isakmp_num.h ipsec_num.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  constants.h field.h isakmp_fld.h isakmp_num.h ipsec_num.h
 isakmp_num.o: isakmp_num.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- constants.h isakmp_num.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  constants.h isakmp_num.h
 key.o: key.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- key.h libcrypto.h log.h util.h x509.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  key.h libcrypto.h log.h util.h x509.h
 libcrypto.o: libcrypto.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- libcrypto.h
-log.o: log.c sysdep/common/pcap.h isakmp_num.h sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- constants.h log.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  libcrypto.h
+log.o: log.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/pcap.h \
+  conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  isakmp_num.h sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  constants.h log.h monitor.h util.h
 message.o: message.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- attribute.h cert.h constants.h crypto.h doi.h exchange.h \
- exchange_num.h isakmp.h isakmp_fld.h field.h isakmp_num.h ipsec_num.h \
- log.h message.h sa.h timer.h transport.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  attribute.h cert.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  constants.h crypto.h /usr/include/openssl/des.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/blf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/cast.h \
+  doi.h dpd.h exchange.h exchange_num.h isakmp.h isakmp_fld.h field.h \
+  isakmp_num.h hash.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h \
+  isakmp_cfg.h log.h message.h nat_traversal.h prf.h sa.h timer.h \
+  transport.h util.h virtual.h
 math_2n.o: math_2n.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- math_2n.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  math_2n.h util.h
 math_group.o: math_group.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- gmp_util.h math_mp.h log.h math_2n.h math_ec2n.h math_group.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  gmp_util.h math_mp.h log.h math_2n.h math_ec2n.h math_group.h
 prf.o: prf.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- hash.h log.h prf.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  hash.h log.h prf.h
 sa.o: sa.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- connection.h cookie.h doi.h exchange.h exchange_num.h constants.h \
- isakmp.h isakmp_fld.h field.h isakmp_num.h log.h message.h sa.h \
- timer.h transport.h util.h cert.h policy.h key.h ipsec.h ipsec_doi.h \
- ipsec_fld.h ipsec_num.h
-sysdep.o: \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep.c \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/app.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/conf.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/ipsec.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/ipsec_doi.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/ipsec_fld.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/field.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/ipsec_num.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/constants.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/klips.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/log.h
-timer.o: timer.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- log.h timer.h
-transport.o: transport.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- conf.h exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h \
- field.h isakmp_num.h log.h message.h sa.h timer.h transport.h
-udp.o: udp.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- conf.h if.h isakmp.h isakmp_fld.h field.h isakmp_num.h constants.h \
- log.h message.h transport.h udp.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  attribute.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  connection.h cookie.h doi.h exchange.h exchange_num.h constants.h \
+  isakmp.h isakmp_fld.h field.h isakmp_num.h log.h message.h monitor.h \
+  sa.h timer.h transport.h util.h cert.h policy.h key.h ipsec.h \
+  ipsec_doi.h ipsec_fld.h ipsec_num.h isakmp_cfg.h
+sysdep.o:  \
+ /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/util.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/app.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/ipsec.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/ipsec_doi.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/ipsec_fld.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/field.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/ipsec_num.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/constants.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/isakmp_cfg.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/anytun_key.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/log.h
+timer.o: timer.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  log.h timer.h
+transport.o: transport.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  conf.h exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h \
+  field.h isakmp_num.h log.h message.h sa.h timer.h transport.h virtual.h
+udp.o: udp.c /usr/include/openssl/err.h sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  if.h isakmp.h isakmp_fld.h field.h isakmp_num.h constants.h log.h \
+  message.h monitor.h transport.h udp.h util.h virtual.h
 ui.o: ui.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- conf.h connection.h doi.h exchange.h exchange_num.h constants.h \
- isakmp.h isakmp_fld.h field.h isakmp_num.h init.h log.h sa.h timer.h \
- transport.h message.h ui.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  connection.h doi.h exchange.h exchange_num.h constants.h isakmp.h \
+  isakmp_fld.h field.h isakmp_num.h init.h log.h monitor.h sa.h timer.h \
+  transport.h message.h ui.h util.h
 util.o: util.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- log.h message.h isakmp.h isakmp_fld.h field.h isakmp_num.h \
- constants.h transport.h util.h
-klips.o: \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/klips.c \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/conf.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/exchange.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/exchange_num.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/constants.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/isakmp.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/isakmp_fld.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/field.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/isakmp_num.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/hash.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/ipsec.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/ipsec_doi.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/ipsec_fld.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/ipsec_num.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/log.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/klips.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sa.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/timer.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/transport.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/message.h
-math_ec2n.o: ./math_ec2n.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- math_2n.h math_ec2n.h
-ike_aggressive.o: ./ike_aggressive.c sysdep.h \
- /home/jdive/devel/isakmpd/src/sbin/isakmpd/sysdep/linux/sysdep-os.h \
- attribute.h conf.h constants.h crypto.h dh.h doi.h exchange.h \
- exchange_num.h isakmp.h isakmp_fld.h field.h isakmp_num.h hash.h \
- ike_auth.h ike_aggressive.h ike_phase_1.h ipsec.h ipsec_doi.h \
- ipsec_fld.h ipsec_num.h log.h math_group.h message.h prf.h sa.h \
- transport.h util.h
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  log.h message.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  isakmp.h isakmp_fld.h field.h isakmp_num.h constants.h monitor.h \
+  transport.h util.h
+virtual.o: virtual.c /usr/include/openssl/err.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  if.h exchange.h exchange_num.h sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  constants.h isakmp.h isakmp_fld.h field.h isakmp_num.h log.h \
+  transport.h message.h virtual.h udp.h util.h udp_encap.h
+anytun_key.o: anytun_key.c anytun_key.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h
+x509.o: x509.c sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  cert.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  conf.h exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h \
+  field.h isakmp_num.h hash.h ike_auth.h ipsec.h ipsec_doi.h ipsec_fld.h \
+  ipsec_num.h isakmp_cfg.h log.h math_mp.h monitor.h policy.h sa.h util.h \
+  x509.h libcrypto.h
+policy.o: policy.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  conf.h exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h \
+  field.h isakmp_num.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h \
+  isakmp_cfg.h isakmp_doi.h sa.h transport.h message.h log.h monitor.h \
+  util.h policy.h x509.h libcrypto.h
+math_ec2n.o: math_ec2n.c sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  math_2n.h math_ec2n.h
+ike_aggressive.o: ike_aggressive.c sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  attribute.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  constants.h crypto.h /usr/include/openssl/des.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/blf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/common/cast.h \
+  dh.h doi.h exchange.h exchange_num.h isakmp.h isakmp_fld.h field.h \
+  isakmp_num.h hash.h ike_auth.h ike_aggressive.h ike_phase_1.h ipsec.h \
+  ipsec_doi.h ipsec_fld.h ipsec_num.h isakmp_cfg.h log.h math_group.h \
+  message.h nat_traversal.h prf.h sa.h transport.h util.h
+isakmp_cfg.o: isakmp_cfg.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/bitstring.h \
+  sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  attribute.h conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h field.h \
+  isakmp_num.h hash.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h \
+  isakmp_cfg.h log.h message.h prf.h sa.h transport.h util.h
+dpd.o: dpd.c sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  dpd.h exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h \
+  field.h isakmp_num.h hash.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h \
+  isakmp_cfg.h log.h message.h sa.h timer.h transport.h util.h
+nat_traversal.o: nat_traversal.c sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  exchange.h exchange_num.h constants.h isakmp.h isakmp_fld.h field.h \
+  isakmp_num.h hash.h ipsec.h ipsec_doi.h ipsec_fld.h ipsec_num.h \
+  isakmp_cfg.h log.h message.h nat_traversal.h prf.h sa.h timer.h \
+  transport.h util.h virtual.h
+udp_encap.o: udp_encap.c /usr/include/openssl/err.h sysdep.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
+  conf.h \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
+  if.h ipsec_doi.h ipsec_fld.h field.h ipsec_num.h constants.h isakmp.h \
+  isakmp_fld.h isakmp_num.h log.h message.h monitor.h transport.h udp.h \
+  udp_encap.h util.h virtual.h

@@ -41,8 +41,8 @@ CFLAGS+=	-DHAVE_GETNAMEINFO -DUSE_OLD_SOCKADDR -DHAVE_PCAP \
 FEATURES=	debug tripledes blowfish cast ec aggressive x509 policy
 FEATURES+=	dpd nat_traversal isakmp_cfg des aes
 
-IPSEC_SRCS=	pf_key_v2.c
-IPSEC_CFLAGS=	-DUSE_PF_KEY_V2
+IPSEC_SRCS=	anytun_key.c
+IPSEC_CFLAGS=	-DUSE_ANYTUN_KEY
 
 USE_LIBCRYPO=	defined
 HAVE_DLOPEN=	defined
