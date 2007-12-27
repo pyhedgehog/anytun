@@ -29,7 +29,7 @@
  */
 
 #ifndef _THREAD_PARAM_H
-#define _THREAD_PARAM__H
+#define _THREAD_PARAM_H
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
