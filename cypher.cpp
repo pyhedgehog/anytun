@@ -64,16 +64,13 @@ AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))
       return;
     }
 
-    // do NOT allocate a pool of secure memory!
-    // this is NOT thread safe!
-    //    /* Allocate a pool of secure memory.  This also drops priviliges
-    //       on some systems. */
-    //    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
-    //    if( err ) {
-    //      std::cerr << "Failed to allocate " << GCRYPT_SEC_MEM << "bytes of secure memory: ";
-    //      std::cerr << gpg_strerror( err ) << std::endl;
-    //      return;
-    //    }
+    /* Allocate a pool of secure memory.  This also drops priviliges
+       on some systems. */
+    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
+    if( err ) {
+      cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << "bytes of secure memory: " << gpg_strerror( err );
+      return;
+    }
 
     /* Tell Libgcrypt that initialization has completed. */
     err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
@@ -85,7 +82,7 @@ AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))
     }
   }
 
-  gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
+  err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err )
     cLog.msg(Log::PRIO_CRIT) << "AesIcmCypher::AesIcmCypher: Failed to open cypher";
 }

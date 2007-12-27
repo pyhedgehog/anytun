@@ -50,6 +50,15 @@ EncryptedPacket::EncryptedPacket(u_int32_t max_payload_length)
 }
 
 
+EncryptedPacket::~EncryptedPacket()
+{
+  buf_ = reinterpret_cast<u_int8_t*>(header_);
+  if( auth_tag_ == NULL )
+    length_ = size_ + sizeof(struct HeaderStruct) + AUTHTAG_SIZE;
+  else
+    length_ = size_ + sizeof(struct HeaderStruct);
+}
+
 seq_nr_t EncryptedPacket::getSeqNr() const
 {
   return SEQ_NR_T_NTOH(header_->seq_nr);

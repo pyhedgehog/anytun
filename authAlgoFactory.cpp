@@ -28,59 +28,20 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _KEYDERIVATION_H_
-#define _KEYDERIVATION_H_
+#include <string>
+#include <stdexcept>
 
-#include "datatypes.h"
-#include "buffer.h"
-#include "threadUtils.hpp"
-#include "syncBuffer.h"
-
-#include <gcrypt.h>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
+#include "authAlgoFactory.h"
+#include "authAlgo.h"
 
 
-typedef enum {
-  LABEL_SATP_ENCRYPTION  = 0x00,
-  LABEL_SATP_MSG_AUTH    = 0x01,
-  LABEL_SATP_SALT        = 0x02,
-} satp_prf_label;
-
-
-class KeyDerivation
+AuthAlgo* AuthAlgoFactory::create(std::string const& type)
 {
-public:
-  KeyDerivation() : ld_kdr_(-1), salt_(0), cipher_(NULL) {};
-  virtual ~KeyDerivation() {};
-
-  void init(Buffer key, Buffer salt);
-  void setLogKDRate(const u_int8_t ld_rate);
-  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length);
-  void clear();
-	u_int32_t bufferGetLength() const;
-
-private:
-	KeyDerivation(const KeyDerivation & src);
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
-		Lock lock(mutex_);
-	  ar & ld_kdr_;
-	  ar & salt_;
-	}
-
-protected:
-  int8_t ld_kdr_;     // ld(key_derivation_rate)
-  SyncBuffer salt_;
-  static const char* MIN_GCRYPT_VERSION;
-  static const u_int32_t GCRYPT_SEC_MEM = 32768;    // 32k secure memory
-
-  gcry_cipher_hd_t cipher_;
-  Mutex mutex_;
-};
-
-
-#endif
+  if( type == "null" )
+    return new NullAuthAlgo();
+  else if( type == "sha1" )
+    return new Sha1AuthAlgo();
+  else
+    throw std::invalid_argument("auth algo not available");
+}
 

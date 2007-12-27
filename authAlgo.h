@@ -45,12 +45,15 @@ public:
   virtual ~AuthAlgo() {};
 
   virtual AuthTag calc(const Buffer& buf) { return AuthTag(0); };
+  virtual void setKey(Buffer key) {};
 };
 
 class NullAuthAlgo : public AuthAlgo
 {
 public:
+  NullAuthAlgo() {};
   AuthTag calc(const Buffer& buf);
+  void setKey(Buffer key) {};
 };
 
 
@@ -78,6 +81,7 @@ public:
   AuthTag calc(const Buffer& buf);
 protected:
   static const char* MIN_GCRYPT_VERSION;
+  static const u_int32_t GCRYPT_SEC_MEM = 32768;    // 32k secure memory
   gcry_md_hd_t ctx_;
   Mutex mutex_;
 };

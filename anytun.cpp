@@ -44,6 +44,8 @@
 #include "keyDerivation.h"
 #include "authAlgo.h"
 #include "authTag.h"
+#include "cypherFactory.h"
+#include "authAlgoFactory.h"
 #include "signalController.h"
 #include "packetSource.h"
 #include "tunDevice.h"
@@ -94,17 +96,17 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 }
 
 
-void addPacketAuthTag(EncryptedPacket& pack, AuthAlgo& a, ConnectionParam& conn)
+void addPacketAuthTag(EncryptedPacket& pack, AuthAlgo* a, ConnectionParam& conn)
 {
-  AuthTag at = a.calc(pack);
+  AuthTag at = a->calc(pack);
   pack.setAuthTag( at );
 }
 
-bool checkPacketAuthTag(EncryptedPacket& pack, AuthAlgo& a, ConnectionParam & conn)
+bool checkPacketAuthTag(EncryptedPacket& pack, AuthAlgo* a, ConnectionParam & conn)
 {
   // check auth_tag and remove it
   AuthTag at = pack.getAuthTag();
-  return (at == a.calc(pack));
+  return (at == a->calc(pack));
 }
 
 bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)
@@ -112,7 +114,8 @@ bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)
 	// compare sender_id and seq with window
 	if(conn.seq_window_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
 	{
-		cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_host_<<":"<< conn.remote_port_<< " seq:"<<pack.getSeqNr() << " sid: "<<pack.getSenderId();
+		cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_host_<<":"<< conn.remote_port_ 
+                               << " seq:"<<pack.getSeqNr() << " sid: "<<pack.getSenderId();
 		return false;
 	}
 
@@ -123,9 +126,11 @@ bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)
 void* sender(void* p)
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
-	//TODO make Cypher selectable with command line option
-  AesIcmCypher c;
-  Sha1AuthAlgo a;
+
+  CypherFactory c_factory;
+  AuthAlgoFactory a_factory;
+  std::auto_ptr<Cypher> c(c_factory.create(param->opt.getCypher()));
+  std::auto_ptr<AuthAlgo> a( a_factory.create(param->opt.getAuthAlgo()) );
 
   PlainPacket plain_packet(1600); // TODO: fix me... mtu size
   EncryptedPacket packet(1600);
@@ -163,15 +168,15 @@ void* sender(void* p)
     conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt, session_salt.getLength());
     conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key, session_auth_key.getLength());
     
-    c.setKey(session_key);
-    c.setSalt(session_salt);
-    c.cypher(packet, plain_packet, plain_packet.getLength(), conn.seq_nr_, param->opt.getSenderId());
+    c->setKey(session_key);
+    c->setSalt(session_salt);
+    c->cypher(packet, plain_packet, plain_packet.getLength(), conn.seq_nr_, param->opt.getSenderId());
 
     packet.setHeader(conn.seq_nr_, param->opt.getSenderId(), mux);
     conn.seq_nr_++;
 
-    a.setKey(session_auth_key);
-		addPacketAuthTag(packet, a, conn);
+//    a->setKey(session_auth_key);
+//		addPacketAuthTag(packet, a.get(), conn);
     param->src.send(packet, conn.remote_host_, conn.remote_port_);
   }
   pthread_exit(NULL);
@@ -213,9 +218,12 @@ void* syncListener(void* p )
 
 void* receiver(void* p)
 {
-  ThreadParam* param = reinterpret_cast<ThreadParam*>(p);  
-  AesIcmCypher c;
-  Sha1AuthAlgo a;
+  ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
+
+  CypherFactory c_factory;
+  AuthAlgoFactory a_factory;
+  std::auto_ptr<Cypher> c( c_factory.create(param->opt.getCypher()) );
+  std::auto_ptr<AuthAlgo> a( a_factory.create(param->opt.getAuthAlgo()) );
 
   EncryptedPacket packet(1600);     // TODO: dynamic mtu size
   PlainPacket plain_packet(1600);
@@ -246,9 +254,9 @@ void* receiver(void* p)
 		ConnectionParam & conn = param->cl.getConnection(0)->second;
 
     conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key, session_auth_key.getLength());
-    a.setKey( session_auth_key );
-		if(!checkPacketAuthTag(packet, a, conn))
-			continue;
+//    a->setKey( session_auth_key );
+//		if(!checkPacketAuthTag(packet, a.get(), conn))
+//			continue;
 
 		//Allow dynamic IP changes 
 		//TODO add command line option to turn this off
@@ -268,9 +276,9 @@ void* receiver(void* p)
     // decrypt packet
     conn.kd_.generate(LABEL_SATP_ENCRYPTION, packet.getSeqNr(), session_key, session_key.getLength());
     conn.kd_.generate(LABEL_SATP_SALT, packet.getSeqNr(), session_salt, session_salt.getLength());
-    c.setKey(session_key);
-    c.setSalt(session_salt);
-    c.cypher(plain_packet, packet, packet.getLength(), packet.getSeqNr(), packet.getSenderId());
+    c->setKey(session_key);
+    c->setSalt(session_salt);
+    c->cypher(plain_packet, packet, packet.getLength(), packet.getSeqNr(), packet.getSenderId());
     
     // check payload_type and remove it
     if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||
@@ -284,7 +292,7 @@ void* receiver(void* p)
 }
 
 
-
+// make libgcrypt thread safe
 extern "C" {
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
 }
@@ -325,6 +333,7 @@ int main(int argc, char* argv[])
   cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
   cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << p.dev.getTypeString() << "'";
 
+  // make libgcrypt thread safe
   gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread );
 
   pthread_t senderThread;

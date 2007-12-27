@@ -44,7 +44,12 @@ public:
    * @param max_payload_length maximum length of encrypted payload
    */
   EncryptedPacket(u_int32_t max_payload_length);
-  
+
+  /**
+   * Packet destructor
+   */
+  ~EncryptedPacket();
+
   /**
    * Get the sequence number
    * @return seqence number

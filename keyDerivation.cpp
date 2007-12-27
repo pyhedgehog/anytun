@@ -59,14 +59,14 @@ void KeyDerivation::init(Buffer key, Buffer salt)
     // do NOT allocate a pool of secure memory!
     // this is NOT thread safe!
 
-    //    /* Allocate a pool of 16k secure memory.  This also drops priviliges
-    //     *      on some systems. */
-    //    err = gcry_control(GCRYCTL_INIT_SECMEM, 16384, 0);
-    //    if( err )
-    //    {
-    //      std::cerr << "Failed to allocate 16k secure memory: " << gpg_strerror( err ) << std::endl;
-    //      return;
-    //    }
+    /* Allocate a pool of 16k secure memory.  This also drops priviliges
+     * on some systems. */
+    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
+    if( err )
+    {
+      cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err );
+      return;
+    }
 
     /* Tell Libgcrypt that initialization has completed. */
     err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);

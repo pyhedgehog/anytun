@@ -58,6 +58,8 @@ OBJS = anytun.o \
 			 authTag.o \
 			 keyDerivation.o \
 			 mpi.o \
+			 cypherFactory.o \
+			 authAlgoFactory.o \
 			 connectionList.o \
 			 connectionParam.o \
 			 networkAddress.o \
@@ -115,6 +117,12 @@ keyDerivation.o: keyDerivation.cpp keyDerivation.h
 	$(C++) $(CCFLAGS) $< -c
 
 mpi.o: mpi.cpp mpi.h
+	$(C++) $(CCFLAGS) $< -c
+
+cypherFactory.o: cypherFactory.cpp cypherFactory.h cypher.h
+	$(C++) $(CCFLAGS) $< -c
+
+authAlgoFactory.o: authAlgoFactory.cpp authAlgoFactory.h authAlgo.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncSocket.o: syncSocket.cpp syncSocket.h

@@ -103,8 +103,8 @@ Options::Options()
   ifconfig_param_local_ = "192.168.200.1";
   ifconfig_param_remote_netmask_ = "255.255.255.0";
   seq_window_size_ = 100;
-  cypher_ = "null";
-  auth_algo_ = "null";
+  cypher_ = "aes";
+  auth_algo_ = "sha1";
 }
 
 bool Options::parse(int argc, char* argv[])
@@ -171,8 +171,8 @@ void Options::printUsage()
   std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
-  std::cout << "       [-c|--cypher] <cypher type>         type of cypher" << std::endl;
-  std::cout << "       [-a|--auth-algo] <algo type>        authentication algoritm" << std::endl;
+  std::cout << "       [-c|--cypher] <cypher type>         payload encryption algorithm" << std::endl;
+  std::cout << "       [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
 }
 
 void Options::printOptions()

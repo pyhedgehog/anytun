@@ -44,7 +44,6 @@ AuthTag NullAuthAlgo::calc(const Buffer& buf)
 
 const char* Sha1AuthAlgo::MIN_GCRYPT_VERSION = "1.2.3";
 
-
 // HMAC_SHA1
 Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
 {
@@ -57,6 +56,15 @@ Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
       cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::Sha1AuthAlgo: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
       return;
     }
+
+    /* Allocate a pool of secure memory.  
+     * This also drops priviliges on some systems. */
+    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
+    if( err ) {
+      cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << "bytes of secure memory: " << gpg_strerror( err );
+      return;
+    }
+        
     /* Tell Libgcrypt that initialization has completed. */
     err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
     if( err ) {

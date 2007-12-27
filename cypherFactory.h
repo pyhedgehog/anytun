@@ -31,7 +31,6 @@
 #ifndef _CYPHER_FACTORY_H_
 #define _CYPHER_FACTORY_H_
 
-#include <stdexcept>
 #include <string>
 
 #include "datatypes.h"
@@ -43,17 +42,7 @@ public:
   CypherFactory() {};
   ~CypherFactory() {};
 
-  Cypher* create(std::string const& type)
-  {
-    if( type == "null" )
-      return new NullCypher();
-    else if( type == "aes" )
-      return new AesIcmCypher();
-    else
-      throw std::invalid_argument("cypher not available");
-  }
-
+  Cypher* create(std::string const& type);
 };
-
 
 #endif
