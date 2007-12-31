@@ -1,4 +1,5 @@
 #include "anytun_key.h"
+#include "pf_key_v2.h"
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/queue.h>
@@ -23,17 +24,18 @@
 
 #include <sys/socket.h>
 #include <netdb.h>
-
+#include "pf_key_v2.c"
 
 int	anytun_key_socket;
 
 void     anytun_key_connection_check(char * conn)
 {
+	pf_key_v2_connection_check(conn);
 }
 
 int      anytun_key_delete_spi(struct sa *sa, struct proto *proto, int incoming)
 {
-return 0;
+return pf_key_v2_delete_spi(sa, proto, incoming);
 }
 
 int      anytun_key_enable_sa(struct sa *sa, struct sa *isakmp_sa)
@@ -84,7 +86,7 @@ int      anytun_key_enable_sa(struct sa *sa, struct sa *isakmp_sa)
 //};
 
 
-return 0;
+return pf_key_v2_enable_sa(sa, isakmp_sa);
 }
 
 //int	anytun_key_enable_spi(in_addr_t, in_addr_t, in_addr_t,
@@ -95,36 +97,42 @@ return 0;
 struct sa_kinfo * anytun_key_get_kernel_sa(u_int8_t *spi, size_t spi_sz, u_int8_t proto,
     struct sockaddr *dst)
 {
-		return 0;
+		return pf_key_v2_get_kernel_sa(spi, spi_sz, proto,
+		    dst);
 }
 
 u_int8_t *anytun_key_get_spi(size_t *sz, u_int8_t proto, struct sockaddr *src,
           struct sockaddr *dst, u_int32_t seq)
 		{
-      *sz = 4;
+      //*sz = 4;
       /* XXX should be random instead I think.  */
-      return strdup ("\x12\x34\x56\x78");
+      //return strdup ("\x12\x34\x56\x78");
+			return pf_key_v2_get_spi(sz,  proto, src,
+			          dst, seq);
 		}
 
 int	anytun_key_group_spis(struct sa *sa, struct proto *proto1,
          struct proto *proto2, int incoming)
 		{
-return 0;
+return pf_key_v2_group_spis(sa, proto1,
+         proto2, incoming);
 		}
 
 void     anytun_key_handler(int fd)
 {
+	pf_key_v2_handler(fd);
 }
 
 int      anytun_key_open(void)
 {
-return 0;
+return pf_key_v2_open();
 }
 
 int      anytun_key_set_spi(struct sa *sa, struct proto *proto, int incoming,
     struct sa *isakmp_sa)
 	 {
-return 0;
+return pf_key_v2_set_spi(sa, proto, incoming,
+    isakmp_sa);
 	 }
 
 

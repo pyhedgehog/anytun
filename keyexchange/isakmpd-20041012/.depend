@@ -258,12 +258,14 @@ virtual.o: virtual.c /usr/include/openssl/err.h conf.h \
   transport.h message.h virtual.h udp.h util.h udp_encap.h
 anytun_key.o: anytun_key.c anytun_key.h \
   /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sys/queue.h \
-  sysdep.h \
+  pf_key_v2.h sysdep.h \
   /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
   cert.h conf.h exchange.h exchange_num.h constants.h isakmp.h \
   isakmp_fld.h field.h isakmp_num.h ipsec.h ipsec_doi.h ipsec_fld.h \
-  ipsec_num.h isakmp_cfg.h key.h log.h pf_key_v2.h sa.h timer.h \
-  transport.h message.h util.h
+  ipsec_num.h isakmp_cfg.h key.h log.h sa.h timer.h transport.h message.h \
+  util.h pf_key_v2.c \
+  /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/bitstring.h \
+  policy.h udp_encap.h
 x509.o: x509.c sysdep.h \
   /home/otti/anytun/keyexchange/isakmpd-20041012/sysdep/linux/sysdep-os.h \
   cert.h \

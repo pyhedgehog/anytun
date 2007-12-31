@@ -34,6 +34,7 @@
 
 #include <sys/types.h>
 #include <sys/queue.h>
+#include <arpa/inet.h>
 
 struct proto;
 struct sa;
