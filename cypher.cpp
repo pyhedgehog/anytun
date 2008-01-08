@@ -44,7 +44,7 @@ void NullCypher::cypher(Buffer& out, Buffer& in, u_int32_t length, seq_nr_t seq_
 {
   try
   {
-    for(u_int32_t i; i<length; ++i)
+    for(u_int32_t i=0; i<length; ++i)
       out[i] = in[i];
   }
   catch(std::out_of_range& o) {}

@@ -141,12 +141,12 @@ void* sender(void* p)
   u_int16_t mux = 0;
   while(1)
   {
-    packet.setLength( packet.getSize() );
-    plain_packet.setLength( plain_packet.getSize() );
+    plain_packet.setLength( 1600);
 
     // read packet from device
     u_int32_t len = param->dev.read(plain_packet);
     plain_packet.setLength(len);
+    packet.setLength( packet.getSize() );
 
     if( param->cl.empty())
       continue;

@@ -78,7 +78,7 @@ OBJS = anytun.o \
 
 EXECUTABLE = anytun
 
-all: $(EXECUTABLE)
+all: $(EXECUTABLE) libAnysync.a
 
 anytun: $(OBJS)
 	$(LD) $(OBJS) -o $@ $(LDFLAGS)
@@ -169,6 +169,13 @@ router.o: router.cpp router.h
 
 anytun.o: anytun.cpp
 	$(C++) $(CCFLAGS) $< -c
+
+cConnectionParam.o: cConnectionParam.cpp
+	$(C++) $(CCFLAGS) $< -c
+
+libAnysync.a: $(OBJS)
+	ar cru $@ $(OBJS)
+	ranlib $@
 
 clean:
 	rm -f *.o
