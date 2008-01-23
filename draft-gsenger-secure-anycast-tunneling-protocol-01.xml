@@ -10,7 +10,7 @@
     <!ENTITY rfc2003 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2003.xml'>
 ]>
 <?rfc toc='yes'?>
-    <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-00'>
+    <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-01'>
     <front>
         <title>secure anycast tunneling protocol (SATP)</title>
 

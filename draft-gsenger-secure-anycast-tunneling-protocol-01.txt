@@ -7,7 +7,7 @@ Expires: July 26, 2008
 
 
                 secure anycast tunneling protocol (SATP)
-           draft-gsenger-secure-anycast-tunneling-protocol-00
+           draft-gsenger-secure-anycast-tunneling-protocol-01
 
 Status of this Memo
 
