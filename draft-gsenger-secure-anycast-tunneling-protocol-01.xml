@@ -203,22 +203,14 @@ Tunneling of IPv6 over IPv4 with RTP payload
 </figure>
 <t></t>
        </section>
-       <section title="sender ID">
-       <t>The sender ID is a 16 bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address</t>
-       </section>
        <section title="sequence number">
        <t>The sequence number is a 32 bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.</t>
        </section>
-       <section title="payload">
-       <t>A packet of the type payload type (e.g. an IP packet).</t>
+       <section title="sender ID">
+       <t>The sender ID is a 16 bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address</t>
        </section>
-       <section title="padding (OPTIONAL)">
-       <t>Padding of max 255 octets.
-None of the pre-defined encryption transforms uses any padding; for
-   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If the padding count field is present, than the padding count field MUST be set to the padding lenght.</t>
-       </section>
-       <section title="padding count (OPTIONAL)">
-       <t>The number of octets of the padding field. This field is optional. It's presence is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.</t>
+       <section title="MUX">
+       <t>The MUX (multiplex) field is a 16 bit unsigned integer. It is used to destinguish multible tunnel connections.</t>
        </section>
        <section title="payload type field">
          <t>The payload type field defines the payload protocol. ETHER TYPE protocol numbers are used. <eref target="http://www.iana.org/assignments/ethernet-numbers">See IANA assigned ethernet numbers</eref> . The values 0000-05DC are reserverd and MUST NOT be used. 
@@ -234,14 +226,25 @@ HEX
 86DD IPv6
 </artwork>
 </figure>
+</t>
+	     </section>
+       <section title="payload">
+       <t>A packet of the type payload type (e.g. an IP packet).</t>
+       </section>
+       <section title="padding (OPTIONAL)">
+       <t>Padding of max 255 octets.
+None of the pre-defined encryption transforms uses any padding; for
+   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If the padding count field is present, than the padding count field MUST be set to the padding lenght.</t>
+       </section>
+       <section title="padding count (OPTIONAL)">
+       <t>The number of octets of the padding field. This field is optional. It's presence is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.</t>
+       </section>
         <section title="MKI (OPTIONAL)">
         <t>The MKI (Master Key Identifier) is OPTIONAL and of configurable length. See <xref target="RFC3711">SRTP Section 3.1</xref> for details</t>
         </section>
 	<section title="authentication tag (RECOMMENDED)">
 	<t>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not of the MKI. On sender side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO calculate the authentication tag before decrypting the encrypted portion.</t>
 	</section>
-</t>
-     </section>
     <section title="Encryption">
      <t>Encryption is done in the same way as for <xref target="RFC3711">SRTP</xref>. This section will only discuss some small changes that HAVE TO be made. Please read  <xref target="RFC3711">SRTP RFC3711 section 3-9</xref> for details. </t><t>The least significant bits of SSRC are replaced by the sender ID and the rest is filled with zeros. For the SRTP SEQ the 16 least significant bits of the SATP sequence number are used and the 16 most significant bits of the sequence number replace the 16 least significant bits of the SRTP ROC.</t>
    <figure anchor="srtp_vs_satp">
