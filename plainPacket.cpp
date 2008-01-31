@@ -40,16 +40,30 @@
 
 PlainPacket::~PlainPacket()
 {
-  buf_ = reinterpret_cast<u_int8_t*>(payload_type_);
-  length_ = size_;
+	buf_=complete_payload_;
+	length_=max_length_;
 }
 
 PlainPacket::PlainPacket(u_int32_t max_payload_length) : Buffer(max_payload_length + sizeof(payload_type_t))
 {
+	splitPayload();
+}
+
+void PlainPacket::splitPayload()
+{
+  complete_payload_length_ = length_;
+	complete_payload_ = buf_;
+
   payload_type_ = reinterpret_cast<payload_type_t*>(buf_);
   buf_ += sizeof(payload_type_t);
-  length_ = max_payload_length;
-  size_ = length_;
+  length_ -= sizeof(payload_type_t);
+  max_length_ = length_;
+}
+
+void PlainPacket::setCompletePayloadLength(u_int32_t payload_length)
+{
+	complete_payload_length_ = payload_length;
+	length_=complete_payload_length_-sizeof(payload_type_t);
 }
 
 payload_type_t PlainPacket::getPayloadType() const
@@ -64,13 +78,14 @@ void PlainPacket::setPayloadType(payload_type_t payload_type)
 
 void PlainPacket::setLength(u_int32_t length)
 {
-  if(length > size_)
+  if(length > max_length_)
     throw std::out_of_range("can't set length greater then size ofsize of  allocated memory");
 
   length_ = length;
+	complete_payload_length_ = length_ + sizeof(payload_type_t);
 }
 
-u_int32_t PlainPacket::getSize() const
+u_int32_t PlainPacket::getMaxLength() const
 {
-  return size_;
+  return max_length_;
 }

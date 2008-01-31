@@ -34,7 +34,7 @@
 #include "datatypes.h"
 #include "buffer.h"
 #include "authTag.h"
-
+class Cypher;
 class EncryptedPacket : public Buffer
 {
 public:
@@ -98,7 +98,7 @@ public:
    * Get the maximum payload size
    * @return maximum payload size
    */
-  u_int32_t getSize() const;
+  u_int32_t getMaxLength() const;
 
   /**
    * Set the real length of the payload
@@ -110,6 +110,8 @@ public:
   void withAuthTag(bool b);
   AuthTag getAuthTag() const;
   void setAuthTag(AuthTag& tag);
+
+	void setPayloadLength(u_int8_t payload_length);
 
                        
 //  bool hasHeader() const;
@@ -131,9 +133,13 @@ private:
 
   struct HeaderStruct* header_;
   AuthTag* auth_tag_;
-  u_int32_t size_;
+  u_int32_t max_length_;
 
   static const u_int32_t AUTHTAG_SIZE = 10;     // 10byte
+protected:
+	friend class Cypher;
+	u_int8_t * payload_;
+	u_int32_t payload_length_;
 };
 
 #endif

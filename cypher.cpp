@@ -38,16 +38,23 @@
 #include "mpi.h"
 #include "log.h"
 
-
-
-void NullCypher::cypher(Buffer& out, Buffer& in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
+void Cypher::encrypt(const PlainPacket & in,EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id)
 {
-  try
-  {
-    for(u_int32_t i=0; i<length; ++i)
-      out[i] = in[i];
-  }
-  catch(std::out_of_range& o) {}
+	cypher(out.payload_, in.complete_payload_ , in.complete_payload_length_, seq_nr, sender_id);
+	out.setSenderId(sender_id);
+	out.setSeqNr(seq_nr);
+	out.setPayloadLength(in.complete_payload_length_);
+}
+
+void Cypher::decrypt(const EncryptedPacket & in,PlainPacket & out)
+{
+	cypher(out.complete_payload_, in.payload_ , in.payload_length_, in.getSeqNr(), in.getSenderId());
+	out.setCompletePayloadLength(in.payload_length_);
+}
+
+void NullCypher::cypher(u_int8_t * out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
+{
+	std::memcpy(out, in, length );
 }
 
 const char* AesIcmCypher::MIN_GCRYPT_VERSION = "1.2.3";
@@ -109,7 +116,7 @@ void AesIcmCypher::setSalt(Buffer salt)
   salt_ = salt;
 }
 
-void AesIcmCypher::cypher(Buffer& out, Buffer& in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
+void AesIcmCypher::cypher(u_int8_t *  out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
   gcry_error_t err;
 
@@ -142,7 +149,7 @@ void AesIcmCypher::cypher(Buffer& out, Buffer& in, u_int32_t length, seq_nr_t se
     return;
   }
 
-  err = gcry_cipher_encrypt( cipher_, out, out.getLength(), in, in.getLength() );
+  err = gcry_cipher_encrypt( cipher_, out, length, in, length );
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to generate cipher bitstream: " << gpg_strerror( err );
     return;

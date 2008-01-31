@@ -141,7 +141,7 @@ void* sender(void* p)
   u_int16_t mux = 0;
   while(1)
   {
-    plain_packet.setLength( 1600);
+    plain_packet.setLength( plain_packet.getMaxLength());
 
     // read packet from device
     u_int32_t len = param->dev.read(plain_packet);
@@ -171,7 +171,7 @@ void* sender(void* p)
     
     c->setKey(session_key);
     c->setSalt(session_salt);
-    c->cypher(packet, plain_packet, plain_packet.getLength(), conn.seq_nr_, param->opt.getSenderId());
+    c->encrypt(plain_packet, packet, conn.seq_nr_, param->opt.getSenderId());
 
     packet.setHeader(conn.seq_nr_, param->opt.getSenderId(), mux);
     conn.seq_nr_++;
@@ -234,8 +234,8 @@ void* receiver(void* p)
   {
     string remote_host;
     u_int16_t remote_port;
-    packet.setLength( packet.getSize() );
-    plain_packet.setLength( plain_packet.getSize() );
+    packet.setLength( packet.getMaxLength() );
+    plain_packet.setLength( plain_packet.getMaxLength() );
     //    u_int16_t sid = 0, seq = 0;
 
     // read packet from socket
@@ -279,7 +279,7 @@ void* receiver(void* p)
     conn.kd_.generate(LABEL_SATP_SALT, packet.getSeqNr(), session_salt, session_salt.getLength());
     c->setKey(session_key);
     c->setSalt(session_salt);
-    c->cypher(plain_packet, packet, packet.getLength(), packet.getSeqNr(), packet.getSenderId());
+    c->decrypt(packet, plain_packet);
     
     // check payload_type and remove it
     if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||

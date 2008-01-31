@@ -44,9 +44,9 @@ EncryptedPacket::EncryptedPacket(u_int32_t max_payload_length)
 {
   header_ = reinterpret_cast<struct HeaderStruct*>(buf_);
   auth_tag_ = NULL;
-  buf_ = buf_ + sizeof(struct HeaderStruct);    // no authtag yet
-  length_ = length_ - sizeof(struct HeaderStruct);
-  size_ = max_payload_length + AUTHTAG_SIZE;
+  payload_ = buf_ + sizeof(struct HeaderStruct);    // no authtag yet
+  length_ = sizeof(struct HeaderStruct);
+  max_length_ = max_payload_length + AUTHTAG_SIZE;
 }
 
 
@@ -54,9 +54,17 @@ EncryptedPacket::~EncryptedPacket()
 {
   buf_ = reinterpret_cast<u_int8_t*>(header_);
   if( auth_tag_ == NULL )
-    length_ = size_ + sizeof(struct HeaderStruct) + AUTHTAG_SIZE;
+    length_ = max_length_ + sizeof(struct HeaderStruct) + AUTHTAG_SIZE;
   else
-    length_ = size_ + sizeof(struct HeaderStruct);
+    length_ = max_length_ + sizeof(struct HeaderStruct);
+}
+
+void EncryptedPacket::setPayloadLength(u_int8_t payload_length)
+{
+	if( auth_tag_)
+		length_= payload_length + sizeof(struct HeaderStruct)+AUTHTAG_SIZE;
+	else
+		length_= payload_length + sizeof(struct HeaderStruct);
 }
 
 seq_nr_t EncryptedPacket::getSeqNr() const
@@ -74,14 +82,14 @@ mux_t EncryptedPacket::getMux() const
   return MUX_T_NTOH(header_->mux);
 }
 
-u_int32_t EncryptedPacket::getSize() const
+u_int32_t EncryptedPacket::getMaxLength() const
 {
-  return size_;
+  return max_length_;
 }
 
 void EncryptedPacket::setLength(u_int32_t length)
 {
-  if(length > size_)
+  if(length > max_length_)
     throw std::out_of_range("can't set length greater then size ofsize of  allocated memory");
 
   length_ = length;
@@ -120,16 +128,20 @@ void EncryptedPacket::withAuthTag(bool b)
 {
   if( b && (auth_tag_ != NULL) )
     throw std::runtime_error("packet already has auth tag function enabled");
+		//TODO: return instead?
+  if( ! b && (auth_tag_ == NULL) )
+    throw std::runtime_error("packet already has auth tag function disabled");
+		//TODO: return instead?
 
   if( b ) {
     auth_tag_ = reinterpret_cast<AuthTag*>( buf_ + sizeof(struct HeaderStruct) );
-    buf_ = buf_ + AUTHTAG_SIZE;
+    payload_ = payload_ + AUTHTAG_SIZE;
     length_ -= AUTHTAG_SIZE;
-    size_ -= AUTHTAG_SIZE;
+    max_length_ -= AUTHTAG_SIZE;
   } else {
-    buf_ = reinterpret_cast<u_int8_t*>( auth_tag_ );
+    payload_ = reinterpret_cast<u_int8_t*>( auth_tag_ );
     length_ += AUTHTAG_SIZE;
-    size_ += AUTHTAG_SIZE;
+    max_length_ += AUTHTAG_SIZE;
     auth_tag_ = NULL;
   }
 }
@@ -158,139 +170,3 @@ AuthTag EncryptedPacket::getAuthTag() const
   return at;
 }
 
-
-//Packet& Packet::addHeader(seq_nr_t seq_nr, sender_id_t sender_id)
-//{
-//  if(!has_header_)
-//  {
-//    if(sizeof(struct HeaderStruct) > resizeFront(length_ + sizeof(struct HeaderStruct)))
-//      return *this;
-//
-//    has_header_ = true;
-//  }
-//  struct HeaderStruct* header;
-//  header = reinterpret_cast<struct HeaderStruct*>(buf_);
-//  header->seq_nr = SEQ_NR_T_HTON(seq_nr);
-//  header->sender_id = SENDER_ID_T_HTON(sender_id);
-//  return *this;
-//}
-//
-//
-//bool Packet::hasPayloadType() const
-//{
-//  return has_payload_type_;
-//}
-//
-//Packet& Packet::withPayloadType(bool b)
-//{
-//  if(b && length_ >= sizeof(payload_type_t))
-//    has_payload_type_ = true;
-//  else
-//    has_payload_type_ = false;
-//
-//  return *this;
-//}
-//
-//payload_type_t Packet::getPayloadType() const
-//{
-//  if(!has_payload_type_)
-//    return 0;
-//
-//  if((!has_auth_tag_ && length_ < sizeof(payload_type_t)) ||
-//     (has_auth_tag_ && length_ < (sizeof(payload_type_t) + AUTHTAG_SIZE)))
-//    return 0;
-//
-//  payload_type_t* payload_type;
-//
-//  if(!has_auth_tag_)  
-//    payload_type = reinterpret_cast<payload_type_t*>(buf_ + length_ - sizeof(payload_type_t));
-//  else
-//    payload_type = reinterpret_cast<payload_type_t*>(buf_ + length_ - sizeof(payload_type_t) - AUTHTAG_SIZE);
-//  return PAYLOAD_TYPE_T_NTOH(*payload_type);
-//}
-//
-//Packet& Packet::addPayloadType(payload_type_t payload_type)
-//{
-//  if(has_auth_tag_)
-//    throw std::runtime_error("can't add payload_type with existing auth_tag");
-//
-//  if(!has_payload_type_)
-//  {
-//    u_int32_t new_length = length_ + sizeof(payload_type_t);
-//    if(new_length > resizeBack(new_length))
-//      return *this;
-//
-//    has_payload_type_ = true;
-//  }
-//  payload_type_t* payload_type_ptr;
-//  payload_type_ptr = reinterpret_cast<payload_type_t*>(buf_ + length_ - sizeof(payload_type_t));
-//  *payload_type_ptr = PAYLOAD_TYPE_T_HTON(payload_type);
-//  return *this;
-//}
-//
-//Packet& Packet::removePayloadType()
-//{
-//  if(has_auth_tag_)
-//    throw std::runtime_error("can't remove payload_type with existing auth_tag");
-//
-//  if(!has_payload_type_)
-//    return *this;
-//
-//  if(length_ >= sizeof(payload_type_t))
-//    resizeBack(length_ - sizeof(payload_type_t));
-//
-//  has_payload_type_ = false;
-//  
-//  return *this;
-//}
-//
-//
-//
-//
-//AuthTag Packet::getAuthTag() const
-//{
-//  if(!has_auth_tag_)
-//    return AuthTag(0);
-//
-//  if(length_ < AUTHTAG_SIZE)
-//    return AuthTag(0);
-//
-//  //AuthTag* auth_tag;
-//  //auth_tag = reinterpret_cast<AuthTag*>(buf_ + length_ - AUTHTAG_SIZE);
-//  //return AUTH_TAG_T_NTOH(*auth_tag);
-//  AuthTag auth_tag;
-//  auth_tag = AuthTag(buf_ + length_ - AUTHTAG_SIZE, AUTHTAG_SIZE);
-//  return auth_tag;
-//}
-//
-//Packet& Packet::addAuthTag(AuthTag auth_tag)
-//{
-//  if(!has_auth_tag_)
-//  {
-//    u_int32_t new_length = length_ + auth_tag.getLength();
-//    if(new_length > resizeBack(new_length))
-//      return *this;
-//
-//    has_auth_tag_ = true;
-//  }
-//
-//  AuthTag* auth_tag_ptr;
-//  auth_tag_ptr = reinterpret_cast<AuthTag*>(buf_ + length_ - auth_tag.getLength());
-//  std::memcpy(auth_tag_ptr, auth_tag.getBuf(), auth_tag.getLength());
-//
-//  return *this;
-//}
-//
-//Packet& Packet::removeAuthTag()
-//{
-//  if(!has_auth_tag_)
-//    return *this;
-//
-//  if(length_ >= AUTHTAG_SIZE)
-//    resizeBack(length_ - AUTHTAG_SIZE);
-//
-//  has_auth_tag_ = false;
-//  
-//  return *this;
-//}
-//

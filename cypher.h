@@ -33,6 +33,8 @@
 
 #include "datatypes.h"
 #include "buffer.h"
+#include "encryptedPacket.h"
+#include "plainPacket.h"
 
 #include <gcrypt.h>
 
@@ -45,7 +47,10 @@ public:
  
   void setKey(Buffer key) {};
   void setSalt(Buffer salt) {};
-  virtual void cypher(Buffer& in, Buffer& out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) {};
+	void encrypt(const PlainPacket & in,EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id);
+	void decrypt(const EncryptedPacket & in,PlainPacket & out);
+private:
+  virtual void cypher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) {};
 };
 
 class NullCypher : public Cypher
@@ -54,7 +59,7 @@ public:
   NullCypher() {};
   ~NullCypher() {};
 protected:
-  void cypher(Buffer& in, Buffer& out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
+  void cypher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
 };
 
 class AesIcmCypher : public Cypher
@@ -64,12 +69,12 @@ public:
   ~AesIcmCypher();
   void setKey(Buffer key);
   void setSalt(Buffer salt);
-  void cypher(Buffer& in, Buffer& out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
 
   static const char* MIN_GCRYPT_VERSION;
   static const u_int32_t GCRYPT_SEC_MEM = 16384;    // 16k secure memory
 
 protected:
+  void cypher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
   gcry_cipher_hd_t cipher_;
   Buffer salt_;
 };

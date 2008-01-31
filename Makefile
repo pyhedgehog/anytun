@@ -50,7 +50,6 @@ OBJS = anytun.o \
        buffer.o \
        syncBuffer.o \
        syncCommand.o \
-       packet.o \
 			 plainPacket.o \
 			 encryptedPacket.o \
        cypher.o \
@@ -93,9 +92,6 @@ buffer.o: buffer.cpp buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncBuffer.o: syncBuffer.cpp syncBuffer.h
-	$(C++) $(CCFLAGS) $< -c
-
-packet.o: packet.cpp packet.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 plainPacket.o: plainPacket.cpp plainPacket.h buffer.h

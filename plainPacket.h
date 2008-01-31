@@ -33,8 +33,8 @@
 
 #include "datatypes.h"
 #include "buffer.h"
-#include "authTag.h"
 
+class Cypher;
 /**
  * plain SATP packet class<br>
  * includes payload_type and payload
@@ -63,17 +63,19 @@ public:
    */
   void setPayloadType(payload_type_t payload_type);
 
+	void setCompletePayloadLength(u_int32_t payload_length);
+
   /**
    * Set the real payload length
    * @param length the real payload length
    */
-  void setRealPayloadLengt(u_int32_t length);
+  //void setRealPayloadLengt(u_int32_t length);
 
   /**
    * Get the real payload length
    * @return the real length of the payload
    */
-  u_int32_t getRealPayloadLength();
+  //u_int32_t getRealPayloadLength();
 
   /**
    * Set the length of the payload
@@ -85,13 +87,18 @@ public:
    * Get the size of the allocated memory for the payload
    * @return maximum size of payload
    */
-  u_int32_t getSize() const; 
+  u_int32_t getMaxLength() const; 
 
 private:
   PlainPacket();
   PlainPacket(const PlainPacket &src);
+	void splitPayload();
+  u_int32_t max_length_;
   payload_type_t* payload_type_;
-  u_int32_t size_;
+protected:
+	friend class Cypher;
+	u_int8_t * complete_payload_;
+	u_int32_t complete_payload_length_;
 };
 
 #endif
