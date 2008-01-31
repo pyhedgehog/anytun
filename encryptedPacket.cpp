@@ -93,6 +93,10 @@ void EncryptedPacket::setLength(u_int32_t length)
     throw std::out_of_range("can't set length greater then size ofsize of  allocated memory");
 
   length_ = length;
+	if( auth_tag_)
+		payload_length_ = length_ - sizeof(struct HeaderStruct)+AUTHTAG_SIZE;
+	else
+		payload_length_ = length_ - sizeof(struct HeaderStruct);
 }
 
 void EncryptedPacket::setSeqNr(seq_nr_t seq_nr)

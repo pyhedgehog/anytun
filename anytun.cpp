@@ -282,9 +282,10 @@ void* receiver(void* p)
     c->decrypt(packet, plain_packet);
     
     // check payload_type and remove it
-    if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||
-       (param->dev.getType() == TunDevice::TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
-      continue;
+//TODO: fix this!
+//    if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||
+//       (param->dev.getType() == TunDevice::TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
+//      continue;
 
     // write it on the device
     param->dev.write(plain_packet);
