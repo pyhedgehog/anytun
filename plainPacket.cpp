@@ -73,7 +73,7 @@ payload_type_t PlainPacket::getPayloadType() const
 
 void PlainPacket::setPayloadType(payload_type_t payload_type)
 {
-  payload_type_ = PAYLOAD_TYPE_T_HTON(payload_type);
+  *payload_type_ = PAYLOAD_TYPE_T_HTON(payload_type);
 }
 
 void PlainPacket::setLength(u_int32_t length)
