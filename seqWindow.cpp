@@ -71,6 +71,8 @@ bool SeqWindow::hasSeqNr(sender_id_t sender, seq_nr_t seq)
 void SeqWindow::addSeqNr(sender_id_t sender, seq_nr_t seq)
 {
   Lock lock(mutex_);
+  if (!window_size_)
+    return;
   if(sender_[sender].size() >= window_size_)
     sender_[sender].pop_front();
   sender_[sender].push_back(seq);
