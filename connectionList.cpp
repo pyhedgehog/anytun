@@ -66,10 +66,8 @@ const ConnectionMap::iterator ConnectionList::getConnection(u_int16_t mux)
 }
 
 
-ConnectionParam & ConnectionList::getOrNewConnection(u_int16_t mux)
+ConnectionParam & ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
 {
-	Lock lock(mutex_);
-
 	ConnectionMap::iterator it = connections_.find(mux);
 	if(it!=connections_.end())
 		return it->second;

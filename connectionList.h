@@ -48,7 +48,7 @@ public:
 	void addConnection(ConnectionParam &conn, u_int16_t mux);
 	const ConnectionMap::iterator getConnection(u_int16_t mux);
 	const ConnectionMap::iterator getEnd();
-	ConnectionParam & getOrNewConnection(u_int16_t mux);
+	ConnectionParam & getOrNewConnectionUnlocked(u_int16_t mux);
 	bool empty();
 	void clear();
   Mutex& getMutex();

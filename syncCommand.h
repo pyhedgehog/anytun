@@ -15,7 +15,6 @@ public:
 
 private:
 	SyncCommand(const SyncCommand &);
-  ::Mutex mutex_;
 	ConnectionList & cl_;
 	u_int16_t mux_;
   friend class boost::serialization::access;
@@ -24,7 +23,7 @@ private:
   {
 		Lock lock(cl_.getMutex());
     ar & mux_;
-		ConnectionParam & conn = cl_.getOrNewConnection(mux_);
+		ConnectionParam & conn = cl_.getOrNewConnectionUnlocked(mux_);
 		ar & conn;
 	}
 };

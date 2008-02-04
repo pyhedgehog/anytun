@@ -87,11 +87,10 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
   KeyDerivation * kd = new KeyDerivation;
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
-
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
+ 	cl.addConnection(connparam,0);
+  SyncCommand sc (cl,0);
 
-	cl.addConnection(connparam,0);
-	SyncCommand sc (cl,0);
 	queue.push(sc);
 }
 
@@ -361,9 +360,12 @@ int main(int argc, char* argv[])
 	ConnectToList connect_to = opt.getConnectTo();
 	SyncQueue queue;
 
+  cLog.msg(Log::PRIO_DEBUG) << "pre create conn";
+
 	if(opt.getRemoteAddr() != "")
 		createConnection(opt.getRemoteAddr(),opt.getRemotePort(),cl,opt.getSeqWindowSize(), queue);
   
+  cLog.msg(Log::PRIO_DEBUG) << "post create conn";
 
   ThreadParam p(opt, dev, *src, cl, queue,*(new OptionConnectTo()));
     
