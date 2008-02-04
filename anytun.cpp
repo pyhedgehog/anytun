@@ -164,9 +164,9 @@ void* sender(void* p)
       plain_packet.setPayloadType(0);
 
     // encrypt packet
-//    conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key, session_key.getLength());
-//    conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt, session_salt.getLength());
-//    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key, session_auth_key.getLength());
+    conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key, session_key.getLength());
+    conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt, session_salt.getLength());
+    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key, session_auth_key.getLength());
     
     c->setKey(session_key);
     c->setSalt(session_salt);
@@ -274,8 +274,8 @@ void* receiver(void* p)
 			continue;
 
     // decrypt packet
-//    conn.kd_.generate(LABEL_SATP_ENCRYPTION, packet.getSeqNr(), session_key, session_key.getLength());
-//    conn.kd_.generate(LABEL_SATP_SALT, packet.getSeqNr(), session_salt, session_salt.getLength());
+    conn.kd_.generate(LABEL_SATP_ENCRYPTION, packet.getSeqNr(), session_key, session_key.getLength());
+    conn.kd_.generate(LABEL_SATP_SALT, packet.getSeqNr(), session_salt, session_salt.getLength());
     c->setKey(session_key);
     c->setSalt(session_salt);
     c->decrypt(packet, plain_packet);
