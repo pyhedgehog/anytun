@@ -69,12 +69,25 @@ const ConnectionMap::iterator ConnectionList::getConnection(u_int16_t mux)
 ConnectionParam & ConnectionList::getOrNewConnection(u_int16_t mux)
 {
 	Lock lock(mutex_);
+
 	ConnectionMap::iterator it = connections_.find(mux);
 	if(it!=connections_.end())
 		return it->second;
+
+  uint8_t key[] = {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+  'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
+  };
+  
+  uint8_t salt[] = {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+  'i', 'j', 'k', 'l', 'm', 'n'
+  };
+
   SeqWindow * seq= new SeqWindow(0);
   seq_nr_t seq_nr_=0;
   KeyDerivation * kd = new KeyDerivation;
+  kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   ConnectionParam conn ( (*kd),  (*seq), seq_nr_, "",  0);
 	connections_.insert(ConnectionMap::value_type(mux, conn));
 	it = connections_.find(mux);
@@ -91,4 +104,9 @@ bool ConnectionList::empty()
 {
   Lock lock(mutex_);
 	return connections_.empty();
+}
+
+Mutex& ConnectionList::getMutex()
+{
+  return mutex_;
 }

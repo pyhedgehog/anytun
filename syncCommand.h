@@ -22,7 +22,7 @@ private:
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
   {
-		Lock lock(mutex_);
+		Lock lock(cl_.getMutex());
     ar & mux_;
 		ConnectionParam & conn = cl_.getOrNewConnection(mux_);
 		ar & conn;
@@ -30,4 +30,4 @@ private:
 };
 
 
-#endif // _SYNCSOCKET_H
+#endif // _SYNCCOMMAND_H

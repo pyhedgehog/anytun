@@ -52,15 +52,15 @@ class KeyDerivation
 {
 public:
   KeyDerivation() : ld_kdr_(-1), salt_(0), cipher_(NULL) {};
-  virtual ~KeyDerivation() {};
+  virtual ~KeyDerivation();
 
   void init(Buffer key, Buffer salt);
   void setLogKDRate(const u_int8_t ld_rate);
   void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length);
-  void clear();
-	u_int32_t bufferGetLength() const;
 
 private:
+  void updateKey();
+  
 	KeyDerivation(const KeyDerivation & src);
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -69,13 +69,14 @@ private:
 		Lock lock(mutex_);
 	  ar & ld_kdr_;
 	  ar & salt_;
+    ar & key_;
+    updateKey();
 	}
 
 protected:
   int8_t ld_kdr_;     // ld(key_derivation_rate)
   SyncBuffer salt_;
-  static const char* MIN_GCRYPT_VERSION;
-  static const u_int32_t GCRYPT_SEC_MEM = 32768;    // 32k secure memory
+  SyncBuffer key_;
 
   gcry_cipher_hd_t cipher_;
   Mutex mutex_;

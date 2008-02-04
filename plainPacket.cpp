@@ -46,6 +46,7 @@ PlainPacket::~PlainPacket()
 
 PlainPacket::PlainPacket(u_int32_t max_payload_length) : Buffer(max_payload_length + sizeof(payload_type_t))
 {
+  payload_type_ = NULL;
 	splitPayload();
 }
 
@@ -73,7 +74,8 @@ payload_type_t PlainPacket::getPayloadType() const
 
 void PlainPacket::setPayloadType(payload_type_t payload_type)
 {
-  *payload_type_ = PAYLOAD_TYPE_T_HTON(payload_type);
+  if(payload_type_)
+    *payload_type_ = PAYLOAD_TYPE_T_HTON(payload_type);
 }
 
 void PlainPacket::setLength(u_int32_t length)

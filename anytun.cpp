@@ -70,26 +70,26 @@
 #define SESSION_KEYLEN_ENCR 16
 #define SESSION_KEYLEN_SALT 14
 
-uint8_t key[] = {
- 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
- 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
- 'q', 'r', 's', 't'
-};
-
-uint8_t salt[] = {
- 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
- 'i', 'j', 'k', 'l', 'm', 'n'
-};
-
 void createConnection(const std::string & remote_host , u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue)
 {
+  uint8_t key[] = {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+  'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
+  };
+  
+  uint8_t salt[] = {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+  'i', 'j', 'k', 'l', 'm', 'n'
+  };
 
 	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = new KeyDerivation;
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
+
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
+
 	cl.addConnection(connparam,0);
 	SyncCommand sc (cl,0);
 	queue.push(sc);
@@ -282,14 +282,51 @@ void* receiver(void* p)
     c->decrypt(packet, plain_packet);
     
     // check payload_type and remove it
-   if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||
-      (param->dev.getType() == TunDevice::TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
-     continue;
+    if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||
+       (param->dev.getType() == TunDevice::TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
+      continue;
 
     // write it on the device
     param->dev.write(plain_packet);
   }
   pthread_exit(NULL);
+}
+
+#define MIN_GCRYPT_VERSION "1.2.3"
+#define GCRYPT_SEC_MEM 32768    // 32k secure memory
+
+void initLibGCrypt()
+{
+  gcry_error_t err;
+      // No other library has already initialized libgcrypt.
+  if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
+  {
+    if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
+      return;
+    }
+    
+        // do NOT allocate a pool of secure memory!
+    // this is NOT thread safe!
+    
+    /* Allocate a pool of 16k secure memory.  This also drops priviliges
+     * on some systems. */
+    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
+    if( err )
+    {
+      cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err );
+      return;
+    }
+
+        /* Tell Libgcrypt that initialization has completed. */
+    err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
+    if( err ) {
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
+      return;
+    } else {
+      cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation::init: libgcrypt init finished";
+    }
+  }
 }
 
 
@@ -336,6 +373,7 @@ int main(int argc, char* argv[])
 
   // make libgcrypt thread safe
   gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread );
+  initLibGCrypt();
 
   pthread_t senderThread;
   pthread_create(&senderThread, NULL, sender, &p);  

@@ -51,6 +51,7 @@ public:
 	ConnectionParam & getOrNewConnection(u_int16_t mux);
 	bool empty();
 	void clear();
+  Mutex& getMutex();
 
 private:
   ConnectionList(const ConnectionList &s);
