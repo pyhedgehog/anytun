@@ -6,11 +6,12 @@
 #include <boost/archive/text_iarchive.hpp>
 
 
+#include "log.h"
 //#include "connectionParam.h"
 #include "Sockets/Utility.h"
 #include "syncClientSocket.h"
 #include "buffer.h"
-//#include "log.h"
+
 
 SyncClientSocket::SyncClientSocket(ISocketHandler& h,ConnectionList & cl)
 :TcpSocket(h),cl_(cl)
@@ -26,14 +27,13 @@ SyncClientSocket::SyncClientSocket(ISocketHandler& h,ConnectionList & cl)
 
 bool SyncClientSocket::OnConnectRetry()
 {
-	std::cout << "SyncClientSocket::OnConnectRetry" << std::endl;
 	return true;
 }
 
 
 void SyncClientSocket::OnReconnect()
 {
-	std::cout << "SyncClientSocket::OnReconnect" << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "reconnected with " << GetRemoteHostname() << std::endl;
 	// ...
 	//Send("Welcome back\r\n");
 }
@@ -43,7 +43,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 //void SyncClientSocket::OnLine(const std::string& line)
 {
 	std::stringstream iss;
-	std::cout << "recieved sync inforamtaion:"<< std::endl;
+	cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion from " << GetRemoteHostname() << std::endl;
 	for(size_t index=0;index<len;index++)
 	{
 		std::cout << buf[index];
@@ -55,7 +55,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	ia >> scom;
 	u_int16_t mux = scom.getMux();
 	const ConnectionParam & conn = cl_.getConnection(mux)->second;
-  std::cout << "sync connection #"<<mux<<" remote host " << conn.remote_host_ << ":" << conn.remote_port_ << std::endl;
+  cLog.msg(Log::PRIO_NOTICE) << "sync connection #"<<mux<<" remote host " << conn.remote_host_ << ":" << conn.remote_port_ << std::endl;
 }
 
 //void StatusClientSocket::InitSSLServer()

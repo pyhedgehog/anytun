@@ -360,12 +360,8 @@ int main(int argc, char* argv[])
 	ConnectToList connect_to = opt.getConnectTo();
 	SyncQueue queue;
 
-  cLog.msg(Log::PRIO_DEBUG) << "pre create conn";
-
 	if(opt.getRemoteAddr() != "")
 		createConnection(opt.getRemoteAddr(),opt.getRemotePort(),cl,opt.getSeqWindowSize(), queue);
-  
-  cLog.msg(Log::PRIO_DEBUG) << "post create conn";
 
   ThreadParam p(opt, dev, *src, cl, queue,*(new OptionConnectTo()));
     

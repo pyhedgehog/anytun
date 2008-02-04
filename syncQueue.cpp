@@ -42,14 +42,9 @@
 #include "syncQueue.h"
 void SyncQueue::push(const SyncCommand & scom )
 {
-
-  std::cout << "entered push" << std::endl;
-
 	std::ostringstream sout;
 	boost::archive::text_oarchive oa(sout);
 	oa << scom;
-
-  std::cout << "after serialize" << std::endl;
 
   Lock lock(mutex_);
 	queue_.push(sout.str());
