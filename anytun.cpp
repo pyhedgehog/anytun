@@ -90,7 +90,6 @@ void createConnection(const std::string & remote_host , u_int16_t remote_port, C
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
  	cl.addConnection(connparam,0);
   SyncCommand sc (cl,0);
-
 	queue.push(sc);
 }
 
@@ -294,16 +293,19 @@ void* receiver(void* p)
 
 void initLibGCrypt()
 {
+  // make libgcrypt thread safe
+  gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread );
+
   gcry_error_t err;
       // No other library has already initialized libgcrypt.
   if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
   {
     if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
-      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
+      cLog.msg(Log::PRIO_ERR) << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
       return;
     }
     
-        // do NOT allocate a pool of secure memory!
+    // do NOT allocate a pool of secure memory!
     // this is NOT thread safe!
     
     /* Allocate a pool of 16k secure memory.  This also drops priviliges
@@ -318,10 +320,10 @@ void initLibGCrypt()
         /* Tell Libgcrypt that initialization has completed. */
     err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
     if( err ) {
-      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
+      cLog.msg(Log::PRIO_ERR) << "initLibGCrypt: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
       return;
     } else {
-      cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation::init: libgcrypt init finished";
+      cLog.msg(Log::PRIO_NOTICE) << "initLibGCrypt: libgcrypt init finished";
     }
   }
 }
@@ -367,8 +369,6 @@ int main(int argc, char* argv[])
   cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
   cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << p.dev.getTypeString() << "'";
 
-  // make libgcrypt thread safe
-  gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread );
   initLibGCrypt();
 
   pthread_t senderThread;
@@ -396,7 +396,7 @@ int main(int argc, char* argv[])
 	  pthread_cancel(syncListenerThread);  
 	for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)
 		pthread_cancel(*it);
-
+  
   pthread_join(senderThread, NULL);
   pthread_join(receiverThread, NULL);
 	if ( opt.getLocalSyncPort())
