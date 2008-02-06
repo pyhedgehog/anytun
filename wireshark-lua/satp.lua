@@ -7,7 +7,9 @@ do
  -- create a function to dissect it
  function satp_proto.dissector(buffer,pinfo,tree)
     pinfo.cols.protocol = "SATP"
-    local subtree = tree:add(satp_proto,buffer(),"SATP Protocol Data")
+
+    local subtree = tree:add(satp_proto,buffer(),"SATP, Sender Id: " .. buffer(4,2):uint() .. ", Mux: " .. buffer(6,2):uint() .. ", SeqNr: " .. buffer(0,4):uint())
+
     subtree:add(buffer(0,4),"Sequence Number: " .. buffer(0,4):uint())
     subtree:add(buffer(4,2),"Sender ID: " .. buffer(4,2):uint())
     subtree:add(buffer(6,2),"Mux: " .. buffer(6,2):uint())
