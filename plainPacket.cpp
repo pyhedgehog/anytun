@@ -67,6 +67,11 @@ void PlainPacket::setCompletePayloadLength(u_int32_t payload_length)
 	length_=complete_payload_length_-sizeof(payload_type_t);
 }
 
+u_int32_t PlainPacket::getCompletePayloadLength()
+{
+	return complete_payload_length_;
+}
+
 payload_type_t PlainPacket::getPayloadType() const
 {
   return PAYLOAD_TYPE_T_NTOH(*payload_type_);

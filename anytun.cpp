@@ -144,10 +144,8 @@ void* sender(void* p)
 
     // read packet from device
     u_int32_t len = param->dev.read(plain_packet);
-//		std::cout << len << std::endl;
     plain_packet.setLength(len);
     packet.setLength( len );
-
     if( param->cl.empty())
       continue;
 		ConnectionMap::iterator cit = param->cl.getConnection(mux);

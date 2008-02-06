@@ -64,6 +64,7 @@ public:
   void setPayloadType(payload_type_t payload_type);
 
 	void setCompletePayloadLength(u_int32_t payload_length);
+	u_int32_t getCompletePayloadLength();
 
   /**
    * Set the real payload length

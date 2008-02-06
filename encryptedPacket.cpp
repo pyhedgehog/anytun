@@ -59,7 +59,7 @@ EncryptedPacket::~EncryptedPacket()
     length_ = max_length_ + sizeof(struct HeaderStruct);
 }
 
-void EncryptedPacket::setPayloadLength(u_int8_t payload_length)
+void EncryptedPacket::setPayloadLength(u_int32_t payload_length)
 {
 	if( auth_tag_)
 		length_= payload_length + sizeof(struct HeaderStruct)+AUTHTAG_SIZE;

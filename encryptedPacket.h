@@ -111,7 +111,7 @@ public:
   AuthTag getAuthTag() const;
   void setAuthTag(AuthTag& tag);
 
-	void setPayloadLength(u_int8_t payload_length);
+	void setPayloadLength(u_int32_t payload_length);
 
                        
 //  bool hasHeader() const;
