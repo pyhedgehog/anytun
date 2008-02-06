@@ -290,6 +290,10 @@ void* receiver(void* p)
 
 #define MIN_GCRYPT_VERSION "1.2.3"
 #define GCRYPT_SEC_MEM 32768    // 32k secure memory
+// make libgcrypt thread safe
+extern "C" {
+GCRY_THREAD_OPTION_PTHREAD_IMPL;
+}
 
 void initLibGCrypt()
 {
@@ -326,12 +330,6 @@ void initLibGCrypt()
       cLog.msg(Log::PRIO_NOTICE) << "initLibGCrypt: libgcrypt init finished";
     }
   }
-}
-
-
-// make libgcrypt thread safe
-extern "C" {
-GCRY_THREAD_OPTION_PTHREAD_IMPL;
 }
 
 int main(int argc, char* argv[])
