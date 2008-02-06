@@ -39,7 +39,14 @@ ConnectionList::ConnectionList()
 
 ConnectionList::~ConnectionList()
 {
-}
+/*  Lock lock(mutex_);
+	ConnectionMap::iterator it;
+	for(it = connections_.begin(); it != connections_.end(); ++it)
+	{
+		//delete &it->second.kd_;
+	}
+*/
+} 
 
 void ConnectionList::addConnection(ConnectionParam &conn, u_int16_t mux )
 {
