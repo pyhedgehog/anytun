@@ -39,11 +39,13 @@
 class AuthAlgoFactory
 {
 public:
-  AuthAlgoFactory() {};
-  ~AuthAlgoFactory() {};
+  static AuthAlgo* create(std::string const& type);
 
-  AuthAlgo* create(std::string const& type);
-
+private:
+  AuthAlgoFactory();
+  AuthAlgoFactory(const AuthAlgoFactory& src);
+  void operator=(const AuthAlgoFactory& src);
+  ~AuthAlgoFactory();
 };
 
 #endif

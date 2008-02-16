@@ -116,7 +116,7 @@ bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)
                                << " seq:"<<pack.getSeqNr() << " sid: "<<pack.getSenderId();
 		return false;
 	}
-
+  
 	conn.seq_window_.addSeqNr(pack.getSenderId(), pack.getSeqNr());
 	return true;
 }
@@ -125,21 +125,22 @@ void* sender(void* p)
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
-  CypherFactory c_factory;
-  AuthAlgoFactory a_factory;
-  std::auto_ptr<Cypher> c(c_factory.create(param->opt.getCypher()));
-  std::auto_ptr<AuthAlgo> a( a_factory.create(param->opt.getAuthAlgo()) );
+  std::auto_ptr<Cypher> c(CypherFactory::create(param->opt.getCypher()));
+  std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
 
   PlainPacket plain_packet(1600); // TODO: fix me... mtu size
   EncryptedPacket packet(1600);
 
-  Buffer session_key(SESSION_KEYLEN_ENCR), session_salt(SESSION_KEYLEN_SALT), session_auth_key(SESSION_KEYLEN_AUTH);
+      // TODO: hardcoded keySize!!!
+  Buffer session_key(SESSION_KEYLEN_ENCR);
+  Buffer session_salt(SESSION_KEYLEN_SALT);
+  Buffer session_auth_key(SESSION_KEYLEN_AUTH);
 
   //TODO replace mux
   u_int16_t mux = 0;
   while(1)
   {
-    plain_packet.setLength( plain_packet.getMaxLength());
+    plain_packet.setLength( plain_packet.getMaxLength()); // Q@NINE wtf???
 
     // read packet from device
     u_int32_t len = param->dev.read(plain_packet);
@@ -160,18 +161,20 @@ void* sender(void* p)
     else 
       plain_packet.setPayloadType(0);
 
-    // encrypt packet
-    conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key, session_key.getLength());
-    conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt, session_salt.getLength());
-    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key, session_auth_key.getLength());
-    
+    // generate packet-key
+    conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key);
+    conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt);
     c->setKey(session_key);
     c->setSalt(session_salt);
+
+    // encrypt packet
     c->encrypt(plain_packet, packet, conn.seq_nr_, param->opt.getSenderId());
 
     packet.setHeader(conn.seq_nr_, param->opt.getSenderId(), mux);
     conn.seq_nr_++;
 
+        // TODO: activate authentication
+//    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key);
 //    a->setKey(session_auth_key);
 //		addPacketAuthTag(packet, a.get(), conn);
     param->src.send(packet, conn.remote_host_, conn.remote_port_);
@@ -217,46 +220,48 @@ void* receiver(void* p)
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
 
-  CypherFactory c_factory;
-  AuthAlgoFactory a_factory;
-  std::auto_ptr<Cypher> c( c_factory.create(param->opt.getCypher()) );
-  std::auto_ptr<AuthAlgo> a( a_factory.create(param->opt.getAuthAlgo()) );
+  std::auto_ptr<Cypher> c( CypherFactory::create(param->opt.getCypher()) );
+  std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
 
   EncryptedPacket packet(1600);     // TODO: dynamic mtu size
   PlainPacket plain_packet(1600);
-  Buffer session_key(SESSION_KEYLEN_SALT), session_salt(SESSION_KEYLEN_SALT), session_auth_key(SESSION_KEYLEN_AUTH);
+
+      // TODO: hardcoded keysize!!!
+  Buffer session_key(SESSION_KEYLEN_SALT);
+  Buffer session_salt(SESSION_KEYLEN_SALT);
+  Buffer session_auth_key(SESSION_KEYLEN_AUTH);
 
   while(1)
   {
     string remote_host;
     u_int16_t remote_port;
-    packet.setLength( packet.getMaxLength() );
-    plain_packet.setLength( plain_packet.getMaxLength() );
+    packet.setLength( packet.getMaxLength() );             // Q@NINE wtf???
+    plain_packet.setLength( plain_packet.getMaxLength() ); // Q@NINE wtf???
     //    u_int16_t sid = 0, seq = 0;
 
     // read packet from socket
     u_int32_t len = param->src.recv(packet, remote_host, remote_port);
     packet.setLength(len);
 
+		// TODO: check auth tag first
+//    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key);
+//    a->setKey( session_auth_key );
+//		if(!checkPacketAuthTag(packet, a.get(), conn))
+//			continue;
+
+
     // autodetect peer
-		// TODO check auth tag first
-		// this should be done by keymanagement anyway
     if(param->opt.getRemoteAddr() == "" && param->cl.empty())
 		{
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
 			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize(),param->queue);
 		}
 
-		//TODO Add multi connection support here
+		// TODO: Add multi connection support here
 		ConnectionParam & conn = param->cl.getConnection(0)->second;
 
-    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key, session_auth_key.getLength());
-//    a->setKey( session_auth_key );
-//		if(!checkPacketAuthTag(packet, a.get(), conn))
-//			continue;
-
 		//Allow dynamic IP changes 
-		//TODO add command line option to turn this off
+		//TODO: add command line option to turn this off
 		if (remote_host != conn.remote_host_ || remote_port != conn.remote_port_)
 		{
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host ip changed " << remote_host << ":" << remote_port;
@@ -269,15 +274,17 @@ void* receiver(void* p)
 		// Replay Protection
 		if (!checkPacketSeqNr(packet, conn))
 			continue;
-
-    // decrypt packet
-    conn.kd_.generate(LABEL_SATP_ENCRYPTION, packet.getSeqNr(), session_key, session_key.getLength());
-    conn.kd_.generate(LABEL_SATP_SALT, packet.getSeqNr(), session_salt, session_salt.getLength());
+    
+    // generate packet-key
+    conn.kd_.generate(LABEL_SATP_ENCRYPTION, packet.getSeqNr(), session_key);
+    conn.kd_.generate(LABEL_SATP_SALT, packet.getSeqNr(), session_salt);
     c->setKey(session_key);
     c->setSalt(session_salt);
+
+    // decrypt packet
     c->decrypt(packet, plain_packet);
     
-    // check payload_type and remove it
+    // check payload_type
     if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||
        (param->dev.getType() == TunDevice::TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
       continue;
@@ -295,7 +302,7 @@ extern "C" {
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
 }
 
-void initLibGCrypt()
+bool initLibGCrypt()
 {
   // make libgcrypt thread safe
   gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread );
@@ -306,11 +313,12 @@ void initLibGCrypt()
   {
     if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
       cLog.msg(Log::PRIO_ERR) << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
-      return;
+      std::cout << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
+      return false;
     }
     
-    // do NOT allocate a pool of secure memory!
-    // this is NOT thread safe!
+    // do NOT allocate a pool uof secure memory!   Q@NINE?
+    // this is NOT thread safe! ?????????????????????????????????? 
     
     /* Allocate a pool of 16k secure memory.  This also drops priviliges
      * on some systems. */
@@ -318,18 +326,21 @@ void initLibGCrypt()
     if( err )
     {
       cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err );
-      return;
+      std::cout << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err ) << std::endl;
+      return false;
     }
 
         /* Tell Libgcrypt that initialization has completed. */
     err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
     if( err ) {
       cLog.msg(Log::PRIO_ERR) << "initLibGCrypt: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
-      return;
-    } else {
-      cLog.msg(Log::PRIO_NOTICE) << "initLibGCrypt: libgcrypt init finished";
+      std::cout << "initLibGCrypt: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err ) << std::endl;
+      return false;
     }
   }
+  cLog.msg(Log::PRIO_NOTICE) << "initLibGCrypt: libgcrypt init finished";
+
+  return true;
 }
 
 int main(int argc, char* argv[])
@@ -367,7 +378,8 @@ int main(int argc, char* argv[])
   cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
   cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << p.dev.getTypeString() << "'";
 
-  initLibGCrypt();
+  if(!initLibGCrypt())
+    return -1;
 
   pthread_t senderThread;
   pthread_create(&senderThread, NULL, sender, &p);  

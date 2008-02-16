@@ -53,6 +53,8 @@ private:
   virtual void cypher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) {};
 };
 
+//****** NullCypher ******
+
 class NullCypher : public Cypher
 {
 public:
@@ -62,6 +64,8 @@ protected:
   void cypher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
 };
 
+//****** AesIcmCypher ******
+
 class AesIcmCypher : public Cypher
 {
 public:
@@ -69,9 +73,6 @@ public:
   ~AesIcmCypher();
   void setKey(Buffer key);
   void setSalt(Buffer salt);
-
-  static const char* MIN_GCRYPT_VERSION;
-  static const u_int32_t GCRYPT_SEC_MEM = 16384;    // 16k secure memory
 
 protected:
   void cypher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);

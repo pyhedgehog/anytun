@@ -46,15 +46,15 @@ void KeyDerivation::init(Buffer key, Buffer salt)
   Lock lock(mutex_);
   gcry_error_t err;
 
-  // TODO: hardcoded keysize!
+  // TODO: hardcoded cipher-type and keysize??
   err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to open cipher: " << gpg_strerror( err );
     return;
   }
 
-  salt_ = SyncBuffer(salt);
-  key_ = SyncBuffer(key);
+  master_salt_ = SyncBuffer(salt);
+  master_key_ = SyncBuffer(key);
 
   updateKey();
 }
@@ -63,9 +63,9 @@ void KeyDerivation::updateKey()
 {
   gcry_error_t err;
 
-  err = gcry_cipher_setkey( cipher_, key_.getBuf(), key_.getLength() );
+  err = gcry_cipher_setkey( cipher_, master_key_.getBuf(), master_key_.getLength() );
   if( err )
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to set cipher key: " << gpg_strerror( err );
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateKey: Failed to set cipher key: " << gpg_strerror( err );
 }
 
 KeyDerivation::~KeyDerivation()
@@ -81,14 +81,14 @@ void KeyDerivation::setLogKDRate(const uint8_t log_rate)
     ld_kdr_ = log_rate;
 }
 
-void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length) 
+void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) 
 {
   ////Lock lock(mutex_);
   gcry_error_t err;
 
   Mpi r;
-  Mpi key_id(128);
-  Mpi iv(128);
+  Mpi key_id(128); // TODO: hardcoded keySize!!!!!!!  Q@NINE?
+  Mpi iv(128); // TODO: hardcoded keySize!!!!!!!       Q@NINE?
 
   // see at: http://tools.ietf.org/html/rfc3711#section-4.3
   // *  Let r = index DIV key_derivation_rate (with DIV as defined above).
@@ -101,27 +101,28 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key,
   if( ld_kdr_ == -1 )    // means key_derivation_rate = 0
     r = 0;
   else
-    // TODO: kdr can be greater than 2^32 (= 2^48)
-    r = static_cast<long unsigned int>(seq_nr / ( 0x01 << ld_kdr_ ));
+    // TODO: kdr can be greater than 2^32 (= 2^48) ????  Q@NINE?
+// Q@NINE? was: r = static_cast<long unsigned int>(seq_nr / ( 0x01 << ld_kdr_ ));
+    r = static_cast<u_int64_t>(seq_nr / ( 0x01 << ld_kdr_ ));
 
-  r = r.mul2exp(8);
+  r = r.mul2exp(8);  // Q@NINE? === r << 8
   key_id = r + static_cast<long unsigned int>(label);
-
-  Mpi salt = Mpi(salt_.getBuf(), salt_.getLength());
+  
+  Mpi salt = Mpi(master_salt_.getBuf(), master_salt_.getLength());
   iv = key_id ^ salt;
 
   err = gcry_cipher_reset( cipher_ );
   if( err ) 
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror( err );
-
+  
   u_int8_t *iv_buf = iv.getNewBuf(16);
   err = gcry_cipher_setiv( cipher_ , iv_buf, 16);
   delete[] iv_buf;
   if( err )
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set IV: " << gpg_strerror( err );
 
-  err = gcry_cipher_encrypt( cipher_, key, length, 0, 0 );
- 
+  err = gcry_cipher_encrypt( cipher_, key, key.getLength(), 0, 0 );
+  
   if( err ) 
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror( err );
 }

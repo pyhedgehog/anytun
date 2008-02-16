@@ -39,10 +39,13 @@
 class CypherFactory
 {
 public:
-  CypherFactory() {};
-  ~CypherFactory() {};
+  static Cypher* create(std::string const& type);
 
-  Cypher* create(std::string const& type);
+private:
+  CypherFactory();
+  CypherFactory(const CypherFactory& src);
+  void operator=(const CypherFactory& src);
+  ~CypherFactory();
 };
 
 #endif

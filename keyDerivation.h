@@ -51,12 +51,12 @@ typedef enum {
 class KeyDerivation
 {
 public:
-  KeyDerivation() : ld_kdr_(-1), salt_(0), cipher_(NULL) {};
+  KeyDerivation() : ld_kdr_(-1), master_salt_(0), cipher_(NULL) {};
   virtual ~KeyDerivation();
 
   void init(Buffer key, Buffer salt);
   void setLogKDRate(const u_int8_t ld_rate);
-  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key, u_int32_t length);
+  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
 
 private:
   void updateKey();
@@ -68,15 +68,15 @@ private:
 	{
 		Lock lock(mutex_);
 	  ar & ld_kdr_;
-	  ar & salt_;
-    ar & key_;
+	  ar & master_salt_;
+    ar & master_key_;
     updateKey();
 	}
 
 protected:
   int8_t ld_kdr_;     // ld(key_derivation_rate)
-  SyncBuffer salt_;
-  SyncBuffer key_;
+  SyncBuffer master_salt_;
+  SyncBuffer master_key_;
 
   gcry_cipher_hd_t cipher_;
   Mutex mutex_;

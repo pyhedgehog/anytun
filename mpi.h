@@ -38,7 +38,7 @@
 
 
 /**
- * This class is a wrapper for the libgcrypt multi precision integer library [1].<br>
+ * This class is a wrapper for the libgcrypt multi precision integer library [1]
  * [1] http://www.gnupg.org/documentation/manuals/gcrypt/MPI-library.html
  *
  */

@@ -52,43 +52,24 @@ void Cypher::decrypt(const EncryptedPacket & in,PlainPacket & out)
 	out.setCompletePayloadLength(in.payload_length_);
 }
 
+
+
+//****** NullCypher ******
+
 void NullCypher::cypher(u_int8_t * out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
 	std::memcpy(out, in, length );
 }
 
-const char* AesIcmCypher::MIN_GCRYPT_VERSION = "1.2.3";
 
-AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))
+
+//****** AesIcmCypher ****** 
+
+AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))   // Q@NINE 14??????
 {
   gcry_error_t err;
 
-  // No other library has already initialized libgcrypt.
-  if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
-  {
-    if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
-      cLog.msg(Log::PRIO_ERR) << "AesIcmCypher::AesIcmCypher: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
-      return;
-    }
-
-    /* Allocate a pool of secure memory.  This also drops priviliges
-       on some systems. */
-    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
-    if( err ) {
-      cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << "bytes of secure memory: " << gpg_strerror( err );
-      return;
-    }
-
-    /* Tell Libgcrypt that initialization has completed. */
-    err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
-    if( err ) {
-      cLog.msg(Log::PRIO_CRIT) << "AesIcmCypher::AesIcmCypher: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
-      return;
-    } else {
-      cLog.msg(Log::PRIO_DEBUG) << "AesIcmCypher::AesIcmCypher: libgcrypt init finished";
-    }
-  }
-
+      // TODO: hardcoded keysize!!!!!
   err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err )
     cLog.msg(Log::PRIO_CRIT) << "AesIcmCypher::AesIcmCypher: Failed to open cypher";
@@ -105,8 +86,8 @@ AesIcmCypher::~AesIcmCypher()
 void AesIcmCypher::setKey(Buffer key)
 {
   gcry_error_t err;
-  // FIXXME: hardcoded keysize
-  err = gcry_cipher_setkey( cipher_, key.getBuf(), 16 );
+
+  err = gcry_cipher_setkey( cipher_, key.getBuf(), key.getLength() );
   if( err )
     cLog.msg(Log::PRIO_ERR) << "AesIcmCypher::setKey: Failed to set cipher key: " << gpg_strerror( err );
 }
