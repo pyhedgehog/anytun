@@ -36,45 +36,20 @@
 
 #include <gcrypt.h>
 
+//****** NullAuthAlgo ******
 
 AuthTag NullAuthAlgo::calc(const Buffer& buf)
 {
   return AuthTag(0);
 }
 
-const char* Sha1AuthAlgo::MIN_GCRYPT_VERSION = "1.2.3";
+//****** Sha1AuthAlgo ******
 
-// HMAC_SHA1
 Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
 {
   Lock lock(mutex_);
-  gcry_error_t err;
-  // No other library has already initialized libgcrypt.
-  if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
-  {
-    if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
-      cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::Sha1AuthAlgo: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
-      return;
-    }
 
-    /* Allocate a pool of secure memory.  
-     * This also drops priviliges on some systems. */
-    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
-    if( err ) {
-      cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << "bytes of secure memory: " << gpg_strerror( err );
-      return;
-    }
-        
-    /* Tell Libgcrypt that initialization has completed. */
-    err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
-    if( err ) {
-      cLog.msg(Log::PRIO_CRIT) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
-      return;
-    } else {
-      cLog.msg(Log::PRIO_DEBUG) << "Sha1AuthAlgo::Sha1AuthAlgo: libgcrypt init finished";
-    }
-  }
-  err = gcry_md_open( &ctx_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC );
+  gcry_error_t err = gcry_md_open( &ctx_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC );
   if( err )
     cLog.msg(Log::PRIO_CRIT) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to open message digest algo";
 }
@@ -82,6 +57,7 @@ Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
 Sha1AuthAlgo::~Sha1AuthAlgo()
 {
   Lock lock(mutex_);
+
   gcry_md_close( ctx_ );
   cLog.msg(Log::PRIO_DEBUG) << "Sha1AuthAlgo::~Sha1AuthAlgo: closed hmac handler";
 }
@@ -89,16 +65,17 @@ Sha1AuthAlgo::~Sha1AuthAlgo()
 void Sha1AuthAlgo::setKey(Buffer key)
 {
   Lock lock(mutex_);
+
   gcry_error_t err;
   err = gcry_md_setkey( ctx_, key.getBuf(), key.getLength() );
   if( err )
     cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set cipher key: " << gpg_strerror( err );
 }
 
-
 AuthTag Sha1AuthAlgo::calc(const Buffer& buf)
 {
   Lock lock(mutex_);
+
   // gcry_error_t err;
   AuthTag hmac(10);      // 10byte
   gcry_mpi_t tmp = gcry_mpi_new(160);   // 20byte

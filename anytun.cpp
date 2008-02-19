@@ -207,11 +207,11 @@ void* syncListener(void* p )
 
 	if (l.Bind(param->opt.getLocalSyncPort()))
 		pthread_exit(NULL);
+
 	Utility::ResolveLocal(); // resolve local hostname
 	h.Add(&l);
 	h.Select(1,0);
-	while (1)
-	{
+	while (1) {
 		h.Select(1,0);
 	}
 }
@@ -296,7 +296,7 @@ void* receiver(void* p)
 }
 
 #define MIN_GCRYPT_VERSION "1.2.3"
-#define GCRYPT_SEC_MEM 32768    // 32k secure memory
+//#define GCRYPT_SEC_MEM 32768    // 32k secure memory
 // make libgcrypt thread safe
 extern "C" {
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
@@ -304,42 +304,38 @@ GCRY_THREAD_OPTION_PTHREAD_IMPL;
 
 bool initLibGCrypt()
 {
-  // make libgcrypt thread safe
+  // make libgcrypt thread safe 
+  // this must be called before any other libgcrypt call
   gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread );
 
-  gcry_error_t err;
-      // No other library has already initialized libgcrypt.
-  if( !gcry_control(GCRYCTL_ANY_INITIALIZATION_P) )
-  {
-    if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
-      cLog.msg(Log::PRIO_ERR) << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION;
-      std::cout << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
-      return false;
-    }
-    
-    // do NOT allocate a pool uof secure memory!   Q@NINE?
-    // this is NOT thread safe! ??????????????????????????????????   why secure memory????????
-    
-    /* Allocate a pool of 16k secure memory.  This also drops priviliges
-     * on some systems. */
-    err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
-    if( err )
-    {
-      cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err );
-      std::cout << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err ) << std::endl;
-      return false;
-    }
-
-        /* Tell Libgcrypt that initialization has completed. */
-    err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
-    if( err ) {
-      cLog.msg(Log::PRIO_ERR) << "initLibGCrypt: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err );
-      std::cout << "initLibGCrypt: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err ) << std::endl;
-      return false;
-    }
+  // this must be called right after the GCRYCTL_SET_THREAD_CBS command
+  // no other function must be called till now
+  if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
+    std::cout << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
+    return false;
   }
-  cLog.msg(Log::PRIO_NOTICE) << "initLibGCrypt: libgcrypt init finished";
+  
+  // do NOT allocate a pool uof secure memory!   Q@NINE?
+  // this is NOT thread safe! ??????????????????????????????????   why secure memory????????
+  
+  /* Allocate a pool of 16k secure memory.  This also drops priviliges
+   * on some systems. */
+//   err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
+//   if( err )
+//   {
+//     cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err );
+//     std::cout << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err ) << std::endl;
+//     return false;
+//   }
+  
+  // Tell Libgcrypt that initialization has completed.
+  gcry_error_t err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
+  if( err ) {
+    std::cout << "initLibGCrypt: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err ) << std::endl;
+    return false;
+  }
 
+  cLog.msg(Log::PRIO_NOTICE) << "initLibGCrypt: libgcrypt init finished";
   return true;
 }
 
@@ -378,6 +374,7 @@ int main(int argc, char* argv[])
   cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
   cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << p.dev.getTypeString() << "'";
 
+  // this must be called before any other libgcrypt call
   if(!initLibGCrypt())
     return -1;
 

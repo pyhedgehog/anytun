@@ -38,6 +38,7 @@
 #include "mpi.h"
 #include "log.h"
 
+
 void Cipher::encrypt(const PlainPacket & in,EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id)
 {
 	cipher(out.payload_, in.complete_payload_ , in.complete_payload_length_, seq_nr, sender_id);
@@ -53,8 +54,7 @@ void Cipher::decrypt(const EncryptedPacket & in,PlainPacket & out)
 }
 
 
-
-//****** NullCipher ******
+//******* NullCipher *******
 
 void NullCipher::cipher(u_int8_t * out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
@@ -62,15 +62,12 @@ void NullCipher::cipher(u_int8_t * out, u_int8_t * in, u_int32_t length, seq_nr_
 }
 
 
-
 //****** AesIcmCipher ****** 
 
 AesIcmCipher::AesIcmCipher() : salt_(Buffer(14))   // Q@NINE 14??????
 {
-  gcry_error_t err;
-
       // TODO: hardcoded keysize!!!!!
-  err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
+  gcry_error_t err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err )
     cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher";
 }

@@ -44,15 +44,17 @@
 class ConnectionParam
 {
 public:
+	ConnectionParam(const ConnectionParam & src);
 	ConnectionParam( KeyDerivation& kd, SeqWindow& seq_window, seq_nr_t seq_nr_, std::string remote_host, u_int16_t remote_port);
+
   KeyDerivation& kd_;
   SeqWindow& seq_window_;
 	seq_nr_t seq_nr_;
   std::string remote_host_;
   u_int16_t remote_port_;
-	ConnectionParam(const ConnectionParam & src);
+
 private:
-//TODO check if this is ok
+  //TODO: check if this is ok
 	Mutex mutex_;
   friend class boost::serialization::access;
   template<class Archive>

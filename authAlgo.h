@@ -44,22 +44,32 @@ public:
   AuthAlgo() {};
   virtual ~AuthAlgo() {};
 
-  virtual AuthTag calc(const Buffer& buf) { return AuthTag(0); };
-  virtual void setKey(Buffer key) {};
+  /**
+   * set the key for the auth algo
+   * @param key key for hmac calculation
+   */
+  virtual void setKey(Buffer key) = 0;
+
+  /**
+   * calculate the sha1 hmac
+   * @param buf buffer for message digest
+   * @return sha1 hmac
+   */
+  virtual AuthTag calc(const Buffer& buf) = 0;
 };
+
+//****** NullAuthAlgo ******
 
 class NullAuthAlgo : public AuthAlgo
 {
 public:
-  NullAuthAlgo() {};
   AuthTag calc(const Buffer& buf);
   void setKey(Buffer key) {};
 };
 
 
-/**
- * HMAC SHA1 Auth Tag Generator Class
- */
+//****** Sha1AuthAlgo ******
+//* HMAC SHA1 Auth Tag Generator Class
 
 class Sha1AuthAlgo : public AuthAlgo
 {
@@ -67,21 +77,10 @@ public:
   Sha1AuthAlgo();
   ~Sha1AuthAlgo();
 
-  /**
-   * set the key for the auth algo
-   * @param key key for hmac calculation
-   */
   void setKey(Buffer key);
-
-  /**
-   * calculate the sha1 hmac
-   * @param buf buffer for message digest
-   * @return sha1 hmac
-   */
   AuthTag calc(const Buffer& buf);
+
 protected:
-  static const char* MIN_GCRYPT_VERSION;
-  static const u_int32_t GCRYPT_SEC_MEM = 32768;    // 32k secure memory
   gcry_md_hd_t ctx_;
   Mutex mutex_;
 };

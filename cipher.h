@@ -42,15 +42,16 @@
 class Cipher
 {
 public:
-  Cipher() {};
   virtual ~Cipher() {};
- 
-  void setKey(Buffer key) {};
-  void setSalt(Buffer salt) {};
+
 	void encrypt(const PlainPacket & in,EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id);
 	void decrypt(const EncryptedPacket & in,PlainPacket & out);
-private:
-  virtual void cipher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) {};
+
+  virtual void setKey(Buffer key) = 0;
+  virtual void setSalt(Buffer salt) = 0;
+
+protected:
+  virtual void cipher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) = 0;
 };
 
 //****** NullCipher ******
@@ -58,8 +59,9 @@ private:
 class NullCipher : public Cipher
 {
 public:
-  NullCipher() {};
-  ~NullCipher() {};
+  void setKey(Buffer key) {};
+  void setSalt(Buffer salt) {};
+
 protected:
   void cipher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
 };
