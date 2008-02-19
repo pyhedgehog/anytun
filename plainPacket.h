@@ -34,7 +34,7 @@
 #include "datatypes.h"
 #include "buffer.h"
 
-class Cypher;
+class Cipher;
 /**
  * plain SATP packet class<br>
  * includes payload_type and payload
@@ -97,7 +97,7 @@ private:
   u_int32_t max_length_;
   payload_type_t* payload_type_;
 protected:
-	friend class Cypher;
+	friend class Cipher;
 	u_int8_t * complete_payload_;
 	u_int32_t complete_payload_length_;
 };

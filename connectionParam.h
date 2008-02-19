@@ -33,7 +33,7 @@
 
 #include "options.h"
 #include "keyDerivation.h"
-#include "cypher.h"
+#include "cipher.h"
 #include "authAlgo.h"
 #include "seqWindow.h"
 #include "threadUtils.hpp"

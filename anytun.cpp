@@ -40,11 +40,11 @@
 #include "buffer.h"
 #include "plainPacket.h"
 #include "encryptedPacket.h"
-#include "cypher.h"
+#include "cipher.h"
 #include "keyDerivation.h"
 #include "authAlgo.h"
 #include "authTag.h"
-#include "cypherFactory.h"
+#include "cipherFactory.h"
 #include "authAlgoFactory.h"
 #include "signalController.h"
 #include "packetSource.h"
@@ -125,7 +125,7 @@ void* sender(void* p)
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
-  std::auto_ptr<Cypher> c(CypherFactory::create(param->opt.getCypher()));
+  std::auto_ptr<Cipher> c(CipherFactory::create(param->opt.getCipher()));
   std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
 
   PlainPacket plain_packet(1600); // TODO: fix me... mtu size
@@ -220,7 +220,7 @@ void* receiver(void* p)
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
 
-  std::auto_ptr<Cypher> c( CypherFactory::create(param->opt.getCypher()) );
+  std::auto_ptr<Cipher> c( CipherFactory::create(param->opt.getCipher()) );
   std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
 
   EncryptedPacket packet(1600);     // TODO: dynamic mtu size
@@ -318,7 +318,7 @@ bool initLibGCrypt()
     }
     
     // do NOT allocate a pool uof secure memory!   Q@NINE?
-    // this is NOT thread safe! ?????????????????????????????????? 
+    // this is NOT thread safe! ??????????????????????????????????   why secure memory????????
     
     /* Allocate a pool of 16k secure memory.  This also drops priviliges
      * on some systems. */

@@ -34,70 +34,70 @@
 #include <cstdio>
 #include <gcrypt.h>
 
-#include "cypher.h"
+#include "cipher.h"
 #include "mpi.h"
 #include "log.h"
 
-void Cypher::encrypt(const PlainPacket & in,EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id)
+void Cipher::encrypt(const PlainPacket & in,EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id)
 {
-	cypher(out.payload_, in.complete_payload_ , in.complete_payload_length_, seq_nr, sender_id);
+	cipher(out.payload_, in.complete_payload_ , in.complete_payload_length_, seq_nr, sender_id);
 	out.setSenderId(sender_id);
 	out.setSeqNr(seq_nr);
 	out.setPayloadLength(in.complete_payload_length_);
 }
 
-void Cypher::decrypt(const EncryptedPacket & in,PlainPacket & out)
+void Cipher::decrypt(const EncryptedPacket & in,PlainPacket & out)
 {
-	cypher(out.complete_payload_, in.payload_ , in.payload_length_, in.getSeqNr(), in.getSenderId());
+	cipher(out.complete_payload_, in.payload_ , in.payload_length_, in.getSeqNr(), in.getSenderId());
 	out.setCompletePayloadLength(in.payload_length_);
 }
 
 
 
-//****** NullCypher ******
+//****** NullCipher ******
 
-void NullCypher::cypher(u_int8_t * out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
+void NullCipher::cipher(u_int8_t * out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
 	std::memcpy(out, in, length );
 }
 
 
 
-//****** AesIcmCypher ****** 
+//****** AesIcmCipher ****** 
 
-AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))   // Q@NINE 14??????
+AesIcmCipher::AesIcmCipher() : salt_(Buffer(14))   // Q@NINE 14??????
 {
   gcry_error_t err;
 
       // TODO: hardcoded keysize!!!!!
   err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err )
-    cLog.msg(Log::PRIO_CRIT) << "AesIcmCypher::AesIcmCypher: Failed to open cipher";
+    cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher";
 }
 
 
-AesIcmCypher::~AesIcmCypher()
+AesIcmCipher::~AesIcmCipher()
 {
   gcry_cipher_close( cipher_ );
-  cLog.msg(Log::PRIO_DEBUG) << "AesIcmCypher::~AesIcmCypher: closed cipher";
+  cLog.msg(Log::PRIO_DEBUG) << "AesIcmCipher::~AesIcmCipher: closed cipher";
 }
 
 
-void AesIcmCypher::setKey(Buffer key)
+void AesIcmCipher::setKey(Buffer key)
 {
   gcry_error_t err;
 
   err = gcry_cipher_setkey( cipher_, key.getBuf(), key.getLength() );
   if( err )
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCypher::setKey: Failed to set cipher key: " << gpg_strerror( err );
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher::setKey: Failed to set cipher key: " << gpg_strerror( err );
 }
 
-void AesIcmCypher::setSalt(Buffer salt)
+void AesIcmCipher::setSalt(Buffer salt)
 {
   salt_ = salt;
 }
 
-void AesIcmCypher::cypher(u_int8_t *  out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
+void AesIcmCipher::cipher(u_int8_t *  out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
 {
   gcry_error_t err;
 
@@ -123,7 +123,7 @@ void AesIcmCypher::cypher(u_int8_t *  out, u_int8_t * in, u_int32_t length, seq_
   err = gcry_cipher_setiv( cipher_, iv_buf, 16 );  // TODO: hardcoded size
   delete[] iv_buf;
   if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to set cipher IV: " << gpg_strerror( err );
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher IV: " << gpg_strerror( err );
     return;
   }
 
@@ -131,13 +131,13 @@ void AesIcmCypher::cypher(u_int8_t *  out, u_int8_t * in, u_int32_t length, seq_
   
   err = gcry_cipher_reset( cipher_ );
   if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to reset cipher: " << gpg_strerror( err );
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to reset cipher: " << gpg_strerror( err );
     return;
   }
 
   err = gcry_cipher_encrypt( cipher_, out, length, in, length );
   if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to generate cipher bitstream: " << gpg_strerror( err );
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to generate cipher bitstream: " << gpg_strerror( err );
     return;
   }
 }

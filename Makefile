@@ -52,12 +52,12 @@ OBJS = anytun.o \
        syncCommand.o \
 			 plainPacket.o \
 			 encryptedPacket.o \
-       cypher.o \
+       cipher.o \
        authAlgo.o \
 			 authTag.o \
 			 keyDerivation.o \
 			 mpi.o \
-			 cypherFactory.o \
+			 cipherFactory.o \
 			 authAlgoFactory.o \
 			 connectionList.o \
 			 connectionParam.o \
@@ -100,7 +100,7 @@ plainPacket.o: plainPacket.cpp plainPacket.h buffer.h
 encryptedPacket.o: encryptedPacket.cpp encryptedPacket.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
-cypher.o: cypher.cpp cypher.h buffer.h 
+cipher.o: cipher.cpp cipher.h buffer.h 
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
@@ -115,7 +115,7 @@ keyDerivation.o: keyDerivation.cpp keyDerivation.h
 mpi.o: mpi.cpp mpi.h
 	$(C++) $(CCFLAGS) $< -c
 
-cypherFactory.o: cypherFactory.cpp cypherFactory.h cypher.h
+cipherFactory.o: cipherFactory.cpp cipherFactory.h cipher.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgoFactory.o: authAlgoFactory.cpp authAlgoFactory.h authAlgo.h

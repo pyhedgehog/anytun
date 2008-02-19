@@ -28,8 +28,8 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _CYPHER_H_
-#define _CYPHER_H_
+#ifndef _CIPHER_H_
+#define _CIPHER_H_
 
 #include "datatypes.h"
 #include "buffer.h"
@@ -39,43 +39,43 @@
 #include <gcrypt.h>
 
 
-class Cypher
+class Cipher
 {
 public:
-  Cypher() {};
-  virtual ~Cypher() {};
+  Cipher() {};
+  virtual ~Cipher() {};
  
   void setKey(Buffer key) {};
   void setSalt(Buffer salt) {};
 	void encrypt(const PlainPacket & in,EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id);
 	void decrypt(const EncryptedPacket & in,PlainPacket & out);
 private:
-  virtual void cypher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) {};
+  virtual void cipher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) {};
 };
 
-//****** NullCypher ******
+//****** NullCipher ******
 
-class NullCypher : public Cypher
+class NullCipher : public Cipher
 {
 public:
-  NullCypher() {};
-  ~NullCypher() {};
+  NullCipher() {};
+  ~NullCipher() {};
 protected:
-  void cypher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
+  void cipher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
 };
 
-//****** AesIcmCypher ******
+//****** AesIcmCipher ******
 
-class AesIcmCypher : public Cypher
+class AesIcmCipher : public Cipher
 {
 public:
-  AesIcmCypher();
-  ~AesIcmCypher();
+  AesIcmCipher();
+  ~AesIcmCipher();
   void setKey(Buffer key);
   void setSalt(Buffer salt);
 
 protected:
-  void cypher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
+  void cipher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
   gcry_cipher_hd_t cipher_;
   Buffer salt_;
 };

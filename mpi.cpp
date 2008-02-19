@@ -31,7 +31,7 @@
 #include "mpi.h"
 
 #include "datatypes.h"
-#include "cypher.h"
+#include "cipher.h"
 
 #include <stdexcept>
 #include <gcrypt.h>

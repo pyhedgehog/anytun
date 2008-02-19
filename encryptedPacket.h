@@ -34,7 +34,7 @@
 #include "datatypes.h"
 #include "buffer.h"
 #include "authTag.h"
-class Cypher;
+class Cipher;
 class EncryptedPacket : public Buffer
 {
 public:
@@ -137,7 +137,7 @@ private:
 
   static const u_int32_t AUTHTAG_SIZE = 10;     // 10byte
 protected:
-	friend class Cypher;
+	friend class Cipher;
 	u_int8_t * payload_;
 	u_int32_t payload_length_;
 };

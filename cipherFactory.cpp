@@ -28,24 +28,20 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _CYPHER_FACTORY_H_
-#define _CYPHER_FACTORY_H_
-
 #include <string>
+#include <stdexcept>
 
-#include "datatypes.h"
-#include "cypher.h"
+#include "cipherFactory.h"
+#include "cipher.h"
 
-class CypherFactory
+
+Cipher* CipherFactory::create(std::string const& type)
 {
-public:
-  static Cypher* create(std::string const& type);
+  if( type == "null" )
+    return new NullCipher();
+  else if( type == "aes" )
+    return new AesIcmCipher();
+  else
+    throw std::invalid_argument("cipher not available");
+}
 
-private:
-  CypherFactory();
-  CypherFactory(const CypherFactory& src);
-  void operator=(const CypherFactory& src);
-  ~CypherFactory();
-};
-
-#endif

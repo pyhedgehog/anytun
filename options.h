@@ -82,8 +82,8 @@ public:
   Options& setIfconfigParamRemoteNetmask(std::string i);
   window_size_t getSeqWindowSize();
   Options& setSeqWindowSize(window_size_t s);
-  std::string getCypher();
-  Options& setCypher(std::string c);
+  std::string getCipher();
+  Options& setCipher(std::string c);
   std::string getAuthAlgo();
   Options& setAuthAlgo(std::string a);
 	ConnectToList getConnectTo();
@@ -107,7 +107,7 @@ private:
   std::string ifconfig_param_local_;
   std::string ifconfig_param_remote_netmask_;
   window_size_t seq_window_size_;
-  std::string cypher_;
+  std::string cipher_;
   std::string auth_algo_;
 };
 

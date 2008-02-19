@@ -65,7 +65,7 @@ public:
 protected:
   friend class TunDevice;
   friend class UDPPacketSource;
-  friend class AesIcmCypher;
+  friend class AesIcmCipher;
   friend class KeyDerivation;   //
   friend class Mpi;
 

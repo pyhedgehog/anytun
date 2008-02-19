@@ -103,7 +103,7 @@ Options::Options()
   ifconfig_param_local_ = "192.168.200.1";
   ifconfig_param_remote_netmask_ = "255.255.255.0";
   seq_window_size_ = 100;
-  cypher_ = "aes";
+  cipher_ = "aes";
   auth_algo_ = "sha1";
 }
 
@@ -133,7 +133,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-t","--type", dev_type_)
     PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
-    PARSE_SCALAR_PARAM("-c","--cypher", cypher_)
+    PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
 		PARSE_SCALAR_CSLIST("-M","--sync-hosts", host_port_queue)
     else 
@@ -171,7 +171,7 @@ void Options::printUsage()
   std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
-  std::cout << "       [-c|--cypher] <cypher type>         payload encryption algorithm" << std::endl;
+  std::cout << "       [-c|--cipher] <cipher type>         payload encryption algorithm" << std::endl;
   std::cout << "       [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
 }
 
@@ -190,7 +190,7 @@ void Options::printOptions()
   std::cout << "ifconfig_param_local='" << ifconfig_param_local_ << "'" << std::endl;
   std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
   std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
-  std::cout << "cypher='" << cypher_ << "'" << std::endl;
+  std::cout << "cipher='" << cipher_ << "'" << std::endl;
   std::cout << "auth_algo='" << auth_algo_ << "'" << std::endl;
 }
 
@@ -392,16 +392,16 @@ Options& Options::setSeqWindowSize(window_size_t s)
   return *this;
 }
 
-std::string Options::getCypher()
+std::string Options::getCipher()
 {
   Lock lock(mutex);
-  return cypher_;
+  return cipher_;
 }
 
-Options& Options::setCypher(std::string c)
+Options& Options::setCipher(std::string c)
 {
   Lock lock(mutex);
-  cypher_ = c;
+  cipher_ = c;
   return *this;
 }
 
