@@ -72,7 +72,7 @@ AesIcmCypher::AesIcmCypher() : salt_(Buffer(14))   // Q@NINE 14??????
       // TODO: hardcoded keysize!!!!!
   err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err )
-    cLog.msg(Log::PRIO_CRIT) << "AesIcmCypher::AesIcmCypher: Failed to open cypher";
+    cLog.msg(Log::PRIO_CRIT) << "AesIcmCypher::AesIcmCypher: Failed to open cipher";
 }
 
 
@@ -109,21 +109,26 @@ void AesIcmCypher::cypher(u_int8_t *  out, u_int8_t * in, u_int32_t length, seq_
   //  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
   //  //  sizeof(k_s) = 112 bit, random
 
-  Mpi iv(128);
+  Mpi iv(128);  // TODO: hardcoded size
   Mpi salt = Mpi(salt_.getBuf(), salt_.getLength());
   Mpi sid = sender_id;
   Mpi seq = seq_nr;
 
-  iv = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16);
+  iv = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16); // TODO: hardcoded size
 
-  u_int8_t *iv_buf = iv.getNewBuf(16);
-  err = gcry_cipher_setiv( cipher_, iv_buf, 16 );
+  u_int8_t *iv_buf = iv.getNewBuf(16);  // TODO: hardcoded size
+
+      // Q@NINE -> CTR Mode -> gcry_cipher_setctr() ????
+
+  err = gcry_cipher_setiv( cipher_, iv_buf, 16 );  // TODO: hardcoded size
   delete[] iv_buf;
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to set cipher IV: " << gpg_strerror( err );
     return;
   }
 
+      // Q@NINE -> reset clears IV ????
+  
   err = gcry_cipher_reset( cipher_ );
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCypher: Failed to reset cipher: " << gpg_strerror( err );
