@@ -59,7 +59,7 @@ public:
   void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
 
 private:
-  void updateKey();
+  void updateMasterKey();
   
 	KeyDerivation(const KeyDerivation & src);
 	friend class boost::serialization::access;
@@ -70,7 +70,7 @@ private:
 	  ar & ld_kdr_;
 	  ar & master_salt_;
     ar & master_key_;
-    updateKey();
+    updateMasterKey();
 	}
 
 protected:

@@ -51,21 +51,17 @@ public:
   Mpi(u_int8_t length);
   Mpi(const Mpi &src);
   Mpi(const u_int8_t * src, u_int32_t len);
-  void operator=(const Mpi &src);
-  void operator=(long unsigned int);
-  Mpi operator+(const Mpi &b) const;
-  Mpi operator+(const long unsigned int &b) const;
-  Mpi operator^(const Mpi &b) const;
-  Mpi operator*(const unsigned long int n) const;
 
-  /**
-   * shift the bits to the right 
-   * (LSB on the right side)
-   * @param n number of bits to shift
-   */
-  void rShift(u_int8_t n);            // LSB on the right side!
+  void operator=(const Mpi &src);
+  void operator=(u_int32_t src);
+  Mpi operator+(const Mpi &b) const;
+  Mpi operator+(const u_int32_t &b) const;
+  Mpi operator*(const u_int32_t n) const;
+  Mpi operator/(const Mpi &b) const;
+
+  Mpi operator^(const Mpi &b) const;
+
   Mpi mul2exp(u_int32_t e) const;     // value * 2^e
-  void clearHighBit(u_int32_t n);
 
   /**
    * returns a new[] u_int8_t* buffer with the MPI value in the 
@@ -75,7 +71,8 @@ public:
    * @return a byte buffer of size buf_len
    */
   u_int8_t *getNewBuf(u_int32_t buf_len) const;
-  u_int32_t getLen() const;
+  std::string getHexDump() const;
+  u_int32_t getLength() const;
  
 protected:
   gcry_mpi_t val_;

@@ -56,16 +56,16 @@ void KeyDerivation::init(Buffer key, Buffer salt)
   master_salt_ = SyncBuffer(salt);
   master_key_ = SyncBuffer(key);
 
-  updateKey();
+  updateMasterKey();
 }
 
-void KeyDerivation::updateKey()
+void KeyDerivation::updateMasterKey()
 {
   gcry_error_t err;
 
   err = gcry_cipher_setkey( cipher_, master_key_.getBuf(), master_key_.getLength() );
   if( err )
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateKey: Failed to set cipher key: " << gpg_strerror( err );
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << gpg_strerror( err );
 }
 
 KeyDerivation::~KeyDerivation()
@@ -83,12 +83,11 @@ void KeyDerivation::setLogKDRate(const uint8_t log_rate)
 
 void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) 
 {
-  ////Lock lock(mutex_);
-  gcry_error_t err;
+  Lock lock(mutex_);
 
-  Mpi r;
-  Mpi key_id(128); // TODO: hardcoded keySize!!!!!!!  Q@NINE?
-  Mpi iv(128); // TODO: hardcoded keySize!!!!!!!       Q@NINE?
+  gcry_error_t err = gcry_cipher_reset( cipher_ );
+  if( err )
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror( err );
 
   // see at: http://tools.ietf.org/html/rfc3711#section-4.3
   // *  Let r = index DIV key_derivation_rate (with DIV as defined above).
@@ -98,31 +97,50 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key)
   //    alignment).
   //
 
+  Mpi r(48);
   if( ld_kdr_ == -1 )    // means key_derivation_rate = 0
     r = 0;
   else
-    // TODO: kdr can be greater than 2^32 (= 2^48) ????  Q@NINE?
-// Q@NINE? was: r = static_cast<long unsigned int>(seq_nr / ( 0x01 << ld_kdr_ ));
-    r = static_cast<u_int64_t>(seq_nr / ( 0x01 << ld_kdr_ ));
+  {
+    Mpi seq = seq_nr;
+    Mpi rate = 1;
+    rate = rate.mul2exp(ld_kdr_);
+    r = seq / rate;
+  }    
 
-  r = r.mul2exp(8);  // Q@NINE? === r << 8
-  key_id = r + static_cast<long unsigned int>(label);
-  
+  std::cout << "r:  " << std::endl;
+  std::cout << r.getHexDump();
+
+  Mpi key_id(128), l(128);                                                       // TODO: hardcoded keySize
+  l = label;
+  key_id = l.mul2exp(48) + r;                                            // TODO: hardcoded keySize
+
+  std::cout << "label:  " << std::endl;
+  std::cout << l.getHexDump();
+
+  std::cout << "keyid:  " << std::endl;
+  std::cout << key_id.getHexDump();
+
+  Mpi x(128);                                                            // TODO: hardcoded keySize
   Mpi salt = Mpi(master_salt_.getBuf(), master_salt_.getLength());
-  iv = key_id ^ salt;
-
-  err = gcry_cipher_reset( cipher_ );
-  if( err ) 
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror( err );
+  x = key_id ^ salt;
   
-  u_int8_t *iv_buf = iv.getNewBuf(16);
-  err = gcry_cipher_setiv( cipher_ , iv_buf, 16);
-  delete[] iv_buf;
+  std::cout << "x:  " << std::endl;
+  std::cout << x.getHexDump();
+
+  std::cout << "x*2^16(ctr):  " << std::endl;
+  std::cout << x.mul2exp(16).getHexDump();
+
+  u_int8_t *ctr_buf = x.mul2exp(16).getNewBuf(16);                       // TODO: hardcoded size
+  err = gcry_cipher_setctr( cipher_ , ctr_buf, 16);                      // TODO: hardcoded size
+  
+  delete[] ctr_buf;
   if( err )
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set IV: " << gpg_strerror( err );
 
-  err = gcry_cipher_encrypt( cipher_, key, key.getLength(), 0, 0 );
-  
+  u_int8_t *x_buf = x.getNewBuf(16);                                     // TODO: hardcoded size
+  err = gcry_cipher_encrypt( cipher_, key, key.getLength(), x_buf, 16 ); // TODO: hardcoded size
+  delete[] x_buf;
   if( err ) 
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror( err );
 }

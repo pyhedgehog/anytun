@@ -341,6 +341,37 @@ bool initLibGCrypt()
 
 int main(int argc, char* argv[])
 {
+//   // this must be called before any other libgcrypt call
+//   if(!initLibGCrypt())
+//     return -1;
+
+//   u_int8_t KEY[] = {0xE1,0xF9,0x7A,0x0D,0x3E,0x01,0x8B,0xE0,0xD6,0x4F,0xA3,0x2C,0x06,0xDE,0x41,0x39};
+//   u_int8_t SALT[] = {0x0E,0xC6,0x75,0xAD,0x49,0x8A,0xFE,0xEB,0xB6,0x96,0x0B,0x3A,0xAB,0xE6};
+//   Buffer master_key(KEY, 16);
+//   Buffer master_salt(SALT, 14);
+//   std::cout << "master key: " << std::endl << master_key.getHexDump() << std::endl;
+//   std::cout << "master salt: " << std::endl << master_salt.getHexDump() << std::endl;
+//   std::cout << std::endl;
+//   KeyDerivation kd;
+//   kd.init(master_key, master_salt);
+
+//   Buffer key(16);
+//   kd.generate(LABEL_SATP_ENCRYPTION, 0, key);
+//   std::cout << "key: " << std::endl << key.getHexDump() << std::endl;
+
+//   Buffer salt(14);
+//   kd.generate(LABEL_SATP_SALT, 0, salt);
+//   std::cout << "salt: " << std::endl << salt.getHexDump() << std::endl;
+
+//   Buffer auth(14);
+//   kd.generate(LABEL_SATP_MSG_AUTH, 0, auth);
+//   std::cout << "auth: " << std::endl << auth.getHexDump() << std::endl;
+
+
+//   exit(0);
+
+// // *++++++++++++++++++ end of kd test
+
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
   Options opt;
   if(!opt.parse(argc, argv))

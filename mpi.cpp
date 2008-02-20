@@ -68,7 +68,7 @@ void Mpi::operator=(const Mpi &src)
   val_ = gcry_mpi_copy(src.val_);
 }
 
-void Mpi::operator=(const long unsigned int src)
+void Mpi::operator=(const u_int32_t src)
 {
   gcry_mpi_set_ui(val_, src);
 }
@@ -80,46 +80,42 @@ Mpi Mpi::operator+(const Mpi &b) const
   return res;
 }
 
-Mpi Mpi::operator+(const long unsigned int &b) const
+Mpi Mpi::operator+(const u_int32_t &b) const
 {
   Mpi res;
   gcry_mpi_add_ui(res.val_, val_, b);
   return res;
 }
 
-Mpi Mpi::operator*(const unsigned long int n) const
+Mpi Mpi::operator*(const u_int32_t n) const
 {
   Mpi res;
   gcry_mpi_mul_ui(res.val_, val_, n);
   return res;
 }
 
+Mpi Mpi::operator/(const Mpi &b) const
+{
+  Mpi res;
+  gcry_mpi_div(res.val_, NULL, val_, b.val_, 0);
+  return res;
+}
+
 //TODO: this is outstandingly ugly!!!!!!!!
 Mpi Mpi::operator^(const Mpi &b) const
 {
-  u_int32_t a_len=0, b_len=0;
-  Mpi res;
+  u_int32_t a_len = gcry_mpi_get_nbits(val_);
+  u_int32_t b_len = gcry_mpi_get_nbits(b.val_);
 
-  a_len = gcry_mpi_get_nbits(val_);
-  b_len = gcry_mpi_get_nbits(b.val_);
-
-  if(a_len>=b_len)
-    res = Mpi(*this);
-  else
-    res = Mpi(b);
+  Mpi res = (a_len >= b_len) ? Mpi(*this) : Mpi(b);
 
   for(u_int32_t i=0; i<a_len && i<b_len; i++) {
     if(gcry_mpi_test_bit(val_, i) ^ gcry_mpi_test_bit(b.val_, i))
       gcry_mpi_set_bit(res.val_, i);
+    else
+      gcry_mpi_clear_bit(res.val_, i);
   }
   return res;
-}
-
-// bit manipulation
-
-void Mpi::rShift(u_int8_t n)
-{
-  gcry_mpi_rshift(val_, val_, n);
 }
 
 Mpi Mpi::mul2exp(u_int32_t e) const
@@ -127,11 +123,6 @@ Mpi Mpi::mul2exp(u_int32_t e) const
   Mpi res;
   gcry_mpi_mul_2exp( res.val_, val_, e );
   return res;
-}
-
-void Mpi::clearHighBit(u_int32_t n)
-{
-  gcry_mpi_clear_highbit( val_, n );
 }
 
 u_int8_t* Mpi::getNewBuf(u_int32_t buf_len) const
@@ -153,7 +144,20 @@ u_int8_t* Mpi::getNewBuf(u_int32_t buf_len) const
   return res;
 }
 
-u_int32_t Mpi::getLen() const
+//TODO: why does this not work ?????
+std::string Mpi::getHexDump() const
+{
+//   u_int8_t *buf;
+//   u_int32_t len;
+//   gcry_mpi_aprint( GCRYMPI_FMT_HEX, &buf, &len, val_ );
+//   std::string res(buf, len);
+  
+  gcry_mpi_dump( val_ );
+  std::string res("\n");
+  return res;
+}
+
+u_int32_t Mpi::getLength() const
 {
   return gcry_mpi_get_nbits( val_ );
 }
