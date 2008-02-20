@@ -126,7 +126,7 @@ void* sender(void* p)
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
   std::auto_ptr<Cipher> c(CipherFactory::create(param->opt.getCipher()));
-  std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
+//  std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
 
   PlainPacket plain_packet(1600); // TODO: fix me... mtu size
   EncryptedPacket packet(1600);
@@ -221,7 +221,7 @@ void* receiver(void* p)
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
 
   std::auto_ptr<Cipher> c( CipherFactory::create(param->opt.getCipher()) );
-  std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
+//  std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
 
   EncryptedPacket packet(1600);     // TODO: dynamic mtu size
   PlainPacket plain_packet(1600);
@@ -412,9 +412,9 @@ int main(int argc, char* argv[])
   pthread_t senderThread;
   pthread_create(&senderThread, NULL, sender, &p);  
   pthread_t receiverThread;
-  pthread_create(&receiverThread, NULL, receiver, &p);  
-	pthread_t syncListenerThread;
+  pthread_create(&receiverThread, NULL, receiver, &p);    
 
+	pthread_t syncListenerThread;
 	if ( opt.getLocalSyncPort())
 		pthread_create(&syncListenerThread, NULL, syncListener, &p);  
 
