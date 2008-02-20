@@ -39,28 +39,34 @@
 #include "log.h"
 
 
-void Cipher::encrypt(const PlainPacket & in,EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id)
+void Cipher::encrypt(const PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id)
 {
-	cipher(out.payload_, in.complete_payload_ , in.complete_payload_length_, seq_nr, sender_id);
+	u_int32_t len = cipher(out.payload_, out.payload_length_, in.complete_payload_ , in.complete_payload_length_, seq_nr, sender_id);
 	out.setSenderId(sender_id);
 	out.setSeqNr(seq_nr);
-	out.setPayloadLength(in.complete_payload_length_);
+	out.setPayloadLength(len);
 }
 
-void Cipher::decrypt(const EncryptedPacket & in,PlainPacket & out)
+void Cipher::decrypt(const EncryptedPacket & in, PlainPacket & out)
 {
-	cipher(out.complete_payload_, in.payload_ , in.payload_length_, in.getSeqNr(), in.getSenderId());
-	out.setCompletePayloadLength(in.payload_length_);
+	u_int32_t len = decipher(out.complete_payload_, out.complete_payload_length_, in.payload_ , in.payload_length_, in.getSeqNr(), in.getSenderId());
+	out.setCompletePayloadLength(len);
 }
 
 
 //******* NullCipher *******
 
-void NullCipher::cipher(u_int8_t * out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
+u_int32_t NullCipher::cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
 {
-	std::memcpy(out, in, length );
+	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
+  return (ilen < olen) ? ilen : olen;
 }
 
+u_int32_t NullCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
+{
+	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
+  return (ilen < olen) ? ilen : olen;
+}
 
 //****** AesIcmCipher ****** 
 
@@ -94,11 +100,27 @@ void AesIcmCipher::setSalt(Buffer salt)
   salt_ = salt;
 }
 
-void AesIcmCipher::cipher(u_int8_t *  out, u_int8_t * in, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id)
+u_int32_t AesIcmCipher::cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
 {
-  gcry_error_t err;
+  calc(in, ilen, out, olen, seq_nr, sender_id);
+  return (ilen < olen) ? ilen : olen;
+}
 
-  // set the IV
+u_int32_t AesIcmCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
+{
+  calc(in, ilen, out, olen, seq_nr, sender_id);
+  return (ilen < olen) ? ilen : olen;
+}
+
+void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
+{
+  gcry_error_t err = gcry_cipher_reset( cipher_ );
+  if( err ) {
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to reset cipher: " << gpg_strerror( err );
+    return;
+  }
+
+  // set the IV ( = CTR)
   //==========================================================================
   //  //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
   //  //  SRTP packet index i, and the SRTP session salting key k_s, as below.
@@ -106,33 +128,21 @@ void AesIcmCipher::cipher(u_int8_t *  out, u_int8_t * in, u_int32_t length, seq_
   //  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
   //  //  sizeof(k_s) = 112 bit, random
 
-  Mpi iv(128);  // TODO: hardcoded size
+  Mpi ctr(128);                                                // TODO: hardcoded size
   Mpi salt = Mpi(salt_.getBuf(), salt_.getLength());
-  Mpi sid = sender_id;
+  Mpi sid = sender_id;                                         // Q@OTTI add mux to sender_id????
   Mpi seq = seq_nr;
 
-  iv = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16); // TODO: hardcoded size
-
-  u_int8_t *iv_buf = iv.getNewBuf(16);  // TODO: hardcoded size
-
-      // Q@NINE -> CTR Mode -> gcry_cipher_setctr() ????
-
-  err = gcry_cipher_setiv( cipher_, iv_buf, 16 );  // TODO: hardcoded size
-  delete[] iv_buf;
+  ctr = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16);  // TODO: hardcoded size
+  u_int8_t *ctr_buf = ctr.getNewBuf(16);                       // TODO: hardcoded size
+  err = gcry_cipher_setctr( cipher_, ctr_buf, 16 );            // TODO: hardcoded size
+  delete[] ctr_buf;
   if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher IV: " << gpg_strerror( err );
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: " << gpg_strerror( err );
     return;
   }
 
-      // Q@NINE -> reset clears IV ????
-  
-  err = gcry_cipher_reset( cipher_ );
-  if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to reset cipher: " << gpg_strerror( err );
-    return;
-  }
-
-  err = gcry_cipher_encrypt( cipher_, out, length, in, length );
+  err = gcry_cipher_encrypt( cipher_, out, olen, in, ilen );
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to generate cipher bitstream: " << gpg_strerror( err );
     return;

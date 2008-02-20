@@ -70,7 +70,7 @@
 #define SESSION_KEYLEN_ENCR 16
 #define SESSION_KEYLEN_SALT 14
 
-void createConnection(const std::string & remote_host , u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue)
+void createConnection(const std::string & remote_host, u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue)
 {
   uint8_t key[] = {
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',

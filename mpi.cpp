@@ -57,6 +57,12 @@ Mpi::Mpi(const u_int8_t * src, u_int32_t len)
   gcry_mpi_scan( &val_, GCRYMPI_FMT_STD, src, len, NULL );
 }
 
+Mpi::~Mpi()
+{
+  gcry_mpi_release( val_ );
+}
+
+
 void Mpi::operator=(const Mpi &src)
 {
   val_ = gcry_mpi_copy(src.val_);
@@ -88,6 +94,7 @@ Mpi Mpi::operator*(const unsigned long int n) const
   return res;
 }
 
+//TODO: this is outstandingly ugly!!!!!!!!
 Mpi Mpi::operator^(const Mpi &b) const
 {
   u_int32_t a_len=0, b_len=0;
@@ -150,9 +157,3 @@ u_int32_t Mpi::getLen() const
 {
   return gcry_mpi_get_nbits( val_ );
 }
-
-Mpi::~Mpi()
-{
-  gcry_mpi_release( val_ );
-}
-

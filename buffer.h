@@ -61,14 +61,9 @@ public:
   u_int8_t operator[](u_int32_t index) const;
   std::string getHexDump() const;
 
-  operator u_int8_t*(); // just for write/read tun and packetSource
-protected:
-  friend class TunDevice;
-  friend class UDPPacketSource;
-  friend class AesIcmCipher;
-  friend class KeyDerivation;   //
-  friend class Mpi;
+  operator u_int8_t*();
 
+protected:
   u_int8_t *buf_;
   u_int32_t length_;
 };

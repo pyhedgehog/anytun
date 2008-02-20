@@ -170,7 +170,7 @@ AuthTag EncryptedPacket::getAuthTag() const
     throw std::runtime_error("auth tag not enabled");
 
   AuthTag at(AUTHTAG_SIZE);
-  std::memcpy(at, auth_tag_, AUTHTAG_SIZE );
+  std::memcpy(at, auth_tag_, AUTHTAG_SIZE ); 
   return at;
 }
 

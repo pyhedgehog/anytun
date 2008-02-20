@@ -44,14 +44,15 @@ class Cipher
 public:
   virtual ~Cipher() {};
 
-	void encrypt(const PlainPacket & in,EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id);
-	void decrypt(const EncryptedPacket & in,PlainPacket & out);
-
+	void encrypt(const PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id);
+	void decrypt(const EncryptedPacket & in, PlainPacket & out);
+  
   virtual void setKey(Buffer key) = 0;
   virtual void setSalt(Buffer salt) = 0;
 
 protected:
-  virtual void cipher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id) = 0;
+  virtual u_int32_t cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id) = 0;
+  virtual u_int32_t decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id) = 0; 
 };
 
 //****** NullCipher ******
@@ -63,7 +64,8 @@ public:
   void setSalt(Buffer salt) {};
 
 protected:
-  void cipher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
+  u_int32_t cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id);
+  u_int32_t decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id);
 };
 
 //****** AesIcmCipher ******
@@ -77,7 +79,12 @@ public:
   void setSalt(Buffer salt);
 
 protected:
-  void cipher(u_int8_t * in, u_int8_t * out, u_int32_t length, seq_nr_t seq_nr, sender_id_t sender_id);
+  u_int32_t cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id);
+  u_int32_t decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id);
+
+private:
+  void calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id);
+
   gcry_cipher_hd_t cipher_;
   Buffer salt_;
 };

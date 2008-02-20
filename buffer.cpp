@@ -30,8 +30,7 @@
 
 #include <stdexcept>
 #include <string>
-#include <cstdio>
-#include <iostream>
+#include <sstream>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include "datatypes.h"
@@ -182,18 +181,19 @@ Buffer::operator u_int8_t*() // just for write/read tun
 
 std::string Buffer::getHexDump() const
 {
-  char text[10];
-  std::string ret = "";
-
+  std::stringstream ss;
+  ss << std::hex;
   for( u_int32_t index = 0; index < length_; index++ )
   {
-    std::sprintf(text, "%#4x", buf_[index]);
-    ret += text;
-    ret += "";
-    if( ((index+1) % 10) == 0 )
-      ret += '\n';
+    ss << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(buf_[index]) << " ";
+    if(!((index+1) % 16)) {
+      ss << std::endl;
+      continue;
+    }
+    if(!((index+1) % 8))
+      ss << " ";
   }
-  return ret;
+  return ss.str();
 }
 
 Buffer Buffer::operator^(const Buffer &xor_by) const
