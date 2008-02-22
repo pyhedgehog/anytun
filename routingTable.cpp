@@ -28,29 +28,56 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _ROUTER_H
-#define _ROUTER_H
-
 #include "threadUtils.hpp"
 #include "datatypes.h"
-#include "connectionParam.h"
-#include "connectionList.h"
+
 #include "routingTable.h"
 
-class Router
+RoutingTable::RoutingTable()
 {
-public:
-	Router(ConnectionList& cl);
-	~Router();
-	void addConnection(ConnectionParam &conn,u_int16_t mux);
-	ConnectionParam getRoute();
+}
 
-private:
-  Router(const Router &s);
-  void operator=(const Router &s);
-	ConnectionList& con_list_;
-	RoutingTable rt_;
-  Mutex mutex_;
-};
+RoutingTable::~RoutingTable()
+{
+} 
 
-#endif
+void RoutingTable::addRoute(const RoutingTableEntry &route )
+{
+  Lock lock(mutex_);
+
+//  std::pair<ConnectionMap::iterator, bool> ret = connections_.insert(ConnectionMap::value_type(mux, conn));
+//  if(!ret.second)
+//  {
+//    connections_.erase(ret.first);
+//    connections_.insert(ConnectionMap::value_type(mux, conn));
+//  }
+}
+
+const RoutingMap::iterator RoutingTable::getEnd()
+{
+	return routes_.end();
+}
+
+const RoutingMap::iterator  RoutingTable::getRoute()
+{
+	Lock lock(mutex_);
+	RoutingMap::iterator it = routes_.begin();
+	return it;
+}
+
+void RoutingTable::clear()
+{
+  Lock lock(mutex_);
+	routes_.clear();
+}
+
+bool RoutingTable::empty()
+{
+  Lock lock(mutex_);
+	return routes_.empty();
+}
+
+Mutex& RoutingTable::getMutex()
+{
+  return mutex_;
+}

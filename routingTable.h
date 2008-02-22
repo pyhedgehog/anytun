@@ -28,28 +28,34 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _ROUTER_H
-#define _ROUTER_H
+#ifndef _ROUTINGTABLE_H
+#define _ROUTINGTABLE_H
+
+#include <map>
+#include <deque>
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
-#include "connectionParam.h"
-#include "connectionList.h"
-#include "routingTable.h"
+#include "routingTableEntry.h"
+#include "networkAddress.h"
+typedef std::map<u_int16_t, RoutingTableEntry> RoutingMap;
 
-class Router
+class RoutingTable
 {
 public:
-	Router(ConnectionList& cl);
-	~Router();
-	void addConnection(ConnectionParam &conn,u_int16_t mux);
-	ConnectionParam getRoute();
+	RoutingTable();
+	~RoutingTable();
+	void addRoute(const RoutingTableEntry &route);
+	const RoutingMap::iterator getRoute();
+	const RoutingMap::iterator getEnd();
+	bool empty();
+	void clear();
+  Mutex& getMutex();
 
 private:
-  Router(const Router &s);
-  void operator=(const Router &s);
-	ConnectionList& con_list_;
-	RoutingTable rt_;
+  RoutingTable(const RoutingTable &s);
+  void operator=(const RoutingTable &s);
+	RoutingMap routes_;
   Mutex mutex_;
 };
 

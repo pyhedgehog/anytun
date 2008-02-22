@@ -64,6 +64,8 @@ OBJS = anytun.o \
 			 networkAddress.o \
        PracticalSocket.o \
 			 router.o \
+			 routingTable.o \
+			 routingTableEntry.o \
        signalController.o \
        syncSocket.o \
        syncSocketHandler.o \
@@ -119,6 +121,12 @@ cipherFactory.o: cipherFactory.cpp cipherFactory.h cipher.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgoFactory.o: authAlgoFactory.cpp authAlgoFactory.h authAlgo.h
+	$(C++) $(CCFLAGS) $< -c
+
+routingTable.o: routingTable.cpp routingTable.h
+	$(C++) $(CCFLAGS) $< -c
+
+routingTableEntry.o: routingTableEntry.cpp routingTableEntry.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncSocket.o: syncSocket.cpp syncSocket.h
