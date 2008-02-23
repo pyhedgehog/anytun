@@ -97,50 +97,37 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key)
   //    alignment).
   //
 
-  Mpi r(48);
+  Mpi r(48); // ld(kdr) <= 48
   if( ld_kdr_ == -1 )    // means key_derivation_rate = 0
-    r = 0;
+    r = 0;  // TODO: no new key should be generated if r == 0, except it is the first time
   else
   {
     Mpi seq = seq_nr;
     Mpi rate = 1;
     rate = rate.mul2exp(ld_kdr_);
     r = seq / rate;
-  }    
+  }
+      // TODO: generate key only if index % r == 0, except it is the first time
 
-  std::cout << "r:  " << std::endl;
-  std::cout << r.getHexDump();
-
-  Mpi key_id(128), l(128);                                                       // TODO: hardcoded keySize
+  Mpi key_id(128);                                                   // TODO: hardcoded size
+  Mpi l(128);                                                 // TODO: hardcoded size
   l = label;
-  key_id = l.mul2exp(48) + r;                                            // TODO: hardcoded keySize
+  key_id = l.mul2exp(48) + r;
 
-  std::cout << "label:  " << std::endl;
-  std::cout << l.getHexDump();
-
-  std::cout << "keyid:  " << std::endl;
-  std::cout << key_id.getHexDump();
-
-  Mpi x(128);                                                            // TODO: hardcoded keySize
-  Mpi salt = Mpi(master_salt_.getBuf(), master_salt_.getLength());
+  Mpi salt(master_salt_.getBuf(), master_salt_.getLength());
+  Mpi x(128);                                                        // TODO: hardcoded size
   x = key_id ^ salt;
-  
-  std::cout << "x:  " << std::endl;
-  std::cout << x.getHexDump();
 
-  std::cout << "x*2^16(ctr):  " << std::endl;
-  std::cout << x.mul2exp(16).getHexDump();
-
-  u_int8_t *ctr_buf = x.mul2exp(16).getNewBuf(16);                       // TODO: hardcoded size
-  err = gcry_cipher_setctr( cipher_ , ctr_buf, 16);                      // TODO: hardcoded size
-  
+  u_int32_t written;
+  u_int8_t *ctr_buf = x.mul2exp(16).getNewBuf(&written);         // TODO: hardcoded size
+  err = gcry_cipher_setctr( cipher_ , ctr_buf, written );
   delete[] ctr_buf;
-  if( err )
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set IV: " << gpg_strerror( err );
 
-  u_int8_t *x_buf = x.getNewBuf(16);                                     // TODO: hardcoded size
-  err = gcry_cipher_encrypt( cipher_, key, key.getLength(), x_buf, 16 ); // TODO: hardcoded size
-  delete[] x_buf;
+  if( err )
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set CTR: " << gpg_strerror( err );
+
+  for(u_int32_t i=0; i < key.getLength(); ++i) key[i] = 0;
+  err = gcry_cipher_encrypt( cipher_, key, key.getLength(), NULL, 0);
   if( err ) 
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror( err );
 }

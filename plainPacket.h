@@ -43,13 +43,17 @@ class Cipher;
 class PlainPacket : public Buffer
 {
 public:
-  ~PlainPacket();
-
   /**
    * Packet constructor
-   * @param max_payload_length maximum payload length
+   * @param the length of the payload 
+   * @param allow reallocation of buffer
    */
-  PlainPacket(u_int32_t max_payload_length);
+  PlainPacket(u_int32_t payload_length, bool allow_realloc = false);
+
+  /**
+   * Packet destructor
+   */
+  ~PlainPacket() {};
 
   /**
    * Get the payload type
@@ -63,43 +67,31 @@ public:
    */
   void setPayloadType(payload_type_t payload_type);
 
-	void setCompletePayloadLength(u_int32_t payload_length);
-	u_int32_t getCompletePayloadLength();
-
   /**
-   * Set the real payload length
-   * @param length the real payload length
+   * Get the length of the payload
+   * @return the length of the payload
    */
-  //void setRealPayloadLengt(u_int32_t length);
-
-  /**
-   * Get the real payload length
-   * @return the real length of the payload
-   */
-  //u_int32_t getRealPayloadLength();
+	u_int32_t getPayloadLength() const;
 
   /**
    * Set the length of the payload
    * @param length length of the payload
    */
-  void setLength(u_int32_t length);
+  void setPayloadLength(u_int32_t payload_length);
 
   /**
-   * Get the size of the allocated memory for the payload
-   * @return maximum size of payload
+   * Get the the payload
+   * @return the Pointer to the payload
    */
-  u_int32_t getMaxLength() const; 
+  u_int8_t* getPayload();
+
 
 private:
   PlainPacket();
   PlainPacket(const PlainPacket &src);
-	void splitPayload();
-  u_int32_t max_length_;
+
   payload_type_t* payload_type_;
-protected:
-	friend class Cipher;
-	u_int8_t * complete_payload_;
-	u_int32_t complete_payload_length_;
+  u_int8_t* payload_;
 };
 
 #endif

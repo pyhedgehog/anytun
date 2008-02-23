@@ -33,43 +33,14 @@
 #include <arpa/inet.h>
 
 #include "datatypes.h"
-
 #include "plainPacket.h"
 
 
-
-PlainPacket::~PlainPacket()
+PlainPacket::PlainPacket(u_int32_t payload_length, bool allow_realloc) : Buffer(payload_length + sizeof(payload_type_t), allow_realloc)
 {
-	buf_=complete_payload_;
-	length_=max_length_;
-}
-
-PlainPacket::PlainPacket(u_int32_t max_payload_length) : Buffer(max_payload_length + sizeof(payload_type_t))
-{
-  payload_type_ = NULL;
-	splitPayload();
-}
-
-void PlainPacket::splitPayload()
-{
-  complete_payload_length_ = length_;
-	complete_payload_ = buf_;
-
   payload_type_ = reinterpret_cast<payload_type_t*>(buf_);
-  buf_ += sizeof(payload_type_t);
-  length_ -= sizeof(payload_type_t);
-  max_length_ = length_;
-}
-
-void PlainPacket::setCompletePayloadLength(u_int32_t payload_length)
-{
-	complete_payload_length_ = payload_length;
-	length_=complete_payload_length_-sizeof(payload_type_t);
-}
-
-u_int32_t PlainPacket::getCompletePayloadLength()
-{
-	return complete_payload_length_;
+  payload_ = buf_ + sizeof(payload_type_t);
+  *payload_type_ = 0;
 }
 
 payload_type_t PlainPacket::getPayloadType() const
@@ -83,16 +54,21 @@ void PlainPacket::setPayloadType(payload_type_t payload_type)
     *payload_type_ = PAYLOAD_TYPE_T_HTON(payload_type);
 }
 
-void PlainPacket::setLength(u_int32_t length)
+u_int32_t PlainPacket::getPayloadLength() const
 {
-  if(length > max_length_)
-    throw std::out_of_range("can't set length greater then size ofsize of  allocated memory");
+  return (length_ > sizeof(payload_type_t)) ? (length_ - sizeof(payload_type_t)) : 0;
+}
+    
+void PlainPacket::setPayloadLength(u_int32_t payload_length)
+{
+  Buffer::setLength(payload_length + sizeof(payload_type_t));
 
-  length_ = length;
-	complete_payload_length_ = length_ + sizeof(payload_type_t);
+  // depending on allow_realloc buf_ may point to another address
+  payload_type_ = reinterpret_cast<payload_type_t*>(buf_);
+  payload_ = buf_ + sizeof(payload_type_t);
 }
 
-u_int32_t PlainPacket::getMaxLength() const
+u_int8_t* PlainPacket::getPayload()
 {
-  return max_length_;
+  return payload_;
 }

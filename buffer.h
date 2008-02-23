@@ -40,32 +40,33 @@ class UDPPacketSource;
 class Buffer
 {
 public:
-  Buffer();
-  Buffer(u_int32_t length);
-  Buffer(u_int8_t* data, u_int32_t length);
+  Buffer(bool allow_realloc = true);
+  Buffer(u_int32_t length, bool allow_realloc = true);
+  Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc = true);
   virtual ~Buffer();
   Buffer(const Buffer &src);
   void operator=(const Buffer &src);
   bool operator==(const Buffer &cmp) const;
+  Buffer operator^(const Buffer &xor_by) const;
 
-  // math operations to calculate IVs and keys
-  virtual Buffer operator^(const Buffer &xor_by) const;
-  virtual Buffer leftByteShift(u_int32_t width) const;
-  virtual Buffer rightByteShift(u_int32_t width) const;
-
-  u_int32_t resizeFront(u_int32_t new_length);
-  u_int32_t resizeBack(u_int32_t new_length);
   u_int32_t getLength() const;
+  virtual void setLength(u_int32_t new_length);
   u_int8_t* getBuf();
   u_int8_t& operator[](u_int32_t index);
   u_int8_t operator[](u_int32_t index) const;
   std::string getHexDump() const;
+
+  bool isReallocAllowed() const;
 
   operator u_int8_t*();
 
 protected:
   u_int8_t *buf_;
   u_int32_t length_;
+  u_int32_t real_length_;
+  bool allow_realloc_;
+
+  static const u_int32_t OVER_SIZE_ = 100;
 };
 
 #endif

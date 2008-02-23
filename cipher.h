@@ -44,8 +44,9 @@ class Cipher
 public:
   virtual ~Cipher() {};
 
-	void encrypt(const PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id);
-	void decrypt(const EncryptedPacket & in, PlainPacket & out);
+      // TODO: in should be const but does not work with getBuf() :(
+	void encrypt(PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id);
+	void decrypt(EncryptedPacket & in, PlainPacket & out);
   
   virtual void setKey(Buffer key) = 0;
   virtual void setSalt(Buffer salt) = 0;

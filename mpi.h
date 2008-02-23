@@ -70,7 +70,7 @@ public:
    * @param buf_len size of the new buffer that is returned
    * @return a byte buffer of size buf_len
    */
-  u_int8_t *getNewBuf(u_int32_t buf_len) const;
+  u_int8_t *getNewBuf(u_int32_t* written) const;
   std::string getHexDump() const;
   u_int32_t getLength() const;
  

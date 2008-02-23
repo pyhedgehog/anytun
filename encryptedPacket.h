@@ -41,14 +41,15 @@ public:
 
   /**
    * Packet constructor
-   * @param max_payload_length maximum length of encrypted payload
+   * @param the length of the payload 
+   * @param allow reallocation of buffer
    */
-  EncryptedPacket(u_int32_t max_payload_length);
+  EncryptedPacket(u_int32_t payload_length, bool allow_realloc = false);
 
   /**
    * Packet destructor
    */
-  ~EncryptedPacket();
+  ~EncryptedPacket() {};
 
   /**
    * Get the sequence number
@@ -94,36 +95,36 @@ public:
    */
   void setHeader(seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
-  /** 
-   * Get the maximum payload size
-   * @return maximum payload size
+  /**
+   * Get the length of the payload
+   * @return the length of the payload
    */
-  u_int32_t getMaxLength() const;
+	u_int32_t getPayloadLength() const;
 
   /**
-   * Set the real length of the payload
-   * @param length the real length of the payload, has to be smaller than the maximum payload size!
+   * Set the length of the payload
+   * @param length length of the payload
    */
-  void setLength(u_int32_t length);
+  void setPayloadLength(u_int32_t payload_length);
+
+  /**
+   * Get the the payload
+   * @return the Pointer to the payload
+   */
+  u_int8_t* getPayload();
+
+
 
   bool hasAuthTag() const;
   void withAuthTag(bool b);
   AuthTag getAuthTag() const;
   void setAuthTag(AuthTag& tag);
 
-	void setPayloadLength(u_int32_t payload_length);
-
-                       
-//  bool hasHeader() const;
-//  Packet& withHeader(bool b);
-//  Packet& addHeader(seq_nr_t seq_nr, sender_id_t sender_id);
-//  Packet& withAuthTag(bool b);
-//  AuthTag getAuthTag() const;
-//  Packet& addAuthTag(AuthTag auth_tag);
-
+                      
 private:
   EncryptedPacket();
   EncryptedPacket(const EncryptedPacket &src);
+
   struct HeaderStruct
   {
     seq_nr_t seq_nr;
@@ -132,14 +133,9 @@ private:
   }__attribute__((__packed__));
 
   struct HeaderStruct* header_;
-  AuthTag* auth_tag_;
-  u_int32_t max_length_;
-
-  static const u_int32_t AUTHTAG_SIZE = 10;     // 10byte
-protected:
-	friend class Cipher;
 	u_int8_t * payload_;
-	u_int32_t payload_length_;
+  AuthTag* auth_tag_;
+  static const u_int32_t AUTHTAG_SIZE = 10;  // TODO: hardcoded size
 };
 
 #endif

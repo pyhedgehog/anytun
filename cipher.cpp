@@ -39,18 +39,20 @@
 #include "log.h"
 
 
-void Cipher::encrypt(const PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id)
+      // TODO: in should be const but does not work with getBuf() :(
+void Cipher::encrypt(PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id)
 {
-	u_int32_t len = cipher(out.payload_, out.payload_length_, in.complete_payload_ , in.complete_payload_length_, seq_nr, sender_id);
+	u_int32_t len = cipher(in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id);
 	out.setSenderId(sender_id);
 	out.setSeqNr(seq_nr);
 	out.setPayloadLength(len);
 }
 
-void Cipher::decrypt(const EncryptedPacket & in, PlainPacket & out)
+      // TODO: in should be const but does not work with getBuf() :(
+void Cipher::decrypt(EncryptedPacket & in, PlainPacket & out)
 {
-	u_int32_t len = decipher(out.complete_payload_, out.complete_payload_length_, in.payload_ , in.payload_length_, in.getSeqNr(), in.getSenderId());
-	out.setCompletePayloadLength(len);
+	u_int32_t len = decipher(in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId());
+	out.setLength(len);
 }
 
 
@@ -70,9 +72,9 @@ u_int32_t NullCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_in
 
 //****** AesIcmCipher ****** 
 
-AesIcmCipher::AesIcmCipher() : salt_(Buffer(14))   // Q@NINE 14??????
+AesIcmCipher::AesIcmCipher()
 {
-      // TODO: hardcoded keysize!!!!!
+      // TODO: hardcoded keysize
   gcry_error_t err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err )
     cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher";
@@ -82,7 +84,6 @@ AesIcmCipher::AesIcmCipher() : salt_(Buffer(14))   // Q@NINE 14??????
 AesIcmCipher::~AesIcmCipher()
 {
   gcry_cipher_close( cipher_ );
-  cLog.msg(Log::PRIO_DEBUG) << "AesIcmCipher::~AesIcmCipher: closed cipher";
 }
 
 
@@ -129,13 +130,17 @@ void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t o
   //  //  sizeof(k_s) = 112 bit, random
 
   Mpi ctr(128);                                                // TODO: hardcoded size
-  Mpi salt = Mpi(salt_.getBuf(), salt_.getLength());
-  Mpi sid = sender_id;                                         // Q@OTTI add mux to sender_id????
-  Mpi seq = seq_nr;
+  Mpi salt(salt_.getBuf(), salt_.getLength());
+  Mpi sid(32);                                                 // TODO: Q@OTTI add mux to sender_id????
+  sid = sender_id;
+  Mpi seq(32);
+  seq = seq_nr;
 
   ctr = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16);  // TODO: hardcoded size
-  u_int8_t *ctr_buf = ctr.getNewBuf(16);                       // TODO: hardcoded size
-  err = gcry_cipher_setctr( cipher_, ctr_buf, 16 );            // TODO: hardcoded size
+
+  u_int32_t written;
+  u_int8_t *ctr_buf = ctr.getNewBuf(&written);             // TODO: hardcoded size
+  err = gcry_cipher_setctr( cipher_, ctr_buf, written );        // TODO: hardcoded size 
   delete[] ctr_buf;
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: " << gpg_strerror( err );

@@ -36,26 +36,32 @@
 #include "datatypes.h"
 #include "buffer.h"
 
-Buffer::Buffer() : buf_(0), length_(0)
+Buffer::Buffer(bool allow_realloc) : buf_(0), length_(0), real_length_(0), allow_realloc_(allow_realloc)
 {  
 }
 
-Buffer::Buffer(u_int32_t length) : length_(length)
+Buffer::Buffer(u_int32_t length, bool allow_realloc) : length_(length), real_length_(length_ + Buffer::OVER_SIZE_), 
+                                                       allow_realloc_(allow_realloc)
 {
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memset(buf_, 0, length_);
-  else 
+  buf_ = new u_int8_t[real_length_];
+  if(!buf_) {
     length_ = 0;
+    real_length_ = 0;
+    throw std::bad_alloc();
+  }
+  std::memset(buf_, 0, real_length_);
 }
 
-Buffer::Buffer(u_int8_t* data, u_int32_t length) : length_(length)
+Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc) : length_(length), real_length_(length + Buffer::OVER_SIZE_), 
+                                                                       allow_realloc_(allow_realloc)
 {
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memcpy(buf_, data, length_);
-  else 
+  buf_ = new u_int8_t[real_length_];
+  if(!buf_) {
     length_ = 0;
+    real_length_ = 0;
+    throw std::bad_alloc();
+  }
+  std::memcpy(buf_, data, length_);
 }
 
 Buffer::~Buffer()
@@ -64,13 +70,15 @@ Buffer::~Buffer()
     delete[] buf_;
 }
 
-Buffer::Buffer(const Buffer &src) : length_(src.length_)
+Buffer::Buffer(const Buffer &src) : length_(src.length_), real_length_(src.real_length_), allow_realloc_(src.allow_realloc_)
 {
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memcpy(buf_, src.buf_, length_);
-  else 
+  buf_ = new u_int8_t[real_length_];
+  if(!buf_) {
     length_ = 0;
+    real_length_ = 0;
+    throw std::bad_alloc();
+  }
+  std::memcpy(buf_, src.buf_, length_);
 }
 
 void Buffer::operator=(const Buffer &src)
@@ -79,12 +87,16 @@ void Buffer::operator=(const Buffer &src)
     delete[] buf_;
  
   length_ = src.length_;
+  real_length_ = src.real_length_; 
+  allow_realloc_ = src.allow_realloc_;
  
-  buf_ = new u_int8_t[length_];
-  if(buf_)
-    std::memcpy(buf_, src.buf_, length_);
-  else
+  buf_ = new u_int8_t[real_length_];
+  if(!buf_) {
     length_ = 0;
+    real_length_ = 0;
+    throw std::bad_alloc();
+  }
+  std::memcpy(buf_, src.buf_, length_);
 }
 
 
@@ -100,58 +112,60 @@ bool Buffer::operator==(const Buffer &cmp) const
   return false;
 }
 
-
-u_int32_t Buffer::resizeFront(u_int32_t new_length)
+Buffer Buffer::operator^(const Buffer &xor_by) const
 {
-  if(length_ == new_length)
-    return length_;
+  u_int32_t res_length = (xor_by.length_ > length_) ? xor_by.length_ : length_;
+  u_int32_t min_length = (xor_by.length_ < length_) ? xor_by.length_ : length_;
+  Buffer res(res_length);
 
-  u_int8_t *tmp = new u_int8_t[new_length];
-  if(!tmp)
-    return length_;
-
-  if(buf_)
-  {
-    u_int8_t *src=buf_, *dest=tmp;
-    if(length_ < new_length)
-      dest = &dest[new_length - length_];
-    else
-      src = &src[length_ - new_length];
-    u_int32_t len = length_ < new_length ? length_ : new_length;
-    std::memcpy(dest, src, len);
-    delete[] buf_;
-  }
-
-  length_ = new_length;
-  buf_ = tmp;
-  return length_;
-}
-
-u_int32_t Buffer::resizeBack(u_int32_t new_length)
-{
-  if(length_ == new_length)
-    return length_;
-
-  u_int8_t *tmp = new u_int8_t[new_length];
-  if(!tmp)
-    return length_;
-
-  if(buf_)
-  {
-    u_int32_t len = length_ < new_length ? length_ : new_length;
-    std::memcpy(tmp, buf_, len);
-    delete[] buf_;
-  }
-
-  length_ = new_length;
-  buf_ = tmp;
-  return length_;
+  for( u_int32_t index = 0; index < min_length; index++ )
+    res[index] = buf_[index] ^ xor_by[index];
+  
+  return res;
 }
 
 u_int32_t Buffer::getLength() const
 {
   return length_;
 }
+
+void Buffer::setLength(u_int32_t new_length)
+{
+  if(new_length == length_)
+    return;
+
+  if(new_length > real_length_)
+  {
+    if(!allow_realloc_)
+      throw std::out_of_range("buffer::setLength() - reallocation not allowed for this Buffer");
+
+    u_int8_t* old_buf = buf_;
+    u_int32_t old_length = length_;
+
+    length_ = new_length;
+    real_length_ = length_ + Buffer::OVER_SIZE_;
+    
+    buf_ = new u_int8_t[real_length_];
+    if(!buf_) {
+      length_ = 0;
+      real_length_ = 0;
+      if(old_buf)
+        delete[] old_buf;
+      
+      throw std::bad_alloc();
+    }
+    std::memcpy(buf_, old_buf, old_length);
+
+    if(old_buf)
+      delete[] old_buf;
+
+    old_buf = &buf_[old_length];
+    std::memset(old_buf, 0, real_length_ - old_length);
+  }
+  else
+    length_ = new_length;
+}  
+
 
 u_int8_t* Buffer::getBuf()
 {
@@ -174,7 +188,7 @@ u_int8_t Buffer::operator[](u_int32_t index) const
   return buf_[index];
 }
 
-Buffer::operator u_int8_t*() // just for write/read tun
+Buffer::operator u_int8_t*()
 {
   return buf_;
 }
@@ -182,10 +196,10 @@ Buffer::operator u_int8_t*() // just for write/read tun
 std::string Buffer::getHexDump() const
 {
   std::stringstream ss;
-  ss << std::hex;
+  ss << "Length=" << length_ << std::endl << std::hex << std::uppercase;
   for( u_int32_t index = 0; index < length_; index++ )
   {
-    ss << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(buf_[index]) << " ";
+    ss << std::setw(2) << std::setfill('0') << u_int32_t(buf_[index]) << " ";
     if(!((index+1) % 16)) {
       ss << std::endl;
       continue;
@@ -196,35 +210,7 @@ std::string Buffer::getHexDump() const
   return ss.str();
 }
 
-Buffer Buffer::operator^(const Buffer &xor_by) const
+bool Buffer::isReallocAllowed() const
 {
-  Buffer res(length_);
-  if( xor_by.getLength() > length_ )
-    throw std::out_of_range("buffer::operator^ const");
-
-  for( u_int32_t index = 0; index < xor_by.getLength(); index++ )
-    res[index] = buf_[index] ^ xor_by[index];
-  
-  return res;
+  return allow_realloc_;
 }
-
-Buffer Buffer::leftByteShift(u_int32_t width) const
-{
-  Buffer res(length_+width);
-
-  for( u_int32_t index = 0; index < length_; index++ )
-    res[index+width] = buf_[index];
-
-  return res;
-}
-
-Buffer Buffer::rightByteShift(u_int32_t width) const
-{
-  Buffer res(length_);
-
-  for( u_int32_t index = 0; index < length_-width; index++ )
-    res[index] = buf_[index+width];
-
-  return res;
-}
-

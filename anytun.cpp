@@ -31,7 +31,7 @@
 #include <iostream>
 #include <poll.h>
 
-#include <gcrypt.h>   // for thread safe libgcrypt initialisation
+#include <gcrypt.h>
 #include <cerrno>     // for ENOMEM
 
 #include "datatypes.h"
@@ -53,6 +53,9 @@
 #include "seqWindow.h"
 #include "connectionList.h"
 
+#include "mpi.h"  // TODO: remove after debug
+
+
 #include "syncQueue.h"
 #include "syncSocketHandler.h"
 #include "syncListenSocket.h"
@@ -66,9 +69,11 @@
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0800
 
-#define SESSION_KEYLEN_AUTH 20
-#define SESSION_KEYLEN_ENCR 16
-#define SESSION_KEYLEN_SALT 14
+#define MAX_PACKET_LENGTH 1600
+
+#define SESSION_KEYLEN_AUTH 20   // TODO: hardcoded size
+#define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
+#define SESSION_KEYLEN_SALT 14   // TODO: hardcoded size
 
 void createConnection(const std::string & remote_host, u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue)
 {
@@ -128,32 +133,30 @@ void* sender(void* p)
   std::auto_ptr<Cipher> c(CipherFactory::create(param->opt.getCipher()));
 //  std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
 
-  PlainPacket plain_packet(1600); // TODO: fix me... mtu size
-  EncryptedPacket packet(1600);
+  PlainPacket plain_packet(MAX_PACKET_LENGTH);
+  EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
 
-      // TODO: hardcoded keySize!!!
-  Buffer session_key(SESSION_KEYLEN_ENCR);
-  Buffer session_salt(SESSION_KEYLEN_SALT);
-  Buffer session_auth_key(SESSION_KEYLEN_AUTH);
+  Buffer session_key(u_int32_t(SESSION_KEYLEN_ENCR));             // TODO: hardcoded size
+  Buffer session_salt(u_int32_t(SESSION_KEYLEN_SALT));            // TODO: hardcoded size
+  Buffer session_auth_key(u_int32_t(SESSION_KEYLEN_AUTH));        // TODO: hardcoded size
 
   //TODO replace mux
   u_int16_t mux = 0;
   while(1)
   {
-    plain_packet.setLength( plain_packet.getMaxLength()); // Q@NINE wtf???
-
     // read packet from device
     u_int32_t len = param->dev.read(plain_packet);
     plain_packet.setLength(len);
-    packet.setLength( len );
-    if( param->cl.empty())
+
+    if(param->cl.empty())
       continue;
-		ConnectionMap::iterator cit = param->cl.getConnection(mux);
+	
+    ConnectionMap::iterator cit = param->cl.getConnection(mux);
 		if(cit==param->cl.getEnd())
 			continue;
 		ConnectionParam & conn = cit->second;
 
-    // add payload type
+    // set payload type
     if(param->dev.getType() == TunDevice::TYPE_TUN)
       plain_packet.setPayloadType(PAYLOAD_TYPE_TUN);
     else if(param->dev.getType() == TunDevice::TYPE_TAP)
@@ -168,16 +171,16 @@ void* sender(void* p)
     c->setSalt(session_salt);
 
     // encrypt packet
-    c->encrypt(plain_packet, packet, conn.seq_nr_, param->opt.getSenderId());
+    c->encrypt(plain_packet, encrypted_packet, conn.seq_nr_, param->opt.getSenderId());
 
-    packet.setHeader(conn.seq_nr_, param->opt.getSenderId(), mux);
+    encrypted_packet.setHeader(conn.seq_nr_, param->opt.getSenderId(), mux);
     conn.seq_nr_++;
 
         // TODO: activate authentication
-//    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key);
+//    conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
 //    a->setKey(session_auth_key);
-//		addPacketAuthTag(packet, a.get(), conn);
-    param->src.send(packet, conn.remote_host_, conn.remote_port_);
+//		addPacketAuthTag(encrypted_packet, a.get(), conn);
+    param->src.send(encrypted_packet, conn.remote_host_, conn.remote_port_);
   }
   pthread_exit(NULL);
 }
@@ -223,30 +226,26 @@ void* receiver(void* p)
   std::auto_ptr<Cipher> c( CipherFactory::create(param->opt.getCipher()) );
 //  std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
 
-  EncryptedPacket packet(1600);     // TODO: dynamic mtu size
+  EncryptedPacket encrypted_packet(1600);     // TODO: dynamic mtu size
   PlainPacket plain_packet(1600);
 
-      // TODO: hardcoded keysize!!!
-  Buffer session_key(SESSION_KEYLEN_SALT);
-  Buffer session_salt(SESSION_KEYLEN_SALT);
-  Buffer session_auth_key(SESSION_KEYLEN_AUTH);
+  Buffer session_key(u_int32_t(SESSION_KEYLEN_ENCR));             // TODO: hardcoded size
+  Buffer session_salt(u_int32_t(SESSION_KEYLEN_SALT));            // TODO: hardcoded size
+  Buffer session_auth_key(u_int32_t(SESSION_KEYLEN_AUTH));        // TODO: hardcoded size
 
   while(1)
   {
     string remote_host;
     u_int16_t remote_port;
-    packet.setLength( packet.getMaxLength() );             // Q@NINE wtf???
-    plain_packet.setLength( plain_packet.getMaxLength() ); // Q@NINE wtf???
-    //    u_int16_t sid = 0, seq = 0;
 
     // read packet from socket
-    u_int32_t len = param->src.recv(packet, remote_host, remote_port);
-    packet.setLength(len);
+    u_int32_t len = param->src.recv(encrypted_packet, remote_host, remote_port);
+    encrypted_packet.setLength(len);
 
 		// TODO: check auth tag first
-//    conn.kd_.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), session_auth_key);
+//    conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
 //    a->setKey( session_auth_key );
-//		if(!checkPacketAuthTag(packet, a.get(), conn))
+//		if(!checkPacketAuthTag(encrypted_packet, a.get(), conn))
 //			continue;
 
 
@@ -272,17 +271,17 @@ void* receiver(void* p)
 		}	
 
 		// Replay Protection
-		if (!checkPacketSeqNr(packet, conn))
+		if (!checkPacketSeqNr(encrypted_packet, conn))
 			continue;
     
     // generate packet-key
-    conn.kd_.generate(LABEL_SATP_ENCRYPTION, packet.getSeqNr(), session_key);
-    conn.kd_.generate(LABEL_SATP_SALT, packet.getSeqNr(), session_salt);
+    conn.kd_.generate(LABEL_SATP_ENCRYPTION, encrypted_packet.getSeqNr(), session_key);
+    conn.kd_.generate(LABEL_SATP_SALT, encrypted_packet.getSeqNr(), session_salt);
     c->setKey(session_key);
     c->setSalt(session_salt);
 
     // decrypt packet
-    c->decrypt(packet, plain_packet);
+    c->decrypt(encrypted_packet, plain_packet);
     
     // check payload_type
     if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||
@@ -341,37 +340,6 @@ bool initLibGCrypt()
 
 int main(int argc, char* argv[])
 {
-//   // this must be called before any other libgcrypt call
-//   if(!initLibGCrypt())
-//     return -1;
-
-//   u_int8_t KEY[] = {0xE1,0xF9,0x7A,0x0D,0x3E,0x01,0x8B,0xE0,0xD6,0x4F,0xA3,0x2C,0x06,0xDE,0x41,0x39};
-//   u_int8_t SALT[] = {0x0E,0xC6,0x75,0xAD,0x49,0x8A,0xFE,0xEB,0xB6,0x96,0x0B,0x3A,0xAB,0xE6};
-//   Buffer master_key(KEY, 16);
-//   Buffer master_salt(SALT, 14);
-//   std::cout << "master key: " << std::endl << master_key.getHexDump() << std::endl;
-//   std::cout << "master salt: " << std::endl << master_salt.getHexDump() << std::endl;
-//   std::cout << std::endl;
-//   KeyDerivation kd;
-//   kd.init(master_key, master_salt);
-
-//   Buffer key(16);
-//   kd.generate(LABEL_SATP_ENCRYPTION, 0, key);
-//   std::cout << "key: " << std::endl << key.getHexDump() << std::endl;
-
-//   Buffer salt(14);
-//   kd.generate(LABEL_SATP_SALT, 0, salt);
-//   std::cout << "salt: " << std::endl << salt.getHexDump() << std::endl;
-
-//   Buffer auth(14);
-//   kd.generate(LABEL_SATP_MSG_AUTH, 0, auth);
-//   std::cout << "auth: " << std::endl << auth.getHexDump() << std::endl;
-
-
-//   exit(0);
-
-// // *++++++++++++++++++ end of kd test
-
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
   Options opt;
   if(!opt.parse(argc, argv))
