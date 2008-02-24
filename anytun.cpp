@@ -91,7 +91,6 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = new KeyDerivation;
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
-  kd->setLogKDRate(0);
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
  	cl.addConnection(connparam,0);
