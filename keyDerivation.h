@@ -51,7 +51,7 @@ typedef enum {
 class KeyDerivation
 {
 public:
-  KeyDerivation() : ld_kdr_(0), master_salt_(0), cipher_(NULL) {};
+  KeyDerivation() : ld_kdr_(0), master_salt_(0), master_key_(0), cipher_(NULL) {};
   virtual ~KeyDerivation();
 
   void init(Buffer key, Buffer salt);
@@ -82,6 +82,16 @@ protected:
   Mutex mutex_;
 };
 
+
+class NullKeyDerivation
+{
+
+};
+
+class AesIcmKeyDerivation
+{
+  
+};
 
 #endif
 

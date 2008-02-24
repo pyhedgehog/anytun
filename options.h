@@ -84,6 +84,8 @@ public:
   Options& setSeqWindowSize(window_size_t s);
   std::string getCipher();
   Options& setCipher(std::string c);
+  std::string getKdPrf();
+  Options& setKdPrf(std::string k);
   std::string getAuthAlgo();
   Options& setAuthAlgo(std::string a);
 	ConnectToList getConnectTo();
@@ -108,6 +110,7 @@ private:
   std::string ifconfig_param_remote_netmask_;
   window_size_t seq_window_size_;
   std::string cipher_;
+  std::string kd_prf_;
   std::string auth_algo_;
 };
 

@@ -103,7 +103,8 @@ Options::Options()
   ifconfig_param_local_ = "192.168.200.1";
   ifconfig_param_remote_netmask_ = "255.255.255.0";
   seq_window_size_ = 100;
-  cipher_ = "aes";
+  cipher_ = "aes-ctr";
+  kd_prf_ = "aes-ctr";
   auth_algo_ = "sha1";
 }
 
@@ -134,6 +135,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
     PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
+    PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
 		PARSE_SCALAR_CSLIST("-M","--sync-hosts", host_port_queue)
     else 
@@ -402,6 +404,19 @@ Options& Options::setCipher(std::string c)
 {
   Lock lock(mutex);
   cipher_ = c;
+  return *this;
+}
+
+std::string Options::getKdPrf()
+{
+  Lock lock(mutex);
+  return kd_prf_;
+}
+
+Options& Options::setKdPrf(std::string k)
+{
+  Lock lock(mutex);
+  kd_prf_ = k;
   return *this;
 }
 
