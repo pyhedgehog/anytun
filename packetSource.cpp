@@ -46,12 +46,12 @@ UDPPacketSource::UDPPacketSource(std::string localaddr, u_int16_t port) : UDPSoc
 {
 }
 
-u_int32_t UDPPacketSource::recv(Buffer& buf, std::string& addr, u_int16_t &port)
+u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, std::string& addr, u_int16_t &port)
 {
-  return recvFrom(buf, buf.getLength(), addr, port);
+  return recvFrom(buf, len, addr, port);
 }
 
-void UDPPacketSource::send(Buffer& buf, std::string addr, u_int16_t port)
+void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, std::string addr, u_int16_t port)
 {
-  sendTo(buf, buf.getLength(), addr, port);
+  sendTo(buf, len, addr, port);
 }

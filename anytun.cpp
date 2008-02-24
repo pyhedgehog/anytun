@@ -91,6 +91,7 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = new KeyDerivation;
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
+  kd->setLogKDRate(0);
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
  	cl.addConnection(connparam,0);
@@ -144,9 +145,13 @@ void* sender(void* p)
   u_int16_t mux = 0;
   while(1)
   {
+    plain_packet.setLength(MAX_PACKET_LENGTH);
+    encrypted_packet.setLength(MAX_PACKET_LENGTH);
     // read packet from device
-    u_int32_t len = param->dev.read(plain_packet);
+    u_int32_t len = param->dev.read(plain_packet.getPayload(), plain_packet.getPayloadLength());
     plain_packet.setLength(len);
+
+    std::cout << "plain_packet.getPayloadLength() = " << plain_packet.getPayloadLength() << std::endl;
 
     if(param->cl.empty())
       continue;
@@ -167,6 +172,13 @@ void* sender(void* p)
     // generate packet-key
     conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key);
     conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt);
+
+    std::cout << "session_key: ";
+    std::cout << session_key.getHexDump();
+    std::cout << "session_salt: ";
+    std::cout << session_salt.getHexDump() << std::endl;
+
+
     c->setKey(session_key);
     c->setSalt(session_salt);
 
@@ -180,7 +192,10 @@ void* sender(void* p)
 //    conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
 //    a->setKey(session_auth_key);
 //		addPacketAuthTag(encrypted_packet, a.get(), conn);
-    param->src.send(encrypted_packet, conn.remote_host_, conn.remote_port_);
+
+    std::cout << "encrypted_packet.getLength() = " << encrypted_packet.getLength() << std::endl << std::endl;
+
+    param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_host_, conn.remote_port_);
   }
   pthread_exit(NULL);
 }
@@ -226,8 +241,8 @@ void* receiver(void* p)
   std::auto_ptr<Cipher> c( CipherFactory::create(param->opt.getCipher()) );
 //  std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
 
-  EncryptedPacket encrypted_packet(1600);     // TODO: dynamic mtu size
-  PlainPacket plain_packet(1600);
+  EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
+  PlainPacket plain_packet(MAX_PACKET_LENGTH);
 
   Buffer session_key(u_int32_t(SESSION_KEYLEN_ENCR));             // TODO: hardcoded size
   Buffer session_salt(u_int32_t(SESSION_KEYLEN_SALT));            // TODO: hardcoded size
@@ -238,8 +253,11 @@ void* receiver(void* p)
     string remote_host;
     u_int16_t remote_port;
 
+    plain_packet.setLength(MAX_PACKET_LENGTH);
+    encrypted_packet.setLength(MAX_PACKET_LENGTH);
+
     // read packet from socket
-    u_int32_t len = param->src.recv(encrypted_packet, remote_host, remote_port);
+    u_int32_t len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_host, remote_port);
     encrypted_packet.setLength(len);
 
 		// TODO: check auth tag first
@@ -289,7 +307,7 @@ void* receiver(void* p)
       continue;
 
     // write it on the device
-    param->dev.write(plain_packet);
+    param->dev.write(plain_packet.getPayload(), plain_packet.getLength());
   }
   pthread_exit(NULL);
 }
@@ -313,20 +331,7 @@ bool initLibGCrypt()
     std::cout << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
     return false;
   }
-  
-  // do NOT allocate a pool uof secure memory!   Q@NINE?
-  // this is NOT thread safe! ??????????????????????????????????   why secure memory????????
-  
-  /* Allocate a pool of 16k secure memory.  This also drops priviliges
-   * on some systems. */
-//   err = gcry_control(GCRYCTL_INIT_SECMEM, GCRYPT_SEC_MEM, 0);
-//   if( err )
-//   {
-//     cLog.msg(Log::PRIO_ERR) << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err );
-//     std::cout << "Failed to allocate " << GCRYPT_SEC_MEM << " bytes of secure memory: " << gpg_strerror( err ) << std::endl;
-//     return false;
-//   }
-  
+    
   // Tell Libgcrypt that initialization has completed.
   gcry_error_t err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
   if( err ) {

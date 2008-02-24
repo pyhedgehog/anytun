@@ -102,8 +102,10 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key)
     r = 0;  // TODO: no new key should be generated if r == 0, except it is the first time
   else
   {
-    Mpi seq = seq_nr;
-    Mpi rate = 1;
+    Mpi seq(32);
+    seq = seq_nr;
+    Mpi rate(48);
+    rate = 1;
     rate = rate.mul2exp(ld_kdr_);
     r = seq / rate;
   }

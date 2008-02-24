@@ -110,7 +110,7 @@ TunDevice::~TunDevice()
     close_tun(dev_);
 }
 
-short TunDevice::read(Buffer& buf)
+short TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
   if(!dev_)
     return -1;
@@ -121,15 +121,15 @@ short TunDevice::read(Buffer& buf)
   pfd[0].revents = 0;
   poll(pfd, 1, -1);
   Lock lock(io_mutex_);
-  return read_tun(dev_, buf, buf.getLength());
+  return read_tun(dev_, buf, len);
 }
 
-int TunDevice::write(Buffer& buf)
+int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
   if(!dev_)
     return -1;
   Lock lock(io_mutex_);
-  return write_tun(dev_, buf, buf.getLength());
+  return write_tun(dev_, buf, len);
 }
 
 char* TunDevice::getActualName()

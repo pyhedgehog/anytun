@@ -48,8 +48,8 @@ public:
   void close();
   bool isOpen();
 
-  short read(Buffer& buf);
-  int write(Buffer& buf);
+  short read(u_int8_t* buf, u_int32_t len);
+  int write(u_int8_t* buf, u_int32_t len);
 
   char* getActualName();
   u_int32_t getType();
