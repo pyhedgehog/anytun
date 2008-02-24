@@ -80,7 +80,7 @@ void AesIcmKeyDerivation::init(Buffer key, Buffer salt)
   if(cipher_)
     gcry_cipher_close( cipher_ );
 
-  // TODO: hardcoded cipher-type and keysize??
+  // TODO: hardcoded size
   gcry_error_t err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to open cipher: " << gpg_strerror( err );

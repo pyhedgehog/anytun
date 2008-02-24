@@ -71,7 +71,7 @@
       i+=2;                                              \
     }
 
-#define PARSE_SCALAR_CSLIST(SHORT, LONG, LIST) \
+#define PARSE_CSLIST_PARAM(SHORT, LONG, LIST) \
     else if(str == SHORT || str == LONG)                 \
     {                                                    \
       if(argc < 1 || argv[i+1][0] == '-')                \
@@ -174,6 +174,7 @@ void Options::printUsage()
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
   std::cout << "       [-c|--cipher] <cipher type>         payload encryption algorithm" << std::endl;
+  std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
   std::cout << "       [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
 }
 
@@ -193,6 +194,7 @@ void Options::printOptions()
   std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
   std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
   std::cout << "cipher='" << cipher_ << "'" << std::endl;
+  std::cout << "kd-prf='" << kd_prf_ << "'" << std::endl;
   std::cout << "auth_algo='" << auth_algo_ << "'" << std::endl;
 }
 
