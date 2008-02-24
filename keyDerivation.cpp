@@ -41,39 +41,6 @@
 #include <gcrypt.h>
 
 
-void KeyDerivation::init(Buffer key, Buffer salt)
-{
-  Lock lock(mutex_);
-  gcry_error_t err;
-
-  // TODO: hardcoded cipher-type and keysize??
-  err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
-  if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to open cipher: " << gpg_strerror( err );
-    return;
-  }
-
-  master_salt_ = SyncBuffer(salt);
-  master_key_ = SyncBuffer(key);
-
-  updateMasterKey();
-}
-
-void KeyDerivation::updateMasterKey()
-{
-  gcry_error_t err;
-
-  err = gcry_cipher_setkey( cipher_, master_key_.getBuf(), master_key_.getLength() );
-  if( err )
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << gpg_strerror( err );
-}
-
-KeyDerivation::~KeyDerivation()
-{
-  Lock lock(mutex_);
-  gcry_cipher_close( cipher_ );
-}
-
 void KeyDerivation::setLogKDRate(const uint8_t log_rate)
 {
   Lock lock(mutex_);
@@ -81,9 +48,59 @@ void KeyDerivation::setLogKDRate(const uint8_t log_rate)
     ld_kdr_ = log_rate;
 }
 
-void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) 
+//****** NullKeyDerivation ******
+
+void NullKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key)
+{
+  for(u_int32_t i=0; i < key.getLength(); ++i) key[i] = 0;
+}
+
+//****** AesIcmKeyDerivation ******
+
+AesIcmKeyDerivation::~AesIcmKeyDerivation()
 {
   Lock lock(mutex_);
+  if(cipher_)
+    gcry_cipher_close( cipher_ );
+}
+
+void AesIcmKeyDerivation::updateMasterKey()
+{
+  if(!cipher_)
+    return;
+
+  gcry_error_t err = gcry_cipher_setkey( cipher_, master_key_.getBuf(), master_key_.getLength() );
+  if( err )
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << gpg_strerror( err );
+}
+
+void AesIcmKeyDerivation::init(Buffer key, Buffer salt)
+{
+  Lock lock(mutex_);
+  if(cipher_)
+    gcry_cipher_close( cipher_ );
+
+  // TODO: hardcoded cipher-type and keysize??
+  gcry_error_t err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
+  if( err ) {
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to open cipher: " << gpg_strerror( err );
+    return;
+  }
+  
+  master_salt_ = SyncBuffer(salt);
+  master_key_ = SyncBuffer(key);
+
+  updateMasterKey();
+}
+
+void AesIcmKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) 
+{
+  Lock lock(mutex_);
+  if(!cipher_)
+  {
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: cipher not opened";
+    return;
+  }
 
   gcry_error_t err = gcry_cipher_reset( cipher_ );
   if( err )
@@ -133,3 +150,4 @@ void KeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key)
   if( err ) 
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror( err );
 }
+

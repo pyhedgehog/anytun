@@ -45,7 +45,10 @@ PlainPacket::PlainPacket(u_int32_t payload_length, bool allow_realloc) : Buffer(
 
 payload_type_t PlainPacket::getPayloadType() const
 {
-  return PAYLOAD_TYPE_T_NTOH(*payload_type_);
+  if(payload_type_)
+    return PAYLOAD_TYPE_T_NTOH(*payload_type_);
+
+  return 0;
 }
 
 void PlainPacket::setPayloadType(payload_type_t payload_type)

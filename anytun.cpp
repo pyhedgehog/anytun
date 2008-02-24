@@ -46,15 +46,13 @@
 #include "authTag.h"
 #include "cipherFactory.h"
 #include "authAlgoFactory.h"
+#include "keyDerivationFactory.h"
 #include "signalController.h"
 #include "packetSource.h"
 #include "tunDevice.h"
 #include "options.h"
 #include "seqWindow.h"
 #include "connectionList.h"
-
-#include "mpi.h"  // TODO: remove after debug
-
 
 #include "syncQueue.h"
 #include "syncSocketHandler.h"
@@ -77,6 +75,7 @@
 
 void createConnection(const std::string & remote_host, u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue)
 {
+      // TODO: use key exchange for master key/salt
   uint8_t key[] = {
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
   'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
@@ -89,7 +88,7 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
 
 	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
-  KeyDerivation * kd = new KeyDerivation;
+  KeyDerivation * kd = KeyDerivationFactory::create("aes-ctr"); // TODO: get value from options
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
@@ -312,7 +311,6 @@ void* receiver(void* p)
 }
 
 #define MIN_GCRYPT_VERSION "1.2.3"
-//#define GCRYPT_SEC_MEM 32768    // 32k secure memory
 // make libgcrypt thread safe
 extern "C" {
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
@@ -341,7 +339,7 @@ bool initLibGCrypt()
   cLog.msg(Log::PRIO_NOTICE) << "initLibGCrypt: libgcrypt init finished";
   return true;
 }
-
+ 
 int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;

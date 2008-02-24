@@ -51,46 +51,89 @@ typedef enum {
 class KeyDerivation
 {
 public:
-  KeyDerivation() : ld_kdr_(0), master_salt_(0), master_key_(0), cipher_(NULL) {};
-  virtual ~KeyDerivation();
+  KeyDerivation() : ld_kdr_(0), master_salt_(0), master_key_(0) {};
+  virtual ~KeyDerivation() {};
 
-  void init(Buffer key, Buffer salt);
   void setLogKDRate(const u_int8_t ld_rate);
-  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
 
-private:
-  void updateMasterKey();
+  virtual void init(Buffer key, Buffer salt) = 0;
+  virtual void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) = 0;
+
+  virtual std::string printType() { return "KeyDerivation"; };
+
+protected:
+  virtual void updateMasterKey() = 0;
   
 	KeyDerivation(const KeyDerivation & src);
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		Lock lock(mutex_);
-	  ar & ld_kdr_;
-	  ar & master_salt_;
+ 		Lock lock(mutex_);
+    ar & ld_kdr_;
+    ar & master_salt_;
     ar & master_key_;
     updateMasterKey();
 	}
 
-protected:
-  int8_t ld_kdr_;     // ld(key_derivation_rate)
+  int8_t ld_kdr_;             // ld(key_derivation_rate)
   SyncBuffer master_salt_;
   SyncBuffer master_key_;
 
-  gcry_cipher_hd_t cipher_;
   Mutex mutex_;
 };
 
+BOOST_IS_ABSTRACT(KeyDerivation)
 
-class NullKeyDerivation
+//****** NullKeyDerivation ******
+
+class NullKeyDerivation : public KeyDerivation
 {
+public:
+  NullKeyDerivation() {};
+  ~NullKeyDerivation() {};
+
+  void init(Buffer key, Buffer salt) {};
+  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
+
+  std::string printType() { return "NullKeyDerivation"; };
+
+private:
+  void updateMasterKey() {};
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+    ar & boost::serialization::base_object<KeyDerivation>(*this);
+	}
 
 };
 
-class AesIcmKeyDerivation
+//****** AesIcmKeyDerivation ******
+
+class AesIcmKeyDerivation : public KeyDerivation
 {
+public:
+  AesIcmKeyDerivation() : cipher_(NULL) {};
+  ~AesIcmKeyDerivation();
   
+  void init(Buffer key, Buffer salt);
+  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
+
+  std::string printType() { return "AesIcmKeyDerivation"; };
+
+private:
+  void updateMasterKey();
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+    ar & boost::serialization::base_object<KeyDerivation>(*this);
+	}
+
+  gcry_cipher_hd_t cipher_;
 };
 
 #endif

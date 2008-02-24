@@ -70,6 +70,7 @@ u_int32_t NullCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_in
   return (ilen < olen) ? ilen : olen;
 }
 
+
 //****** AesIcmCipher ****** 
 
 AesIcmCipher::AesIcmCipher()

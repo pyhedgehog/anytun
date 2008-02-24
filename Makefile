@@ -59,6 +59,7 @@ OBJS = anytun.o \
 			 mpi.o \
 			 cipherFactory.o \
 			 authAlgoFactory.o \
+			 keyDerivationFactory.o \
 			 connectionList.o \
 			 connectionParam.o \
 			 networkAddress.o \
@@ -121,6 +122,9 @@ cipherFactory.o: cipherFactory.cpp cipherFactory.h cipher.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgoFactory.o: authAlgoFactory.cpp authAlgoFactory.h authAlgo.h
+	$(C++) $(CCFLAGS) $< -c
+
+keyDerivationFactory.o: keyDerivationFactory.cpp keyDerivationFactory.h keyDerivation.h
 	$(C++) $(CCFLAGS) $< -c
 
 routingTable.o: routingTable.cpp routingTable.h
