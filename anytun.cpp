@@ -147,7 +147,7 @@ void* sender(void* p)
     encrypted_packet.setLength(MAX_PACKET_LENGTH);
     // read packet from device
     u_int32_t len = param->dev.read(plain_packet.getPayload(), plain_packet.getPayloadLength());
-    plain_packet.setLength(len);
+    plain_packet.setPayloadLength(len);
 
     std::cout << "plain_packet.getPayloadLength() = " << plain_packet.getPayloadLength() << std::endl;
 
