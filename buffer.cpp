@@ -161,6 +161,8 @@ void Buffer::setLength(u_int32_t new_length)
 
     old_buf = &buf_[old_length];
     std::memset(old_buf, 0, real_length_ - old_length);
+
+    reinit();
   }
   else
     length_ = new_length;

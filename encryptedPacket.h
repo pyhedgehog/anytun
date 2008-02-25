@@ -125,6 +125,8 @@ private:
   EncryptedPacket();
   EncryptedPacket(const EncryptedPacket &src);
 
+  void reinit();
+
   struct HeaderStruct
   {
     seq_nr_t seq_nr;

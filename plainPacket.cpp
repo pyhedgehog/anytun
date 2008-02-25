@@ -65,8 +65,13 @@ u_int32_t PlainPacket::getPayloadLength() const
 void PlainPacket::setPayloadLength(u_int32_t payload_length)
 {
   Buffer::setLength(payload_length + sizeof(payload_type_t));
+      // depending on allow_realloc buf_ may point to another address
+      // therefore in this case reinit() gets called by Buffer::setLength()
+}
 
-  // depending on allow_realloc buf_ may point to another address
+void PlainPacket::reinit()
+{
+  Buffer::reinit();
   payload_type_ = reinterpret_cast<payload_type_t*>(buf_);
   payload_ = buf_ + sizeof(payload_type_t);
 }

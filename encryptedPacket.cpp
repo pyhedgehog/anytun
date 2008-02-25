@@ -113,8 +113,13 @@ u_int32_t EncryptedPacket::getPayloadLength() const
 void EncryptedPacket::setPayloadLength(u_int32_t payload_length)
 {
   Buffer::setLength(payload_length + sizeof(struct HeaderStruct));
-  
-  // depending on allow_realloc buf_ may point to another address
+      // depending on allow_realloc buf_ may point to another address
+      // therefore in this case reinit() gets called by Buffer::setLength()
+}
+
+void EncryptedPacket::reinit()
+{
+  Buffer::reinit();
   header_ = reinterpret_cast<struct HeaderStruct*>(buf_);
   payload_ = buf_ + sizeof(struct HeaderStruct);    // TODO: fix auth_tag stuff
   auth_tag_ = NULL;                                 // TODO: fix auth_tag stuff

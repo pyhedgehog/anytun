@@ -61,6 +61,8 @@ public:
   operator u_int8_t*();
 
 protected:
+  virtual void reinit() {};
+
   u_int8_t *buf_;
   u_int32_t length_;
   u_int32_t real_length_;

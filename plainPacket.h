@@ -90,6 +90,8 @@ private:
   PlainPacket();
   PlainPacket(const PlainPacket &src);
 
+  void reinit();
+
   payload_type_t* payload_type_;
   u_int8_t* payload_;
 };
