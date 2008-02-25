@@ -46,7 +46,8 @@ typedef std::list<OptionConnectTo>  ConnectToList;
 class Options
 {
 public:
-  Options();
+  static Options& instance();
+
   bool parse(int argc, char* argv[]);
   void printUsage();
   void printOptions();
@@ -91,6 +92,21 @@ public:
 	ConnectToList getConnectTo();
 
 private:
+  Options();
+  ~Options();
+  Options(const Options &l);
+  void operator=(const Options &l);
+
+  static Options* inst;
+  static Mutex instMutex;
+  class instanceCleaner {
+    public: ~instanceCleaner() {
+      if(Options::inst != 0)
+        delete Options::inst;
+    }
+  };
+  friend class instanceCleaner;
+
   Mutex mutex;
 
 	ConnectToList connect_to_;
@@ -113,5 +129,7 @@ private:
   std::string kd_prf_;
   std::string auth_algo_;
 };
+
+extern Options& gOpt;
 
 #endif

@@ -33,7 +33,6 @@
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
-#include "options.h"
 #include "tunDevice.h"
 #include "connectionList.h"
 #include "syncQueue.h"
@@ -41,10 +40,9 @@
 class ThreadParam
 {
 public:
-	ThreadParam(Options& opt_,TunDevice& dev_,PacketSource& src_,ConnectionList& cl_,SyncQueue & queue_,OptionConnectTo & connto_)
-		: opt(opt_),dev(dev_),src(src_),cl(cl_),queue(queue_),connto(connto_)
+	ThreadParam(TunDevice& dev_,PacketSource& src_,ConnectionList& cl_,SyncQueue & queue_,OptionConnectTo & connto_)
+		: dev(dev_),src(src_),cl(cl_),queue(queue_),connto(connto_)
 		{};
-  Options& opt;
   TunDevice& dev;
   PacketSource& src;
   ConnectionList& cl;

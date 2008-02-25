@@ -36,6 +36,44 @@
 #include "datatypes.h"
 #include "options.h"
 
+Options* Options::inst = NULL;
+Mutex Options::instMutex;
+Options& gOpt = Options::instance();
+
+Options& Options::instance()
+{
+  Lock lock(instMutex);
+  static instanceCleaner c;
+  if(!inst)
+    inst = new Options();
+  
+  return *inst;
+}
+
+Options::Options()
+{
+  progname_ = "anytun";
+  sender_id_ = 0;
+  local_addr_ = "";
+  local_port_ = 4444;
+  local_sync_port_ = 0;
+  remote_sync_port_ = 0;
+  remote_sync_addr_ = "";
+  remote_addr_ = "";
+  remote_port_ = 4444;
+  dev_name_ = "tap";
+  dev_type_ = "";
+  ifconfig_param_local_ = "192.168.200.1";
+  ifconfig_param_remote_netmask_ = "255.255.255.0";
+  seq_window_size_ = 100;
+  cipher_ = "aes-ctr";
+  kd_prf_ = "aes-ctr";
+  auth_algo_ = "sha1";
+}
+
+Options::~Options()
+{
+}
 
 #define PARSE_BOOL_PARAM(SHORT, LONG, VALUE)             \
     else if(str == SHORT || str == LONG)                 \
@@ -71,7 +109,7 @@
       i+=2;                                              \
     }
 
-#define PARSE_CSLIST_PARAM(SHORT, LONG, LIST) \
+#define PARSE_CSLIST_PARAM(SHORT, LONG, LIST)            \
     else if(str == SHORT || str == LONG)                 \
     {                                                    \
       if(argc < 1 || argv[i+1][0] == '-')                \
@@ -86,27 +124,6 @@
       argc--;                                            \
       i++;                                               \
     }
-
-Options::Options()
-{
-  progname_ = "anytun";
-  sender_id_ = 0;
-  local_addr_ = "";
-  local_port_ = 4444;
-  local_sync_port_ = 0;
-  remote_sync_port_ = 0;
-  remote_sync_addr_ = "";
-  remote_addr_ = "";
-  remote_port_ = 4444;
-  dev_name_ = "tap";
-  dev_type_ = "";
-  ifconfig_param_local_ = "192.168.200.1";
-  ifconfig_param_remote_netmask_ = "255.255.255.0";
-  seq_window_size_ = 100;
-  cipher_ = "aes-ctr";
-  kd_prf_ = "aes-ctr";
-  auth_algo_ = "sha1";
-}
 
 bool Options::parse(int argc, char* argv[])
 {
@@ -137,10 +154,13 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
-		PARSE_SCALAR_CSLIST("-M","--sync-hosts", host_port_queue)
+		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
     else 
       return false;
   }
+
+  if(cipher_ == "null")
+    kd_prf_ = "null";
 	while(!host_port_queue.empty())
 	{
 		std::stringstream tmp_stream(host_port_queue.front());

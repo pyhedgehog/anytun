@@ -88,7 +88,7 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
 
 	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
-  KeyDerivation * kd = KeyDerivationFactory::create("aes-ctr"); // TODO: get value from options
+  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
@@ -129,8 +129,8 @@ void* sender(void* p)
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
-  std::auto_ptr<Cipher> c(CipherFactory::create(param->opt.getCipher()));
-//  std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
+  std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher()));
+//  std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
 
   PlainPacket plain_packet(MAX_PACKET_LENGTH);
   EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
@@ -181,9 +181,9 @@ void* sender(void* p)
     c->setSalt(session_salt);
 
     // encrypt packet
-    c->encrypt(plain_packet, encrypted_packet, conn.seq_nr_, param->opt.getSenderId());
+    c->encrypt(plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId());
 
-    encrypted_packet.setHeader(conn.seq_nr_, param->opt.getSenderId(), mux);
+    encrypted_packet.setHeader(conn.seq_nr_, gOpt.getSenderId(), mux);
     conn.seq_nr_++;
 
         // TODO: activate authentication
@@ -221,7 +221,7 @@ void* syncListener(void* p )
 	SyncSocketHandler h(param->queue);
 	SyncListenSocket<SyncSocket,ConnectionList> l(h,param->cl);
 
-	if (l.Bind(param->opt.getLocalSyncPort()))
+	if (l.Bind(gOpt.getLocalSyncPort()))
 		pthread_exit(NULL);
 
 	Utility::ResolveLocal(); // resolve local hostname
@@ -236,8 +236,8 @@ void* receiver(void* p)
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
 
-  std::auto_ptr<Cipher> c( CipherFactory::create(param->opt.getCipher()) );
-//  std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(param->opt.getAuthAlgo()) );
+  std::auto_ptr<Cipher> c( CipherFactory::create(gOpt.getCipher()) );
+//  std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
 
   EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
   PlainPacket plain_packet(MAX_PACKET_LENGTH);
@@ -266,10 +266,10 @@ void* receiver(void* p)
 
 
     // autodetect peer
-    if(param->opt.getRemoteAddr() == "" && param->cl.empty())
+    if(gOpt.getRemoteAddr() == "" && param->cl.empty())
 		{
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
-			createConnection(remote_host, remote_port, param->cl,param->opt.getSeqWindowSize(),param->queue);
+			createConnection(remote_host, remote_port, param->cl, gOpt.getSeqWindowSize(),param->queue);
 		}
 
 		// TODO: Add multi connection support here
@@ -343,33 +343,32 @@ bool initLibGCrypt()
 int main(int argc, char* argv[])
 {
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
-  Options opt;
-  if(!opt.parse(argc, argv))
+  if(!gOpt.parse(argc, argv))
   {
-    opt.printUsage();
+    gOpt.printUsage();
     exit(-1);
   }
   cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
 
   SignalController sig;
   sig.init();
-  std::string dev_type(opt.getDevType()); 
-  TunDevice dev(opt.getDevName().c_str(), dev_type=="" ? NULL : dev_type.c_str(), opt.getIfconfigParamLocal().c_str(), opt.getIfconfigParamRemoteNetmask().c_str());
+  std::string dev_type(gOpt.getDevType()); 
+  TunDevice dev(gOpt.getDevName().c_str(), dev_type=="" ? NULL : dev_type.c_str(), gOpt.getIfconfigParamLocal().c_str(), gOpt.getIfconfigParamRemoteNetmask().c_str());
 
   PacketSource* src;
-  if(opt.getLocalAddr() == "")
-    src = new UDPPacketSource(opt.getLocalPort());
+  if(gOpt.getLocalAddr() == "")
+    src = new UDPPacketSource(gOpt.getLocalPort());
   else
-    src = new UDPPacketSource(opt.getLocalAddr(), opt.getLocalPort());
+    src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
 	ConnectionList cl;
-	ConnectToList connect_to = opt.getConnectTo();
+	ConnectToList connect_to = gOpt.getConnectTo();
 	SyncQueue queue;
 
-	if(opt.getRemoteAddr() != "")
-		createConnection(opt.getRemoteAddr(),opt.getRemotePort(),cl,opt.getSeqWindowSize(), queue);
+	if(gOpt.getRemoteAddr() != "")
+		createConnection(gOpt.getRemoteAddr(),gOpt.getRemotePort(),cl,gOpt.getSeqWindowSize(), queue);
 
-  ThreadParam p(opt, dev, *src, cl, queue,*(new OptionConnectTo()));
+  ThreadParam p(dev, *src, cl, queue,*(new OptionConnectTo()));
     
   cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
   cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
@@ -385,14 +384,14 @@ int main(int argc, char* argv[])
   pthread_create(&receiverThread, NULL, receiver, &p);    
 
 	pthread_t syncListenerThread;
-	if ( opt.getLocalSyncPort())
+	if ( gOpt.getLocalSyncPort())
 		pthread_create(&syncListenerThread, NULL, syncListener, &p);  
 
 	std::list<pthread_t> connectThreads;
 	for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) 
 	{ 
 	 connectThreads.push_back(pthread_t());
-	 ThreadParam * point = new ThreadParam(opt, dev, *src, cl, queue,*it);
+	 ThreadParam * point = new ThreadParam(dev, *src, cl, queue,*it);
 	 pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
 	}
   
@@ -400,14 +399,14 @@ int main(int argc, char* argv[])
 
   pthread_cancel(senderThread);
   pthread_cancel(receiverThread);  
-	if ( opt.getLocalSyncPort())
+	if ( gOpt.getLocalSyncPort())
 	  pthread_cancel(syncListenerThread);  
 	for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)
 		pthread_cancel(*it);
   
   pthread_join(senderThread, NULL);
   pthread_join(receiverThread, NULL);
-	if ( opt.getLocalSyncPort())
+	if ( gOpt.getLocalSyncPort())
 	  pthread_join(syncListenerThread, NULL);
 
 	for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)

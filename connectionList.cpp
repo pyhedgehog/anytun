@@ -31,6 +31,7 @@
 #include "threadUtils.hpp"
 #include "datatypes.h"
 #include "keyDerivationFactory.h"
+#include "options.h"
 
 #include "connectionList.h"
 
@@ -92,7 +93,7 @@ ConnectionParam & ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
 
   SeqWindow * seq= new SeqWindow(0);
   seq_nr_t seq_nr_=0;
-  KeyDerivation * kd = KeyDerivationFactory::create("aes-ctr"); // TODO: get value from options
+  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   ConnectionParam conn ( (*kd),  (*seq), seq_nr_, "",  0);
 	connections_.insert(ConnectionMap::value_type(mux, conn));

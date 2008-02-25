@@ -31,7 +31,6 @@
 #ifndef _CONNECTIONPARAM_H_
 #define _CONNECTIONPARAM_H_
 
-#include "options.h"
 #include "keyDerivation.h"
 #include "cipher.h"
 #include "authAlgo.h"
