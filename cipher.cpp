@@ -100,6 +100,8 @@ void AesIcmCipher::setKey(Buffer key)
 void AesIcmCipher::setSalt(Buffer salt)
 {
   salt_ = salt;
+  if(!salt_[u_int32_t(0)])
+    salt_[u_int32_t(0)] = 1; // TODO: this is a outstandingly ugly workaround
 }
 
 u_int32_t AesIcmCipher::cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
