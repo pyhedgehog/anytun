@@ -181,7 +181,7 @@ void Options::printUsage()
   std::cout << "anytun [-h|--help]                         prints this..." << std::endl;
 //  std::cout << "       [-f|--config] <file>                the config file" << std::endl;
   std::cout << "       [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
-  std::cout << "       [-i|--interface] <interface>        local interface to bind to" << std::endl;
+  std::cout << "       [-i|--interface] <ip-address>       local ip anycast address to bind to" << std::endl;
   std::cout << "       [-p|--port] <port>                  local anycast(data) port to bind to" << std::endl;
   std::cout << "       [-S|--sync-port] <port>             local unicast(sync) port to bind to" << std::endl;
   std::cout << "       [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]"<< std::endl;
