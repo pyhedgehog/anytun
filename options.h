@@ -32,6 +32,7 @@
 #define _OPTIONS_H_
 
 #include "datatypes.h"
+#include "buffer.h"
 #include "threadUtils.hpp"
 #include <list>
 
@@ -90,6 +91,12 @@ public:
   std::string getAuthAlgo();
   Options& setAuthAlgo(std::string a);
 	ConnectToList getConnectTo();
+  Options& setMux(u_int16_t m);
+  u_int16_t getMux();
+  Options& setKey(std::string k);
+  Buffer getKey();
+  Options& setSalt(std::string s);
+  Buffer getSalt();
 
 private:
   Options();
@@ -128,6 +135,9 @@ private:
   std::string cipher_;
   std::string kd_prf_;
   std::string auth_algo_;
+  u_int16_t mux_;
+  Buffer key_;
+  Buffer salt_;
 };
 
 extern Options& gOpt;

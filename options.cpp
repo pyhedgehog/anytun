@@ -69,6 +69,9 @@ Options::Options()
   cipher_ = "aes-ctr";
   kd_prf_ = "aes-ctr";
   auth_algo_ = "sha1";
+  key_ = "";
+  salt_ = "";
+  mux_ = 0;
 }
 
 Options::~Options()
@@ -152,7 +155,10 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-t","--type", dev_type_)
     PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
+    PARSE_SCALAR_PARAM("-m","--mux", mux_)
     PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
+    PARSE_SCALAR_PARAM("-K","--key", key_)
+    PARSE_SCALAR_PARAM("-a","--salt", salt_)
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
 		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
@@ -195,7 +201,10 @@ void Options::printUsage()
   std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
+  std::cout << "       [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
   std::cout << "       [-c|--cipher] <cipher type>         payload encryption algorithm" << std::endl;
+  std::cout << "       [-K|--key] <master key>             master key to use for encryption" << std::endl;
+  std::cout << "       [-a|--salt] <master salt>           master salt to use for encryption" << std::endl;
   std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
   std::cout << "       [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
 }
@@ -216,7 +225,9 @@ void Options::printOptions()
   std::cout << "ifconfig_param_local='" << ifconfig_param_local_ << "'" << std::endl;
   std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
   std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
+  std::cout << "mux_id='" << mux_ << "'" << std::endl;
   std::cout << "cipher='" << cipher_ << "'" << std::endl;
+  std::cout << "salt='" << salt_.getHexDump() << "'" << std::endl;
   std::cout << "kd-prf='" << kd_prf_ << "'" << std::endl;
   std::cout << "auth_algo='" << auth_algo_ << "'" << std::endl;
 }
@@ -455,5 +466,30 @@ Options& Options::setAuthAlgo(std::string a)
 {
   Lock lock(mutex);
   auth_algo_ = a;
+  return *this;
+}
+
+u_int16_t Options::getMux()
+{
+  Lock lock(mutex);
+  return mux_;
+}
+
+Options& Options::setMux(u_int16_t m)
+{
+  Lock lock(mutex);
+  mux_ = m;
+  return *this;
+}
+
+Buffer Options::getKey()
+{
+  Lock lock(mutex);
+  return Buffer(u_int32_t(0));
+}
+
+Options& Options::setKey(std::string k)
+{
+  Lock lock(mutex);
   return *this;
 }

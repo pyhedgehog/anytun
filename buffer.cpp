@@ -31,6 +31,7 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <iostream>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include "datatypes.h"
@@ -62,6 +63,23 @@ Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc) : length_(l
     throw std::bad_alloc();
   }
   std::memcpy(buf_, data, length_);
+}
+
+Buffer::Buffer(std::string hex_data, bool allow_realloc) : length_(hex_data.size()/2), 
+                                                       real_length_(length_ + Buffer::OVER_SIZE_),
+                                                       allow_realloc_(allow_realloc)
+{
+  buf_ = new u_int8_t[real_length_];
+  if(!buf_) {
+    length_ = 0;
+    real_length_ = 0;
+    throw std::bad_alloc();
+  }
+  std::stringstream tmp(hex_data);
+  for(u_int32_t i=0;i<length_;++i)
+  {
+    tmp >> std::hex >> std::setw(2) >> buf_[i];
+  }
 }
 
 Buffer::~Buffer()

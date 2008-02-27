@@ -142,7 +142,7 @@ void* sender(void* p)
   Buffer session_auth_key(u_int32_t(SESSION_KEYLEN_AUTH));        // TODO: hardcoded size
 
   //TODO replace mux
-  u_int16_t mux = 0;
+  u_int16_t mux = gOpt.getMux();
   while(1)
   {
     plain_packet.setLength(MAX_PACKET_LENGTH);
@@ -335,6 +335,22 @@ bool initLibGCrypt()
  
 int main(int argc, char* argv[])
 {
+/*
+  
+  char INPUT[] = "101232565621f6e77f56";
+
+  std::string input(INPUT, sizeof(INPUT));
+
+  Buffer b(input);
+
+  std::cout << " b:" << b.getHexDump() << std::endl;
+  
+
+
+
+  exit(0);
+*/
+
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
   if(!gOpt.parse(argc, argv))
   {
