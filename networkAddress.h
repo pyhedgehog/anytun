@@ -49,11 +49,17 @@ class NetworkAddress
 {
 public:
 	NetworkAddress();
+	NetworkAddress(const NetworkAddress &);
+	NetworkAddress(in6_addr);
+	NetworkAddress(in_addr);
+	NetworkAddress(uint64_t);
 	~NetworkAddress();
 	void setNetworkAddress(const network_address_type_t type, const char * address );
 	void getNetworkAddress(const char *);
 	network_address_type_t getNetworkAddressType();
   bool operator<(const NetworkAddress &s) const;
+  NetworkAddress operator&(const NetworkAddress &s) const;
+  NetworkAddress operator<<(uint8_t shift) const;
 
 private:
   Mutex mutex_;

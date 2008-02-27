@@ -30,12 +30,36 @@
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
+#include <exception>
 
 #include "networkAddress.h"
 
 NetworkAddress::NetworkAddress()
 {
 }
+
+NetworkAddress::NetworkAddress(const NetworkAddress & ref) : mutex_(),ipv4_address_(ref.ipv4_address_),ipv6_address_(ref.ipv6_address_),ethernet_address_(ref.ethernet_address_),network_address_type_(ref.network_address_type_)
+{
+}
+
+NetworkAddress::NetworkAddress(in6_addr ipv6_address)
+{
+	network_address_type_=ipv6;
+	ipv6_address_ = ipv6_address;
+}
+
+NetworkAddress::NetworkAddress(in_addr ipv4_address)
+{
+	network_address_type_=ipv4;
+	ipv4_address_ = ipv4_address;
+}
+
+NetworkAddress::NetworkAddress(uint64_t ethernet_address)
+{
+	network_address_type_=ethernet;
+	ethernet_address_=ethernet_address;
+}
+
 
 NetworkAddress::~NetworkAddress()
 {
@@ -85,3 +109,49 @@ bool NetworkAddress::operator<(const NetworkAddress &right) const
 	return false;
 }
 
+
+NetworkAddress NetworkAddress::operator<<(uint8_t shift) const
+{
+	if (network_address_type_==ipv4)
+	{
+		in_addr new_v4_addr;
+		new_v4_addr.s_addr = ipv4_address_.s_addr << shift;
+		return (NetworkAddress(new_v4_addr));
+	} else if (network_address_type_==ipv6) {
+		in6_addr new_v6_addr;
+		for(int i=0;i<4;i++)
+		{
+			new_v6_addr.s6_addr32[i]=ipv6_address_.s6_addr32[i]<<1;
+			if (i<3 && ipv6_address_.s6_addr32[i+1] || uint32_t (0x80000000))
+				new_v6_addr.s6_addr32[i] &=1;
+		}
+		return NetworkAddress(new_v6_addr);
+	} else if (network_address_type_==ethernet) {
+		//TODO
+	} else {
+		//TODO
+	}
+	return false;
+}
+
+NetworkAddress NetworkAddress::operator&(const NetworkAddress &right) const
+{
+	if (network_address_type_!=right.network_address_type_)
+		throw std::runtime_error("network_address_types did not match");
+	if (network_address_type_==ipv4)
+	{
+		in_addr new_v4_addr;
+		new_v4_addr.s_addr = ipv4_address_.s_addr & right.ipv4_address_.s_addr;
+		return (NetworkAddress(new_v4_addr));
+	} else if (network_address_type_==ipv6) {
+		in6_addr new_v6_addr;
+		for(int i=0;i<4;i++)
+			new_v6_addr.s6_addr32[i]=ipv6_address_.s6_addr32[i]&right.ipv6_address_.s6_addr32[i];
+		return NetworkAddress(new_v6_addr);
+	} else if (network_address_type_==ethernet) {
+		//TODO
+	} else {
+		//TODO
+	}
+	return false;
+}
