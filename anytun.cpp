@@ -151,8 +151,6 @@ void* sender(void* p)
     u_int32_t len = param->dev.read(plain_packet.getPayload(), plain_packet.getPayloadLength());
     plain_packet.setPayloadLength(len);
 
-    std::cout << "plain_packet.getPayloadLength() = " << plain_packet.getPayloadLength() << std::endl;
-
     if(param->cl.empty())
       continue;
 
@@ -174,12 +172,6 @@ void* sender(void* p)
     conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key);
     conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt);
 
-    std::cout << "session_key: ";
-    std::cout << session_key.getHexDump();
-    std::cout << "session_salt: ";
-    std::cout << session_salt.getHexDump() << std::endl;
-
-
     c->setKey(session_key);
     c->setSalt(session_salt);
 
@@ -193,8 +185,6 @@ void* sender(void* p)
 //    conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
 //    a->setKey(session_auth_key);
 //		addPacketAuthTag(encrypted_packet, a.get(), conn);
-
-    std::cout << "encrypted_packet.getLength() = " << encrypted_packet.getLength() << std::endl << std::endl;
 
     param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_host_, conn.remote_port_);
   }
