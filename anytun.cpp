@@ -77,21 +77,10 @@
 
 void createConnection(const std::string & remote_host, u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
 {
-      // TODO: use key exchange for master key/salt
-  uint8_t key[] = {
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-  'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
-  };
-  
-  uint8_t salt[] = {
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-  'i', 'j', 'k', 'l', 'm', 'n'
-  };
-
 	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
-  kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
+  kd->init(gOpt.getKey(), gOpt.getSalt());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
  	cl.addConnection(connparam,mux);
@@ -339,22 +328,6 @@ bool initLibGCrypt()
  
 int main(int argc, char* argv[])
 {
-/*
-  
-  char INPUT[] = "101232565621f6e77f56";
-
-  std::string input(INPUT, sizeof(INPUT));
-
-  Buffer b(input);
-
-  std::cout << " b:" << b.getHexDump() << std::endl;
-  
-
-
-
-  exit(0);
-*/
-
   std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
   if(!gOpt.parse(argc, argv))
   {

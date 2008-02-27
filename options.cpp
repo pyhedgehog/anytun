@@ -50,7 +50,7 @@ Options& Options::instance()
   return *inst;
 }
 
-Options::Options()
+Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
 {
   progname_ = "anytun";
   sender_id_ = 0;
@@ -69,8 +69,6 @@ Options::Options()
   cipher_ = "aes-ctr";
   kd_prf_ = "aes-ctr";
   auth_algo_ = "sha1";
-  key_ = "";
-  salt_ = "";
   mux_ = 0;
 }
 
@@ -110,6 +108,16 @@ Options::~Options()
       tmp >> VALUE2;                                     \
       argc-=2;                                           \
       i+=2;                                              \
+    }
+
+#define PARSE_HEXSTRING_PARAM(SHORT, LONG, VALUE)        \
+    else if(str == SHORT || str == LONG)                 \
+    {                                                    \
+      if(argc < 1 || argv[i+1][0] == '-')                \
+        return false;                                    \
+      VALUE = Buffer(std::string(argv[i+1]));            \
+      argc--;                                            \
+      i++;                                               \
     }
 
 #define PARSE_CSLIST_PARAM(SHORT, LONG, LIST)            \
@@ -157,8 +165,8 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
     PARSE_SCALAR_PARAM("-m","--mux", mux_)
     PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
-    PARSE_SCALAR_PARAM("-K","--key", key_)
-    PARSE_SCALAR_PARAM("-a","--salt", salt_)
+    PARSE_HEXSTRING_PARAM("-K","--key", key_)
+    PARSE_HEXSTRING_PARAM("-a","--salt", salt_)
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
 		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
@@ -227,7 +235,8 @@ void Options::printOptions()
   std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
   std::cout << "mux_id='" << mux_ << "'" << std::endl;
   std::cout << "cipher='" << cipher_ << "'" << std::endl;
-  std::cout << "salt='" << salt_.getHexDump() << "'" << std::endl;
+  std::cout << "key=" << key_.getHexDumpOneLine() << std::endl;
+  std::cout << "salt=" << salt_.getHexDumpOneLine() << std::endl;
   std::cout << "kd-prf='" << kd_prf_ << "'" << std::endl;
   std::cout << "auth_algo='" << auth_algo_ << "'" << std::endl;
 }
@@ -485,11 +494,25 @@ Options& Options::setMux(u_int16_t m)
 Buffer Options::getKey()
 {
   Lock lock(mutex);
-  return Buffer(u_int32_t(0));
+  return key_;
 }
 
 Options& Options::setKey(std::string k)
 {
   Lock lock(mutex);
+  key_ = k;
+  return *this;
+}
+
+Buffer Options::getSalt()
+{
+  Lock lock(mutex);
+  return salt_;
+}
+
+Options& Options::setSalt(std::string s)
+{
+  Lock lock(mutex);
+  salt_ = s;
   return *this;
 }

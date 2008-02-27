@@ -66,8 +66,8 @@ Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc) : length_(l
 }
 
 Buffer::Buffer(std::string hex_data, bool allow_realloc) : length_(hex_data.size()/2), 
-                                                       real_length_(length_ + Buffer::OVER_SIZE_),
-                                                       allow_realloc_(allow_realloc)
+                                                           real_length_(length_ + Buffer::OVER_SIZE_),
+                                                           allow_realloc_(allow_realloc)
 {
   buf_ = new u_int8_t[real_length_];
   if(!buf_) {
@@ -75,10 +75,13 @@ Buffer::Buffer(std::string hex_data, bool allow_realloc) : length_(hex_data.size
     real_length_ = 0;
     throw std::bad_alloc();
   }
-  std::stringstream tmp(hex_data);
-  for(u_int32_t i=0;i<length_;++i)
+  
+  for(u_int32_t i=0; i<length_; ++i)
   {
-    tmp >> std::hex >> std::setw(2) >> buf_[i];
+    u_int32_t tmp;
+    std::istringstream ss(std::string(hex_data.c_str(), i*2, 2));
+    if(!(ss >> std::hex >> tmp)) tmp = 0;
+    buf_[i] = tmp;
   }
 }
 
@@ -227,6 +230,18 @@ std::string Buffer::getHexDump() const
     if(!((index+1) % 8))
       ss << " ";
   }
+  return ss.str();
+}
+
+std::string Buffer::getHexDumpOneLine() const
+{
+  std::stringstream ss;
+  ss << length_ << " Bytes,'" << std::hex << std::uppercase;
+  for( u_int32_t index = 0; index < length_; index++ )
+  {
+    ss << std::setw(2) << std::setfill('0') << u_int32_t(buf_[index]);
+  }
+  ss << "'";
   return ss.str();
 }
 

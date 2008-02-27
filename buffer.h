@@ -43,7 +43,7 @@ public:
   Buffer(bool allow_realloc = true);
   Buffer(u_int32_t length, bool allow_realloc = true);
   Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc = true);
-  Buffer(std::string data, bool allow_realloc = true);
+  Buffer(std::string hex_data, bool allow_realloc = true);
   virtual ~Buffer();
   Buffer(const Buffer &src);
   void operator=(const Buffer &src);
@@ -56,6 +56,7 @@ public:
   u_int8_t& operator[](u_int32_t index);
   u_int8_t operator[](u_int32_t index) const;
   std::string getHexDump() const;
+  std::string getHexDumpOneLine() const;
 
   bool isReallocAllowed() const;
 
