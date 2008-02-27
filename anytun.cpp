@@ -75,7 +75,7 @@
 #define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
 #define SESSION_KEYLEN_SALT 14   // TODO: hardcoded size
 
-void createConnection(const std::string & remote_host, u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue)
+void createConnection(const std::string & remote_host, u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
 {
       // TODO: use key exchange for master key/salt
   uint8_t key[] = {
@@ -94,9 +94,9 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
- 	cl.addConnection(connparam,gOpt.getMux());
-	gRoutingTable.addRoute(NetworkPrefix(NetworkAddress()),gOpt.getMux());
-  SyncCommand sc (cl,gOpt.getMux());
+ 	cl.addConnection(connparam,mux);
+	gRoutingTable.addRoute(NetworkPrefix(NetworkAddress()),mux);
+  SyncCommand sc (cl,mux);
 	queue.push(sc);
 }
 
@@ -263,11 +263,14 @@ void* receiver(void* p)
     if(gOpt.getRemoteAddr() == "" && param->cl.empty())
 		{
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
-			createConnection(remote_host, remote_port, param->cl, gOpt.getSeqWindowSize(),param->queue);
+			createConnection(remote_host, remote_port, param->cl, gOpt.getSeqWindowSize(),param->queue,encrypted_packet.getMux());
 		}
 
 		// TODO: Add multi connection support here
-		ConnectionParam & conn = param->cl.getConnection(0)->second;
+		ConnectionMap::iterator cit = param->cl.getConnection(encrypted_packet.getMux());
+		if (cit == param->cl.getEnd())
+			continue;
+		ConnectionParam & conn = cit->second;
 
 		//Allow dynamic IP changes 
 		//TODO: add command line option to turn this off
@@ -376,7 +379,7 @@ int main(int argc, char* argv[])
 	SyncQueue queue;
 
 	if(gOpt.getRemoteAddr() != "")
-		createConnection(gOpt.getRemoteAddr(),gOpt.getRemotePort(),cl,gOpt.getSeqWindowSize(), queue);
+		createConnection(gOpt.getRemoteAddr(),gOpt.getRemotePort(),cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
 
   ThreadParam p(dev, *src, cl, queue,*(new OptionConnectTo()));
     
