@@ -155,3 +155,23 @@ NetworkAddress NetworkAddress::operator&(const NetworkAddress &right) const
 	}
 	return false;
 }
+
+NetworkAddress NetworkAddress::operator&=(const NetworkAddress &right)
+{
+	if (network_address_type_!=right.network_address_type_)
+		throw std::runtime_error("network_address_types did not match");
+	if (network_address_type_==ipv4)
+	{
+		ipv4_address_.s_addr &= right.ipv4_address_.s_addr;
+		return *this;
+	} else if (network_address_type_==ipv6) {
+		for(int i=0;i<4;i++)
+			ipv6_address_.s6_addr32[i]&=right.ipv6_address_.s6_addr32[i];
+		return *this;
+	} else if (network_address_type_==ethernet) {
+		//TODO
+	} else {
+		//TODO
+	}
+	return false;
+}

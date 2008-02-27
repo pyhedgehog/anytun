@@ -59,14 +59,17 @@ public:
 	network_address_type_t getNetworkAddressType();
   bool operator<(const NetworkAddress &s) const;
   NetworkAddress operator&(const NetworkAddress &s) const;
+  NetworkAddress operator&=(const NetworkAddress &s);
   NetworkAddress operator<<(uint8_t shift) const;
 
-private:
+protected:
   Mutex mutex_;
 	in_addr ipv4_address_;
 	in6_addr ipv6_address_;
 	uint64_t ethernet_address_;
 	network_address_type_t network_address_type_;
+private:
+	NetworkAddress operator=(const NetworkAddress &s);
 };
 
 #endif
