@@ -53,6 +53,8 @@
 #include "options.h"
 #include "seqWindow.h"
 #include "connectionList.h"
+#include "routingTable.h"
+#include "networkAddress.h"
 
 #include "syncQueue.h"
 #include "syncSocketHandler.h"
@@ -153,7 +155,8 @@ void* sender(void* p)
 
     if(param->cl.empty())
       continue;
-	
+
+		gRoutingTable.getRoute(NetworkAddress());
     ConnectionMap::iterator cit = param->cl.getConnection(mux);
 		if(cit==param->cl.getEnd())
 			continue;

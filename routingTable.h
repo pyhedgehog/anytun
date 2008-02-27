@@ -36,27 +36,38 @@
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
-#include "routingTableEntry.h"
+//#include "routingTableEntry.h"
 #include "networkAddress.h"
-typedef std::map<u_int16_t, RoutingTableEntry> RoutingMap;
+#include "networkPrefix.h"
+typedef std::map<NetworkPrefix,u_int16_t> RoutingMap;
 
 class RoutingTable
 {
 public:
+	static RoutingTable& instance();
 	RoutingTable();
 	~RoutingTable();
-	void addRoute(const RoutingTableEntry &route);
-	const RoutingMap::iterator getRoute();
-	const RoutingMap::iterator getEnd();
+	void addRoute(const NetworkPrefix & ,u_int16_t);
+	u_int16_t getRoute(const NetworkAddress &);
 	bool empty();
 	void clear();
   Mutex& getMutex();
 
 private:
-  RoutingTable(const RoutingTable &s);
+  static Mutex instMutex;
+	static RoutingTable* inst;
+  class instanceCleaner {
+    public: ~instanceCleaner() {
+     if(RoutingTable::inst != 0)
+       delete RoutingTable::inst;
+   }
+	};
+	RoutingTable(const RoutingTable &s);
   void operator=(const RoutingTable &s);
 	RoutingMap routes_;
   Mutex mutex_;
 };
+
+extern RoutingTable& gRoutingTable;
 
 #endif

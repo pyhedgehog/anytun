@@ -33,6 +33,21 @@
 
 #include "routingTable.h"
 
+RoutingTable* RoutingTable::inst = NULL;
+Mutex RoutingTable::instMutex;
+RoutingTable& gRoutingTable = RoutingTable::instance();
+
+
+RoutingTable& RoutingTable::instance()
+{
+  Lock lock(instMutex);
+  static instanceCleaner c;
+  if(!inst)
+    inst = new RoutingTable();
+
+  return *inst;
+}
+
 RoutingTable::RoutingTable()
 {
 }
@@ -41,7 +56,7 @@ RoutingTable::~RoutingTable()
 {
 } 
 
-void RoutingTable::addRoute(const RoutingTableEntry &route )
+void RoutingTable::addRoute(const NetworkPrefix & ,u_int16_t )
 {
   Lock lock(mutex_);
 
@@ -53,16 +68,11 @@ void RoutingTable::addRoute(const RoutingTableEntry &route )
 //  }
 }
 
-const RoutingMap::iterator RoutingTable::getEnd()
-{
-	return routes_.end();
-}
-
-const RoutingMap::iterator  RoutingTable::getRoute()
+u_int16_t  RoutingTable::getRoute(const NetworkAddress &)
 {
 	Lock lock(mutex_);
 	RoutingMap::iterator it = routes_.begin();
-	return it;
+	return 0;
 }
 
 void RoutingTable::clear()
