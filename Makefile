@@ -63,6 +63,7 @@ OBJS = anytun.o \
 			 connectionList.o \
 			 connectionParam.o \
 			 networkAddress.o \
+			 networkPrefix.o \
        PracticalSocket.o \
 			 router.o \
 			 routingTable.o \
@@ -167,6 +168,9 @@ connectionList.o: connectionList.cpp connectionList.h
 	$(C++) $(CCFLAGS) $< -c
 
 connectionParam.o: connectionParam.cpp connectionParam.h
+	$(C++) $(CCFLAGS) $< -c
+
+networkPrefix.o: networkPrefix.cpp networkPrefix.h
 	$(C++) $(CCFLAGS) $< -c
 
 networkAddress.o: networkAddress.cpp networkAddress.h

@@ -53,9 +53,9 @@ public:
 	void setNetworkAddress(const network_address_type_t type, const char * address );
 	void getNetworkAddress(const char *);
 	network_address_type_t getNetworkAddressType();
+  bool operator<(const NetworkAddress &s) const;
 
 private:
-  bool operator<(const NetworkAddress &s) const;
   Mutex mutex_;
 	in_addr ipv4_address_;
 	in6_addr ipv6_address_;
