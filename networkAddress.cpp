@@ -36,6 +36,8 @@
 
 NetworkAddress::NetworkAddress()
 {
+	network_address_type_=ipv4;
+	ipv4_address_.s_addr=0;
 }
 
 NetworkAddress::NetworkAddress(const NetworkAddress & ref) : mutex_(),ipv4_address_(ref.ipv4_address_),ipv6_address_(ref.ipv6_address_),ethernet_address_(ref.ethernet_address_),network_address_type_(ref.network_address_type_)

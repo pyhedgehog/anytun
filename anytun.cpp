@@ -94,8 +94,9 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
- 	cl.addConnection(connparam,0);
-  SyncCommand sc (cl,0);
+ 	cl.addConnection(connparam,gOpt.getMux());
+	gRoutingTable.addRoute(NetworkPrefix(NetworkAddress()),gOpt.getMux());
+  SyncCommand sc (cl,gOpt.getMux());
 	queue.push(sc);
 }
 
@@ -154,7 +155,7 @@ void* sender(void* p)
     if(param->cl.empty())
       continue;
 
-		gRoutingTable.getRoute(NetworkAddress());
+		mux = gRoutingTable.getRoute(NetworkAddress());
     ConnectionMap::iterator cit = param->cl.getConnection(mux);
 		if(cit==param->cl.getEnd())
 			continue;

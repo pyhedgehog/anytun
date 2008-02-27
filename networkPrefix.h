@@ -39,6 +39,7 @@
 class NetworkPrefix : public NetworkAddress
 {
 public:
+	NetworkPrefix(const NetworkAddress &);
 	void setNetworkPrefixLength(uint8_t length );
 	uint8_t getNetworkPrefixLength();
   bool operator<(const NetworkPrefix &s) const;

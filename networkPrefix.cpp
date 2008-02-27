@@ -33,6 +33,10 @@
 
 #include "networkPrefix.h"
 
+NetworkPrefix::NetworkPrefix(const NetworkAddress & src): NetworkAddress(src),length_(0)
+{
+}
+
 void NetworkPrefix::setNetworkPrefixLength(uint8_t length )
 {
 	length_ = length;

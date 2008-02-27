@@ -27,7 +27,7 @@
  *  distribution); if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+#include "networkPrefix.h"
 #include "threadUtils.hpp"
 #include "datatypes.h"
 
@@ -56,22 +56,36 @@ RoutingTable::~RoutingTable()
 {
 } 
 
-void RoutingTable::addRoute(const NetworkPrefix & ,u_int16_t )
+void RoutingTable::addRoute(const NetworkPrefix & pref,u_int16_t mux )
 {
   Lock lock(mutex_);
-
-//  std::pair<ConnectionMap::iterator, bool> ret = connections_.insert(ConnectionMap::value_type(mux, conn));
-//  if(!ret.second)
-//  {
-//    connections_.erase(ret.first);
-//    connections_.insert(ConnectionMap::value_type(mux, conn));
-//  }
+	
+	
+  std::pair<RoutingMap::iterator, bool> ret = routes_.insert(RoutingMap::value_type(pref,mux));
+  if(!ret.second)
+  {
+    routes_.erase(ret.first);
+    routes_.insert(RoutingMap::value_type(pref,mux));
+  }
 }
 
-u_int16_t  RoutingTable::getRoute(const NetworkAddress &)
+
+void RoutingTable::delRoute(const NetworkPrefix & pref )
+{
+  Lock lock(mutex_);
+	
+  routes_.erase(routes_.find(pref));	
+}
+
+u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
 {
 	Lock lock(mutex_);
-	RoutingMap::iterator it = routes_.begin();
+	NetworkPrefix prefix(addr);
+	prefix.setNetworkPrefixLength(32);
+	RoutingMap::iterator it = routes_.lower_bound(prefix);
+	it--;
+	if (it!=routes_.end())
+		return it->second;
 	return 0;
 }
 

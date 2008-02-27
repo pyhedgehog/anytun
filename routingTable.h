@@ -48,6 +48,7 @@ public:
 	RoutingTable();
 	~RoutingTable();
 	void addRoute(const NetworkPrefix & ,u_int16_t);
+	void delRoute(const NetworkPrefix & );
 	u_int16_t getRoute(const NetworkAddress &);
 	bool empty();
 	void clear();
