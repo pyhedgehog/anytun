@@ -143,6 +143,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-i","--interface", local_addr_)
     PARSE_SCALAR_PARAM("-p","--port", local_port_)
     PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_port_)
+    PARSE_SCALAR_PARAM("-I","--sync-interface", local_sync_addr_)
     PARSE_SCALAR_PARAM("-R","--remote-sync-host", remote_sync_addr_)
     PARSE_SCALAR_PARAM("-O","--remote-sync-port", remote_sync_port_)
     PARSE_SCALAR_PARAM("-r","--remote-host", remote_addr_)
@@ -181,8 +182,9 @@ void Options::printUsage()
   std::cout << "anytun [-h|--help]                         prints this..." << std::endl;
 //  std::cout << "       [-f|--config] <file>                the config file" << std::endl;
   std::cout << "       [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
-  std::cout << "       [-i|--interface] <ip-address>       local ip anycast address to bind to" << std::endl;
+  std::cout << "       [-i|--interface] <ip-address>       local anycast ip address to bind to" << std::endl;
   std::cout << "       [-p|--port] <port>                  local anycast(data) port to bind to" << std::endl;
+  std::cout << "       [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to" << std::endl;
   std::cout << "       [-S|--sync-port] <port>             local unicast(sync) port to bind to" << std::endl;
   std::cout << "       [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]"<< std::endl;
 	std::cout << "                                           remote hosts to sync with" << std::endl;
@@ -205,6 +207,7 @@ void Options::printOptions()
   std::cout << "sender_id='" << sender_id_ << "'" << std::endl;
   std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
   std::cout << "local_port='" << local_port_ << "'" << std::endl;
+  std::cout << "local_sync_addr='" << local_sync_addr_ << "'" << std::endl;
   std::cout << "local_sync_port='" << local_sync_port_ << "'" << std::endl;
   std::cout << "remote_addr='" << remote_addr_ << "'" << std::endl;
   std::cout << "remote_port='" << remote_port_ << "'" << std::endl;
