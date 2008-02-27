@@ -31,10 +31,12 @@
 #include <stdexcept>
 #include <iostream>
 #include <arpa/inet.h>
+#include <net/ethernet.h>
+#include <netinet/ip.h>
+#include <netinet/ip6.h>
 
 #include "datatypes.h"
 #include "plainPacket.h"
-
 
 PlainPacket::PlainPacket(u_int32_t payload_length, bool allow_realloc) : Buffer(payload_length + sizeof(payload_type_t), allow_realloc)
 {
@@ -79,4 +81,60 @@ void PlainPacket::reinit()
 u_int8_t* PlainPacket::getPayload()
 {
   return payload_;
+}
+
+
+NetworkAddress PlainPacket::getSrcAddr() const
+{
+  if(!payload_type_ || !payload_)
+    return NetworkAddress();
+
+  if(PAYLOAD_TYPE_TAP) // Ehternet
+  {
+        // TODO
+    return NetworkAddress();
+  }
+  else if(PAYLOAD_TYPE_TUN) // IPv4
+  {
+    if(length_ < (sizeof(payload_type_t)+sizeof(struct ip)))
+      return NetworkAddress();
+    struct ip* hdr = reinterpret_cast<struct ip*>(payload_);
+    return NetworkAddress(hdr->ip_src);
+  }
+  else if(PAYLOAD_TYPE_TUN6) // IPv6
+  {
+    if(length_ < (sizeof(payload_type_t)+sizeof(struct ip6_hdr)))
+      return NetworkAddress();
+    struct ip6_hdr* hdr = reinterpret_cast<struct ip6_hdr*>(payload_);
+    return NetworkAddress(hdr->ip6_dst);
+  }
+  return NetworkAddress();
+}
+
+
+NetworkAddress PlainPacket::getDstAddr() const
+{
+  if(!payload_type_ || !payload_)
+    return NetworkAddress();
+
+  if(PAYLOAD_TYPE_TAP) // Ehternet
+  {
+        // TODO
+    return NetworkAddress();
+  }
+  else if(PAYLOAD_TYPE_TUN) // IPv4
+  {
+    if(length_ < (sizeof(payload_type_t)+sizeof(struct ip)))
+      return NetworkAddress();
+    struct ip* hdr = reinterpret_cast<struct ip*>(payload_);
+    return NetworkAddress(hdr->ip_dst);
+  }
+  else if(PAYLOAD_TYPE_TUN6) // IPv6
+  {
+    if(length_ < (sizeof(payload_type_t)+sizeof(struct ip6_hdr)))
+      return NetworkAddress();
+    struct ip6_hdr* hdr = reinterpret_cast<struct ip6_hdr*>(payload_);
+    return NetworkAddress(hdr->ip6_dst);
+  }
+  return NetworkAddress();
 }

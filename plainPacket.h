@@ -34,11 +34,17 @@
 #include "datatypes.h"
 #include "buffer.h"
 
+#include "networkAddress.h"
+
 class Cipher;
 /**
  * plain SATP packet class<br>
  * includes payload_type and payload
  */
+
+#define PAYLOAD_TYPE_TAP 0x6558
+#define PAYLOAD_TYPE_TUN 0x0800
+#define PAYLOAD_TYPE_TUN6 0x86DD 
 
 class PlainPacket : public Buffer
 {
@@ -85,6 +91,8 @@ public:
    */
   u_int8_t* getPayload();
 
+  NetworkAddress getSrcAddr() const;
+  NetworkAddress getDstAddr() const;
 
 private:
   PlainPacket();

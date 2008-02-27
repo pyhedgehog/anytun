@@ -66,9 +66,6 @@
 
 #include "threadParam.h"
 
-#define PAYLOAD_TYPE_TAP 0x6558
-#define PAYLOAD_TYPE_TUN 0x0800
-
 #define MAX_PACKET_LENGTH 1600
 
 #define SESSION_KEYLEN_AUTH 20   // TODO: hardcoded size
