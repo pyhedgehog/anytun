@@ -1,16 +1,27 @@
 #include "syncCommand.h"
 
 SyncCommand::SyncCommand(ConnectionList & cl )
-:cl_(cl)
 {	
+	scc_ = new SyncConnectionCommand(cl);
+	src_ = new SyncRouteCommand();
 }
 
 SyncCommand::SyncCommand(ConnectionList & cl, u_int16_t mux )
-:cl_(cl),mux_(mux)
 {	
+	scc_ = new SyncConnectionCommand(cl,mux);
+	src_=NULL;
 }
 
-u_int16_t SyncCommand::getMux() const 
+SyncCommand::SyncCommand(u_int16_t mux )
+{	
+	scc_ = NULL;
+	src_ = new SyncRouteCommand(mux);
+}
+
+SyncCommand::~SyncCommand()
 {
-	return mux_;
+	if (scc_)
+		delete scc_;
+	if (src_)
+		delete src_;
 }

@@ -53,9 +53,9 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	boost::archive::text_iarchive ia(iss);
 	SyncCommand scom(cl_);
 	ia >> scom;
-	u_int16_t mux = scom.getMux();
-	const ConnectionParam & conn = cl_.getConnection(mux)->second;
-  cLog.msg(Log::PRIO_NOTICE) << "sync connection #"<<mux<<" remote host " << conn.remote_host_ << ":" << conn.remote_port_ << std::endl;
+	//u_int16_t mux = scom.getMux();
+	//const ConnectionParam & conn = cl_.getConnection(mux)->second;
+  //cLog.msg(Log::PRIO_NOTICE) << "sync connection #"<<mux<<" remote host " << conn.remote_host_ << ":" << conn.remote_port_ << std::endl;
 }
 
 //void StatusClientSocket::InitSSLServer()

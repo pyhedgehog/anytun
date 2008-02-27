@@ -50,6 +50,8 @@ OBJS = anytun.o \
        buffer.o \
        syncBuffer.o \
        syncCommand.o \
+       syncRouteCommand.o \
+       syncConnectionCommand.o \
 			 plainPacket.o \
 			 encryptedPacket.o \
        cipher.o \
@@ -141,6 +143,12 @@ syncSocketHandler.o: syncSocketHandler.cpp syncSocketHandler.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncCommand.o: syncCommand.cpp syncCommand.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncRouteCommand.o: syncRouteCommand.cpp syncRouteCommand.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncConnectionCommand.o: syncConnectionCommand.cpp syncConnectionCommand.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncClientSocket.o: syncClientSocket.cpp syncClientSocket.h

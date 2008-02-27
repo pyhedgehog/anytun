@@ -5,26 +5,40 @@
 
 #include "connectionList.h"
 #include "threadUtils.hpp"
+#include "syncConnectionCommand.h"
+#include "syncRouteCommand.h"
+#include <string>
 
 class SyncCommand
 {
 public:
 	SyncCommand(ConnectionList & cl );
 	SyncCommand(ConnectionList & cl ,u_int16_t mux);
-	u_int16_t getMux() const;
+	SyncCommand(u_int16_t mux);
+	~SyncCommand();
 
 private:
 	SyncCommand(const SyncCommand &);
-	ConnectionList & cl_;
-	u_int16_t mux_;
+	SyncConnectionCommand * scc_;
+	SyncRouteCommand * src_;
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
   {
-		Lock lock(cl_.getMutex());
-    ar & mux_;
-		ConnectionParam & conn = cl_.getOrNewConnectionUnlocked(mux_);
-		ar & conn;
+		std::string syncstr;
+		if (scc_)
+		{
+			syncstr = "connection";
+		}
+		if ( src_)
+		{
+			syncstr = "route";
+		}
+    ar & syncstr;
+		if (syncstr == "connection")
+			ar & *scc_;
+		if (syncstr == "route")
+			ar & *src_;
 	}
 };
 

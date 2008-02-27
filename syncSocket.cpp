@@ -1,7 +1,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-
+#include "routingTable.h"
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
@@ -32,6 +32,14 @@ void SyncSocket::OnAccept()
 		std::ostringstream sout;
 		boost::archive::text_oarchive oa(sout);
 		const SyncCommand scom(cl_,0);
+		oa << scom;
+		Send(sout.str());
+	}
+	if( ! gRoutingTable.empty())
+	{
+		std::ostringstream sout;
+		boost::archive::text_oarchive oa(sout);
+		const SyncCommand scom(0);
 		oa << scom;
 		Send(sout.str());
 	}
