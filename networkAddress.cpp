@@ -91,6 +91,26 @@ network_address_type_t NetworkAddress::getNetworkAddressType()
 	return network_address_type_;
 }
 
+std::string NetworkAddress::toString() const
+{
+	if (network_address_type_==ipv4){
+    char buf[INET_ADDRSTRLEN];
+    if(!inet_ntop(AF_INET, &ipv4_address_, buf, sizeof(buf)))
+      return std::string("");
+    return std::string(buf);
+	} 
+  else if (network_address_type_==ipv6) {
+    char buf[INET6_ADDRSTRLEN];
+    if(!inet_ntop(AF_INET6, &ipv6_address_, buf, sizeof(buf)))
+      return std::string("");
+    return std::string(buf);
+	} 
+  else if (network_address_type_==ethernet) {
+        // TODO
+	} 
+  return std::string("");
+}
+
 bool NetworkAddress::operator<(const NetworkAddress &right) const
 {
 	if (network_address_type_!=right.network_address_type_)

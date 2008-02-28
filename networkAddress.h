@@ -37,6 +37,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <string>
 
 enum network_address_type_t
 {
@@ -57,6 +58,7 @@ public:
 	void setNetworkAddress(const network_address_type_t type, const char * address );
 	void getNetworkAddress(const char *);
 	network_address_type_t getNetworkAddressType();
+  std::string toString() const;
   bool operator<(const NetworkAddress &s) const;
   NetworkAddress operator&(const NetworkAddress &s) const;
   NetworkAddress operator&=(const NetworkAddress &s);

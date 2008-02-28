@@ -89,19 +89,21 @@ NetworkAddress PlainPacket::getSrcAddr() const
   if(!payload_type_ || !payload_)
     return NetworkAddress();
 
-  if(PAYLOAD_TYPE_TAP) // Ehternet
+  payload_type_t type = PAYLOAD_TYPE_T_NTOH(*payload_type_);
+
+  if(type == PAYLOAD_TYPE_TAP) // Ehternet
   {
         // TODO
     return NetworkAddress();
   }
-  else if(PAYLOAD_TYPE_TUN) // IPv4
+  else if(type == PAYLOAD_TYPE_TUN) // IPv4
   {
     if(length_ < (sizeof(payload_type_t)+sizeof(struct ip)))
       return NetworkAddress();
     struct ip* hdr = reinterpret_cast<struct ip*>(payload_);
     return NetworkAddress(hdr->ip_src);
   }
-  else if(PAYLOAD_TYPE_TUN6) // IPv6
+  else if(type == PAYLOAD_TYPE_TUN6) // IPv6
   {
     if(length_ < (sizeof(payload_type_t)+sizeof(struct ip6_hdr)))
       return NetworkAddress();
@@ -117,19 +119,21 @@ NetworkAddress PlainPacket::getDstAddr() const
   if(!payload_type_ || !payload_)
     return NetworkAddress();
 
-  if(PAYLOAD_TYPE_TAP) // Ehternet
+  payload_type_t type = PAYLOAD_TYPE_T_NTOH(*payload_type_);
+
+  if(type == PAYLOAD_TYPE_TAP) // Ehternet
   {
         // TODO
     return NetworkAddress();
   }
-  else if(PAYLOAD_TYPE_TUN) // IPv4
+  else if(type == PAYLOAD_TYPE_TUN) // IPv4
   {
     if(length_ < (sizeof(payload_type_t)+sizeof(struct ip)))
       return NetworkAddress();
     struct ip* hdr = reinterpret_cast<struct ip*>(payload_);
     return NetworkAddress(hdr->ip_dst);
   }
-  else if(PAYLOAD_TYPE_TUN6) // IPv6
+  else if(type == PAYLOAD_TYPE_TUN6) // IPv6
   {
     if(length_ < (sizeof(payload_type_t)+sizeof(struct ip6_hdr)))
       return NetworkAddress();

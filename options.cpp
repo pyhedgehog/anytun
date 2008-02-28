@@ -176,6 +176,9 @@ bool Options::parse(int argc, char* argv[])
 
   if(cipher_ == "null")
     kd_prf_ = "null";
+  if(cipher_ != "null" && kd_prf_ == "null")
+    kd_prf_ = "aes-ctr";
+
 	while(!host_port_queue.empty())
 	{
 		std::stringstream tmp_stream(host_port_queue.front());
@@ -237,7 +240,7 @@ void Options::printOptions()
   std::cout << "cipher='" << cipher_ << "'" << std::endl;
   std::cout << "key=" << key_.getHexDumpOneLine() << std::endl;
   std::cout << "salt=" << salt_.getHexDumpOneLine() << std::endl;
-  std::cout << "kd-prf='" << kd_prf_ << "'" << std::endl;
+  std::cout << "kd_prf='" << kd_prf_ << "'" << std::endl;
   std::cout << "auth_algo='" << auth_algo_ << "'" << std::endl;
 }
 
