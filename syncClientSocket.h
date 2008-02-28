@@ -5,6 +5,11 @@
 #include "Sockets/ISocketHandler.h"
 #include "connectionList.h"
 #include "syncCommand.h"
+#include <sstream>
+#include <iostream>
+#include <string>
+
+
 
 #ifdef SOCKETS_NAMESPACE
 using namespace SOCKETS_NAMESPACE;
@@ -20,6 +25,7 @@ public:
 	void OnRawData(const char *buf,size_t len);
 private:
 	ConnectionList & cl_;
+	std::stringstream iss_;
 };
 
 

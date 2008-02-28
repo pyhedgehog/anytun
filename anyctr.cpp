@@ -89,8 +89,11 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
   const SyncCommand scom(cl,mux);
   const SyncCommand scom2 (prefix);
   oa << scom;
-  oa << scom2;
   std::cout << sout.str() << std::endl;
+	std::ostringstream sout2;
+	boost::archive::text_oarchive oa2(sout2);
+  oa2 << scom2;
+  std::cout << sout2.str() << std::endl;
 }
 
 int main(int argc, char* argv[])

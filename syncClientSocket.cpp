@@ -42,17 +42,19 @@ void SyncClientSocket::OnReconnect()
 void SyncClientSocket::OnRawData(const char *buf,size_t len)
 //void SyncClientSocket::OnLine(const std::string& line)
 {
-	std::stringstream iss;
 	cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion from " << GetRemoteHostname() << std::endl;
 	for(size_t index=0;index<len;index++)
 	{
 		std::cout << buf[index];
-		iss << buf[index];
+		iss_ << buf[index];
 	}
 
-	boost::archive::text_iarchive ia(iss);
-	SyncCommand scom(cl_);
-	ia >> scom;
+	while(!iss_.fail())
+	{
+		boost::archive::text_iarchive ia(iss_);
+		SyncCommand scom(cl_);
+		ia >> scom;
+	}
 	//u_int16_t mux = scom.getMux();
 	//const ConnectionParam & conn = cl_.getConnection(mux)->second;
   //cLog.msg(Log::PRIO_NOTICE) << "sync connection #"<<mux<<" remote host " << conn.remote_host_ << ":" << conn.remote_port_ << std::endl;
