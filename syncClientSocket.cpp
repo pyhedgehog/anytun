@@ -49,9 +49,10 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	}
 	while (iss_.good())
 	{
+		cLog.msg(Log::PRIO_NOTICE) << "string size " << iss_.str().size() << " casted size" << static_cast<int32_t>(iss_.str().size());
 		if(missing_chars==-1 && iss_.str().size()>5)
 		{
-      char * buffer = new char [6];
+      char * buffer = new char [6+1];
       iss_.read(buffer,6);
       std::stringstream tmp;
       tmp.write(buffer,6);
@@ -61,7 +62,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 		} else
 		if(missing_chars>0 && missing_chars<=static_cast<int32_t>(iss_.str().size()))
 		{
-			char * buffer = new char [missing_chars];
+			char * buffer = new char [missing_chars+1];
 			iss_.read(buffer,missing_chars);
 			std::stringstream tmp;
 			tmp.write(buffer,missing_chars);
