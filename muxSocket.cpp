@@ -1,10 +1,10 @@
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <string>
 
 #include "Sockets/Utility.h"
 #include "muxSocket.h"
-//#include "log.h"
 
 #ifdef SOCKETS_NAMESPACE
 using namespace SOCKETS_NAMESPACE;
@@ -21,10 +21,20 @@ MuxSocket::MuxSocket(ISocketHandler& h)
 
 void MuxSocket::OnAccept()
 {
-	Send( Utility::GetLocalHostname() + "\n");
-	Send( Utility::GetLocalAddress() + "\n");
-	Send("Number of sockets in list : " + Utility::l2string(Handler().GetCount()) + "\n");
+  std::string filename("testoutput.txt");
+  std::ifstream file(filename.c_str());
+  if( file.is_open() )
+  {
+    std::string line;
+    while( !file.eof() )
+    {
+      getline( file, line );
+      Send( line + "\n" );
+    }
+    file.close();
+  }
 	Send("\n");
+
 	//TODO Locking here
 }
 

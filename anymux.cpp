@@ -73,9 +73,9 @@ int main(int argc, char* argv[])
   sig.init();
 
 //  ThreadParam p(4445);
-  int p;  
+  int port;  
 	pthread_t syncListenerThread;
-	pthread_create(&syncListenerThread, NULL, syncListener, &p);  
+	pthread_create(&syncListenerThread, NULL, syncListener, &port);  
 
 	int ret = sig.run();
 
