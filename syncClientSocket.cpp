@@ -51,10 +51,10 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	{
 		if(missing_chars==-1 && iss_.str().length()>5)
 		{
-      char * buffer = new char [missing_chars];
-      iss_.read(buffer,missing_chars);
+      char * buffer = new char [6];
+      iss_.read(buffer,6);
       std::stringstream tmp;
-      tmp.write(buffer,missing_chars);
+      tmp.write(buffer,6);
 			tmp>>missing_chars;
 			cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion from " << GetRemoteHostname() <<" "<<tmp.str()<<"bytes of data"<< std::endl;
 			delete buffer;
