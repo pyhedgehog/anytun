@@ -80,7 +80,7 @@ OBJS = tunDevice.o \
        $(OPENVPNDEPS) \
 			 $(SOCKETDEPS)
 
-EXECUTABLE = anytun anyctr
+EXECUTABLE = anytun anyctr anymux
 
 all: $(EXECUTABLE) libAnysync.a
 
@@ -89,6 +89,9 @@ anytun: $(OBJS) anytun.o
 
 anyctr: $(OBJS) anyctr.o
 	$(LD) $(OBJS) anyctr.o -o $@ $(LDFLAGS)
+
+anymux: $(OBJS) anymux.o
+	$(LD) $(OBJS) anymux.o -o $@ $(LDFLAGS)
 
 tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
@@ -193,6 +196,9 @@ anytun.o: anytun.cpp
 	$(C++) $(CCFLAGS) $< -c
 
 anyctr.o: anyctr.cpp
+	$(C++) $(CCFLAGS) $< -c
+
+anymux.o: anymux.cpp
 	$(C++) $(CCFLAGS) $< -c
 
 cConnectionParam.o: cConnectionParam.cpp
