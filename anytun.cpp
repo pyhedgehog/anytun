@@ -248,16 +248,15 @@ void* receiver(void* p)
 //		if(!checkPacketAuthTag(encrypted_packet, a.get(), conn))
 //			continue;
 
-
+		mux_t mux = encrypted_packet.getMux();
     // autodetect peer
     if(gOpt.getRemoteAddr() == "" && param->cl.empty())
 		{
       cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
-			createConnection(remote_host, remote_port, param->cl, gOpt.getSeqWindowSize(),param->queue,encrypted_packet.getMux());
+			createConnection(remote_host, remote_port, param->cl, gOpt.getSeqWindowSize(),param->queue,mux);
 		}
 
-		// TODO: Add multi connection support here
-		ConnectionMap::iterator cit = param->cl.getConnection(encrypted_packet.getMux());
+		ConnectionMap::iterator cit = param->cl.getConnection(mux);
 		if (cit == param->cl.getEnd())
 			continue;
 		ConnectionParam & conn = cit->second;
@@ -266,10 +265,10 @@ void* receiver(void* p)
 		//TODO: add command line option to turn this off
 		if (remote_host != conn.remote_host_ || remote_port != conn.remote_port_)
 		{
-      cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host ip changed " << remote_host << ":" << remote_port;
+      cLog.msg(Log::PRIO_NOTICE) << "connection "<< mux << " autodetected remote host ip changed " << remote_host << ":" << remote_port;
 			conn.remote_host_=remote_host;
 			conn.remote_port_=remote_port;
-			SyncCommand sc (param->cl,0);
+			SyncCommand sc (param->cl,mux);
 			param->queue.push(sc);
 		}	
 
