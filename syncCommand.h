@@ -35,10 +35,12 @@ private:
 			syncstr = "route";
 		}
     ar & syncstr;
+		std::cout << "syncstr received " <<syncstr << std::endl;
 		if (syncstr == "connection")
 			ar & *scc_;
 		if (syncstr == "route")
 			ar & *src_;
+		std::cout << "syncstr done " <<syncstr << std::endl;
 	}
 };
 
