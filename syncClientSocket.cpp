@@ -50,6 +50,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	}
 	while (1)
 	{
+		cLog.msg(Log::PRIO_NOTICE) << "buffer size << buffer_size_";
 		if(missing_chars==-1 && buffer_size_>5)
 		{
       char * buffer = new char [6+1];
