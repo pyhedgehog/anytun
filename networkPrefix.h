@@ -33,6 +33,8 @@
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 #include "networkAddress.h"
 
@@ -47,6 +49,14 @@ public:
 
 private:
 	uint8_t length_;
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+    ar & length_;
+		ar & boost::serialization::base_object<NetworkAddress>(*this);
+  };
+
 };
 
 #endif
