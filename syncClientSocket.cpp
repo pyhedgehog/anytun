@@ -50,7 +50,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	}
 	while (1)
 	{
-		cLog.msg(Log::PRIO_NOTICE) << "buffer size "<< buffer_size_ << " missing_chars " << missing_chars;
+//		cLog.msg(Log::PRIO_NOTICE) << "buffer size "<< buffer_size_ << " missing_chars " << missing_chars;
 		if(missing_chars==-1 && buffer_size_>5)
 		{
       char * buffer = new char [6+1];
@@ -72,9 +72,9 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 			boost::archive::text_iarchive ia(tmp);
 			SyncCommand scom(cl_);
 			ia >> scom;
+			buffer_size_-=missing_chars;
 			missing_chars=-1;
 			delete buffer;
-			buffer_size_-=missing_chars;
 		} else
 		break;
 	}
