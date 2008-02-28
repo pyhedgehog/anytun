@@ -14,7 +14,7 @@
 
 
 SyncClientSocket::SyncClientSocket(ISocketHandler& h,ConnectionList & cl)
-:TcpSocket(h),cl_(cl),missing_chars(-1)
+:TcpSocket(h),cl_(cl),missing_chars(-1),buffer_size_(0)
 {
 	// initial connection timeout setting and number of retries
 	SetConnectTimeout(12);
@@ -46,11 +46,12 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	{
 		std::cout << buf[index];
 		iss_ << buf[index];
+		buffer_size_++;
 	}
-	while (iss_.good())
+	while (1)
 	{
-		cLog.msg(Log::PRIO_NOTICE) << "string size " << iss_.str().size() << " casted size" << static_cast<int32_t>(iss_.str().size());
-		if(missing_chars==-1 && iss_.str().size()>5)
+		cLog.msg(Log::PRIO_NOTICE) << "string size " << iss_.str().size() << " casted size" << static_cast<int32_t>(iss_.str().size()) << std::endl;
+		if(missing_chars==-1 && buffer_size_>5)
 		{
       char * buffer = new char [6+1];
       iss_.read(buffer,6);
@@ -59,8 +60,9 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 			tmp>>missing_chars;
 			cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion length from " << GetRemoteHostname() <<" "<<tmp.str()<<"bytes of data"<< std::endl;
 			delete buffer;
+			buffer_size_-=6;
 		} else
-		if(missing_chars>0 && missing_chars<=static_cast<int32_t>(iss_.str().size()))
+		if(missing_chars>0 && missing_chars<=buffer_size_)
 		{
 			char * buffer = new char [missing_chars+1];
 			iss_.read(buffer,missing_chars);
@@ -72,6 +74,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 			ia >> scom;
 			missing_chars=-1;
 			delete buffer;
+			buffer_size_-=missing_chars;
 		} else
 		break;
 	}

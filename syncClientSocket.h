@@ -27,6 +27,7 @@ private:
 	ConnectionList & cl_;
 	std::stringstream iss_;
 	int32_t missing_chars;
+	int32_t buffer_size_;
 };
 
 
