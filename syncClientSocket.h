@@ -26,7 +26,7 @@ public:
 private:
 	ConnectionList & cl_;
 	std::stringstream iss_;
-	int16_t missing_chars;
+	int32_t missing_chars;
 };
 
 
