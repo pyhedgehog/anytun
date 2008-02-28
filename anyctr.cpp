@@ -64,6 +64,8 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
   cl.addConnection( connparam, mux );
   NetworkAddress addr( ipv4, gOpt.getIfconfigParamRemoteNetmask().c_str() );
   NetworkPrefix prefix( addr );
+	// TODO configurierbar machen!!!
+	prefix.setNetworkPrefixLength(32);
   gRoutingTable.addRoute( prefix, mux );
   std::ostringstream sout;
   boost::archive::text_oarchive oa( sout );

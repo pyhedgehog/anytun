@@ -49,12 +49,12 @@ void NetworkPrefix::setNetworkPrefixLength(uint8_t length )
 	{ 
 		in_addr v4addr;
 		v4addr.s_addr=0xFFFFFFFF;
-		*this &= (NetworkAddress(v4addr)<<length);
+		*this &= (NetworkAddress(v4addr)<<(32-length));
 	} else if (network_address_type_==ipv6) {
 		in6_addr v6addr;
 		for(int i=0;i<4;i++)
 			ipv6_address_.s6_addr32[i]=0xFFFFFFFF;
-		*this &= (NetworkAddress(v6addr)<<length);
+		*this &= (NetworkAddress(v6addr)<<(128-length));
 	} else if (network_address_type_==ethernet) {
 		//TODO
 	} else {
