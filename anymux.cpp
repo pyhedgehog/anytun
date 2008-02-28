@@ -31,71 +31,38 @@
 #include <iostream>
 #include <poll.h>
 
-#include <gcrypt.h>
 #include <cerrno>     // for ENOMEM
 
 #include "datatypes.h"
 
 #include "log.h"
-#include "buffer.h"
-#include "plainPacket.h"
-#include "encryptedPacket.h"
-#include "cipher.h"
-#include "keyDerivation.h"
-#include "authAlgo.h"
-#include "authTag.h"
-#include "cipherFactory.h"
-#include "authAlgoFactory.h"
-#include "keyDerivationFactory.h"
 #include "signalController.h"
-#include "packetSource.h"
-#include "tunDevice.h"
 #include "options.h"
-#include "seqWindow.h"
-#include "connectionList.h"
-#include "routingTable.h"
-#include "networkAddress.h"
 
-#include "syncQueue.h"
-#include "syncSocketHandler.h"
-#include "syncListenSocket.h"
+#include "muxSocket.h"
+#include "Sockets/ListenSocket.h"
+#include "Sockets/SocketHandler.h"
 
-#include "syncSocket.h"
-#include "syncClientSocket.h"
-#include "syncCommand.h"
 
-#include "threadParam.h"
-
-#define MAX_PACKET_LENGTH 1600
-
-#define SESSION_KEYLEN_AUTH 20   // TODO: hardcoded size
-#define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
-#define SESSION_KEYLEN_SALT 14   // TODO: hardcoded size
-
-void createConnection(const std::string & remote_host, u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
+void* syncListener(void* p )
 {
-  SeqWindow * seq= new SeqWindow(seqSize);
-  seq_nr_t seq_nr_=0;
-  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
-  kd->init(gOpt.getKey(), gOpt.getSalt());
-  cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
-  ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
-  cl.addConnection(connparam,mux);
-  NetworkAddress addr(ipv4,gOpt.getIfconfigParamRemoteNetmask().c_str());
-  NetworkPrefix prefix(addr);
-  gRoutingTable.addRoute(prefix,mux);
-  std::ostringstream sout;
-  boost::archive::text_oarchive oa(sout);
-  const SyncCommand scom(cl,mux);
-  const SyncCommand scom2 (prefix);
-  oa << scom;
-  oa << scom2;
-  std::cout << sout.str() << std::endl;
-}
+	//ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
+	SOCKETS_NAMESPACE::SocketHandler h;
+	SOCKETS_NAMESPACE::ListenSocket<MuxSocket> l(h,true);
+
+	if (l.Bind(1234))
+		pthread_exit(NULL);
+
+	Utility::ResolveLocal(); // resolve local hostname
+	h.Add(&l);
+	h.Select(1,0);
+	while (1) {
+		h.Select(1,0);
+	}
+}
 int main(int argc, char* argv[])
 {
-  int ret=0;
   if(!gOpt.parse(argc, argv))
   {
     gOpt.printUsage();
@@ -105,14 +72,16 @@ int main(int argc, char* argv[])
   SignalController sig;
   sig.init();
 
-	ConnectionList cl;
-	SyncQueue queue;
+//  ThreadParam p(4445);
+  int p;  
+	pthread_t syncListenerThread;
+	pthread_create(&syncListenerThread, NULL, syncListener, &p);  
 
-	if(gOpt.getRemoteAddr() != "")
-	{
-		createConnection(gOpt.getRemoteAddr(),gOpt.getRemotePort(),cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
+	int ret = sig.run();
 
-	}
+	pthread_cancel(syncListenerThread);  
+  
+	pthread_join(syncListenerThread, NULL);
 
   return ret;
 }

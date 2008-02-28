@@ -59,6 +59,7 @@ OBJS = tunDevice.o \
 			 keyDerivation.o \
 			 mpi.o \
 			 cipherFactory.o \
+			 muxSocket.o \
 			 authAlgoFactory.o \
 			 keyDerivationFactory.o \
 			 connectionList.o \
@@ -112,6 +113,9 @@ encryptedPacket.o: encryptedPacket.cpp encryptedPacket.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 cipher.o: cipher.cpp cipher.h buffer.h 
+	$(C++) $(CCFLAGS) $< -c
+
+muxSocket.o: muxSocket.cpp muxSocket.h 
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
