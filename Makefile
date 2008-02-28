@@ -44,8 +44,7 @@ SOCKETDEPS = Sockets/libSockets.a
 #             Sockets/SSLInitializer.o
 
 
-OBJS = anytun.o \
-       tunDevice.o \
+OBJS = tunDevice.o \
        packetSource.o \
        buffer.o \
        syncBuffer.o \
@@ -81,12 +80,15 @@ OBJS = anytun.o \
        $(OPENVPNDEPS) \
 			 $(SOCKETDEPS)
 
-EXECUTABLE = anytun
+EXECUTABLE = anytun anyctr
 
 all: $(EXECUTABLE) libAnysync.a
 
-anytun: $(OBJS)
-	$(LD) $(OBJS) -o $@ $(LDFLAGS)
+anytun: $(OBJS) anytun.o
+	$(LD) $(OBJS) anytun.o -o $@ $(LDFLAGS)
+
+anyctr: $(OBJS) anyctr.o
+	$(LD) $(OBJS) anyctr.o -o $@ $(LDFLAGS)
 
 tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
@@ -188,6 +190,9 @@ router.o: router.cpp router.h
 	$(C++) $(CCFLAGS) $< -c
 
 anytun.o: anytun.cpp
+	$(C++) $(CCFLAGS) $< -c
+
+anyctr.o: anyctr.cpp
 	$(C++) $(CCFLAGS) $< -c
 
 cConnectionParam.o: cConnectionParam.cpp

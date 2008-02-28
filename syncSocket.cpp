@@ -27,15 +27,16 @@ void SyncSocket::OnAccept()
 //	Send( Utility::GetLocalAddress() + "\n");
 //	Send("Number of sockets in list : " + Utility::l2string(Handler().GetCount()) + "\n");
 //	Send("\n");
-	if( ! cl_.empty())
+	//TODO Locking here
+	ConnectionMap::iterator cit = cl_.getBeginUnlocked();
+  for (;cit!=cl_.getEndUnlocked();++cit)
 	{
 		std::ostringstream sout;
 		boost::archive::text_oarchive oa(sout);
-		const SyncCommand scom(cl_,0);
+		const SyncCommand scom(cl_,cit->first);
 		oa << scom;
 		Send(sout.str());
 	}
-	sleep(1);
 	//TODO Locking here
 	RoutingMap::iterator it = gRoutingTable.getBeginUnlocked();
   for (;it!=gRoutingTable.getEndUnlocked();++it)

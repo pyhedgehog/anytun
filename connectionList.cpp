@@ -67,6 +67,16 @@ const ConnectionMap::iterator ConnectionList::getEnd()
 	return connections_.end();
 }
 
+ConnectionMap::iterator ConnectionList::getBeginUnlocked()
+{
+  return connections_.begin();
+}
+
+ConnectionMap::iterator ConnectionList::getEndUnlocked()
+{
+  return connections_.end();
+}
+
 const ConnectionMap::iterator ConnectionList::getConnection(u_int16_t mux)
 {
 	Lock lock(mutex_);
