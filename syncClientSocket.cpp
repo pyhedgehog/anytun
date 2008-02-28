@@ -53,7 +53,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 		{
 			iss_>>missing_chars;
 		} else
-		if(missing_chars>0 && missing_chars<=static_cast<int16_t>(iss_.str().size()))
+		if(missing_chars>0 && missing_chars<static_cast<int16_t>(iss_.str().size()))
 		{
 			char * buffer = new char [missing_chars+1];
 			iss_.read(buffer,missing_chars+1);
