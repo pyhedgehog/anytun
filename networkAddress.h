@@ -79,10 +79,13 @@ private:
   void serialize(Archive & ar, const unsigned int version)
   {
     ar & network_address_type_;
-		ar & ipv4_address_.s_addr;
-    for(int i=0;i<4;i++)
-			ar & ipv6_address_.s6_addr32;
-		ar & ethernet_address_;
+		if (network_address_type_==ipv4)
+			ar & ipv4_address_.s_addr;
+		if (network_address_type_==ipv6)
+			for(int i=0;i<4;i++)
+				ar & ipv6_address_.s6_addr32;
+		if (network_address_type_==ethernet_address_)
+			ar & ethernet_address_;
    }
 };
 
