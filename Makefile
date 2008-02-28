@@ -86,6 +86,31 @@ ANYMUXOBJS = muxSocket.o \
 						 log.o \
 						 $(SOCKETDEPS)
 
+ANYCTROBJS = log.o \
+						 buffer.o \
+						 keyDerivation.o \
+						 mpi.o \
+						 keyDerivationFactory.o \
+						 networkAddress.o \
+						 networkPrefix.o \
+						 signalController.o \
+						 connectionList.o \
+						 connectionParam.o \
+						 anyctrOptions.o \
+						 router.o \
+						 routingTable.o \
+						 routingTableEntry.o \
+						 seqWindow.o \
+						 syncSocket.o \
+						 syncSocketHandler.o \
+						 syncClientSocket.o \
+						 syncQueue.o \
+						 syncBuffer.o \
+						 syncCommand.o \
+						 syncRouteCommand.o \
+						 syncConnectionCommand.o \
+						 $(SOCKETDEPS)
+
 EXECUTABLE = anytun anyctr anymux anytun-showtables
 
 all: $(EXECUTABLE) libAnysync.a
@@ -96,8 +121,8 @@ anytun: $(OBJS) anytun.o
 anytun-showtables: $(OBJS) anytun-showtables.o
 	$(LD) $(OBJS) anytun-showtables.o -o $@ $(LDFLAGS)
 
-anyctr: $(OBJS) anyctr.o
-	$(LD) $(OBJS) anyctr.o -o $@ $(LDFLAGS)
+anyctr: $(ANYCTROBJS) anyctr.o
+	$(LD) $(ANYCTROBJS) anyctr.o -o $@ $(LDFLAGS)
 
 anymux: $(ANYMUXOBJS) anymux.o
 	$(LD) $(ANYMUXOBJS) anymux.o -o $@ $(LDFLAGS)
@@ -127,6 +152,9 @@ muxSocket.o: muxSocket.cpp muxSocket.h
 	$(C++) $(CCFLAGS) $< -c
 
 anymuxOptions.o: anymuxOptions.cpp anymuxOptions.h
+	$(C++) $(CCFLAGS) $< -c
+
+anyctrOptions.o: anyctrOptions.cpp anyctrOptions.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
