@@ -30,6 +30,8 @@
 
 #ifndef _NETWORK_ADDRESS_H
 #define _NETWORK_ADDRESS_H
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
@@ -72,6 +74,15 @@ protected:
 	network_address_type_t network_address_type_;
 private:
 	NetworkAddress operator=(const NetworkAddress &s);
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+    ar & network_address_type_;
+		ar & ipv4_address_;
+		ar & ipv6_address_;
+		ar & ethernet_address_;
+   }
 };
 
 #endif

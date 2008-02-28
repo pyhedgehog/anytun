@@ -91,6 +91,18 @@ u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
 	return 0;
 }
 
+u_int16_t& RoutingTable::getOrNewRoutingTEUnlocked(const NetworkAddress & addr)
+{
+  RoutingMap::iterator it = routes_.find(addr);
+  if(it!=routes_.end())
+    return it->second;
+
+  routes_.insert(RoutingMap::value_type(addr, 0));
+  it = routes_.find(addr);
+  return it->second;
+}
+
+
 void RoutingTable::clear()
 {
   Lock lock(mutex_);

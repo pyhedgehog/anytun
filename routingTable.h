@@ -53,6 +53,7 @@ public:
 	bool empty();
 	void clear();
   Mutex& getMutex();
+	u_int16_t& getOrNewRoutingTEUnlocked(const NetworkAddress & addr);
 
 private:
   static Mutex instMutex;

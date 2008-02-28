@@ -4,12 +4,12 @@ SyncRouteCommand::SyncRouteCommand()
 {	
 }
 
-SyncRouteCommand::SyncRouteCommand( u_int16_t mux )
-:mux_(mux)
+SyncRouteCommand::SyncRouteCommand( const NetworkAddress & addr )
+:addr_(addr)
 {	
 }
 
-u_int16_t SyncRouteCommand::getMux() const 
+NetworkAddress SyncRouteCommand::getAddr() const 
 {
-	return mux_;
+	return addr_;
 }
