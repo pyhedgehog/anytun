@@ -51,7 +51,13 @@ Options& Options::instance()
 
 Options::Options()
 {
-  progname_ = "plain_tool";
+  progname_ = "anyrtpproxy";
+  chroot_ = false;
+  username_ = "nobody";
+  chroot_dir_ = "/var/run";
+  daemonize_ = true;
+  local_interfaces_.push_back(IfListElement("0.0.0.0", 22221));
+  remote_hosts_.push_back(IfListElement("127.0.0.1", 22222));
 }
 
 Options::~Options()
@@ -108,11 +114,12 @@ Options::~Options()
       if(argc < 1 || argv[i+1][0] == '-')                \
         return false;                                    \
       std::stringstream tmp(argv[i+1]);                  \
+      LIST.clear();                                      \
 			while (tmp.good())                                 \
 			{                                                  \
 				std::string tmp_line;                            \
 				getline(tmp,tmp_line,',');                       \
-				LIST.push(tmp_line);                             \
+				LIST.push_back(tmp_line);                        \
 			}                                                  \
       argc--;                                            \
       i++;                                               \
@@ -131,9 +138,30 @@ bool Options::parse(int argc, char* argv[])
 
     if(str == "-h" || str == "--help")
       return false;
+    PARSE_BOOL_PARAM("-t","--chroot", chroot_)
+    PARSE_SCALAR_PARAM("-u","--user", username_)
+    PARSE_SCALAR_PARAM("-c","--chroot-dir", chroot_dir_)
+    PARSE_INVERSE_BOOL_PARAM("-d","--nodaemonize", daemonize_)
+    PARSE_SCALAR_PARAM("-c","--chroot-dir", chroot_dir_)
+    PARSE_CSLIST_PARAM("-l","--listen", local_interfaces_)
+    PARSE_CSLIST_PARAM("-r","--hosts", remote_hosts_)
     else 
       return false;
   }
+  
+  return sanityCheck();
+}
+
+bool Options::sanityCheck()
+{
+  IfList::iterator it=local_interfaces_.begin();
+  for(u_int32_t i=0; it != local_interfaces_.end(); ++it, ++i)
+    if(!it->port_) it->port_ = 22221;
+
+  it=remote_hosts_.begin();
+  for(u_int32_t i=0; it != remote_hosts_.end(); ++it, ++i)
+    if(!it->port_) it->port_ = 22222;
+
   return true;
 }
 
@@ -148,6 +176,26 @@ void Options::printOptions()
 {
   Lock lock(mutex);
   std::cout << "Options:" << std::endl;
+  std::cout << "chroot='" << chroot_ << "'" << std::endl;
+  std::cout << "username='" << username_ << "'" << std::endl;
+  std::cout << "chroot-dir='" << chroot_dir_ << "'" << std::endl;
+  std::cout << "daemonize='" << daemonize_ << "'" << std::endl;
+  std::cout << "local interfaces='";
+  IfList::const_iterator it=local_interfaces_.begin();
+  for(u_int32_t i=0; it != local_interfaces_.end(); ++it, ++i)
+  {
+    if(i) std::cout << "','";
+    std::cout << it->toString();
+  }
+  std::cout << "'" << std::endl;
+  std::cout << "remote hosts='";
+  it=remote_hosts_.begin();
+  for(u_int32_t i=0; it != remote_hosts_.end(); ++it, ++i)
+  {
+    if(i) std::cout << "','";
+    std::cout << it->toString();
+  }
+  std::cout << "'" << std::endl;
 }
 
 std::string Options::getProgname()
@@ -162,4 +210,68 @@ Options& Options::setProgname(std::string p)
   Lock lock(mutex);
   progname_ = p;
   return *this;
+}
+
+bool Options::getChroot()
+{
+  Lock lock(mutex);
+  return chroot_;
+}
+
+Options& Options::setChroot(bool c)
+{
+  Lock lock(mutex);
+  chroot_ = c;
+  return *this;
+}
+
+std::string Options::getUsername()
+{
+  Lock lock(mutex);
+  return username_;
+}
+
+Options& Options::setUsername(std::string u)
+{
+  Lock lock(mutex);
+  username_ = u;
+  return *this;
+}
+
+std::string Options::getChrootDir()
+{
+  Lock lock(mutex);
+  return chroot_dir_;
+}
+
+Options& Options::setChrootDir(std::string c)
+{
+  Lock lock(mutex);
+  chroot_dir_ = c;
+  return *this;
+}
+
+bool Options::getDaemonize()
+{
+  Lock lock(mutex);
+  return daemonize_;
+}
+
+Options& Options::setDaemonize(bool d)
+{
+  Lock lock(mutex);
+  daemonize_ = d;
+  return *this;
+}
+
+IfList Options::getLocalInterfaces()
+{
+  Lock lock(mutex);
+  return local_interfaces_;
+}
+
+IfList Options::getRemoteHosts()
+{
+  Lock lock(mutex);
+  return remote_hosts_;
 }

@@ -32,6 +32,31 @@
 #define _OPTIONS_H_
 
 #include "../threadUtils.hpp"
+#include <list>
+#include <sstream>
+
+class IfListElement
+{
+public:
+  IfListElement(std::string host, u_int16_t port) : host_(host), port_(port) {}
+  IfListElement(std::string host_port)
+  {
+    std::istringstream iss(host_port);
+    getline(iss, host_, ':');
+    if(!(iss >> port_)) port_ = 0;
+  } 
+  std::string toString() const
+  {
+    std::ostringstream oss;
+    oss << host_ << ":" << port_;
+    return oss.str();
+  }
+  
+  std::string host_;
+	u_int16_t port_;
+};
+
+typedef std::list<IfListElement> IfList;
 
 class Options
 {
@@ -44,13 +69,23 @@ public:
 
   std::string getProgname();
   Options& setProgname(std::string p);
-
+  bool getChroot();
+  Options& setChroot(bool c);
+  std::string getUsername();
+  Options& setUsername(std::string u);
+  std::string getChrootDir();
+  Options& setChrootDir(std::string c);
+  bool getDaemonize();
+  Options& setDaemonize(bool d);
+  IfList getLocalInterfaces();
+  IfList getRemoteHosts();
 
 private:
   Options();
   ~Options();
   Options(const Options &l);
   void operator=(const Options &l);
+  bool sanityCheck();
 
   static Options* inst;
   static Mutex instMutex;
@@ -65,6 +100,12 @@ private:
   Mutex mutex;
 
   std::string progname_;
+  bool chroot_;
+  std::string username_;
+  std::string chroot_dir_;
+  bool daemonize_;
+  IfList local_interfaces_;
+  IfList remote_hosts_;
 };
 
 extern Options& gOpt;

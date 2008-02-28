@@ -40,14 +40,14 @@
 
 int SigIntHandler::handle()
 {
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Int caught";
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Int caught, exiting";
 
   return 1;
 }
 
 int SigQuitHandler::handle()
 {
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Quit caught";
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Quit caught, exiting";
 
   return 1;
 }
@@ -61,7 +61,7 @@ int SigHupHandler::handle()
 
 int SigTermHandler::handle()
 {
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Term caught";
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Term caughtm, exiting";
 
   return 1;
 }
