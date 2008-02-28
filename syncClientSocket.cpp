@@ -14,7 +14,7 @@
 
 
 SyncClientSocket::SyncClientSocket(ISocketHandler& h,ConnectionList & cl)
-:TcpSocket(h),cl_(cl)
+:TcpSocket(h),cl_(cl),missing_chars(0)
 {
 	// initial connection timeout setting and number of retries
 	SetConnectTimeout(12);
@@ -49,7 +49,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 		iss_ << buf[index];
 	}
 
-	while(!iss_.eof() && !iss_.fail())
+	while(iss_.good())
 	{
 		boost::archive::text_iarchive ia(iss_);
 		SyncCommand scom(cl_);
