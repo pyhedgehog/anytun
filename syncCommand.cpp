@@ -12,10 +12,10 @@ SyncCommand::SyncCommand(ConnectionList & cl, u_int16_t mux )
 	src_=NULL;
 }
 
-SyncCommand::SyncCommand(u_int16_t mux )
+SyncCommand::SyncCommand(NetworkPrefix np )
 {	
 	scc_ = NULL;
-	src_ = new SyncRouteCommand(mux);
+	src_ = new SyncRouteCommand(np);
 }
 
 SyncCommand::~SyncCommand()

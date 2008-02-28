@@ -102,6 +102,24 @@ u_int16_t& RoutingTable::getOrNewRoutingTEUnlocked(const NetworkAddress & addr)
   return it->second;
 }
 
+uint16_t RoutingTable::getCountUnlocked()
+{
+	RoutingMap::iterator it = routes_.begin();
+	uint16_t routes=0;
+	for (;it!=routes_.end();++it)
+		routes++;
+	return routes;
+}
+
+RoutingMap::iterator RoutingTable::getBeginUnlocked()
+{
+	return routes_.begin();
+}
+
+RoutingMap::iterator RoutingTable::getEndUnlocked()
+{
+	return routes_.end();
+}
 
 void RoutingTable::clear()
 {

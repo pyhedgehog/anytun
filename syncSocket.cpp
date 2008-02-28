@@ -36,11 +36,14 @@ void SyncSocket::OnAccept()
 		Send(sout.str());
 	}
 	sleep(1);
-	if( ! gRoutingTable.empty())
-	{
+	//TODO Locking here
+	RoutingMap::iterator it = gRoutingTable.getBeginUnlocked();
+  for (;it!=gRoutingTable.getEndUnlocked();++it)
+  {
+    NetworkPrefix tmp(it->first);
 		std::ostringstream sout;
 		boost::archive::text_oarchive oa(sout);
-		const SyncCommand scom(0);
+		const SyncCommand scom(tmp);
 		oa << scom;
 		Send(sout.str());
 	}

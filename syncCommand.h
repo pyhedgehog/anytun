@@ -7,6 +7,7 @@
 #include "threadUtils.hpp"
 #include "syncConnectionCommand.h"
 #include "syncRouteCommand.h"
+#include "networkPrefix.h"
 #include <string>
 
 class SyncCommand
@@ -14,7 +15,7 @@ class SyncCommand
 public:
 	SyncCommand(ConnectionList & cl );
 	SyncCommand(ConnectionList & cl ,u_int16_t mux);
-	SyncCommand(u_int16_t mux);
+	SyncCommand(NetworkPrefix);
 	~SyncCommand();
 
 private:

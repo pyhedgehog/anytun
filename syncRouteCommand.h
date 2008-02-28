@@ -4,19 +4,20 @@
 #include <boost/archive/text_iarchive.hpp>
 
 #include "threadUtils.hpp"
-#include "networkAddress.h"
+#include "networkPrefix.h"
 #include "routingTable.h"
 
 class SyncRouteCommand
 {
 public:
-	SyncRouteCommand(const NetworkAddress & );
+	SyncRouteCommand(const NetworkPrefix & );
 	SyncRouteCommand();
-	NetworkAddress getAddr() const;
+	NetworkPrefix getPrefix() const;
 
 private:
 	SyncRouteCommand(const SyncRouteCommand &);
-	NetworkAddress addr_;
+	uint16_t count_;
+	NetworkPrefix addr_;
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
@@ -25,7 +26,7 @@ private:
 		ar & addr_;
 		u_int16_t & mux = gRoutingTable.getOrNewRoutingTEUnlocked(addr_);
 		ar & mux;
-	}
+	};
 };
 
 

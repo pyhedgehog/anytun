@@ -56,6 +56,7 @@ public:
 	NetworkAddress(in6_addr);
 	NetworkAddress(in_addr);
 	NetworkAddress(uint64_t);
+	NetworkAddress(const network_address_type_t type, const char * address );
 	~NetworkAddress();
 	void setNetworkAddress(const network_address_type_t type, const char * address );
 	void getNetworkAddress(const char *);
@@ -84,7 +85,7 @@ private:
 		if (network_address_type_==ipv6)
 			for(int i=0;i<4;i++)
 				ar & ipv6_address_.s6_addr32;
-		if (network_address_type_==ethernet_address_)
+		if (network_address_type_==ethernet)
 			ar & ethernet_address_;
    }
 };

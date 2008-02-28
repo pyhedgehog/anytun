@@ -4,12 +4,13 @@ SyncRouteCommand::SyncRouteCommand()
 {	
 }
 
-SyncRouteCommand::SyncRouteCommand( const NetworkAddress & addr )
+SyncRouteCommand::SyncRouteCommand( const NetworkPrefix & addr )
 :addr_(addr)
 {	
 }
 
-NetworkAddress SyncRouteCommand::getAddr() const 
+
+NetworkPrefix SyncRouteCommand::getPrefix() const 
 {
 	return addr_;
 }

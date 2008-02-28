@@ -67,6 +67,11 @@ NetworkAddress::~NetworkAddress()
 {
 }
 
+NetworkAddress::NetworkAddress(const network_address_type_t type, const char * address )
+{
+	setNetworkAddress( type, address);
+}
+
 void NetworkAddress::setNetworkAddress(const network_address_type_t type, const char * address )
 {
 	if (type==ipv4)

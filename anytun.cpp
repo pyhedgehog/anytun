@@ -81,9 +81,13 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
  	cl.addConnection(connparam,mux);
-	gRoutingTable.addRoute(NetworkPrefix(NetworkAddress()),mux);
+	NetworkAddress addr(ipv4,gOpt.getIfconfigParamRemoteNetmask().c_str());
+	NetworkPrefix prefix(addr);
+	gRoutingTable.addRoute(prefix,mux);
   SyncCommand sc (cl,mux);
 	queue.push(sc);
+  SyncCommand sc2 (prefix);
+	queue.push(sc2);
 }
 
 
