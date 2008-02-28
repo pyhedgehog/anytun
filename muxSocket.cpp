@@ -29,11 +29,10 @@ void MuxSocket::OnAccept()
     while( !file.eof() )
     {
       getline( file, line );
-      Send( line + "\n" );
+      Send( line );
     }
     file.close();
   }
-	Send("\n");
 
 	//TODO Locking here
 }
