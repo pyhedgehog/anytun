@@ -56,11 +56,11 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 		} else
 		if(missing_chars>0 && missing_chars<=static_cast<int16_t>(iss_.str().size()))
 		{
-			char * buffer = new char [missing_chars];
-			iss_.read(buffer,missing_chars);
+			char * buffer = new char [missing_chars+1];
+			iss_.read(buffer,missing_chars+1);
 			std::stringstream tmp;
-			tmp.write(buffer,missing_chars);
-			std::cout<<tmp.str()<<std::endl;
+			tmp.write(buffer,missing_chars+1);
+			std::cout<<'"'<<tmp.str()<<'"'<<std::endl;
 			boost::archive::text_iarchive ia(tmp);
 			SyncCommand scom(cl_);
 			ia >> scom;
