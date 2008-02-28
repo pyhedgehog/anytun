@@ -49,7 +49,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 		iss_ << buf[index];
 	}
 
-	while(!iss_.fail())
+	while(!iss_.eof() && !iss_.fail())
 	{
 		boost::archive::text_iarchive ia(iss_);
 		SyncCommand scom(cl_);
