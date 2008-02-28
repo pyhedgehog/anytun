@@ -42,7 +42,6 @@ void SyncClientSocket::OnReconnect()
 void SyncClientSocket::OnRawData(const char *buf,size_t len)
 //void SyncClientSocket::OnLine(const std::string& line)
 {
-	cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion from " << GetRemoteHostname() << std::endl;
 	for(size_t index=0;index<len;index++)
 	{
 		std::cout << buf[index];
@@ -59,8 +58,8 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 			char * buffer = new char [missing_chars+1];
 			iss_.read(buffer,missing_chars+1);
 			std::stringstream tmp;
-			tmp.write(buffer,missing_chars+1);
-			std::cout<<'"'<<tmp.str()<<'"'<<std::endl;
+			tmp.write(buffer+1,missing_chars);
+			cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion from " << GetRemoteHostname() <<" \""<<tmp.str()<<'"'<< std::endl;
 			boost::archive::text_iarchive ia(tmp);
 			SyncCommand scom(cl_);
 			ia >> scom;
