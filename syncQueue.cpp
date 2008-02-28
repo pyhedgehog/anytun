@@ -47,7 +47,9 @@ void SyncQueue::push(const SyncCommand & scom )
 	oa << scom;
 
   Lock lock(mutex_);
-	queue_.push(sout.str());
+  std::stringstream lengthout;
+  lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
+	queue_.push(lengthout.str()+sout.str());
 }
 
 void SyncQueue::push(const std::string & str )

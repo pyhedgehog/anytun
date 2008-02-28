@@ -14,7 +14,7 @@
 
 
 SyncClientSocket::SyncClientSocket(ISocketHandler& h,ConnectionList & cl)
-:TcpSocket(h),cl_(cl),missing_chars(0)
+:TcpSocket(h),cl_(cl),missing_chars(-1)
 {
 	// initial connection timeout setting and number of retries
 	SetConnectTimeout(12);
@@ -48,13 +48,22 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 		std::cout << buf[index];
 		iss_ << buf[index];
 	}
-
-	while(iss_.good())
+	while (1)
 	{
-		boost::archive::text_iarchive ia(iss_);
-		SyncCommand scom(cl_);
-		ia >> scom;
+		if(missing_chars==-1 && iss_.str().size()>5)
+		{
+			iss_>>missing_chars;
+		} else
+		if(missing_chars>0 && missing_chars<=static_cast<int16_t>(iss_.str().size()))
+		{
+			boost::archive::text_iarchive ia(iss_);
+			SyncCommand scom(cl_);
+			ia >> scom;
+			missing_chars=-1;
+		} else
+		break;
 	}
+
 	//u_int16_t mux = scom.getMux();
 	//const ConnectionParam & conn = cl_.getConnection(mux)->second;
   //cLog.msg(Log::PRIO_NOTICE) << "sync connection #"<<mux<<" remote host " << conn.remote_host_ << ":" << conn.remote_port_ << std::endl;

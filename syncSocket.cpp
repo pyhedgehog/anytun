@@ -35,6 +35,9 @@ void SyncSocket::OnAccept()
 		boost::archive::text_oarchive oa(sout);
 		const SyncCommand scom(cl_,cit->first);
 		oa << scom;
+		std::stringstream lengthout;
+		lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
+		Send(lengthout.str());
 		Send(sout.str());
 	}
 	//TODO Locking here
@@ -46,6 +49,9 @@ void SyncSocket::OnAccept()
 		boost::archive::text_oarchive oa(sout);
 		const SyncCommand scom(tmp);
 		oa << scom;
+		std::stringstream lengthout;
+		lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
+		Send(lengthout.str());
 		Send(sout.str());
 	}
 }
