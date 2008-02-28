@@ -81,12 +81,15 @@ OBJS = tunDevice.o \
        $(OPENVPNDEPS) \
 			 $(SOCKETDEPS)
 
-EXECUTABLE = anytun anyctr anymux
+EXECUTABLE = anytun anyctr anymux anytun-showtables
 
 all: $(EXECUTABLE) libAnysync.a
 
 anytun: $(OBJS) anytun.o
 	$(LD) $(OBJS) anytun.o -o $@ $(LDFLAGS)
+
+anytun-showtables: $(OBJS) anytun-showtables.o
+	$(LD) $(OBJS) anytun-showtables.o -o $@ $(LDFLAGS)
 
 anyctr: $(OBJS) anyctr.o
 	$(LD) $(OBJS) anyctr.o -o $@ $(LDFLAGS)
@@ -197,6 +200,9 @@ router.o: router.cpp router.h
 	$(C++) $(CCFLAGS) $< -c
 
 anytun.o: anytun.cpp
+	$(C++) $(CCFLAGS) $< -c
+
+anytun-showtables.o: anytun-showtables.cpp
 	$(C++) $(CCFLAGS) $< -c
 
 anyctr.o: anyctr.cpp
