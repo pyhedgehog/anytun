@@ -147,7 +147,6 @@ bool Options::parse(int argc, char* argv[])
     PARSE_HEXSTRING_PARAM("-K","--key", key_)
     PARSE_HEXSTRING_PARAM("-a","--salt", salt_)
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
-		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
     else 
       return false;
   }
@@ -175,6 +174,7 @@ void Options::printUsage()
   std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
+  std::cout << "       [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
   std::cout << "       [-K|--key] <master key>             master key to use for encryption" << std::endl;
   std::cout << "       [-a|--salt] <master salt>           master salt to use for encryption" << std::endl;
   std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
