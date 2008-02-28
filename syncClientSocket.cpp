@@ -49,16 +49,22 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	}
 	while (1)
 	{
-		if(missing_chars==-1 && iss_.str().size()>5)
+		if(missing_chars==-1 && iss_.str().length()>5)
 		{
-			iss_>>missing_chars;
+      char * buffer = new char [missing_chars];
+      iss_.read(buffer,missing_chars);
+      std::stringstream tmp;
+      tmp.write(buffer,missing_chars);
+			tmp>>missing_chars;
+			cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion from " << GetRemoteHostname() <<" "<<tmp.str()<<"bytes of data"<< std::endl;
+			delete buffer;
 		} else
-		if(missing_chars>0 && missing_chars<static_cast<int16_t>(iss_.str().size()))
+		if(missing_chars>0 && missing_chars<=static_cast<int16_t>(iss_.str().length()))
 		{
-			char * buffer = new char [missing_chars+1];
-			iss_.read(buffer,missing_chars+1);
+			char * buffer = new char [missing_chars];
+			iss_.read(buffer,missing_chars);
 			std::stringstream tmp;
-			tmp.write(buffer+1,missing_chars);
+			tmp.write(buffer,missing_chars);
 			cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion from " << GetRemoteHostname() <<" \""<<tmp.str()<<'"'<< std::endl;
 			boost::archive::text_iarchive ia(tmp);
 			SyncCommand scom(cl_);
