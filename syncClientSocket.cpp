@@ -50,7 +50,6 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	}
 	while (1)
 	{
-		cLog.msg(Log::PRIO_NOTICE) << "string size " << iss_.str().size() << " casted size" << static_cast<int32_t>(iss_.str().size()) << std::endl;
 		if(missing_chars==-1 && buffer_size_>5)
 		{
       char * buffer = new char [6+1];
