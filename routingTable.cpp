@@ -80,6 +80,8 @@ void RoutingTable::delRoute(const NetworkPrefix & pref )
 u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
 {
 	Lock lock(mutex_);
+	if (routes_.empty())
+  	return 0;
 	NetworkPrefix prefix(addr);
 	prefix.setNetworkPrefixLength(32);
 	RoutingMap::iterator it = routes_.lower_bound(prefix);

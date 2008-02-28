@@ -35,7 +35,7 @@ void SyncSocket::OnAccept()
 		oa << scom;
 		Send(sout.str());
 	}
-	sleep(5);
+	sleep(1);
 	if( ! gRoutingTable.empty())
 	{
 		std::ostringstream sout;
