@@ -29,6 +29,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <poll.h>
 
 #include "datatypes.h"
@@ -71,6 +72,15 @@ int main(int argc, char* argv[])
   if(!gOpt.parse(argc, argv))
   {
     gOpt.printUsage();
+    exit(-1);
+  }
+  
+  std::ifstream file( gOpt.getFileName().c_str() );
+  if( file.is_open() )
+    file.close();
+  else
+  {
+    std::cout << "ERROR: unable to open file!" << std::endl;
     exit(-1);
   }
 
