@@ -3,26 +3,26 @@
 #include <fstream>
 #include <string>
 
+#include "anymuxOptions.h"
+
 #include "Sockets/Utility.h"
 #include "muxSocket.h"
+
 
 #ifdef SOCKETS_NAMESPACE
 using namespace SOCKETS_NAMESPACE;
 #endif // SOCKETS_NAMESPACE
 
 
-MuxSocket::MuxSocket(ISocketHandler& h)
-:TcpSocket(h)
+MuxSocket::MuxSocket(ISocketHandler& h) : TcpSocket(h), filename_(gOpt.getFileName())
 {
 	SetConnectTimeout(12);
 }
 
 
-
 void MuxSocket::OnAccept()
 {
-  std::string filename("testoutput.txt");
-  std::ifstream file(filename.c_str());
+  std::ifstream file(filename_.c_str());
   if( file.is_open() )
   {
     std::string line;

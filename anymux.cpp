@@ -31,27 +31,32 @@
 #include <iostream>
 #include <poll.h>
 
-#include <cerrno>     // for ENOMEM
-
 #include "datatypes.h"
 
 #include "log.h"
 #include "signalController.h"
-#include "options.h"
+#include "anymuxOptions.h"
 
 #include "muxSocket.h"
 #include "Sockets/ListenSocket.h"
 #include "Sockets/SocketHandler.h"
 
 
+class ThreadParam
+{
+public:
+  ThreadParam() : port(0) {};
+  u_int16_t port;
+};
+
+
 void* syncListener(void* p )
 {
-	//ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
-
+  ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 	SOCKETS_NAMESPACE::SocketHandler h;
 	SOCKETS_NAMESPACE::ListenSocket<MuxSocket> l(h,true);
 
-	if (l.Bind(1234))
+	if( l.Bind(param->port) )
 		pthread_exit(NULL);
 
 	Utility::ResolveLocal(); // resolve local hostname
@@ -72,10 +77,10 @@ int main(int argc, char* argv[])
   SignalController sig;
   sig.init();
 
-//  ThreadParam p(4445);
-  int port;  
+  ThreadParam p;
+  p.port = gOpt.getLocalPort(); 
 	pthread_t syncListenerThread;
-	pthread_create(&syncListenerThread, NULL, syncListener, &port);  
+	pthread_create(&syncListenerThread, NULL, syncListener, &p);  
 
 	int ret = sig.run();
 

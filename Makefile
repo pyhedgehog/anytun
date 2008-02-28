@@ -59,7 +59,6 @@ OBJS = tunDevice.o \
 			 keyDerivation.o \
 			 mpi.o \
 			 cipherFactory.o \
-			 muxSocket.o \
 			 authAlgoFactory.o \
 			 keyDerivationFactory.o \
 			 connectionList.o \
@@ -81,6 +80,12 @@ OBJS = tunDevice.o \
        $(OPENVPNDEPS) \
 			 $(SOCKETDEPS)
 
+ANYMUXOBJS = muxSocket.o \
+						 anymuxOptions.o \
+						 signalController.o \
+						 log.o \
+						 $(SOCKETDEPS)
+
 EXECUTABLE = anytun anyctr anymux anytun-showtables
 
 all: $(EXECUTABLE) libAnysync.a
@@ -94,8 +99,8 @@ anytun-showtables: $(OBJS) anytun-showtables.o
 anyctr: $(OBJS) anyctr.o
 	$(LD) $(OBJS) anyctr.o -o $@ $(LDFLAGS)
 
-anymux: $(OBJS) anymux.o
-	$(LD) $(OBJS) anymux.o -o $@ $(LDFLAGS)
+anymux: $(ANYMUXOBJS) anymux.o
+	$(LD) $(ANYMUXOBJS) anymux.o -o $@ $(LDFLAGS)
 
 tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
@@ -119,6 +124,9 @@ cipher.o: cipher.cpp cipher.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 muxSocket.o: muxSocket.cpp muxSocket.h 
+	$(C++) $(CCFLAGS) $< -c
+
+anymuxOptions.o: anymuxOptions.cpp anymuxOptions.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h

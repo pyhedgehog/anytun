@@ -8,15 +8,19 @@
 using namespace SOCKETS_NAMESPACE;
 #endif // SOCKETS_NAMESPACE
 
+
 class MuxSocket : public TcpSocket
 {
 public:
-	MuxSocket(ISocketHandler& );
+	MuxSocket(ISocketHandler&);
 
 	void OnAccept();
 //	void Init();
 
 //	void InitSSLServer();
+
+private:
+  std::string filename_;
 };
 
 
