@@ -26,20 +26,28 @@ public:
     return host_;
   }
 
-  void setHost(std::string host, u_int16_t port)
+  u_int16_t getLocalPort() {
+    Lock lock(mutex);
+    return local_port_;
+  }
+
+  void setHost(std::string host, u_int16_t port, u_int16_t local_port)
   {
     Lock lock(mutex);
     if(host_.host_ != host || host_.port_ != port)
-      cLog.msg(Log::PRIO_NOTICE) << "openSer Host detected at " << host << ":" << port;
+      cLog.msg(Log::PRIO_NOTICE) << "openSer Host detected at " << host << ":" << port 
+                                 << " received at local port " << local_port;
 
     host_.host_ = host;
     host_.port_ = port;
+    local_port_ = local_port;
   }
 
 private:
   Mutex mutex;
   
   IfListElement host_;
+  u_int16_t local_port_;
 };
 
 struct ThreadParam
@@ -69,7 +77,7 @@ void* sender(void* p)
       u_int32_t len = recv_sock.recvFrom(buf.getBuf(), buf.getLength(), remote_host, remote_port);
       buf.setLength(len);
       
-      param->open_ser_.setHost(remote_host, remote_port);
+      param->open_ser_.setHost(remote_host, remote_port, param->interface_.port_);
       
       IfList::const_iterator it = remote_host_list.begin();
       for(;it != remote_host_list.end(); it++)
@@ -91,7 +99,9 @@ void* receiver(void* p)
   
   try 
   {
-    UDPSocket sock(gOpt.getSendPort());
+    UDPSocket recv_sock(gOpt.getSendPort());
+    UDPSocket send_sock;    
+    u_int16_t local_port = 0;
 
     cLog.msg(Log::PRIO_NOTICE) << "receiver listening for packets from: " << param->interface_.toString();
 
@@ -101,7 +111,7 @@ void* receiver(void* p)
       u_int16_t remote_port;
       
       buf.setLength(MAX_PACKET_SIZE);
-      u_int32_t len = sock.recvFrom(buf.getBuf(), buf.getLength(), remote_host, remote_port);
+      u_int32_t len = recv_sock.recvFrom(buf.getBuf(), buf.getLength(), remote_host, remote_port);
       buf.setLength(len);
 
       if(remote_host != param->interface_.host_ || remote_port != param->interface_.port_)
@@ -113,8 +123,13 @@ void* receiver(void* p)
         cLog.msg(Log::PRIO_NOTICE) << "no openser host detected till now, ignoring packet";
         continue;
       }
-        
-      sock.sendTo(buf.getBuf(), buf.getLength(), openSerHost.host_, openSerHost.port_);
+
+      if(local_port != param->open_ser_.getLocalPort())
+      {
+        local_port = param->open_ser_.getLocalPort();
+        send_sock.setLocalPort(local_port);
+      }
+      send_sock.sendTo(buf.getBuf(), buf.getLength(), openSerHost.host_, openSerHost.port_);
     }  
   }
   catch(std::exception &e)
