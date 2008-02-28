@@ -49,7 +49,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 	}
 	while (1)
 	{
-		if(missing_chars==-1 && iss_.str().size()>5)
+		if(missing_chars==-1 && iss_.good() && iss_.str().size()>5)
 		{
       char * buffer = new char [6];
       iss_.read(buffer,6);
