@@ -56,6 +56,7 @@ Options::Options()
   username_ = "nobody";
   chroot_dir_ = "/var/run";
   daemonize_ = true;
+  send_port_ = 22220;
   local_interfaces_.push_back(IfListElement("0.0.0.0", 22221));
   remote_hosts_.push_back(IfListElement("127.0.0.1", 22222));
 }
@@ -142,7 +143,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-u","--user", username_)
     PARSE_SCALAR_PARAM("-c","--chroot-dir", chroot_dir_)
     PARSE_INVERSE_BOOL_PARAM("-d","--nodaemonize", daemonize_)
-    PARSE_SCALAR_PARAM("-c","--chroot-dir", chroot_dir_)
+    PARSE_SCALAR_PARAM("-p","--port", send_port_)
     PARSE_CSLIST_PARAM("-l","--listen", local_interfaces_)
     PARSE_CSLIST_PARAM("-r","--hosts", remote_hosts_)
     else 
@@ -168,8 +169,14 @@ bool Options::sanityCheck()
 void Options::printUsage()
 {
   std::cout << "USAGE:" << std::endl;
-  std::cout << "plain_tool [-h|--help]                         prints this..." << std::endl;
-//  std::cout << "            [-K|--key] <master key>             master key to use for encryption" << std::endl;
+  std::cout << "anyrtpproxy [-h|--help]                                     prints this..." << std::endl;
+  std::cout << "            [-t|--chroot]                                   chroot and drop priviledges" << std::endl;
+  std::cout << "            [-u|--username] <username>                      in case of chroot run as this user" << std::endl;
+  std::cout << "            [-c|--chroot-dir] <directory>                   directory to make a chroot to" << std::endl;
+  std::cout << "            [-d|--nodaemonize]                              don't run in background" << std::endl;
+  std::cout << "            [-p|--port] <port>                              use this port to send out packets" << std::endl;
+  std::cout << "            [-l|--listen] <host[:port]>[,<host>[:<port> ..] a list of local interfaces to listen on" << std::endl;
+  std::cout << "            [-r|--hosts] <host[:port]>[,<host>[:<port> ..]  a list of remote hosts to send duplicates to" << std::endl;
 }
 
 void Options::printOptions()
@@ -180,6 +187,7 @@ void Options::printOptions()
   std::cout << "username='" << username_ << "'" << std::endl;
   std::cout << "chroot-dir='" << chroot_dir_ << "'" << std::endl;
   std::cout << "daemonize='" << daemonize_ << "'" << std::endl;
+  std::cout << "send-port='" << send_port_ << "'" << std::endl;
   std::cout << "local interfaces='";
   IfList::const_iterator it=local_interfaces_.begin();
   for(u_int32_t i=0; it != local_interfaces_.end(); ++it, ++i)
@@ -261,6 +269,19 @@ Options& Options::setDaemonize(bool d)
 {
   Lock lock(mutex);
   daemonize_ = d;
+  return *this;
+}
+
+u_int16_t Options::getSendPort()
+{
+  Lock lock(mutex);
+  return send_port_;
+}
+
+Options& Options::setSendPort(u_int16_t p)
+{
+  Lock lock(mutex);
+  send_port_ = p;
   return *this;
 }
 

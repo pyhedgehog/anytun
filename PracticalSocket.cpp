@@ -186,6 +186,14 @@ void Socket::setLocalAddressAndPort(const string &localAddress,
   }
 }
 
+void Socket::setSocketOpt(int optionName, const void* optionValue, socklen_t optionLen)
+  throw(SocketException) 
+{
+  if (::setsockopt(sockDesc, SOL_SOCKET, optionName, optionValue, optionLen) < 0) {
+    throw SocketException("setSockopt failed", true);
+  }
+}
+
 void Socket::cleanUp() throw(SocketException) {
   #ifdef WIN32
     if (WSACleanup() != 0) {
@@ -282,6 +290,8 @@ TCPSocket::TCPSocket(int newConnSD) : CommunicatingSocket(newConnSD) {
 
 TCPServerSocket::TCPServerSocket(unsigned short localPort, int queueLen) 
     throw(SocketException) : Socket(SOCK_STREAM, IPPROTO_TCP) {
+  const int opt = 1;
+  setSocketOpt(SO_REUSEADDR, &opt, sizeof(opt)); 
   setLocalPort(localPort);
   setListen(queueLen);
 }
@@ -289,6 +299,8 @@ TCPServerSocket::TCPServerSocket(unsigned short localPort, int queueLen)
 TCPServerSocket::TCPServerSocket(const string &localAddress, 
     unsigned short localPort, int queueLen) 
     throw(SocketException) : Socket(SOCK_STREAM, IPPROTO_TCP) {
+  const int opt = 1;
+  setSocketOpt(SO_REUSEADDR, &opt, sizeof(opt)); 
   setLocalAddressAndPort(localAddress, localPort);
   setListen(queueLen);
 }
@@ -312,17 +324,24 @@ void TCPServerSocket::setListen(int queueLen) throw(SocketException) {
 
 UDPSocket::UDPSocket() throw(SocketException) : CommunicatingSocket(SOCK_DGRAM,
     IPPROTO_UDP) {
+  
+  const int opt = 1;
+  setSocketOpt(SO_REUSEADDR, &opt, sizeof(opt)); 
   setBroadcast();
 }
 
 UDPSocket::UDPSocket(unsigned short localPort)  throw(SocketException) : 
     CommunicatingSocket(SOCK_DGRAM, IPPROTO_UDP) {
+  const int opt = 1;
+  setSocketOpt(SO_REUSEADDR, &opt, sizeof(opt)); 
   setLocalPort(localPort);
   setBroadcast();
 }
 
 UDPSocket::UDPSocket(const string &localAddress, unsigned short localPort) 
      throw(SocketException) : CommunicatingSocket(SOCK_DGRAM, IPPROTO_UDP) {
+  const int opt = 1;
+  setSocketOpt(SO_REUSEADDR, &opt, sizeof(opt)); 
   setLocalAddressAndPort(localAddress, localPort);
   setBroadcast();
 }

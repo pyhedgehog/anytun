@@ -128,6 +128,10 @@ public:
   void setLocalAddressAndPort(const string &localAddress, 
     unsigned short localPort = 0) throw(SocketException);
 
+
+  void setSocketOpt(int optionName, const void* optionValue, socklen_t optionLen)
+    throw(SocketException);
+
   /**
    *   If WinSock, unload the WinSock DLLs; otherwise do nothing.  We ignore
    *   this in our sample client code but include it in the library for

@@ -77,6 +77,8 @@ public:
   Options& setChrootDir(std::string c);
   bool getDaemonize();
   Options& setDaemonize(bool d);
+  u_int16_t getSendPort();
+  Options& setSendPort(u_int16_t p);
   IfList getLocalInterfaces();
   IfList getRemoteHosts();
 
@@ -104,6 +106,7 @@ private:
   std::string username_;
   std::string chroot_dir_;
   bool daemonize_;
+  u_int16_t send_port_;
   IfList local_interfaces_;
   IfList remote_hosts_;
 };
