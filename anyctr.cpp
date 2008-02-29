@@ -96,10 +96,7 @@ int main(int argc, char* argv[])
 	ConnectionList cl;
 	SyncQueue queue;
 
-	if(gOpt.getRemoteAddr() != "")
-	{
-		createConnection(gOpt.getRemoteAddr(),gOpt.getRemotePort(),cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
-	}
+	createConnection(gOpt.getRemoteAddr(),gOpt.getRemotePort(),cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
 
   return ret;
 }
