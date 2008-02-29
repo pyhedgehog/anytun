@@ -28,43 +28,18 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <iostream>
-#include <poll.h>
-
-#include <gcrypt.h>
-#include <cerrno>     // for ENOMEM
-
 #include "datatypes.h"
 
 #include "log.h"
 #include "buffer.h"
-#include "plainPacket.h"
-#include "encryptedPacket.h"
-#include "cipher.h"
 #include "keyDerivation.h"
-#include "authAlgo.h"
-#include "authTag.h"
-#include "cipherFactory.h"
-#include "authAlgoFactory.h"
-#include "keyDerivationFactory.h"
-#include "signalController.h"
-#include "packetSource.h"
-#include "tunDevice.h"
 #include "options.h"
 #include "seqWindow.h"
 #include "connectionList.h"
 #include "routingTable.h"
 #include "networkAddress.h"
-
-#include "syncQueue.h"
-#include "syncSocketHandler.h"
-#include "syncListenSocket.h"
-
-#include "syncSocket.h"
-#include "syncClientSocket.h"
 #include "syncCommand.h"
 
-#include "threadParam.h"
 #include <sstream>
 #include <iostream>
 #include <string>
@@ -72,41 +47,75 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
-#define MAX_PACKET_LENGTH 1600
 
-#define SESSION_KEYLEN_AUTH 20   // TODO: hardcoded size
-#define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
-#define SESSION_KEYLEN_SALT 14   // TODO: hardcoded size
+void output(ConnectionList & cl)
+{
+	if( !cl.empty() )
+	{
+		ConnectionMap::iterator it = cl.getBeginUnlocked();
+		mux_t mux = it->first;
+		std::cout << "mux: " << mux << std::endl;
+		ConnectionParam &conn( it->second );
+    std::cout << "Keyderivation-Type: " << conn.kd_.printType() << std::endl;
+	} 
+  else if( !gRoutingTable.empty() ) 
+  {
+		RoutingMap::iterator it = gRoutingTable.getBeginUnlocked();
+		NetworkPrefix pref( it->first );
+		mux_t mux = it->second;
+	}
+	std::cout << std::endl;
+}
 
 int main(int argc, char* argv[])
 {
-  int ret=0;
+  int ret = 0;
   if(!gOpt.parse(argc, argv))
   {
     gOpt.printUsage();
     exit(-1);
   }
 
-  SignalController sig;
-  sig.init();
-
 	ConnectionList cl;
-
-	boost::archive::text_iarchive ia(std::cin);
-	SyncCommand scom(cl);
-	ia>>scom;
-	if (!cl.empty())
-	{
-		ConnectionMap::iterator it=cl.getBeginUnlocked();
-		mux_t mux = it->first;
-		std::cout <<mux;
-		ConnectionParam & conn ( it->second);
-	} else if (!gRoutingTable.empty()) {
-		RoutingMap::iterator it=gRoutingTable.getBeginUnlocked();
-		NetworkPrefix pref (it->first);
-		mux_t mux = it->second;
-	}
-	std::cout << std::endl;
+  std::stringstream iss_;
+  int32_t missing_chars=-1;
+  int32_t buffer_size_=0;
+  while(std::cin.good()) 
+  {
+    char c;
+    std::cin.get(c);
+    iss_ << c;
+    buffer_size_++;
+    while (1)
+    {
+      if(missing_chars==-1 && buffer_size_>5)
+      {
+        char * buffer = new char [6+1];
+        iss_.read(buffer,6);
+        std::stringstream tmp;
+        tmp.write(buffer,6);
+        tmp>>missing_chars;
+        delete[] buffer;
+        buffer_size_-=6;
+      } 
+      else if(missing_chars>0 && missing_chars<=buffer_size_)
+      {
+        char * buffer = new char [missing_chars+1];
+        iss_.read(buffer,missing_chars);
+        std::stringstream tmp;
+        tmp.write(buffer,missing_chars);
+        boost::archive::text_iarchive ia(tmp);
+        SyncCommand scom(cl);
+        ia >> scom;
+        buffer_size_-=missing_chars;
+        missing_chars=-1;
+        output(cl);
+        delete[] buffer;
+        } 
+      else
+        break;
+    }
+  }
   return ret;
 }
 
