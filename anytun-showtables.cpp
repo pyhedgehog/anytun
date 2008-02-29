@@ -54,9 +54,9 @@ void output(ConnectionList &cl)
 	{
 		ConnectionMap::iterator it = cl.getBeginUnlocked();
 		mux_t mux = it->first;
-		std::cout << "Connection: Mux-ID: " << mux << std::endl;
+		std::cout << "Connection: " << mux << std::endl;
 		ConnectionParam &conn( it->second );
-    std::cout << "Connection: Keyderivation-Type: " << conn.kd_.printType() << std::endl;
+    //std::cout << "Connection: Keyderivation-Type: " << conn.kd_.printType() << std::endl;
     cl.clear();
 	} 
   else if( !gRoutingTable.empty() ) 
@@ -68,7 +68,6 @@ void output(ConnectionList &cl)
     std::cout << mux << std::endl;
     gRoutingTable.clear();
 	}
-	std::cout << std::endl;
 }
 
 int main(int argc, char* argv[])
