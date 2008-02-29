@@ -42,7 +42,7 @@ class NetworkPrefix : public NetworkAddress
 {
 public:
 	NetworkPrefix();
-	NetworkPrefix(const NetworkAddress &);
+	NetworkPrefix(const NetworkAddress &, uint8_t length);
 	NetworkPrefix(const NetworkPrefix &);
 	void setNetworkPrefixLength(uint8_t length );
 	uint8_t getNetworkPrefixLength();

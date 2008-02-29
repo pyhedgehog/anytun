@@ -38,7 +38,7 @@ NetworkPrefix::NetworkPrefix(): NetworkAddress(),length_(0)
 {
 }
 
-NetworkPrefix::NetworkPrefix(const NetworkAddress & src): NetworkAddress(src),length_(0)
+NetworkPrefix::NetworkPrefix(const NetworkAddress & src,uint8_t length): NetworkAddress(src),length_(length)
 {
 }
 

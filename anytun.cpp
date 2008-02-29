@@ -82,7 +82,7 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
  	cl.addConnection(connparam,mux);
 	NetworkAddress addr(ipv4,gOpt.getIfconfigParamRemoteNetmask().c_str());
-	NetworkPrefix prefix(addr);
+	NetworkPrefix prefix(addr,32);
 	gRoutingTable.addRoute(prefix,mux);
   SyncCommand sc (cl,mux);
 	queue.push(sc);
