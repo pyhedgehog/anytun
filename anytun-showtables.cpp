@@ -54,8 +54,15 @@ void output(ConnectionList &cl)
 	{
 		ConnectionMap::iterator it = cl.getBeginUnlocked();
 		mux_t mux = it->first;
-		std::cout << "Connection: " << mux << std::endl;
 		ConnectionParam &conn( it->second );
+		std::cout << "Client " << mux << ": " ;
+		if( conn.remote_host_=="")
+		{
+			std::cout<< "not registered";
+		} else {
+		  std::cout<< conn.remote_host_ << ':'<<conn.remote_port_;
+		}
+		std::cout << std::endl;
     //std::cout << "Connection: Keyderivation-Type: " << conn.kd_.printType() << std::endl;
     cl.clear();
 	} 
