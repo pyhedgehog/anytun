@@ -84,7 +84,7 @@ u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
   	return 0;
 	NetworkPrefix prefix(addr,32);
 	RoutingMap::iterator it = routes_.lower_bound(prefix);
-	it--;
+//	it--;
 	if (it!=routes_.end())
 		return it->second;
 	return 0;
