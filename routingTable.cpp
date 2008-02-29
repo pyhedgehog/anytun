@@ -97,7 +97,7 @@ u_int16_t& RoutingTable::getOrNewRoutingTEUnlocked(const NetworkAddress & addr)
   if(it!=routes_.end())
     return it->second;
 
-  routes_.insert(RoutingMap::value_type(addr, 0));
+  routes_.insert(RoutingMap::value_type(addr, 1));
   it = routes_.find(addr);
   return it->second;
 }
