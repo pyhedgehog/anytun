@@ -83,11 +83,13 @@ u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
 	if (routes_.empty())
   	return 0;
 	NetworkPrefix prefix(addr,32);
+	//TODO Routing algorithem isnt working!!!
 	RoutingMap::iterator it = routes_.lower_bound(prefix);
 //	it--;
 	if (it!=routes_.end())
 		return it->second;
-	return 0;
+	it=routes_.begin();
+	return it->second;
 }
 
 u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix & addr)

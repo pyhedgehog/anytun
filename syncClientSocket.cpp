@@ -44,7 +44,7 @@ void SyncClientSocket::OnRawData(const char *buf,size_t len)
 {
 	for(size_t index=0;index<len;index++)
 	{
-		std::cout << buf[index];
+//		std::cout << buf[index];
 		iss_ << buf[index];
 		buffer_size_++;
 	}
