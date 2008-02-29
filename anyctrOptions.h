@@ -72,6 +72,8 @@ public:
   Buffer getKey();
   Options& setSalt(std::string s);
   Buffer getSalt();
+  Options& setNetworkPrefixLength(u_int16_t l);
+  u_int16_t getNetworkPrefixLength();
 
 private:
   Options();
@@ -100,6 +102,7 @@ private:
   window_size_t seq_window_size_;
   std::string kd_prf_;
   u_int16_t mux_;
+  u_int16_t network_prefix_length_;
   Buffer key_;
   Buffer salt_;
 };

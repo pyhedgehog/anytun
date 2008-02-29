@@ -54,7 +54,7 @@ void output(ConnectionList & cl)
 	{
 		ConnectionMap::iterator it = cl.getBeginUnlocked();
 		mux_t mux = it->first;
-		std::cout << "mux: " << mux << std::endl;
+		std::cout << "Mux-ID: " << mux << std::endl;
 		ConnectionParam &conn( it->second );
     std::cout << "Keyderivation-Type: " << conn.kd_.printType() << std::endl;
 	} 
@@ -62,7 +62,9 @@ void output(ConnectionList & cl)
   {
 		RoutingMap::iterator it = gRoutingTable.getBeginUnlocked();
 		NetworkPrefix pref( it->first );
+    std::cout << "Network-Prefix: " << pref.getNetworkPrefixLength() << std::endl;
 		mux_t mux = it->second;
+    std::cout << "Mux-ID: " << mux << std::endl;
 	}
 	std::cout << std::endl;
 }

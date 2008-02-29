@@ -59,6 +59,7 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   seq_window_size_ = 100;
   kd_prf_ = "aes-ctr";
   mux_ = 0;
+  network_prefix_length_ = 32;
 }
 
 Options::~Options()
@@ -144,6 +145,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
     PARSE_SCALAR_PARAM("-m","--mux", mux_)
+    PARSE_SCALAR_PARAM("-l","--prefix-len", network_prefix_length_)
     PARSE_HEXSTRING_PARAM("-K","--key", key_)
     PARSE_HEXSTRING_PARAM("-a","--salt", salt_)
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
@@ -175,6 +177,7 @@ void Options::printUsage()
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
   std::cout << "       [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
+  std::cout << "       [-l|--prefix-len] <prefix length>   network prefix length" << std::endl;
   std::cout << "       [-K|--key] <master key>             master key to use for encryption" << std::endl;
   std::cout << "       [-a|--salt] <master salt>           master salt to use for encryption" << std::endl;
   std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
@@ -190,6 +193,7 @@ void Options::printOptions()
   std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
   std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
   std::cout << "mux_id='" << mux_ << "'" << std::endl;
+  std::cout << "network_prefix_length='" << network_prefix_length_ << "'" << std::endl;
   std::cout << "key=" << key_.getHexDumpOneLine() << std::endl;
   std::cout << "salt=" << salt_.getHexDumpOneLine() << std::endl;
   std::cout << "kd_prf='" << kd_prf_ << "'" << std::endl;
@@ -290,6 +294,19 @@ Options& Options::setMux(u_int16_t m)
 {
   Lock lock(mutex);
   mux_ = m;
+  return *this;
+}
+
+u_int16_t Options::getNetworkPrefixLength()
+{
+  Lock lock(mutex);
+  return network_prefix_length_;
+}
+
+Options& Options::setNetworkPrefixLength(u_int16_t l)
+{
+  Lock lock(mutex);
+  network_prefix_length_ = l;
   return *this;
 }
 
