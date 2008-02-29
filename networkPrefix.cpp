@@ -42,6 +42,10 @@ NetworkPrefix::NetworkPrefix(const NetworkAddress & src): NetworkAddress(src),le
 {
 }
 
+NetworkPrefix::NetworkPrefix(const NetworkPrefix & src): NetworkAddress(src),length_(src.length_)
+{
+}
+
 void NetworkPrefix::setNetworkPrefixLength(uint8_t length )
 {
 	length_ = length;
