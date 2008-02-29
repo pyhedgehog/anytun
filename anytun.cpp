@@ -141,6 +141,13 @@ void* sender(void* p)
     // read packet from device
     u_int32_t len = param->dev.read(plain_packet.getPayload(), plain_packet.getPayloadLength());
     plain_packet.setPayloadLength(len);
+    // set payload type
+    if(param->dev.getType() == TunDevice::TYPE_TUN)
+      plain_packet.setPayloadType(PAYLOAD_TYPE_TUN);
+    else if(param->dev.getType() == TunDevice::TYPE_TAP)
+      plain_packet.setPayloadType(PAYLOAD_TYPE_TAP);
+    else 
+      plain_packet.setPayloadType(0);
 
     if(param->cl.empty())
       continue;
@@ -151,14 +158,6 @@ void* sender(void* p)
 		if(cit==param->cl.getEnd())
 			continue;
 		ConnectionParam & conn = cit->second;
-
-    // set payload type
-    if(param->dev.getType() == TunDevice::TYPE_TUN)
-      plain_packet.setPayloadType(PAYLOAD_TYPE_TUN);
-    else if(param->dev.getType() == TunDevice::TYPE_TAP)
-      plain_packet.setPayloadType(PAYLOAD_TYPE_TAP);
-    else 
-      plain_packet.setPayloadType(0);
 
     // generate packet-key
     conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key);
