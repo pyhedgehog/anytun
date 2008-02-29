@@ -48,23 +48,25 @@
 #include <boost/archive/text_iarchive.hpp>
 
 
-void output(ConnectionList & cl)
+void output(ConnectionList &cl)
 {
 	if( !cl.empty() )
 	{
 		ConnectionMap::iterator it = cl.getBeginUnlocked();
 		mux_t mux = it->first;
-		std::cout << "Mux-ID: " << mux << std::endl;
+		std::cout << "Connection: Mux-ID: " << mux << std::endl;
 		ConnectionParam &conn( it->second );
-    std::cout << "Keyderivation-Type: " << conn.kd_.printType() << std::endl;
+    std::cout << "Connection: Keyderivation-Type: " << conn.kd_.printType() << std::endl;
+    cl.clear();
 	} 
   else if( !gRoutingTable.empty() ) 
   {
 		RoutingMap::iterator it = gRoutingTable.getBeginUnlocked();
 		NetworkPrefix pref( it->first );
-    std::cout << "Network-Prefix: " << pref.getNetworkPrefixLength() << std::endl;
+    std::cout << "Route: " << pref.toString() << "/" << pref.getNetworkPrefixLength() << " -> ";
 		mux_t mux = it->second;
-    std::cout << "Mux-ID: " << mux << std::endl;
+    std::cout << mux << std::endl;
+    gRoutingTable.clear();
 	}
 	std::cout << std::endl;
 }
@@ -82,7 +84,7 @@ int main(int argc, char* argv[])
   std::stringstream iss_;
   int32_t missing_chars=-1;
   int32_t buffer_size_=0;
-  while(std::cin.good()) 
+  while( std::cin.good() )
   {
     char c;
     std::cin.get(c);
@@ -100,7 +102,7 @@ int main(int argc, char* argv[])
         delete[] buffer;
         buffer_size_-=6;
       } 
-      else if(missing_chars>0 && missing_chars<=buffer_size_)
+      else if( missing_chars>0 && missing_chars<=buffer_size_ )
       {
         char * buffer = new char [missing_chars+1];
         iss_.read(buffer,missing_chars);
