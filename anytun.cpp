@@ -144,8 +144,9 @@ void* sender(void* p)
 
     if(param->cl.empty())
       continue;
-
-		mux = gRoutingTable.getRoute(NetworkAddress());
+		std::cout << "got Packet for plain "<<plain_packet.getDstAddr().toString();
+		mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
+		std::cout << " -> "<<mux << std::endl;
     ConnectionMap::iterator cit = param->cl.getConnection(mux);
 		if(cit==param->cl.getEnd())
 			continue;
