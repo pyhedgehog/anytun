@@ -35,28 +35,28 @@
 #include <list>
 #include <sstream>
 
-class IfListElement
+class Host
 {
 public:
-  IfListElement(std::string host, u_int16_t port) : host_(host), port_(port) {}
-  IfListElement(std::string host_port)
+  Host(std::string addr, u_int16_t port) : addr_(addr), port_(port) {}
+  Host(std::string addr_port)
   {
-    std::istringstream iss(host_port);
-    getline(iss, host_, ':');
+    std::istringstream iss(addr_port);
+    getline(iss, addr_, ':');
     if(!(iss >> port_)) port_ = 0;
   } 
   std::string toString() const
   {
     std::ostringstream oss;
-    oss << host_ << ":" << port_;
+    oss << addr_ << ":" << port_;
     return oss.str();
   }
   
-  std::string host_;
+  std::string addr_;
 	u_int16_t port_;
 };
 
-typedef std::list<IfListElement> IfList;
+typedef std::list<Host> HostList;
 
 class Options
 {
@@ -68,19 +68,13 @@ public:
   void printOptions();
 
   std::string getProgname();
-  Options& setProgname(std::string p);
   bool getChroot();
-  Options& setChroot(bool c);
   std::string getUsername();
-  Options& setUsername(std::string u);
   std::string getChrootDir();
-  Options& setChrootDir(std::string c);
   bool getDaemonize();
-  Options& setDaemonize(bool d);
   u_int16_t getSendPort();
-  Options& setSendPort(u_int16_t p);
-  IfList getLocalInterfaces();
-  IfList getRemoteHosts();
+  Host getControlInterface();
+  HostList getRemoteHosts();
 
 private:
   Options();
@@ -107,8 +101,8 @@ private:
   std::string chroot_dir_;
   bool daemonize_;
   u_int16_t send_port_;
-  IfList local_interfaces_;
-  IfList remote_hosts_;
+  Host control_interface_;
+  HostList remote_hosts_;
 };
 
 extern Options& gOpt;
