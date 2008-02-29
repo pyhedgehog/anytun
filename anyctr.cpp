@@ -65,7 +65,8 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
   NetworkAddress addr( ipv4, gOpt.getIfconfigParamRemoteNetmask().c_str() );
   NetworkPrefix prefix( addr,gOpt.getNetworkPrefixLength() );
 
-	prefix.setNetworkPrefixLength(gOpt.getNetworkPrefixLength());
+//TODO: FIX this not
+//	prefix.setNetworkPrefixLength(gOpt.getNetworkPrefixLength());
 
   gRoutingTable.addRoute( prefix, mux );
   std::ostringstream sout;
