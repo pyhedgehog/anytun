@@ -91,7 +91,7 @@ u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
 	return 0;
 }
 
-u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkAddress & addr)
+u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix & addr)
 {
   RoutingMap::iterator it = routes_.find(addr);
   if(it!=routes_.end())
