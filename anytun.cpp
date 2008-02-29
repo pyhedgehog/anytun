@@ -158,7 +158,9 @@ void* sender(void* p)
 		if(cit==param->cl.getEnd())
 			continue;
 		ConnectionParam & conn = cit->second;
-
+		
+		if(conn.remote_host_==""||!conn.remote_port_)
+			continue;
     // generate packet-key
     conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key);
     conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt);

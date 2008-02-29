@@ -142,7 +142,7 @@ bool Options::parse(int argc, char* argv[])
       return false;
     PARSE_SCALAR_PARAM("-r","--remote-host", remote_addr_)
     PARSE_SCALAR_PARAM("-o","--remote-port", remote_port_)
-    PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
+    PARSE_SCALAR_PARAM("-n","--prefix", ifconfig_param_remote_netmask_)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
     PARSE_SCALAR_PARAM("-m","--mux", mux_)
     PARSE_SCALAR_PARAM("-l","--prefix-len", network_prefix_length_)
@@ -173,8 +173,7 @@ void Options::printUsage()
   std::cout << "anyctr [-h|--help]                         prints this..." << std::endl;
   std::cout << "       [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
-  std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
-            << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
+  std::cout << "       [-n|--prefix] <remote net>          remote subnet for route" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
   std::cout << "       [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
   std::cout << "       [-l|--prefix-len] <prefix length>   network prefix length" << std::endl;
