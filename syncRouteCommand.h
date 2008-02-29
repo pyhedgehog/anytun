@@ -26,7 +26,7 @@ private:
 		ar & addr_;
 //		u_int16_t & mux (gRoutingTable.getOrNewRoutingTEUnlocked(addr_));
 //		ar & mux;
-		ar & gRoutingTable.getOrNewRoutingTEUnlocked(addr_);
+		ar & (*(gRoutingTable.getOrNewRoutingTEUnlocked(addr_)));
 	};
 };
 

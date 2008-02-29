@@ -53,7 +53,7 @@ public:
 	bool empty();
 	void clear();
   Mutex& getMutex();
-	u_int16_t& getOrNewRoutingTEUnlocked(const NetworkAddress & addr);
+	u_int16_t* getOrNewRoutingTEUnlocked(const NetworkAddress & addr);
 	uint16_t getCountUnlocked();
 	RoutingMap::iterator getBeginUnlocked();
 	RoutingMap::iterator getEndUnlocked();
