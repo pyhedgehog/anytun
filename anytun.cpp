@@ -123,7 +123,9 @@ void* sender(void* p)
   while(1)
   {
     plain_packet.setLength(MAX_PACKET_LENGTH);
+    encrypted_packet.withAuthTag(false);
     encrypted_packet.setLength(MAX_PACKET_LENGTH);
+
     // read packet from device
     u_int32_t len = param->dev.read(plain_packet.getPayload(), plain_packet.getPayloadLength());
     plain_packet.setPayloadLength(len);
@@ -227,6 +229,7 @@ void* receiver(void* p)
     u_int16_t remote_port;
 
     plain_packet.setLength(MAX_PACKET_LENGTH);
+    encrypted_packet.withAuthTag(false);
     encrypted_packet.setLength(MAX_PACKET_LENGTH);
 
     // read packet from socket
@@ -248,6 +251,7 @@ void* receiver(void* p)
 
     // check whether auth tag is ok or not
     if(a->getMaxLength()) {
+      encrypted_packet.withAuthTag(true);
       conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
       a->setKey(session_auth_key);
       if(!a->checkTag(encrypted_packet)) {
