@@ -53,6 +53,7 @@ Options& Options::instance()
 Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
 {
   progname_ = "anytun";
+  daemonize_ = true;
   sender_id_ = 0;
   local_addr_ = "";
   local_port_ = 4444;
@@ -150,6 +151,7 @@ bool Options::parse(int argc, char* argv[])
 
     if(str == "-h" || str == "--help")
       return false;
+    PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_)
     PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_)
     PARSE_SCALAR_PARAM("-i","--interface", local_addr_)
     PARSE_SCALAR_PARAM("-p","--port", local_port_)
@@ -174,9 +176,9 @@ bool Options::parse(int argc, char* argv[])
       return false;
   }
 
-  if(cipher_ == "null")
+  if(cipher_ == "null" && auth_algo_ == "null")
     kd_prf_ = "null";
-  if(cipher_ != "null" && kd_prf_ == "null")
+  if((cipher_ != "null" || auth_algo_ != "null") && kd_prf_ == "null")
     kd_prf_ = "aes-ctr";
 
 	while(!host_port_queue.empty())
@@ -198,6 +200,7 @@ void Options::printUsage()
   std::cout << "USAGE:" << std::endl;
   std::cout << "anytun [-h|--help]                         prints this..." << std::endl;
 //  std::cout << "       [-f|--config] <file>                the config file" << std::endl;
+  std::cout << "       [-D|--nodaemonize]                  don't run in background" << std::endl;
   std::cout << "       [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
   std::cout << "       [-i|--interface] <ip-address>       local anycast ip address to bind to" << std::endl;
   std::cout << "       [-p|--port] <port>                  local anycast(data) port to bind to" << std::endl;
@@ -224,6 +227,7 @@ void Options::printOptions()
 {
   Lock lock(mutex);
   std::cout << "Options:" << std::endl;
+  std::cout << "daemonize=" << daemonize_ << std::endl;
   std::cout << "sender_id='" << sender_id_ << "'" << std::endl;
   std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
   std::cout << "local_port='" << local_port_ << "'" << std::endl;
@@ -255,6 +259,17 @@ Options& Options::setProgname(std::string p)
 {
   Lock lock(mutex);
   progname_ = p;
+  return *this;
+}
+
+bool Options::getDaemonize()
+{
+  return daemonize_;
+}
+
+Options& Options::setDaemonize(bool d)
+{
+  daemonize_ = d;
   return *this;
 }
 

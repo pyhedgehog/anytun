@@ -55,6 +55,8 @@ public:
 
   std::string getProgname();
   Options& setProgname(std::string p);
+  bool getDaemonize();
+  Options& setDaemonize(bool d);
   sender_id_t getSenderId();
   Options& setSenderId(sender_id_t s);
   std::string getLocalAddr();
@@ -118,6 +120,7 @@ private:
 
 	ConnectToList connect_to_;
   std::string progname_;
+  bool daemonize_;
   sender_id_t sender_id_;
   std::string local_addr_;
   std::string local_sync_addr_;

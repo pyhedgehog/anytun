@@ -61,6 +61,9 @@ void PlainPacket::setPayloadType(payload_type_t payload_type)
 
 u_int32_t PlainPacket::getPayloadLength() const
 {
+  if(!payload_)
+    return 0;
+
   return (length_ > sizeof(payload_type_t)) ? (length_ - sizeof(payload_type_t)) : 0;
 }
     
@@ -73,16 +76,23 @@ void PlainPacket::setPayloadLength(u_int32_t payload_length)
 
 void PlainPacket::reinit()
 {
-  Buffer::reinit();
   payload_type_ = reinterpret_cast<payload_type_t*>(buf_);
   payload_ = buf_ + sizeof(payload_type_t);
+
+  if(length_ <= (sizeof(payload_type_t)))
+    payload_ = NULL;
+
+  if(length_ < (sizeof(payload_type_t))) {
+    payload_type_ = NULL;
+    throw std::runtime_error("packet can't be initialized, buffer is too small"); 
+  }
+
 }
 
 u_int8_t* PlainPacket::getPayload()
 {
   return payload_;
 }
-
 
 NetworkAddress PlainPacket::getSrcAddr() const
 {
@@ -108,11 +118,10 @@ NetworkAddress PlainPacket::getSrcAddr() const
     if(length_ < (sizeof(payload_type_t)+sizeof(struct ip6_hdr)))
       return NetworkAddress();
     struct ip6_hdr* hdr = reinterpret_cast<struct ip6_hdr*>(payload_);
-    return NetworkAddress(hdr->ip6_dst);
+    return NetworkAddress(hdr->ip6_src);
   }
   return NetworkAddress();
 }
-
 
 NetworkAddress PlainPacket::getDstAddr() const
 {

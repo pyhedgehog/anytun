@@ -73,7 +73,7 @@ u_int32_t NullCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_in
 
 //****** AesIcmCipher ****** 
 
-AesIcmCipher::AesIcmCipher()
+AesIcmCipher::AesIcmCipher() : cipher_(NULL)
 {
       // TODO: hardcoded keysize
   gcry_error_t err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
@@ -84,20 +84,21 @@ AesIcmCipher::AesIcmCipher()
 
 AesIcmCipher::~AesIcmCipher()
 {
-  gcry_cipher_close( cipher_ );
+  if(cipher_)
+    gcry_cipher_close( cipher_ );
 }
 
-
-void AesIcmCipher::setKey(Buffer key)
+void AesIcmCipher::setKey(Buffer& key)
 {
-  gcry_error_t err;
+  if(!cipher_)
+    return;
 
-  err = gcry_cipher_setkey( cipher_, key.getBuf(), key.getLength() );
+  gcry_error_t err = gcry_cipher_setkey( cipher_, key.getBuf(), key.getLength() );
   if( err )
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher::setKey: Failed to set cipher key: " << gpg_strerror( err );
 }
 
-void AesIcmCipher::setSalt(Buffer salt)
+void AesIcmCipher::setSalt(Buffer& salt)
 {
   salt_ = salt;
   if(!salt_[u_int32_t(0)])
@@ -118,6 +119,9 @@ u_int32_t AesIcmCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_
 
 void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
 {
+  if(!cipher_)
+    return;
+
   gcry_error_t err = gcry_cipher_reset( cipher_ );
   if( err ) {
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to reset cipher: " << gpg_strerror( err );

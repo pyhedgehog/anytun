@@ -31,10 +31,9 @@
 #ifndef _AUTHALGO_H_
 #define _AUTHALGO_H_
 
-#include "authTag.h"
 #include "datatypes.h"
 #include "buffer.h"
-#include "threadUtils.hpp"
+#include "encryptedPacket.h"
 
 #include <gcrypt.h>
 
@@ -48,14 +47,24 @@ public:
    * set the key for the auth algo
    * @param key key for hmac calculation
    */
-  virtual void setKey(Buffer key) = 0;
+  virtual void setKey(Buffer& key) = 0;
 
   /**
-   * calculate the sha1 hmac
-   * @param buf buffer for message digest
-   * @return sha1 hmac
+   * generate the mac
+   * @param packet the packet to be authenticated
    */
-  virtual AuthTag calc(const Buffer& buf) = 0;
+  virtual void generate(EncryptedPacket& packet) = 0;
+
+  /**
+   * check the mac
+   * @param packet the packet to be authenticated
+   */
+  virtual bool checkTag(EncryptedPacket& packet) = 0;
+
+  /**
+   * get the maximum size of the auth algo
+   */
+  virtual u_int32_t getMaxLength() = 0;
 };
 
 //****** NullAuthAlgo ******
@@ -63,8 +72,12 @@ public:
 class NullAuthAlgo : public AuthAlgo
 {
 public:
-  AuthTag calc(const Buffer& buf);
-  void setKey(Buffer key) {};
+  void setKey(Buffer& key) {};
+  void generate(EncryptedPacket& packet);
+  bool checkTag(EncryptedPacket& packet);
+  u_int32_t getMaxLength();
+
+  static const u_int32_t MAX_LENGTH_ = 0;
 };
 
 
@@ -77,12 +90,15 @@ public:
   Sha1AuthAlgo();
   ~Sha1AuthAlgo();
 
-  void setKey(Buffer key);
-  AuthTag calc(const Buffer& buf);
+  void setKey(Buffer& key);
+  void generate(EncryptedPacket& packet);
+  bool checkTag(EncryptedPacket& packet);
+  u_int32_t getMaxLength();
 
-protected:
+  static const u_int32_t MAX_LENGTH_ = 20;
+
+private:
   gcry_md_hd_t ctx_;
-  Mutex mutex_;
 };
 
 #endif

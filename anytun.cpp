@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <poll.h>
+#include <fcntl.h>
 
 #include <gcrypt.h>
 #include <cerrno>     // for ENOMEM
@@ -43,7 +44,6 @@
 #include "cipher.h"
 #include "keyDerivation.h"
 #include "authAlgo.h"
-#include "authTag.h"
 #include "cipherFactory.h"
 #include "authAlgoFactory.h"
 #include "keyDerivationFactory.h"
@@ -90,20 +90,6 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
 	queue.push(sc2);
 }
 
-
-void addPacketAuthTag(EncryptedPacket& pack, AuthAlgo* a, ConnectionParam& conn)
-{
-  AuthTag at = a->calc(pack);
-  pack.setAuthTag( at );
-}
-
-bool checkPacketAuthTag(EncryptedPacket& pack, AuthAlgo* a, ConnectionParam & conn)
-{
-  // check auth_tag and remove it
-  AuthTag at = pack.getAuthTag();
-  return (at == a->calc(pack));
-}
-
 bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)
 {
 	// compare sender_id and seq with window
@@ -123,8 +109,8 @@ void* sender(void* p)
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
   std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher()));
-//  std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
-
+  std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
+  
   PlainPacket plain_packet(MAX_PACKET_LENGTH);
   EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
 
@@ -161,7 +147,7 @@ void* sender(void* p)
 		
 		if(conn.remote_host_==""||!conn.remote_port_)
 			continue;
-    // generate packet-key
+    // generate packet-key TODO: do this only when needed
     conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key);
     conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt);
 
@@ -174,10 +160,13 @@ void* sender(void* p)
     encrypted_packet.setHeader(conn.seq_nr_, gOpt.getSenderId(), mux);
     conn.seq_nr_++;
 
-        // TODO: activate authentication
-//    conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
-//    a->setKey(session_auth_key);
-//		addPacketAuthTag(encrypted_packet, a.get(), conn);
+    // add authentication tag
+    if(a->getMaxLength()) {
+      encrypted_packet.addAuthTag();
+      conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
+      a->setKey(session_auth_key);
+      a->generate(encrypted_packet);
+    }  
 
     param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_host_, conn.remote_port_);
   }
@@ -223,7 +212,7 @@ void* receiver(void* p)
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
 
   std::auto_ptr<Cipher> c( CipherFactory::create(gOpt.getCipher()) );
-//  std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
+  std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
 
   EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
   PlainPacket plain_packet(MAX_PACKET_LENGTH);
@@ -243,13 +232,7 @@ void* receiver(void* p)
     // read packet from socket
     u_int32_t len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_host, remote_port);
     encrypted_packet.setLength(len);
-
-		// TODO: check auth tag first
-//    conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
-//    a->setKey( session_auth_key );
-//		if(!checkPacketAuthTag(encrypted_packet, a.get(), conn))
-//			continue;
-
+    
 		mux_t mux = encrypted_packet.getMux();
     // autodetect peer
     if(gOpt.getRemoteAddr() == "" && param->cl.empty())
@@ -262,6 +245,17 @@ void* receiver(void* p)
 		if (cit == param->cl.getEnd())
 			continue;
 		ConnectionParam & conn = cit->second;
+
+    // check whether auth tag is ok or not
+    if(a->getMaxLength()) {
+      conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
+      a->setKey(session_auth_key);
+      if(!a->checkTag(encrypted_packet)) {
+        cLog.msg(Log::PRIO_NOTICE) << "wrong Authentication Tag!" << std::endl;
+        continue;
+      }        
+      encrypted_packet.removeAuthTag();
+    }  
 
 		//Allow dynamic IP changes 
 		//TODO: add command line option to turn this off
@@ -316,9 +310,15 @@ bool initLibGCrypt()
     std::cout << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
     return false;
   }
+  
+  gcry_error_t err = gcry_control (GCRYCTL_DISABLE_SECMEM, 0); 
+  if( err ) {
+    std::cout << "initLibGCrypt: Failed to disable secure memory: " << gpg_strerror( err ) << std::endl;
+    return false;
+  }
     
   // Tell Libgcrypt that initialization has completed.
-  gcry_error_t err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
+  err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
   if( err ) {
     std::cout << "initLibGCrypt: Failed to finish the initialization of libgcrypt: " << gpg_strerror( err ) << std::endl;
     return false;
@@ -326,6 +326,27 @@ bool initLibGCrypt()
 
   cLog.msg(Log::PRIO_NOTICE) << "initLibGCrypt: libgcrypt init finished";
   return true;
+}
+
+void daemonize()
+{
+  pid_t pid;
+
+  pid = fork();
+  if(pid) exit(0);  
+  setsid();
+  pid = fork();
+  if(pid) exit(0);
+  
+  std::cout << "running in background now..." << std::endl;
+
+  int fd;
+  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
+    close(fd);
+  fd=open("/dev/null",O_RDWR);        // stdin
+  dup(fd);                            // stdout
+  dup(fd);                            // stderr
+  umask(027); 
 }
  
 int main(int argc, char* argv[])
@@ -336,6 +357,9 @@ int main(int argc, char* argv[])
     gOpt.printUsage();
     exit(-1);
   }
+  if(gOpt.getDaemonize())
+    daemonize();
+
   cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
 
   SignalController sig;

@@ -31,24 +31,31 @@
 #include "authAlgo.h"
 #include "log.h"
 #include "buffer.h"
-#include "authTag.h"
-#include "threadUtils.hpp"
+#include "encryptedPacket.h"
+
+#include <iostream>
 
 #include <gcrypt.h>
 
 //****** NullAuthAlgo ******
-
-AuthTag NullAuthAlgo::calc(const Buffer& buf)
+void NullAuthAlgo::generate(EncryptedPacket& packet)
 {
-  return AuthTag(0);
+}
+
+bool NullAuthAlgo::checkTag(EncryptedPacket& packet)
+{
+  return true;
+}
+
+u_int32_t NullAuthAlgo::getMaxLength()
+{
+  return MAX_LENGTH_;
 }
 
 //****** Sha1AuthAlgo ******
 
 Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
 {
-  Lock lock(mutex_);
-
   gcry_error_t err = gcry_md_open( &ctx_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC );
   if( err )
     cLog.msg(Log::PRIO_CRIT) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to open message digest algo";
@@ -56,36 +63,63 @@ Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
 
 Sha1AuthAlgo::~Sha1AuthAlgo()
 {
-  Lock lock(mutex_);
-
-  gcry_md_close( ctx_ );
-  cLog.msg(Log::PRIO_DEBUG) << "Sha1AuthAlgo::~Sha1AuthAlgo: closed hmac handler";
+  if(ctx_)
+    gcry_md_close( ctx_ );
 }
 
-void Sha1AuthAlgo::setKey(Buffer key)
+void Sha1AuthAlgo::setKey(Buffer& key)
 {
-  Lock lock(mutex_);
+  if(!ctx_)
+    return;
 
-  gcry_error_t err;
-  err = gcry_md_setkey( ctx_, key.getBuf(), key.getLength() );
+  gcry_error_t err = gcry_md_setkey( ctx_, key.getBuf(), key.getLength() );
   if( err )
     cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set cipher key: " << gpg_strerror( err );
 }
 
-AuthTag Sha1AuthAlgo::calc(const Buffer& buf)
+void Sha1AuthAlgo::generate(EncryptedPacket& packet)
 {
-  Lock lock(mutex_);
+  if(!packet.getAuthTagLength())
+    return;
 
-  // gcry_error_t err;
-  AuthTag hmac(10);      // 10byte
-  gcry_mpi_t tmp = gcry_mpi_new(160);   // 20byte
+  gcry_md_reset( ctx_ );
 
-  gcry_md_write( ctx_, static_cast<Buffer>(buf).getBuf(), buf.getLength() );
+  gcry_md_write( ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength() );
   gcry_md_final( ctx_ );
-  gcry_mpi_scan( &tmp, GCRYMPI_FMT_STD, gcry_md_read(ctx_, 0), 20, NULL );
-  gcry_mpi_clear_highbit( tmp, 81 );    // truncate hmac from 20byte to 10byte
-  gcry_mpi_print( GCRYMPI_FMT_STD, hmac, hmac.getLength(), NULL, tmp );
-  return hmac;
+
+  u_int8_t* tag = packet.getAuthTag();
+  if(packet.getAuthTagLength() > MAX_LENGTH_)
+    std::memset(tag, 0, (packet.getAuthTagLength() - MAX_LENGTH_));
+  
+  u_int8_t* hmac = gcry_md_read(ctx_, 0);
+  u_int32_t length = (packet.getAuthTagLength() < MAX_LENGTH_) ? packet.getAuthTagLength() : MAX_LENGTH_;
+  std::memcpy(&tag[packet.getAuthTagLength() - length], &hmac[MAX_LENGTH_ - length], length);
 }
 
+bool Sha1AuthAlgo::checkTag(EncryptedPacket& packet)
+{
+  if(!packet.getAuthTagLength())
+    return true;
 
+  gcry_md_reset( ctx_ );
+
+  gcry_md_write( ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength() );
+  gcry_md_final( ctx_ );
+
+  u_int8_t* tag = packet.getAuthTag();
+  if(packet.getAuthTagLength() > MAX_LENGTH_)
+    for(u_int32_t i=0; i < (packet.getAuthTagLength() - MAX_LENGTH_); ++i)
+      if(tag[i]) return false; 
+  
+  u_int8_t* hmac = gcry_md_read(ctx_, 0);
+  u_int32_t length = (packet.getAuthTagLength() < MAX_LENGTH_) ? packet.getAuthTagLength() : MAX_LENGTH_;
+  if(std::memcmp(&tag[packet.getAuthTagLength() - length], &hmac[MAX_LENGTH_ - length], length))
+    return false;
+
+  return true;
+}
+
+u_int32_t Sha1AuthAlgo::getMaxLength()
+{
+  return MAX_LENGTH_;
+}

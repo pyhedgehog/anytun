@@ -48,8 +48,8 @@ public:
 	void encrypt(PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id);
 	void decrypt(EncryptedPacket & in, PlainPacket & out);
   
-  virtual void setKey(Buffer key) = 0;
-  virtual void setSalt(Buffer salt) = 0;
+  virtual void setKey(Buffer& key) = 0;
+  virtual void setSalt(Buffer& salt) = 0;
 
 protected:
   virtual u_int32_t cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id) = 0;
@@ -61,8 +61,8 @@ protected:
 class NullCipher : public Cipher
 {
 public:
-  void setKey(Buffer key) {};
-  void setSalt(Buffer salt) {};
+  void setKey(Buffer& key) {};
+  void setSalt(Buffer& salt) {};
 
 protected:
   u_int32_t cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id);
@@ -76,8 +76,8 @@ class AesIcmCipher : public Cipher
 public:
   AesIcmCipher();
   ~AesIcmCipher();
-  void setKey(Buffer key);
-  void setSalt(Buffer salt);
+  void setKey(Buffer& key);
+  void setSalt(Buffer& salt);
 
 protected:
   u_int32_t cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id);

@@ -35,16 +35,14 @@
 
 #include "encryptedPacket.h"
 #include "datatypes.h"
-#include "authTag.h"
 #include "log.h"
 
-// TODO: fix auth_tag stuff
 EncryptedPacket::EncryptedPacket(u_int32_t payload_length, bool allow_realloc)
   : Buffer(payload_length + sizeof(struct HeaderStruct), allow_realloc)
 {
   header_ = reinterpret_cast<struct HeaderStruct*>(buf_);
-  payload_ = buf_ + sizeof(struct HeaderStruct);    // TODO: fix auth_tag stuff
-  auth_tag_ = NULL;                                 // TODO: fix auth_tag stuff
+  payload_ = buf_ + sizeof(struct HeaderStruct);
+  auth_tag_ = NULL;
   if(header_)
   {
     header_->seq_nr = 0;
@@ -107,7 +105,13 @@ void EncryptedPacket::setHeader(seq_nr_t seq_nr, sender_id_t sender_id, mux_t mu
 
 u_int32_t EncryptedPacket::getPayloadLength() const
 {
-  return (length_ > sizeof(struct HeaderStruct)) ? (length_ - sizeof(struct HeaderStruct)) : 0;  // TODO: fix auth_tag stuff
+  if(!payload_) 
+    return 0;
+
+  if(!auth_tag_)
+    return (length_ > sizeof(struct HeaderStruct)) ? (length_ - sizeof(struct HeaderStruct)) : 0;
+  
+  return (length_ > (sizeof(struct HeaderStruct) + AUTHTAG_SIZE)) ? (length_ - sizeof(struct HeaderStruct) - AUTHTAG_SIZE) : 0;
 }
 
 void EncryptedPacket::setPayloadLength(u_int32_t payload_length)
@@ -119,10 +123,25 @@ void EncryptedPacket::setPayloadLength(u_int32_t payload_length)
 
 void EncryptedPacket::reinit()
 {
-  Buffer::reinit();
   header_ = reinterpret_cast<struct HeaderStruct*>(buf_);
-  payload_ = buf_ + sizeof(struct HeaderStruct);    // TODO: fix auth_tag stuff
-  auth_tag_ = NULL;                                 // TODO: fix auth_tag stuff
+  payload_ = buf_ + sizeof(struct HeaderStruct);
+  
+  if(length_ <= (sizeof(struct HeaderStruct)))
+    payload_ = NULL;
+  
+  if(length_ < (sizeof(struct HeaderStruct))) {
+    header_ = NULL;
+    throw std::runtime_error("packet can't be initialized, buffer is too small"); 
+  }  
+  
+  if(auth_tag_)
+  {
+    if(length_ < (sizeof(struct HeaderStruct) + AUTHTAG_SIZE)) {
+      auth_tag_ = NULL;
+      throw std::runtime_error("auth-tag can't be enabled, buffer is too small"); 
+    }
+    auth_tag_ = buf_ + length_ - AUTHTAG_SIZE;
+  }  
 }
 
 u_int8_t* EncryptedPacket::getPayload()
@@ -130,62 +149,67 @@ u_int8_t* EncryptedPacket::getPayload()
   return payload_;
 }
 
-
-
-
-
-
-// TODO: fix auth_tag stuff
-
-bool EncryptedPacket::hasAuthTag() const
+u_int8_t* EncryptedPacket::getAuthenticatedPortion()
 {
-//   if( auth_tag_ == NULL )
-     return false;
-//   return true;
+  return buf_;
+}
+
+u_int32_t EncryptedPacket::getAuthenticatedPortionLength()
+{
+  if(!buf_)
+    return 0;
+
+  if(!auth_tag_)
+    return length_;
+  
+  return (length_ > AUTHTAG_SIZE) ? (length_ - AUTHTAG_SIZE) : 0;
 }
 
 void EncryptedPacket::withAuthTag(bool b)
 {
-//   if( b && (auth_tag_ != NULL) )
-//     throw std::runtime_error("packet already has auth tag function enabled");
-// 		//TODO: return instead?
-//   if( ! b && (auth_tag_ == NULL) )
-//     throw std::runtime_error("packet already has auth tag function disabled");
-// 		//TODO: return instead?
-
-//   if( b ) {
-//     auth_tag_ = reinterpret_cast<AuthTag*>( buf_ + sizeof(struct HeaderStruct) );
-//     payload_ = payload_ + AUTHTAG_SIZE;
-//     length_ -= AUTHTAG_SIZE;
-//     max_length_ -= AUTHTAG_SIZE;
-//   } else {
-//     payload_ = reinterpret_cast<u_int8_t*>( auth_tag_ );
-//     length_ += AUTHTAG_SIZE;
-//     max_length_ += AUTHTAG_SIZE;
-//     auth_tag_ = NULL;
-//   }
+  if((b && auth_tag_) || (!b && !auth_tag_))
+    return;
+  
+  if(b)
+  {
+    if(length_ < (sizeof(struct HeaderStruct) + AUTHTAG_SIZE))
+      throw std::runtime_error("auth-tag can't be enabled, buffer is too small");
+    
+    auth_tag_ = buf_ + length_ - AUTHTAG_SIZE;
+  }
+  else
+    auth_tag_ = NULL;
 }
 
-void EncryptedPacket::setAuthTag(AuthTag& tag)
+void EncryptedPacket::addAuthTag()
 {
-//   if( auth_tag_ == NULL )
-//     throw std::runtime_error("auth tag not enabled");
+  if(auth_tag_)
+    return;
 
-//   if( tag == AuthTag(0) )
-//     return;
-
-//   if( tag.getLength() != AUTHTAG_SIZE )
-//     throw std::length_error("authtag length mismatch with AUTHTAG_SIZE");
-
-//   std::memcpy( auth_tag_, tag.getBuf(), AUTHTAG_SIZE );
+  auth_tag_ = buf_; // will be set to the correct value @ reinit
+  setLength(length_ + AUTHTAG_SIZE);
+  if(auth_tag_ == buf_) // reinit was not called by setLength
+    reinit();
 }
 
-AuthTag EncryptedPacket::getAuthTag() const
+void EncryptedPacket::removeAuthTag()
 {
-//   if( auth_tag_ == NULL )
-//     throw std::runtime_error("auth tag not enabled");
+  if(!auth_tag_)
+    return;
 
-  AuthTag at(AUTHTAG_SIZE);
-//  std::memcpy(at, auth_tag_, AUTHTAG_SIZE ); 
-  return at;
+  auth_tag_ = NULL;
+  setLength(length_ - AUTHTAG_SIZE);
+}
+
+u_int8_t* EncryptedPacket::getAuthTag()
+{
+  return auth_tag_;
+}
+
+u_int32_t EncryptedPacket::getAuthTagLength()
+{
+  if(auth_tag_)
+    return AUTHTAG_SIZE;
+
+  return 0;
 }

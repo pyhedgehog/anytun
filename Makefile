@@ -55,7 +55,6 @@ OBJS = tunDevice.o \
 			 encryptedPacket.o \
        cipher.o \
        authAlgo.o \
-			 authTag.o \
 			 keyDerivation.o \
 			 mpi.o \
 			 cipherFactory.o \
@@ -158,9 +157,6 @@ anyctrOptions.o: anyctrOptions.cpp anyctrOptions.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
-	$(C++) $(CCFLAGS) $< -c
-
-authTag.o: authTag.cpp authTag.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 keyDerivation.o: keyDerivation.cpp keyDerivation.h

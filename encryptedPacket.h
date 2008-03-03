@@ -33,7 +33,7 @@
 
 #include "datatypes.h"
 #include "buffer.h"
-#include "authTag.h"
+
 class Cipher;
 class EncryptedPacket : public Buffer
 {
@@ -114,12 +114,14 @@ public:
   u_int8_t* getPayload();
 
 
+  u_int8_t* getAuthenticatedPortion();
+  u_int32_t getAuthenticatedPortionLength();
 
-  bool hasAuthTag() const;
   void withAuthTag(bool b);
-  AuthTag getAuthTag() const;
-  void setAuthTag(AuthTag& tag);
-
+  void addAuthTag();
+  void removeAuthTag();
+  u_int8_t* getAuthTag();
+  u_int32_t getAuthTagLength();
                       
 private:
   EncryptedPacket();
@@ -136,7 +138,7 @@ private:
 
   struct HeaderStruct* header_;
 	u_int8_t * payload_;
-  AuthTag* auth_tag_;
+  u_int8_t * auth_tag_;
   static const u_int32_t AUTHTAG_SIZE = 10;  // TODO: hardcoded size
 };
 
