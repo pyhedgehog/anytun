@@ -147,7 +147,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-m","--mux", mux_)
     PARSE_SCALAR_PARAM("-l","--prefix-len", network_prefix_length_)
     PARSE_HEXSTRING_PARAM("-K","--key", key_)
-    PARSE_HEXSTRING_PARAM("-a","--salt", salt_)
+    PARSE_HEXSTRING_PARAM("-A","--salt", salt_)
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
     else 
       return false;
@@ -178,7 +178,7 @@ void Options::printUsage()
   std::cout << "       [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
   std::cout << "       [-l|--prefix-len] <prefix length>   network prefix length" << std::endl;
   std::cout << "       [-K|--key] <master key>             master key to use for encryption" << std::endl;
-  std::cout << "       [-a|--salt] <master salt>           master salt to use for encryption" << std::endl;
+  std::cout << "       [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
   std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
 }
 
