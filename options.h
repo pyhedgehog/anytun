@@ -107,7 +107,7 @@ private:
   void operator=(const Options &l);
 
   static Options* inst;
-  static Mutex instMutex;
+  static ::Mutex instMutex;
   class instanceCleaner {
     public: ~instanceCleaner() {
       if(Options::inst != 0)
@@ -116,7 +116,7 @@ private:
   };
   friend class instanceCleaner;
 
-  Mutex mutex;
+  ::Mutex mutex;
 
 	ConnectToList connect_to_;
   std::string progname_;

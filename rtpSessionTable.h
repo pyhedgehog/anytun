@@ -49,14 +49,14 @@ public:
 	//u_int16_t getRoute(const NetworkAddress &);
 	bool empty();
 	void clear();
-  Mutex& getMutex();
+  ::Mutex& getMutex();
 	RtpSession& getOrNewSessionUnlocked(const std::string & addr);
 	uint16_t getCountUnlocked();
 	RtpSessionMap::iterator getBeginUnlocked();
 	RtpSessionMap::iterator getEndUnlocked();
 
 private:
-  static Mutex instMutex;
+  static ::Mutex instMutex;
 	static RtpSessionTable* inst;
   class instanceCleaner {
     public: ~instanceCleaner() {
@@ -67,7 +67,7 @@ private:
 	RtpSessionTable(const RtpSessionTable &s);
   void operator=(const RtpSessionTable &s);
 	RtpSessionMap map_;
-  Mutex mutex_;
+  ::Mutex mutex_;
 };
 
 extern RtpSessionTable& gRtpSessionTable;

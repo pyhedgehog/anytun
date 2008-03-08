@@ -31,7 +31,6 @@
 #ifndef _RTPSESSION_H_
 #define _RTPSESSION_H_
 
-#include "options.h"
 #include "threadUtils.hpp"
 
 #include <boost/archive/text_oarchive.hpp>
@@ -45,12 +44,12 @@ public:
 
 private:
   //TODO: check if this is ok
-	Mutex mutex_;
+	//Mutex mutex_;
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
 	{
-		Lock lock(mutex_);
+		//Lock lock(mutex_);
 	}
 };
 

@@ -50,6 +50,7 @@ OBJS = tunDevice.o \
        syncBuffer.o \
        syncCommand.o \
        syncRouteCommand.o \
+       syncRtpCommand.o \
        syncConnectionCommand.o \
 			 plainPacket.o \
 			 encryptedPacket.o \
@@ -96,6 +97,9 @@ ANYCTROBJS = log.o \
 						 signalController.o \
 						 connectionList.o \
 						 connectionParam.o \
+			 rtpSessionTable.o \
+			 rtpSession.o \
+       syncRtpCommand.o \
 						 anyctrOptions.o \
 						 router.o \
 						 routingTable.o \
@@ -193,6 +197,9 @@ syncCommand.o: syncCommand.cpp syncCommand.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncRouteCommand.o: syncRouteCommand.cpp syncRouteCommand.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncRtpCommand.o: syncRtpCommand.cpp syncRtpCommand.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncConnectionCommand.o: syncConnectionCommand.cpp syncConnectionCommand.h

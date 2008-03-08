@@ -35,8 +35,8 @@ public:
 private:
   Mutex mutex;
     
-  std::map<ControlHost, std::pair<UDPSocket*, pthread_t>> control_hosts_;
-}
+  std::map<ControlHost, std::pair<UDPSocket*, pthread_t> > control_hosts_;
+};
 
 void* sender(void* dont_use_me)
 {
@@ -50,10 +50,10 @@ void* sender(void* dont_use_me)
     u_int16_t remote_port;
     while(1) {
       buf.setLength(MAX_PACKET_SIZE);
-      u_int32_t len = control_sock_.recvFrom(buf.getBuf(), buf.getLength(), remote_host, remote_port);
+      u_int32_t len = control_sock.recvFrom(buf.getBuf(), buf.getLength(), remote_host, remote_port);
       buf.setLength(len);
       
-      param->control_.setHost(remote_host, remote_port);
+//TODO????//TODO????//TODO????//TODO????//TODO????//TODO????//TODO????      control.setHost(remote_host, remote_port);
 
 //     SenderThreadParam receiverParam = {control_host, control_sock, sock, gOpt.getRemoteHosts().front()};
 //     pthread_t receiverThread;
@@ -62,8 +62,8 @@ void* sender(void* dont_use_me)
 
       
       HostList::const_iterator it = remote_host_list.begin();
-      for(;it != remote_host_list.end(); it++)
-        param->sock_.sendTo(buf.getBuf(), buf.getLength(), it->addr_, it->port_);
+//      for(;it != remote_host_list.end(); it++)
+//        param->sock_.sendTo(buf.getBuf(), buf.getLength(), it->addr_, it->port_);
     }  
   }
   catch(std::exception &e)

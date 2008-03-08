@@ -30,10 +30,10 @@
 
 #include "rtpSession.h"
 
-RtpSession::RtpSession() : mutex_()
+RtpSession::RtpSession()
 {
 }
 
-RtpSession::RtpSession(const RtpSession & src) : mutex_()
+RtpSession::RtpSession(const RtpSession & src)
 {
 }
