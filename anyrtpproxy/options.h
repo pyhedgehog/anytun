@@ -35,6 +35,14 @@
 #include <list>
 #include <sstream>
 
+typedef struct OptionConnectTo
+{
+  std::string host;
+  uint16_t port;
+};
+
+typedef std::list<OptionConnectTo>  ConnectToList;
+
 class Host
 {
 public:
@@ -84,7 +92,7 @@ private:
   bool sanityCheck();
 
   static Options* inst;
-  static Mutex instMutex;
+  static ::Mutex instMutex;
   class instanceCleaner {
     public: ~instanceCleaner() {
       if(Options::inst != 0)
@@ -93,7 +101,7 @@ private:
   };
   friend class instanceCleaner;
 
-  Mutex mutex;
+  ::Mutex mutex;
 
   std::string progname_;
   bool chroot_;
