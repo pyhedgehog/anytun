@@ -28,12 +28,30 @@
  * 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "routingTableEntry.h"
+#ifndef _RTPSESSION_H_
+#define _RTPSESSION_H_
 
-RoutingTableEntry::RoutingTableEntry() : mutex_()
-{
-}
+#include "options.h"
+#include "threadUtils.hpp"
 
-RoutingTableEntry::RoutingTableEntry(const RoutingTableEntry & src) : mutex_()
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
+class RtpSession
 {
-}
+public:
+	RtpSession(const RtpSession & src);
+	RtpSession();
+
+private:
+  //TODO: check if this is ok
+	Mutex mutex_;
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+	{
+		Lock lock(mutex_);
+	}
+};
+
+#endif

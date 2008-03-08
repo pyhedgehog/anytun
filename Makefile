@@ -56,6 +56,8 @@ OBJS = tunDevice.o \
        cipher.o \
        authAlgo.o \
 			 keyDerivation.o \
+			 rtpSessionTable.o \
+			 rtpSession.o \
 			 mpi.o \
 			 cipherFactory.o \
 			 authAlgoFactory.o \
@@ -67,7 +69,6 @@ OBJS = tunDevice.o \
        PracticalSocket.o \
 			 router.o \
 			 routingTable.o \
-			 routingTableEntry.o \
        signalController.o \
        syncSocket.o \
        syncSocketHandler.o \
@@ -98,7 +99,6 @@ ANYCTROBJS = log.o \
 						 anyctrOptions.o \
 						 router.o \
 						 routingTable.o \
-						 routingTableEntry.o \
 						 seqWindow.o \
 						 syncSocket.o \
 						 syncSocketHandler.o \
@@ -138,6 +138,12 @@ buffer.o: buffer.cpp buffer.h
 syncBuffer.o: syncBuffer.cpp syncBuffer.h
 	$(C++) $(CCFLAGS) $< -c
 
+rtpSessionTable.o: rtpSessionTable.cpp rtpSessionTable.h
+	$(C++) $(CCFLAGS) $< -c
+
+rtpSession.o: rtpSession.cpp rtpSession.h
+	$(C++) $(CCFLAGS) $< -c
+
 plainPacket.o: plainPacket.cpp plainPacket.h buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
@@ -175,9 +181,6 @@ keyDerivationFactory.o: keyDerivationFactory.cpp keyDerivationFactory.h keyDeriv
 	$(C++) $(CCFLAGS) $< -c
 
 routingTable.o: routingTable.cpp routingTable.h
-	$(C++) $(CCFLAGS) $< -c
-
-routingTableEntry.o: routingTableEntry.cpp routingTableEntry.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncSocket.o: syncSocket.cpp syncSocket.h

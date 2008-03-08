@@ -10,6 +10,7 @@ OBJS = anyrtpproxy.o \
        PracticalSocket.o \
        log.o \
        buffer.o \
+       ../rtpSessionTable.o \
        options.o
 
 EXECUTABLE = anyrtpproxy
