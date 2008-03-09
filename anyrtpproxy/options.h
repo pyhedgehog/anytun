@@ -83,6 +83,11 @@ public:
   u_int16_t getSendPort();
   Host getControlInterface();
   HostList getRemoteHosts();
+  u_int16_t getLocalSyncPort();
+	Options& setLocalSyncPort(u_int16_t l);
+  ConnectToList getConnectTo();
+  Options& setMux(u_int16_t m);
+
 
 private:
   Options();
@@ -108,6 +113,8 @@ private:
   std::string username_;
   std::string chroot_dir_;
   bool daemonize_;
+	u_int16_t local_sync_port_;
+	ConnectToList connect_to_;
   u_int16_t send_port_;
   Host control_interface_;
   HostList remote_hosts_;

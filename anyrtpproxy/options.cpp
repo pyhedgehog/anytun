@@ -255,3 +255,21 @@ HostList Options::getRemoteHosts()
   Lock lock(mutex);
   return remote_hosts_;
 }
+
+u_int16_t Options::getLocalSyncPort()
+{
+  return local_sync_port_;
+}
+
+Options& Options::setLocalSyncPort(u_int16_t l)
+{
+  local_sync_port_ = l;
+  return *this;
+}
+
+ConnectToList Options::getConnectTo()
+{
+  Lock lock(mutex);
+  return connect_to_;
+}
+

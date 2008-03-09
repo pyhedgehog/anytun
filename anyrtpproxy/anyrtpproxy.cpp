@@ -10,7 +10,7 @@
 #include "../signalController.h"
 #include "../PracticalSocket.h"
 #include "../buffer.h"
-#include "../connectionList.h"
+#include "connectionList.h"
 #include "../rtpSessionTable.h"
 #include "../syncCommand.h"
 #include "../syncQueue.h"
@@ -20,7 +20,6 @@
 #include "../syncSocket.h"
 #include "../syncClientSocket.h"
 #include "../threadUtils.hpp"
-
 
 #include "options.h"
 #include <map>
@@ -246,11 +245,12 @@ int main(int argc, char* argv[])
   pthread_t syncListenerThread;
 
   SyncQueue queue;
+	ConnectToList connect_to = gOpt.getConnectTo();
 // Example
 //  gRtpSessionTable.addSession(std::string("callid"),RtpSession());
 //  SyncCommand sc (std::string("callid"));
 //  queue.push(sc);
-	ThreadParam p( queue,*(new OptionConnectTo()))
+	ThreadParam p( queue,*(new OptionConnectTo()));
   if ( gOpt.getLocalSyncPort())
     pthread_create(&syncListenerThread, NULL, syncListener, &p);
 
@@ -258,7 +258,7 @@ int main(int argc, char* argv[])
   for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it)
   {
    connectThreads.push_back(pthread_t());
-   ThreadParam * point = new ThreadParam(dev, *src, cl, queue,*it);
+   ThreadParam * point = new ThreadParam(queue,*it);
    pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
   }
   
