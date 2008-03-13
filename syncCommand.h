@@ -38,7 +38,7 @@ private:
 		{
 			syncstr = "route";
 		}
-		if ( src_)
+		if ( srtpc_)
 		{
 			syncstr = "rtp";
 		}
