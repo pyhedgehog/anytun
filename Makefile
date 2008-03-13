@@ -114,7 +114,7 @@ ANYCTROBJS = log.o \
 						 syncConnectionCommand.o \
 						 $(SOCKETDEPS)
 
-EXECUTABLE = anytun anyctr anymux anytun-showtables
+EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
 
 all: $(EXECUTABLE) libAnysync.a
 
@@ -124,11 +124,11 @@ anytun: $(OBJS) anytun.o
 anytun-showtables: $(OBJS) anytun-showtables.o
 	$(LD) $(OBJS) anytun-showtables.o -o $@ $(LDFLAGS)
 
-anyctr: $(ANYCTROBJS) anyctr.o
-	$(LD) $(ANYCTROBJS) anyctr.o -o $@ $(LDFLAGS)
+anytun-config: $(ANYCTROBJS) anytun-config.o
+	$(LD) $(ANYCTROBJS) anytun-config.o -o $@ $(LDFLAGS)
 
-anymux: $(ANYMUXOBJS) anymux.o
-	$(LD) $(ANYMUXOBJS) anymux.o -o $@ $(LDFLAGS)
+anytun-controld: $(ANYMUXOBJS) anytun-controld.o
+	$(LD) $(ANYMUXOBJS) anytun-controld.o -o $@ $(LDFLAGS)
 
 tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
@@ -247,10 +247,10 @@ anytun.o: anytun.cpp
 anytun-showtables.o: anytun-showtables.cpp
 	$(C++) $(CCFLAGS) $< -c
 
-anyctr.o: anyctr.cpp
+anytun-config.o: anytun-config.cpp
 	$(C++) $(CCFLAGS) $< -c
 
-anymux.o: anymux.cpp
+anytun-controld.o: anytun-controld.cpp
 	$(C++) $(CCFLAGS) $< -c
 
 cConnectionParam.o: cConnectionParam.cpp
