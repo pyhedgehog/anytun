@@ -19,7 +19,7 @@ do
  local field_seq = ProtoField.uint32("satp.seq","Sequence Number",base.DEC)
  local field_sid = ProtoField.uint16("satp.sid","Sender ID",base.DEC)
  local field_mux = ProtoField.uint16("satp.mux","Mux",base.DEC)
- local field_ptype = ProtoField.uint16("satp.ptype","Payload Type (encrypted?)",base.HEX,payload_types)
+ local field_ptype = ProtoField.uint16("satp.ptype","Payload Type (plain?)",base.HEX,payload_types)
 
  proto_satp.fields = { field_seq, field_sid, field_mux, field_ptype }
 
