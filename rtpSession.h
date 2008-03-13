@@ -33,24 +33,79 @@
 
 #include "threadUtils.hpp"
 
+#include <iostream>
+
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
 class RtpSession
 {
 public:
-	RtpSession(const RtpSession & src);
 	RtpSession();
+	~RtpSession();
+
+  void init();
+
+  bool isDead();
+  bool isDead(bool d);
+
+  u_int16_t getLocalPort();
+  RtpSession& setLocalPort(u_int16_t p);
+  std::string getLocalAddr();
+  RtpSession& setLocalAddr(std::string a);
+
+  u_int16_t getRemotePort1();
+  RtpSession& setRemotePort1(u_int16_t p);
+  std::string getRemoteAddr1();
+  RtpSession& setRemoteAddr1(std::string a);
+
+  u_int16_t getRemotePort2();
+  RtpSession& setRemotePort2(u_int16_t p);
+  std::string getRemoteAddr2();
+  RtpSession& setRemoteAddr2(std::string a);
 
 private:
+	RtpSession(const RtpSession & src);
+  
+  void reinitSock();
+
   //TODO: check if this is ok
-	//Mutex mutex_;
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
-	{
-		//Lock lock(mutex_);
+	{    
+    Lock lock(mutex_);
+
+    std::cout << "seralize called: " << local_port_ << "," << local_addr_ << std::endl;
+
+
+    u_int16_t old_local_port = local_port_;
+    std::string old_local_addr = local_addr_;
+
+    ar & dead_;
+    ar & local_addr_;
+    ar & local_port_;
+    ar & remote_addr1_;
+    ar & remote_port1_;
+    ar & remote_addr2_;
+    ar & remote_port2_;
+
+    if(old_local_port != local_port_ || old_local_addr != local_addr_)
+      reinitSock();
+
+    in_sync_ = true;
 	}
+
+  bool in_sync_;
+	::Mutex mutex_;
+  void* sock_;
+
+  bool dead_;
+  u_int16_t local_port_;
+  std::string local_addr_;
+  std::string remote_addr1_, remote_addr2_;
+  u_int16_t remote_port1_, remote_port2_;
 };
+
 
 #endif

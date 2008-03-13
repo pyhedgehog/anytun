@@ -34,14 +34,15 @@
 #include <string>
 #include "../datatypes.h"
 #include "../PracticalSocket.h"
+#include "../syncQueue.h"
 
 using std::string;
 
 class CommandHandler
 {
 public:
-  CommandHandler(u_int16_t lp);
-  CommandHandler(string la, u_int16_t lp);
+  CommandHandler(SyncQueue& q, u_int16_t lp);
+  CommandHandler(SyncQueue& q, string la, u_int16_t lp);
   ~CommandHandler();
   
   bool isRunning();
@@ -54,6 +55,7 @@ public:
 
   #define RET_OK "0"
   #define RET_ERR_SYNTAX "E1"
+  #define RET_ERR_UNKNOWN "E2"
 
   #define BASE_VERSION "20040107"
   #define SUP_VERSION "20050322"
@@ -73,6 +75,8 @@ private:
   string handleInfo();
 
   pthread_t thread_;
+  SyncQueue& queue_;
+
   bool running_;
   UDPSocket control_sock_;
   string local_address_;

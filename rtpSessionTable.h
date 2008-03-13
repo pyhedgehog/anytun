@@ -36,7 +36,7 @@
 #include "threadUtils.hpp"
 #include "datatypes.h"
 #include "rtpSession.h"
-typedef std::map<std::string,RtpSession> RtpSessionMap;
+typedef std::map<std::string,RtpSession*> RtpSessionMap;
 
 class RtpSessionTable
 {
@@ -44,16 +44,13 @@ public:
 	static RtpSessionTable& instance();
 	RtpSessionTable();
 	~RtpSessionTable();
-	void addSession(const std::string & , const RtpSession &);
-	void delSession(const std::string & );
-	//u_int16_t getRoute(const NetworkAddress &);
+	void addSession(const std::string & call_id, RtpSession* ses);
+	void delSession(const std::string & call_id);
 	bool empty();
 	void clear();
   ::Mutex& getMutex();
-	RtpSession& getOrNewSessionUnlocked(const std::string & addr);
-	uint16_t getCountUnlocked();
-	RtpSessionMap::iterator getBeginUnlocked();
-	RtpSessionMap::iterator getEndUnlocked();
+	RtpSession& getOrNewSessionUnlocked(const std::string & call_id);
+	RtpSession& getSession(const std::string & call_id);
 
 private:
   static ::Mutex instMutex;

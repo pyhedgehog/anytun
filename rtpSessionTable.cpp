@@ -55,71 +55,49 @@ RtpSessionTable::~RtpSessionTable()
 {
 } 
 
-void RtpSessionTable::addSession(const std::string & pref, const RtpSession & ses )
+void RtpSessionTable::addSession(const std::string & call_id, RtpSession* ses )
 {
   Lock lock(mutex_);
 	
 	
-  std::pair<RtpSessionMap::iterator, bool> ret = map_.insert(RtpSessionMap::value_type(pref,ses));
+  std::pair<RtpSessionMap::iterator, bool> ret = map_.insert(RtpSessionMap::value_type(call_id,ses));
   if(!ret.second)
   {
     map_.erase(ret.first);
-    map_.insert(RtpSessionMap::value_type(pref,ses));
+    map_.insert(RtpSessionMap::value_type(call_id,ses));
   }
 }
 
 
-void RtpSessionTable::delSession(const std::string & pref )
+void RtpSessionTable::delSession(const std::string & call_id )
 {
   Lock lock(mutex_);
-	
-  map_.erase(map_.find(pref));	
-}
 
-/*u_int16_t  RtpSessionTable::getRtpSession(const std::string & addr)
-{
-	Lock lock(mutex_);
-	if (map_.empty())
-  	return 0;
-	NetworkPrefix prefix(addr,32);
-	//TODO Routing algorithem isnt working!!!
-	RoutingMap::iterator it = map_.lower_bound(prefix);
-//	it--;
-	if (it!=map_.end())
-		return it->second;
-	it=map_.begin();
-	return it->second;
-}
-*/
-
-RtpSession& RtpSessionTable::getOrNewSessionUnlocked(const std::string & addr)
-{
-  RtpSessionMap::iterator it = map_.find(addr);
+  RtpSessionMap::iterator it = map_.find(call_id);
   if(it!=map_.end())
-    return it->second;
+    delete it->second;
 
-  map_.insert(RtpSessionMap::value_type(addr, RtpSession()));
-  it = map_.find(addr);
-  return it->second;
+  map_.erase(it);
 }
 
-uint16_t RtpSessionTable::getCountUnlocked()
+RtpSession& RtpSessionTable::getOrNewSessionUnlocked(const std::string & call_id)
 {
-	RtpSessionMap::iterator it = map_.begin();
-	uint16_t routes=0;
-	for (;it!=map_.end();++it)
-		routes++;
-	return routes;
+  RtpSessionMap::iterator it = map_.find(call_id);
+  if(it!=map_.end())
+    return *(it->second);
+
+  map_.insert(RtpSessionMap::value_type(call_id, new RtpSession()));
+  it = map_.find(call_id);
+  return *(it->second);
 }
 
-RtpSessionMap::iterator RtpSessionTable::getBeginUnlocked()
+RtpSession& RtpSessionTable::getSession(const std::string & call_id)
 {
-	return map_.begin();
-}
+  RtpSessionMap::iterator it = map_.find(call_id);
+  if(it!=map_.end())
+    return *(it->second);
 
-RtpSessionMap::iterator RtpSessionTable::getEndUnlocked()
-{
-	return map_.end();
+  throw std::runtime_error("session not found");
 }
 
 void RtpSessionTable::clear()

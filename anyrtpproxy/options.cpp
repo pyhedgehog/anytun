@@ -57,6 +57,7 @@ Options::Options() : control_interface_("0.0.0.0", 22222)
   username_ = "nobody";
   chroot_dir_ = "/var/run";
   daemonize_ = true;
+	local_sync_port_ = 2023;
 }
 
 Options::~Options()

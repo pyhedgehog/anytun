@@ -248,10 +248,6 @@ int main(int argc, char* argv[])
 
   SyncQueue queue;
 	ConnectToList connect_to = gOpt.getConnectTo();
-// Example
-//  gRtpSessionTable.addSession(std::string("callid"),RtpSession());
-//  SyncCommand sc (std::string("callid"));
-//  queue.push(sc);
 	ThreadParam p( queue,*(new OptionConnectTo()));
   if ( gOpt.getLocalSyncPort())
     pthread_create(&syncListenerThread, NULL, syncListener, &p);
@@ -264,7 +260,7 @@ int main(int argc, char* argv[])
     pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
   }
 
-  CommandHandler cmd(gOpt.getControlInterface().addr_, gOpt.getControlInterface().port_);
+  CommandHandler cmd(queue, gOpt.getControlInterface().addr_, gOpt.getControlInterface().port_);
   
   int ret = sig.run();
   return ret;

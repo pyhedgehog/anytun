@@ -100,6 +100,7 @@ ANYCTROBJS = log.o \
 			 rtpSessionTable.o \
 			 rtpSession.o \
        syncRtpCommand.o \
+       PracticalSocket.o \
 						 anyctrOptions.o \
 						 router.o \
 						 routingTable.o \

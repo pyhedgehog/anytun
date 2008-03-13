@@ -28,12 +28,136 @@
  * 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "PracticalSocket.h"
+
 #include "rtpSession.h"
 
-RtpSession::RtpSession()
-{
+RtpSession::RtpSession() : in_sync_(false), sock_(NULL), dead_(false), local_port_(0), local_addr_(""), 
+                           remote_addr1_(""), remote_addr2_(""), remote_port1_(0), remote_port2_(0)
+{  
 }
 
-RtpSession::RtpSession(const RtpSession & src)
+RtpSession::~RtpSession()
 {
+  if(sock_)
+    delete reinterpret_cast<UDPSocket*>(sock_);
+}
+
+void RtpSession::init()
+{
+  Lock lock(mutex_);
+  
+  if(sock_ || !local_port_)
+    return;
+
+  sock_ = new UDPSocket(local_addr_, local_port_);
+// TODO: start threads 
+}
+
+void RtpSession::reinitSock()
+{
+  if(sock_)
+    delete reinterpret_cast<UDPSocket*>(sock_);    
+  sock_ = NULL;
+
+  if(!local_port_)
+    return;
+
+  sock_ = new UDPSocket(local_addr_, local_port_);
+}
+
+bool RtpSession::isDead()
+{
+  Lock lock(mutex_);
+  return dead_;
+}
+
+bool RtpSession::isDead(bool d)
+{
+  Lock Lock(mutex_);
+  return dead_ = d;
+}
+
+u_int16_t RtpSession::getLocalPort()
+{
+  Lock lock(mutex_);
+  return local_port_;
+}
+
+RtpSession& RtpSession::setLocalPort(u_int16_t p)
+{
+  Lock lock(mutex_);
+  in_sync_ = false;
+  local_port_ = p;
+  return *this;
+}
+
+std::string RtpSession::getLocalAddr()
+{
+  Lock lock(mutex_);
+  return local_addr_;
+}
+
+RtpSession& RtpSession::setLocalAddr(std::string a)
+{
+  Lock lock(mutex_);
+  in_sync_ = false;
+  local_addr_ = a;
+  return *this;
+}
+
+u_int16_t RtpSession::getRemotePort1()
+{
+  Lock lock(mutex_);
+  return remote_port1_;
+}
+
+RtpSession& RtpSession::setRemotePort1(u_int16_t p)
+{
+  Lock lock(mutex_);
+  in_sync_ = false;
+  remote_port1_ = p;
+  return *this;
+}
+
+std::string RtpSession::getRemoteAddr1()
+{
+  Lock lock(mutex_);
+  return remote_addr1_;
+}
+
+RtpSession& RtpSession::setRemoteAddr1(std::string a)
+{
+  Lock lock(mutex_);
+  in_sync_ = false;
+  remote_addr1_ = a;
+  return *this;
+}
+
+u_int16_t RtpSession::getRemotePort2()
+{
+  Lock lock(mutex_);
+  return remote_port2_;
+}
+
+RtpSession& RtpSession::setRemotePort2(u_int16_t p)
+{
+  Lock lock(mutex_);
+  in_sync_ = false;
+  remote_port2_ = p;
+  return *this;
+}
+
+std::string RtpSession::getRemoteAddr2()
+{
+  Lock lock(mutex_);
+  return remote_addr2_;
+}
+
+RtpSession& RtpSession::setRemoteAddr2(std::string a)
+{
+  Lock lock(mutex_);
+  in_sync_ = false;
+  remote_addr2_ = a;
+  return *this;
 }

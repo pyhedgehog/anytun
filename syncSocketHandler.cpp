@@ -27,7 +27,7 @@ int SyncSocketHandler::Select(long sec,long usec)
 		std::string sendstr = queue_.pop();
 		for (socket_m::iterator it = m_sockets.begin(); it != m_sockets.end(); it++)
 		{
-			Socket *p = (*it).second;
+			::SOCKETS_NAMESPACE::Socket *p = (*it).second;
 			TcpSocket *p3 = dynamic_cast<TcpSocket *>(p);
 			//SyncListenSocket<SyncSocket,ConnectionList> *p4 = dynamic_cast<SyncListenSocket<SyncSocket,ConnectionList> *>(p);
 			if (p3)

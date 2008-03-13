@@ -37,15 +37,20 @@
 #include "commandHandler.h"
 #include "../buffer.h"
 #include "../log.h"
+#include "../syncQueue.h"
+#include "../syncCommand.h"
+#include "../rtpSessionTable.h"
 
 #define MAX_COMMAND_LENGTH 1000
 
-CommandHandler::CommandHandler(u_int16_t lp) : running_(true), control_sock_(lp), local_address_("0.0.0.0"), local_port_(lp)
+CommandHandler::CommandHandler(SyncQueue& q, u_int16_t lp) : queue_(q), running_(true), control_sock_(lp), 
+                                                             local_address_("0.0.0.0"), local_port_(lp)
 {
   pthread_create(&thread_, NULL, run, this);
 }
 
-CommandHandler::CommandHandler(string la, u_int16_t lp) : running_(true), control_sock_(la, lp), local_address_(la), local_port_(lp)
+CommandHandler::CommandHandler(SyncQueue& q, string la, u_int16_t lp) : queue_(q), running_(true), control_sock_(la, lp), 
+                                                                        local_address_(la), local_port_(lp)
 {
   pthread_create(&thread_, NULL, run, this);
 }
@@ -159,7 +164,26 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
   std::cout << "received request[" << modifiers << "] command ('" << call_id << "','" << addr  << "','" << port 
             << "','" << from_tag << "','" << to_tag << "')" << std::endl;
 
-  return RET_OK;
+  try 
+  {
+    gRtpSessionTable.addSession(call_id, new RtpSession());
+    u_int16_t port = 35000; // TODO: get next available port
+    RtpSession& session = gRtpSessionTable.getSession(call_id);
+    session.setLocalPort(port);   
+    session.setLocalAddr("0.0.0.0"); // TODO: read this from config;
+    session.setRemotePort1(port);
+    session.setRemoteAddr1(addr);
+    SyncCommand sc(call_id);
+    queue_.push(sc);
+
+    ostringstream oss;
+    oss << port;
+    return oss.str();
+  }
+  catch(std::exception& e)
+  {
+    return RET_ERR_UNKNOWN; // TODO: change to corret error value
+  }
 }
 
 string CommandHandler::handleResponse(string modifiers, string call_id, string addr, string port, string from_tag, string to_tag)
@@ -167,14 +191,42 @@ string CommandHandler::handleResponse(string modifiers, string call_id, string a
   std::cout << "received response[" << modifiers << "] command ('" << call_id << "','" << addr  << "','" << port 
             << "','" << from_tag << "','" << to_tag << "')" << std::endl;
 
-  return RET_OK;
+  try
+  {
+    RtpSession& session = gRtpSessionTable.getSession(call_id);
+    u_int16_t port = session.getLocalPort();
+    session.setRemotePort2(port);
+    session.setRemoteAddr2(addr);
+    SyncCommand sc(call_id);
+    queue_.push(sc);
+
+    ostringstream oss;
+    oss << port;
+    return oss.str();
+  }
+  catch(std::exception& e)
+  {
+    return RET_ERR_UNKNOWN; // TODO: change to corret error value
+  }
 }
 
 string CommandHandler::handleDelete(string call_id, string from_tag, string to_tag)
 {
   std::cout << "received delete command ('" << call_id << "','" << from_tag << "','" << to_tag << "')" << std::endl;
 
-  return RET_OK;
+  try
+  {
+    RtpSession& session = gRtpSessionTable.getSession(call_id);
+    session.isDead(true);
+    SyncCommand sc(call_id);
+    queue_.push(sc);
+
+    return RET_OK;
+  }
+  catch(std::exception& e)
+  {
+    return RET_ERR_UNKNOWN; // TODO: change to corret error value
+  }
 }
 
 string CommandHandler::handleVersion()
@@ -194,7 +246,7 @@ string CommandHandler::handleVersionF(string date_code)
 
 string CommandHandler::handleInfo()
 {
-  std::cout << "received info command" << std::endl;  
+  std::cout << "received info command, ignoring" << std::endl;  
   return RET_OK;
 }
 
