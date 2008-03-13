@@ -32,6 +32,7 @@ OBJS = anyrtpproxy.o \
        ../networkAddress.o \
        ../networkPrefix.o \
        ../Sockets/libSockets.a \
+       commandHandler.o \
        options.o
 
 EXECUTABLE = anyrtpproxy
@@ -45,6 +46,9 @@ options.o: options.cpp options.h
 	$(C++) $(CCFLAGS) $< -c
 
 connectionList.o: connectionList.cpp connectionList.h
+	$(C++) $(CCFLAGS) $< -c
+
+commandHandler.o: commandHandler.cpp commandHandler.h
 	$(C++) $(CCFLAGS) $< -c
 
 anyrtpproxy.o: anyrtpproxy.cpp

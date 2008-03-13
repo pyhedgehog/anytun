@@ -49,7 +49,7 @@ Options& Options::instance()
   return *inst;
 }
 
-Options::Options() : control_interface_("0.0.0.0", 22220)
+Options::Options() : control_interface_("0.0.0.0", 22222)
 
 {
   progname_ = "anyrtpproxy";
@@ -57,8 +57,6 @@ Options::Options() : control_interface_("0.0.0.0", 22220)
   username_ = "nobody";
   chroot_dir_ = "/var/run";
   daemonize_ = true;
-  send_port_ = 22221;
-  remote_hosts_.push_back(Host("127.0.0.1", 22222));
 }
 
 Options::~Options()
@@ -155,8 +153,6 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-c","--chroot-dir", chroot_dir_)
     PARSE_INVERSE_BOOL_PARAM("-d","--nodaemonize", daemonize_)
     PARSE_STRING_PARAM("-s","--control", control_interface_)
-    PARSE_SCALAR_PARAM("-p","--port", send_port_)
-    PARSE_CSLIST_PARAM("-r","--remote-hosts", remote_hosts_)
     else 
       return false;
   }
@@ -166,12 +162,7 @@ bool Options::parse(int argc, char* argv[])
 
 bool Options::sanityCheck()
 {
-  if(control_interface_.port_) control_interface_.port_ = 22220;
-
-  HostList::iterator it=remote_hosts_.begin();
-  for(u_int32_t i=0; it != remote_hosts_.end(); ++it, ++i)
-    if(!it->port_) it->port_ = 22222;
-
+  if(!control_interface_.port_) control_interface_.port_ = 22220;
   return true;
 }
 
@@ -184,8 +175,6 @@ void Options::printUsage()
   std::cout << "            [-c|--chroot-dir] <directory>                          directory to make a chroot to" << std::endl;
   std::cout << "            [-d|--nodaemonize]                                     don't run in background" << std::endl;
   std::cout << "            [-s|--control] <addr[:port]>                           the address/port to listen on for control commands" << std::endl;
-  std::cout << "            [-p|--port] <port>                                     use this port to send out packets to remote hosts" << std::endl;
-  std::cout << "            [-r|--remote-hosts] <addr[:port]>[,<addr[:<port]> .. ] a list of remote hosts to send duplicates to" << std::endl;
 }
 
 void Options::printOptions()
@@ -197,15 +186,6 @@ void Options::printOptions()
   std::cout << "chroot-dir='" << chroot_dir_ << "'" << std::endl;
   std::cout << "daemonize='" << daemonize_ << "'" << std::endl;
   std::cout << "control-interface='" << control_interface_.toString() << "'" << std::endl;
-  std::cout << "send-port='" << send_port_ << "'" << std::endl;
-  std::cout << "remote hosts='";
-  HostList::const_iterator it=remote_hosts_.begin();
-  for(u_int32_t i=0; it != remote_hosts_.end(); ++it, ++i)
-  {
-    if(i) std::cout << "','";
-    std::cout << it->toString();
-  }
-  std::cout << "'" << std::endl;
 }
 
 std::string Options::getProgname()
@@ -238,22 +218,10 @@ bool Options::getDaemonize()
   return daemonize_;
 }
 
-u_int16_t Options::getSendPort()
-{
-  Lock lock(mutex);
-  return send_port_;
-}
-
 Host Options::getControlInterface()
 {
   Lock lock(mutex);
   return control_interface_;
-}
-
-HostList Options::getRemoteHosts()
-{
-  Lock lock(mutex);
-  return remote_hosts_;
 }
 
 u_int16_t Options::getLocalSyncPort()

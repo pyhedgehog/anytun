@@ -21,6 +21,8 @@
 #include "../syncClientSocket.h"
 #include "../threadUtils.hpp"
 
+#include "commandHandler.h"
+
 #include "options.h"
 #include <map>
 
@@ -62,18 +64,18 @@ private:
 
 void* sender(void* dont_use_me)
 {
-  try 
-  {
-    HostList remote_host_list(gOpt.getRemoteHosts());
-    UDPSocket control_sock(gOpt.getControlInterface().addr_, gOpt.getControlInterface().port_);
+//   try 
+//   {
+//     HostList remote_host_list(gOpt.getRemoteHosts());
+//     UDPSocket control_sock(gOpt.getControlInterface().addr_, gOpt.getControlInterface().port_);
 
-    Buffer buf(u_int32_t(MAX_PACKET_SIZE));
-    string remote_host;
-    u_int16_t remote_port;
-    while(1) {
-      buf.setLength(MAX_PACKET_SIZE);
-      u_int32_t len = control_sock.recvFrom(buf.getBuf(), buf.getLength(), remote_host, remote_port);
-      buf.setLength(len);
+//     Buffer buf(u_int32_t(MAX_PACKET_SIZE));
+//     string remote_host;
+//     u_int16_t remote_port;
+//     while(1) {
+//       buf.setLength(MAX_PACKET_SIZE);
+//       u_int32_t len = control_sock.recvFrom(buf.getBuf(), buf.getLength(), remote_host, remote_port);
+//       buf.setLength(len);
       
 //TODO????//TODO????//TODO????//TODO????//TODO????//TODO????//TODO????      control.setHost(remote_host, remote_port);
 
@@ -83,15 +85,15 @@ void* sender(void* dont_use_me)
 //     pthread_detach(receiverThread);  
 
       
-      HostList::const_iterator it = remote_host_list.begin();
+//      HostList::const_iterator it = remote_host_list.begin();
 //      for(;it != remote_host_list.end(); it++)
 //        param->sock_.sendTo(buf.getBuf(), buf.getLength(), it->addr_, it->port_);
-    }  
-  }
-  catch(std::exception &e)
-  {
-    cLog.msg(Log::PRIO_ERR) << "sender exiting because: " << e.what() << std::endl;
-  }
+//     }  
+//   }
+//   catch(std::exception &e)
+//   {
+//     cLog.msg(Log::PRIO_ERR) << "sender exiting because: " << e.what() << std::endl;
+//   }
   pthread_exit(NULL);
 }
 
@@ -129,7 +131,7 @@ void* receiver(void* p)
 //   {
 //     cLog.msg(Log::PRIO_ERR) << "receiver exiting because: " << e.what() << std::endl;
 //   }
-//   pthread_exit(NULL);
+  pthread_exit(NULL);
 } 
 
 void chrootAndDrop(string const& chrootdir, string const& username)
@@ -239,9 +241,9 @@ int main(int argc, char* argv[])
   SignalController sig;
   sig.init();
 
-  pthread_t senderThread;
-  pthread_create(&senderThread, NULL, sender, NULL);
-  pthread_detach(senderThread);
+//   pthread_t senderThread;
+//   pthread_create(&senderThread, NULL, sender, NULL);
+//   pthread_detach(senderThread);
   pthread_t syncListenerThread;
 
   SyncQueue queue;
@@ -257,10 +259,12 @@ int main(int argc, char* argv[])
   std::list<pthread_t> connectThreads;
   for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it)
   {
-   connectThreads.push_back(pthread_t());
-   ThreadParam * point = new ThreadParam(queue,*it);
-   pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
+    connectThreads.push_back(pthread_t());
+    ThreadParam * point = new ThreadParam(queue,*it);
+    pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
   }
+
+  CommandHandler cmd(gOpt.getControlInterface().addr_, gOpt.getControlInterface().port_);
   
   int ret = sig.run();
   return ret;
