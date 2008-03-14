@@ -41,8 +41,6 @@ class RtpSession
 public:
 	RtpSession();
 
-  void init();
-
   bool isDead();
   bool isDead(bool d);
 

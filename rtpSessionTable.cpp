@@ -107,6 +107,16 @@ RtpSession& RtpSessionTable::getSession(const std::string & call_id)
   throw std::runtime_error("session not found");
 }
 
+RtpSessionMap::iterator RtpSessionTable::getBeginUnlocked()
+{
+  return map_.begin();
+}
+
+RtpSessionMap::iterator RtpSessionTable::getEndUnlocked()
+{
+  return map_.end();
+}
+
 void RtpSessionTable::clear()
 {
   Lock lock(mutex_);

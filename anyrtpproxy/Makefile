@@ -33,6 +33,7 @@ OBJS = anyrtpproxy.o \
        ../networkPrefix.o \
        ../Sockets/libSockets.a \
        commandHandler.o \
+       callIdQueue.o \
        options.o
 
 EXECUTABLE = anyrtpproxy
@@ -49,6 +50,9 @@ connectionList.o: connectionList.cpp connectionList.h
 	$(C++) $(CCFLAGS) $< -c
 
 commandHandler.o: commandHandler.cpp commandHandler.h
+	$(C++) $(CCFLAGS) $< -c
+
+callIdQueue.o: callIdQueue.cpp callIdQueue.h
 	$(C++) $(CCFLAGS) $< -c
 
 anyrtpproxy.o: anyrtpproxy.cpp

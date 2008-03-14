@@ -35,13 +35,6 @@ RtpSession::RtpSession() : in_sync_(false), dead_(false), local_addr_(""), local
 {  
 }
 
-void RtpSession::init()
-{
-  Lock lock(mutex_);
-  
-// TODO: start threads 
-}
-
 void RtpSession::reinit()
 {
   Lock lock(mutex_);

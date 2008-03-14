@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "routingTable.h"
+#include "rtpSessionTable.h"
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
@@ -48,6 +49,19 @@ void SyncSocket::OnAccept()
 		std::ostringstream sout;
 		boost::archive::text_oarchive oa(sout);
 		const SyncCommand scom(tmp);
+		oa << scom;
+		std::stringstream lengthout;
+		lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
+		Send(lengthout.str());
+		Send(sout.str());
+	}
+	//TODO Locking here
+	RtpSessionMap::iterator rit = gRtpSessionTable.getBeginUnlocked();
+  for (;rit!=gRtpSessionTable.getEndUnlocked();++rit)
+  {
+		std::ostringstream sout;
+		boost::archive::text_oarchive oa(sout);
+		const SyncCommand scom(rit->first);
 		oa << scom;
 		std::stringstream lengthout;
 		lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';

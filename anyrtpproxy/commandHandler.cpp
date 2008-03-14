@@ -40,6 +40,7 @@
 #include "../syncQueue.h"
 #include "../syncCommand.h"
 #include "../rtpSessionTable.h"
+#include "callIdQueue.h"
 
 #define MAX_COMMAND_LENGTH 1000
 
@@ -187,7 +188,7 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
     queue_.push(sc);
 
     ostringstream oss;
-    oss << session.getLocalPort1();
+    oss << session.getLocalPort2();
     return oss.str();
   }
   catch(std::exception& e)
@@ -212,10 +213,10 @@ string CommandHandler::handleResponse(string modifiers, string call_id, string a
     SyncCommand sc(call_id);
     queue_.push(sc);
 
-    session.init();
+    gCallIdQueue.push(call_id);
 
     ostringstream oss;
-    oss << session.getLocalPort2();
+    oss << session.getLocalPort1();
     return oss.str();
   }
   catch(std::exception& e)
