@@ -169,8 +169,10 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
     RtpSession& session = gRtpSessionTable.getOrNewSession(call_id, is_new);
     if(is_new)
     {
-      u_int16_t port1 = 35000; // TODO: get next available port
-      u_int16_t port2 = 35001; // TODO: get next available port
+      static u_int16_t port1 = 35000; // TODO: get next available port
+      static u_int16_t port2 = 35001; // TODO: get next available port
+      port1+=2;
+			port2+=2;
 
       session.setLocalAddr("0.0.0.0"); // TODO: read this from config
       session.setLocalPort1(port1);
