@@ -18,8 +18,7 @@
  *  as published by the Free Software Foundation.
  *
  *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
@@ -80,12 +79,20 @@ void RtpSessionTable::delSession(const std::string & call_id )
   map_.erase(it);
 }
 
-RtpSession& RtpSessionTable::getOrNewSessionUnlocked(const std::string & call_id)
+RtpSession& RtpSessionTable::getOrNewSession(const std::string & call_id, bool& is_new)
 {
+  Lock lock(mutex_);
+  return getOrNewSessionUnlocked(call_id, is_new);
+}
+
+RtpSession& RtpSessionTable::getOrNewSessionUnlocked(const std::string & call_id, bool& is_new)
+{
+  is_new = false;
   RtpSessionMap::iterator it = map_.find(call_id);
   if(it!=map_.end())
     return *(it->second);
 
+  is_new = true;
   map_.insert(RtpSessionMap::value_type(call_id, new RtpSession()));
   it = map_.find(call_id);
   return *(it->second);

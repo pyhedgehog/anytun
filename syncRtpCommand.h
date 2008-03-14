@@ -22,7 +22,8 @@ private:
   {
 		Lock lock(gRtpSessionTable.getMutex());
 		ar & callid_;
-		ar & gRtpSessionTable.getOrNewSessionUnlocked(callid_);
+    bool is_new;
+		ar & gRtpSessionTable.getOrNewSessionUnlocked(callid_, is_new);
 	};
 };
 

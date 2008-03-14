@@ -125,37 +125,36 @@ std::string CommandHandler::handle(std::string command)
     params.push_back(tmp);
   }
 
-  std::string ret;
   switch(std::toupper(cmd[0]))
   {
   case CMD_REQUEST:
-    if(params.size() < 4) { ret = RET_ERR_SYNTAX; break; }
-    ret = handleRequest(cmd.erase(0,1), params[0], params[1], params[2], params[3], (params.size() < 5) ? "" : params[4]);
+    if(params.size() < 4) { oss << RET_ERR_SYNTAX; break; }
+    oss << handleRequest(cmd.erase(0,1), params[0], params[1], params[2], params[3], (params.size() < 5) ? "" : params[4]);
     break;
   case CMD_RESPONSE:
-    if(params.size() < 4) { ret = RET_ERR_SYNTAX; break; }
-    ret = handleResponse(cmd.erase(0,1), params[0], params[1], params[2], params[3], (params.size() < 5) ? "" : params[4]);
+    if(params.size() < 4) { oss << RET_ERR_SYNTAX; break; }
+    oss << handleResponse(cmd.erase(0,1), params[0], params[1], params[2], params[3], (params.size() < 5) ? "" : params[4]);
     break;
   case CMD_DELETE:
-    if(params.size() < 2) { ret = RET_ERR_SYNTAX; break; }
-    return handleDelete(params[0], params[1], (params.size() < 3) ? "" : params[2]);
+    if(params.size() < 2) { oss << RET_ERR_SYNTAX; break; }
+    oss << handleDelete(params[0], params[1], (params.size() < 3) ? "" : params[2]);
+    break;
   case CMD_VERSION:
     if(cmd.length() > 1 && cmd[1] == 'F') {
-      if(params.size() < 1) { ret = RET_ERR_SYNTAX; break; }
-      ret = handleVersionF(params[0]);
+      if(params.size() < 1) { oss << RET_ERR_SYNTAX; break; }
+      oss << handleVersionF(params[0]);
       break;
     }
-    ret = handleVersion();
+    oss << handleVersion();
     break;
   case CMD_INFO:
-    ret = handleInfo();
+    oss << handleInfo();
     break;
   default:
-    ret = RET_ERR_SYNTAX;
+    oss << RET_ERR_SYNTAX;
     break;
   }
 
-  oss << ret;
   return oss.str();
 }
 
@@ -166,18 +165,27 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
 
   try 
   {
-    gRtpSessionTable.addSession(call_id, new RtpSession());
-    u_int16_t port = 35000; // TODO: get next available port
-    RtpSession& session = gRtpSessionTable.getSession(call_id);
-    session.setLocalPort(port);   
-    session.setLocalAddr("0.0.0.0"); // TODO: read this from config;
-    session.setRemotePort1(port);
+    bool is_new;
+    RtpSession& session = gRtpSessionTable.getOrNewSession(call_id, is_new);
+    if(is_new)
+    {
+      u_int16_t port1 = 35000; // TODO: get next available port
+      u_int16_t port2 = 35001; // TODO: get next available port
+
+      session.setLocalAddr("0.0.0.0"); // TODO: read this from config
+      session.setLocalPort1(port1);
+      session.setLocalPort2(port2);
+    }
+    istringstream iss(port);
+    u_int16_t rport;
+    iss >> rport;
+    session.setRemotePort1(rport);
     session.setRemoteAddr1(addr);
     SyncCommand sc(call_id);
     queue_.push(sc);
 
     ostringstream oss;
-    oss << port;
+    oss << session.getLocalPort1();
     return oss.str();
   }
   catch(std::exception& e)
@@ -194,14 +202,18 @@ string CommandHandler::handleResponse(string modifiers, string call_id, string a
   try
   {
     RtpSession& session = gRtpSessionTable.getSession(call_id);
-    u_int16_t port = session.getLocalPort();
-    session.setRemotePort2(port);
+    istringstream iss(port);
+    u_int16_t rport;
+    iss >> rport;
+    session.setRemotePort2(rport);
     session.setRemoteAddr2(addr);
     SyncCommand sc(call_id);
     queue_.push(sc);
 
+    session.init();
+
     ostringstream oss;
-    oss << port;
+    oss << session.getLocalPort2();
     return oss.str();
   }
   catch(std::exception& e)

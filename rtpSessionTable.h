@@ -49,7 +49,8 @@ public:
 	bool empty();
 	void clear();
   ::Mutex& getMutex();
-	RtpSession& getOrNewSessionUnlocked(const std::string & call_id);
+	RtpSession& getOrNewSession(const std::string & call_id, bool& isnew);
+	RtpSession& getOrNewSessionUnlocked(const std::string & call_id, bool& isnew);
 	RtpSession& getSession(const std::string & call_id);
 
 private:
