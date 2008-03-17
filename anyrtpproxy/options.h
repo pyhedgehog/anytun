@@ -83,6 +83,10 @@ public:
   Host getControlInterface();
   u_int16_t getLocalSyncPort();
 	Options& setLocalSyncPort(u_int16_t l);
+  u_int16_t getRtpStartPort();
+	Options& setRtpStartPort(u_int16_t l);
+  u_int16_t getRtpEndPort();
+	Options& setRtpEndPort(u_int16_t l);
   ConnectToList getConnectTo();
 
 private:
@@ -110,6 +114,8 @@ private:
   std::string chroot_dir_;
   bool daemonize_;
 	u_int16_t local_sync_port_;
+	u_int16_t rtp_start_port_;
+	u_int16_t rtp_end_port_;
 	ConnectToList connect_to_;
   Host control_interface_;
 };

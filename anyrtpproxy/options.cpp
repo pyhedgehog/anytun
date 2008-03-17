@@ -58,6 +58,8 @@ Options::Options() : control_interface_("0.0.0.0", 22222)
   chroot_dir_ = "/var/run";
   daemonize_ = true;
 	local_sync_port_ = 2023;
+	rtp_start_port_ = 34000;
+	rtp_end_port_ = 35000;
 }
 
 Options::~Options()
@@ -154,6 +156,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-c","--chroot-dir", chroot_dir_)
     PARSE_INVERSE_BOOL_PARAM("-d","--nodaemonize", daemonize_)
     PARSE_STRING_PARAM("-s","--control", control_interface_)
+    PARSE_SCALAR_PARAM2("-p","--port-range", rtp_start_port_, rtp_end_port_)
     else 
       return false;
   }
@@ -176,6 +179,7 @@ void Options::printUsage()
   std::cout << "            [-c|--chroot-dir] <directory>                          directory to make a chroot to" << std::endl;
   std::cout << "            [-d|--nodaemonize]                                     don't run in background" << std::endl;
   std::cout << "            [-s|--control] <addr[:port]>                           the address/port to listen on for control commands" << std::endl;
+  std::cout << "            [-p|--port-range] <start port> <end port>              port range used to relay rtp connections" << std::endl;
 }
 
 void Options::printOptions()
@@ -233,6 +237,28 @@ u_int16_t Options::getLocalSyncPort()
 Options& Options::setLocalSyncPort(u_int16_t l)
 {
   local_sync_port_ = l;
+  return *this;
+}
+
+u_int16_t Options::getRtpStartPort()
+{
+  return rtp_start_port_;
+}
+
+Options& Options::setRtpStartPort(u_int16_t l)
+{
+  rtp_start_port_ = l;
+  return *this;
+}
+
+u_int16_t Options::getRtpEndPort()
+{
+  return rtp_end_port_;
+}
+
+Options& Options::setRtpEndPort(u_int16_t l)
+{
+  rtp_end_port_ = l;
   return *this;
 }
 

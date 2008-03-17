@@ -33,6 +33,7 @@ OBJS = anyrtpproxy.o \
        ../networkPrefix.o \
        ../Sockets/libSockets.a \
        commandHandler.o \
+       portWindow.o \
        callIdQueue.o \
        options.o
 
@@ -44,6 +45,9 @@ anyrtpproxy: $(OBJS)
 	$(LD) $(OBJS) -o $@ $(LDFLAGS)
 
 options.o: options.cpp options.h
+	$(C++) $(CCFLAGS) $< -c
+
+portWindow.o: portWindow.cpp portWindow.h
 	$(C++) $(CCFLAGS) $< -c
 
 connectionList.o: connectionList.cpp connectionList.h
