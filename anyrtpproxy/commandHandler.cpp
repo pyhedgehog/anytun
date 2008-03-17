@@ -170,10 +170,14 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
     RtpSession& session = gRtpSessionTable.getOrNewSession(call_id, is_new);
     if(is_new)
     {
-      static u_int16_t port1 = 35000; // TODO: get next available port
-      static u_int16_t port2 = 35001; // TODO: get next available port
-      port1+=2;
-			port2+=2;
+      u_int16_t port1 = port_window_.newPort(); // TODO: get next available port
+      u_int16_t port2 = port_window_.newPort(); // TODO: get next available port
+			if( !port1 || !port2)
+			{
+				if( port1) port_window_.freePort(port1);
+				if( port2) port_window_.freePort(port2);
+				throw std::runtime_error("no free port found");
+			}
 
       session.setLocalAddr("0.0.0.0"); // TODO: read this from config
       session.setLocalPort1(port1);
