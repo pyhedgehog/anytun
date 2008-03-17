@@ -35,14 +35,15 @@
 #include "../datatypes.h"
 #include "../PracticalSocket.h"
 #include "../syncQueue.h"
+#include "portWindow.h"
 
 using std::string;
 
 class CommandHandler
 {
 public:
-  CommandHandler(SyncQueue& q, u_int16_t lp);
-  CommandHandler(SyncQueue& q, string la, u_int16_t lp);
+  CommandHandler(SyncQueue& q, u_int16_t lp, PortWindow &);
+  CommandHandler(SyncQueue& q, string la, u_int16_t lp, PortWindow &);
   ~CommandHandler();
   
   bool isRunning();
@@ -81,6 +82,7 @@ private:
   UDPSocket control_sock_;
   string local_address_;
   u_int16_t local_port_;
+	PortWindow& port_window_;
 };
 
 

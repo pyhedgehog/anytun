@@ -53,7 +53,7 @@ public:
 private:
 	u_int16_t start_port_;
 	u_int16_t end_port_;
-  Mutex mutex_;
+  ::Mutex mutex_;
 	PortSet ports_;
 
   PortWindow(const PortWindow &s);

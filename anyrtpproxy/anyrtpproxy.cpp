@@ -55,6 +55,7 @@
 #include "callIdQueue.h"
 
 #include "options.h"
+#include "portWindow.h"
 #include <map>
 
 
@@ -315,7 +316,8 @@ int main(int argc, char* argv[])
     pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
   }
 
-  CommandHandler cmd(queue, gOpt.getControlInterface().addr_, gOpt.getControlInterface().port_);
+	PortWindow port_window(gOpt.getRtpStartPort(),gOpt.getRtpEndPort());
+  CommandHandler cmd(queue, gOpt.getControlInterface().addr_, gOpt.getControlInterface().port_,port_window);
   
   int ret = sig.run();
   return ret;
