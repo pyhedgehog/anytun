@@ -97,26 +97,33 @@ void* listener(void* p)
     u_int16_t remote_port;
     while(1) {
       buf.setLength(MAX_PACKET_SIZE);
-      u_int32_t len;
+      u_int32_t len=0;
       if(param->dir_ == 1)
         len = param->sock1_.recvFrom(buf.getBuf(), buf.getLength(), remote_addr, remote_port);
       else if(param->dir_ == 2)
         len = param->sock2_.recvFrom(buf.getBuf(), buf.getLength(), remote_addr, remote_port);
+			else break;
       buf.setLength(len);
 
       RtpSession& session = gRtpSessionTable.getSession(param->call_id_);
       if(session.isDead())
         break;
 
-          //TODO: if weak? don't check but save the new(?) remote addr into list
       if((param->dir_ == 1 && (remote_port != session.getRemotePort1() || remote_addr != session.getRemoteAddr1())) || 
          (param->dir_ == 2 && (remote_port != session.getRemotePort2() || remote_addr != session.getRemoteAddr2())))
-        continue;
+      {
+        //TODO: if weak? don't check but save the new(?) remote addr into list
+				continue;
+			}
 
       if(param->dir_ == 1)
+			{
         param->sock2_.sendTo(buf.getBuf(), buf.getLength(), session.getRemoteAddr2(), session.getRemotePort2());
+			}
       else if(param->dir_ == 2)
+			{
         param->sock1_.sendTo(buf.getBuf(), buf.getLength(), session.getRemoteAddr1(), session.getRemotePort1());
+			}
     }  
   }
   catch(std::exception &e)

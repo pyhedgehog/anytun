@@ -34,7 +34,7 @@
 
 RtpSession::RtpSession(const std::string& call_id) : in_sync_(false), call_id_(call_id) , dead_(false), complete_(false), 
                                                      local_addr_("") , local_port1_(0), local_port2_(0),
-                                                     remote_addr1_(""), remote_addr2_(""), remote_port1_(0), remote_port2_(0)
+                                                     remote_addr1_(""), remote_addr2_(""), remote_port1_(0), remote_port2_(0),seen1_(false), seen2_(false)
 {  
 }
 
@@ -80,6 +80,34 @@ RtpSession& RtpSession::setLocalAddr(std::string a)
   Lock lock(mutex_);
   in_sync_ = false;
   local_addr_ = a;
+  return *this;
+}
+
+bool RtpSession::getSeen1()
+{
+  Lock lock(mutex_);
+  return seen1_;
+}
+
+RtpSession& RtpSession::setSeen1()
+{
+  Lock lock(mutex_);
+  //in_sync_ = false;
+  seen1_ = true;
+  return *this;
+}
+
+bool RtpSession::getSeen2()
+{
+  Lock lock(mutex_);
+  return seen2_;
+}
+
+RtpSession& RtpSession::setSeen2()
+{
+  Lock lock(mutex_);
+  //in_sync_ = false;
+  seen2_ = true;
   return *this;
 }
 

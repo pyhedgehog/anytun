@@ -65,6 +65,12 @@ public:
   std::string getRemoteAddr2();
   RtpSession& setRemoteAddr2(std::string a);
 
+	RtpSession& setSeen1();
+  bool getSeen1();
+
+	RtpSession& setSeen2();
+  bool getSeen2();
+
 private:
 	RtpSession(const RtpSession & src);
   
@@ -90,6 +96,8 @@ private:
     ar & remote_port1_;
     ar & remote_addr2_;
     ar & remote_port2_;
+		ar & seen1_;
+		ar & seen2_;
 
     if(old_local_port1 != local_port1_ || old_local_port2 != local_port2_ || old_local_addr != local_addr_)
       reinit();
@@ -107,6 +115,7 @@ private:
   u_int16_t local_port1_, local_port2_;
   std::string remote_addr1_, remote_addr2_;
   u_int16_t remote_port1_, remote_port2_;
+	bool seen1_,seen2_; //has at least 1 packet been recieved?
 };
 
 
