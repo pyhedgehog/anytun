@@ -57,7 +57,7 @@ Options::Options() : control_interface_("0.0.0.0", 22222)
   username_ = "nobody";
   chroot_dir_ = "/var/run";
   daemonize_ = true;
-	local_sync_port_ = 2023;
+	local_sync_port_ = 0;
 	rtp_start_port_ = 34000;
 	rtp_end_port_ = 35000;
 	no_nat_once_ = false;
@@ -129,12 +129,12 @@ Options::~Options()
       if(argc < 1 || argv[i+1][0] == '-')                \
         return false;                                    \
       std::stringstream tmp(argv[i+1]);                  \
-      LIST.clear();                                      \
+      /* LIST.clear(); */                                \
 			while (tmp.good())                                 \
 			{                                                  \
 				std::string tmp_line;                            \
 				getline(tmp,tmp_line,',');                       \
-				LIST.push_back(tmp_line);                        \
+				LIST.push(tmp_line);                        \
 			}                                                  \
       argc--;                                            \
       i++;                                               \
@@ -145,6 +145,7 @@ bool Options::parse(int argc, char* argv[])
   Lock lock(mutex);
 
   progname_ = argv[0];
+  std::queue<std::string> host_port_queue;
   argc--;
   for(int i=1; argc > 0; ++i)
   {
@@ -161,8 +162,22 @@ bool Options::parse(int argc, char* argv[])
     PARSE_INVERSE_BOOL_PARAM("-d","--nodaemonize", daemonize_)
     PARSE_STRING_PARAM("-s","--control", control_interface_)
     PARSE_SCALAR_PARAM2("-p","--port-range", rtp_start_port_, rtp_end_port_)
+		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
+    PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_port_)
+//    PARSE_SCALAR_PARAM("-I","--sync-interface", local_sync_addr_)
     else 
       return false;
+  }
+  while(!host_port_queue.empty())
+  {
+    std::stringstream tmp_stream(host_port_queue.front());
+    OptionConnectTo oct;
+    getline(tmp_stream,oct.host,':');
+    if(!tmp_stream.good())
+      return false;
+    tmp_stream >> oct.port;
+    host_port_queue.pop();
+    connect_to_.push_back(oct);
   }
   
   return sanityCheck();
@@ -186,6 +201,10 @@ void Options::printUsage()
   std::cout << "  [-p|--port-range] <start> <end>  port range used to relay rtp connections" << std::endl;
   std::cout << "  [-n|--nat]                       enable permantent automatic nat detection(use only with anytun)" << std::endl;
   std::cout << "  [-o|--no-nat-once]               disable automatic nat detection for new connections" << std::endl;
+//  std::cout << "       [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to" << std::endl;
+  std::cout << "  [-S|--sync-port] <port>          local unicast(sync) port to bind to" << std::endl;
+  std::cout << "  [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]"<< std::endl;
+  std::cout << "                                   List of Remote Sync Hosts/Ports"<< std::endl;
 }
 
 void Options::printOptions()
