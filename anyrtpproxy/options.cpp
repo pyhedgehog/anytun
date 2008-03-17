@@ -60,6 +60,8 @@ Options::Options() : control_interface_("0.0.0.0", 22222)
 	local_sync_port_ = 2023;
 	rtp_start_port_ = 34000;
 	rtp_end_port_ = 35000;
+	no_nat_once_ = false;
+	nat_ = false;
 }
 
 Options::~Options()
@@ -152,6 +154,8 @@ bool Options::parse(int argc, char* argv[])
     if(str == "-h" || str == "--help")
       return false;
     PARSE_BOOL_PARAM("-t","--chroot", chroot_)
+    PARSE_BOOL_PARAM("-n","--nat", nat_)
+    PARSE_BOOL_PARAM("-o","--no-nat-once", no_nat_once_)
     PARSE_SCALAR_PARAM("-u","--user", username_)
     PARSE_SCALAR_PARAM("-c","--chroot-dir", chroot_dir_)
     PARSE_INVERSE_BOOL_PARAM("-d","--nodaemonize", daemonize_)
@@ -172,14 +176,16 @@ bool Options::sanityCheck()
 
 void Options::printUsage()
 {
-  std::cout << "USAGE:" << std::endl;
-  std::cout << "anyrtpproxy [-h|--help]                                            prints this..." << std::endl;
-  std::cout << "            [-t|--chroot]                                          chroot and drop priviledges" << std::endl;
-  std::cout << "            [-u|--username] <username>                             in case of chroot run as this user" << std::endl;
-  std::cout << "            [-c|--chroot-dir] <directory>                          directory to make a chroot to" << std::endl;
-  std::cout << "            [-d|--nodaemonize]                                     don't run in background" << std::endl;
-  std::cout << "            [-s|--control] <addr[:port]>                           the address/port to listen on for control commands" << std::endl;
-  std::cout << "            [-p|--port-range] <start port> <end port>              port range used to relay rtp connections" << std::endl;
+  std::cout << "USAGE: anyrtpproxy" << std::endl;
+  std::cout << "  [-h|--help]                      prints this..." << std::endl;
+  std::cout << "  [-t|--chroot]                    chroot and drop priviledges" << std::endl;
+  std::cout << "  [-u|--username] <username>       in case of chroot run as this user" << std::endl;
+  std::cout << "  [-c|--chroot-dir] <directory>    directory to make a chroot to" << std::endl;
+  std::cout << "  [-d|--nodaemonize]               don't run in background" << std::endl;
+  std::cout << "  [-s|--control] <addr[:port]>     the address/port to listen on for control commands" << std::endl;
+  std::cout << "  [-p|--port-range] <start> <end>  port range used to relay rtp connections" << std::endl;
+  std::cout << "  [-n|--nat]                       enable permantent automatic nat detection(use only with anytun)" << std::endl;
+  std::cout << "  [-o|--no-nat-once]               disable automatic nat detection for new connections" << std::endl;
 }
 
 void Options::printOptions()
@@ -203,6 +209,18 @@ bool Options::getChroot()
 {
   Lock lock(mutex);
   return chroot_;
+}
+
+bool Options::getNat()
+{
+  Lock lock(mutex);
+  return nat_;
+}
+
+bool Options::getNoNatOnce()
+{
+  Lock lock(mutex);
+  return no_nat_once_;
 }
 
 std::string Options::getUsername()

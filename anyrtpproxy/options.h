@@ -77,6 +77,8 @@ public:
 
   std::string getProgname();
   bool getChroot();
+  bool getNat();
+  bool getNoNatOnce();
   std::string getUsername();
   std::string getChrootDir();
   bool getDaemonize();
@@ -110,6 +112,8 @@ private:
 
   std::string progname_;
   bool chroot_;
+  bool nat_;
+  bool no_nat_once_;
   std::string username_;
   std::string chroot_dir_;
   bool daemonize_;
