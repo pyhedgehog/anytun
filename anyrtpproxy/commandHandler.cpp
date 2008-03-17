@@ -210,6 +210,7 @@ string CommandHandler::handleResponse(string modifiers, string call_id, string a
     iss >> rport;
     session.setRemotePort2(rport);
     session.setRemoteAddr2(addr);
+    session.isComplete(true);
     SyncCommand sc(call_id);
     queue_.push(sc);
 

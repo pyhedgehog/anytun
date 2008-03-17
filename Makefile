@@ -59,6 +59,7 @@ OBJS = tunDevice.o \
 			 keyDerivation.o \
 			 rtpSessionTable.o \
 			 rtpSession.o \
+       anyrtpproxy/callIdQueue.o \
 			 mpi.o \
 			 cipherFactory.o \
 			 authAlgoFactory.o \
@@ -97,10 +98,11 @@ ANYCTROBJS = log.o \
 						 signalController.o \
 						 connectionList.o \
 						 connectionParam.o \
-			 rtpSessionTable.o \
-			 rtpSession.o \
-       syncRtpCommand.o \
-       PracticalSocket.o \
+						 rtpSessionTable.o \
+						 rtpSession.o \
+						 anyrtpproxy/callIdQueue.o \
+						 syncRtpCommand.o \
+						 PracticalSocket.o \
 						 anyctrOptions.o \
 						 router.o \
 						 routingTable.o \

@@ -39,10 +39,13 @@
 class RtpSession
 {
 public:
-	RtpSession();
+	RtpSession(const std::string& call_id);
 
   bool isDead();
   bool isDead(bool d);
+
+  bool isComplete();
+  bool isComplete(bool c);
 
   std::string getLocalAddr();
   RtpSession& setLocalAddr(std::string a);
@@ -79,6 +82,7 @@ private:
     u_int16_t old_local_port2 = local_port2_;
 
     ar & dead_;
+    ar & complete_;
     ar & local_addr_;
     ar & local_port1_;
     ar & local_port2_;
@@ -96,7 +100,9 @@ private:
   bool in_sync_;
 	::Mutex mutex_;
 
+  const std::string& call_id_;
   bool dead_;
+  bool complete_;
   std::string local_addr_;
   u_int16_t local_port1_, local_port2_;
   std::string remote_addr1_, remote_addr2_;

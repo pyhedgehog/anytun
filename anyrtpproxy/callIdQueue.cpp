@@ -28,47 +28,49 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _RTPSESSIONTABLE_H
-#define _RTPSESSIONTABLE_H
+#include "callIdQueue.h"
 
-#include <map>
+CallIdQueue* CallIdQueue::inst = NULL;
+Mutex CallIdQueue::instMutex;
+CallIdQueue& gCallIdQueue = CallIdQueue::instance();
 
-#include "threadUtils.hpp"
-#include "datatypes.h"
-#include "rtpSession.h"
-typedef std::map<std::string,RtpSession*> RtpSessionMap;
-
-class RtpSessionTable
+CallIdQueue& CallIdQueue::instance()
 {
-public:
-	static RtpSessionTable& instance();
-	RtpSessionTable();
-	~RtpSessionTable();
-	void delSession(const std::string & call_id);
-	bool empty();
-	void clear();
-  ::Mutex& getMutex();
-	RtpSessionMap::iterator getBeginUnlocked();
-	RtpSessionMap::iterator getEndUnlocked();
-	RtpSession& getOrNewSession(const std::string & call_id, bool& isnew);
-	RtpSession& getOrNewSessionUnlocked(const std::string & call_id, bool& isnew);
-	RtpSession& getSession(const std::string & call_id);
+  Lock lock(instMutex);
+  static instanceCleaner c;
+  if(!inst)
+    inst = new CallIdQueue();
+  
+  return *inst;
+}
 
-private:
-  static ::Mutex instMutex;
-	static RtpSessionTable* inst;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-     if(RtpSessionTable::inst != 0)
-       delete RtpSessionTable::inst;
-   }
-	};
-	RtpSessionTable(const RtpSessionTable &s);
-  void operator=(const RtpSessionTable &s);
-	RtpSessionMap map_;
-  ::Mutex mutex_;
-};
+CallIdQueue::CallIdQueue()
+{
+}
 
-extern RtpSessionTable& gRtpSessionTable;
+CallIdQueue::~CallIdQueue()
+{
+  while(!callids_.empty())
+    pop();
+}
 
-#endif
+std::string& CallIdQueue::front()
+{
+  sem_.down();
+  Lock lock(mutex_);
+  return callids_.front();
+}
+
+void CallIdQueue::push(std::string c)
+{
+  Lock lock(mutex_);
+  callids_.push(c);
+  sem_.up();
+}
+
+void CallIdQueue::pop()
+{
+  Lock lock(mutex_);
+  callids_.pop();
+}
+

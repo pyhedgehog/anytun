@@ -30,8 +30,11 @@
 
 #include "rtpSession.h"
 
-RtpSession::RtpSession() : in_sync_(false), dead_(false), local_addr_(""), local_port1_(0), local_port2_(0),
-                           remote_addr1_(""), remote_addr2_(""), remote_port1_(0), remote_port2_(0)
+#include "anyrtpproxy/callIdQueue.h"
+
+RtpSession::RtpSession(const std::string& call_id) : in_sync_(false), call_id_(call_id) , dead_(false), complete_(false), 
+                                                     local_addr_("") , local_port1_(0), local_port2_(0),
+                                                     remote_addr1_(""), remote_addr2_(""), remote_port1_(0), remote_port2_(0)
 {  
 }
 
@@ -39,7 +42,7 @@ void RtpSession::reinit()
 {
   Lock lock(mutex_);
 
-// TODO: inform threads of reinit
+  gCallIdQueue.push(call_id_);
 }
 
 bool RtpSession::isDead()
@@ -52,6 +55,18 @@ bool RtpSession::isDead(bool d)
 {
   Lock Lock(mutex_);
   return dead_ = d;
+}
+
+bool RtpSession::isComplete()
+{
+  Lock lock(mutex_);
+  return complete_;
+}
+
+bool RtpSession::isComplete(bool c)
+{
+  Lock lock(mutex_);
+  return complete_ = c;
 }
 
 std::string RtpSession::getLocalAddr()

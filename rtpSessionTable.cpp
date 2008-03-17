@@ -54,21 +54,7 @@ RtpSessionTable::~RtpSessionTable()
 {
 } 
 
-void RtpSessionTable::addSession(const std::string & call_id, RtpSession* ses )
-{
-  Lock lock(mutex_);
-	
-	
-  std::pair<RtpSessionMap::iterator, bool> ret = map_.insert(RtpSessionMap::value_type(call_id,ses));
-  if(!ret.second)
-  {
-    map_.erase(ret.first);
-    map_.insert(RtpSessionMap::value_type(call_id,ses));
-  }
-}
-
-
-void RtpSessionTable::delSession(const std::string & call_id )
+void RtpSessionTable::delSession(const std::string & call_id)
 {
   Lock lock(mutex_);
 
@@ -93,9 +79,9 @@ RtpSession& RtpSessionTable::getOrNewSessionUnlocked(const std::string & call_id
     return *(it->second);
 
   is_new = true;
-  map_.insert(RtpSessionMap::value_type(call_id, new RtpSession()));
-  it = map_.find(call_id);
-  return *(it->second);
+  std::pair<RtpSessionMap::iterator, bool> ret = map_.insert(RtpSessionMap::value_type(call_id, NULL));
+  ret.first->second = new RtpSession(ret.first->first);
+  return *(ret.first->second);
 }
 
 RtpSession& RtpSessionTable::getSession(const std::string & call_id)
