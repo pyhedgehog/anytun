@@ -137,7 +137,7 @@ void AesIcmKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer
   Mpi x(128);                                                        // TODO: hardcoded size
   x = key_id ^ salt;
 
-  u_int32_t written;
+  size_t written;
   u_int8_t *ctr_buf = x.mul2exp(16).getNewBuf(&written);         // TODO: hardcoded size
   err = gcry_cipher_setctr( cipher_ , ctr_buf, written );
   delete[] ctr_buf;

@@ -156,7 +156,7 @@ Mpi Mpi::mul2exp(u_int32_t e) const
 }
 
 //TODO: problem, seems as gcry_mpi_(a)print doesn't work for mpi values of '0'
-u_int8_t* Mpi::getNewBuf(u_int32_t* written) const
+u_int8_t* Mpi::getNewBuf(size_t* written) const
 {
   u_int8_t* res_cpy;
   gcry_mpi_aprint( GCRYMPI_FMT_STD, &res_cpy, written, val_ );

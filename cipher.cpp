@@ -145,7 +145,7 @@ void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t o
 
   ctr = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16);  // TODO: hardcoded size
 
-  u_int32_t written;
+  size_t written;
   u_int8_t *ctr_buf = ctr.getNewBuf(&written);             // TODO: hardcoded size
   err = gcry_cipher_setctr( cipher_, ctr_buf, written );        // TODO: hardcoded size 
   delete[] ctr_buf;
