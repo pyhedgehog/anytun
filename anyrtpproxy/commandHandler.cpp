@@ -218,8 +218,6 @@ string CommandHandler::handleResponse(string modifiers, string call_id, string a
     SyncCommand sc(call_id);
     queue_.push(sc);
 
-    gCallIdQueue.push(call_id);
-
     ostringstream oss;
     oss << session.getLocalPort1();
     return oss.str();

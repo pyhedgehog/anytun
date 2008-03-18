@@ -83,10 +83,6 @@ private:
 	{    
     Lock lock(mutex_);
 
-    std::string old_local_addr = local_addr_;
-    u_int16_t old_local_port1 = local_port1_;
-    u_int16_t old_local_port2 = local_port2_;
-
     ar & dead_;
     ar & complete_;
     ar & local_addr_;
@@ -99,7 +95,7 @@ private:
 		ar & seen1_;
 		ar & seen2_;
 
-    if(old_local_port1 != local_port1_ || old_local_port2 != local_port2_ || old_local_addr != local_addr_)
+    if(complete_)
       reinit();
 
     in_sync_ = true;

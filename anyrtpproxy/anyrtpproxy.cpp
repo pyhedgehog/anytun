@@ -201,7 +201,7 @@ void* listenerManager(void* dont_use_me)
         gRtpSessionTable.delSession(call_id);
         continue;
       }
-          // TODO: reinit if session is changed or cleanup if it is daed
+          // TODO: reinit if session changed
     }
   }
   catch(std::exception &e)
