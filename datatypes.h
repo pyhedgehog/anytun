@@ -31,7 +31,7 @@
 #ifndef _DATATYPES_H_
 #define _DATATYPES_H_
 
-#include<tr1/cstdint>
+#include<boost/cstdint.hpp>
 
 typedef uint8_t u_int8_t;
 typedef uint16_t u_int16_t;
