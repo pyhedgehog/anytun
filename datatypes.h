@@ -31,17 +31,12 @@
 #ifndef _DATATYPES_H_
 #define _DATATYPES_H_
 
-typedef signed char int8_t;
-typedef unsigned char u_int8_t;
+#include<tr1/cstdint>
 
-typedef signed short int16;
-typedef unsigned short u_int16_t;
-
-typedef signed int int32;
-typedef unsigned int u_int32_t;
-
-typedef signed long long int64_t;
-typedef unsigned long long u_int64_t;
+typedef uint8_t u_int8_t;
+typedef uint16_t u_int16_t;
+typedef uint32_t u_int32_t;
+typedef uint64_t u_int64_t;
 
 typedef u_int32_t window_size_t;
 
