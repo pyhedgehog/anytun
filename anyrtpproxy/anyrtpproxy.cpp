@@ -124,13 +124,10 @@ void* listener(void* p)
 			}
 
       if(param->dir_ == 1)
-			{
         param->sock2_.sendTo(buf.getBuf(), buf.getLength(), session.getRemoteAddr2(), session.getRemotePort2());
-			}
       else if(param->dir_ == 2)
-			{
         param->sock1_.sendTo(buf.getBuf(), buf.getLength(), session.getRemoteAddr1(), session.getRemotePort1());
-			}
+      else break;
     }  
   }
   catch(std::exception &e)

@@ -188,8 +188,6 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
     iss >> rport;
     session.setRemotePort1(rport);
     session.setRemoteAddr1(addr);
-    SyncCommand sc(call_id);
-    queue_.push(sc);
 
     ostringstream oss;
     oss << session.getLocalPort2();

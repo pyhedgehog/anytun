@@ -95,7 +95,7 @@ private:
 		ar & seen1_;
 		ar & seen2_;
 
-    if(complete_)
+    if(complete_ && !dead_)
       reinit();
 
     in_sync_ = true;
