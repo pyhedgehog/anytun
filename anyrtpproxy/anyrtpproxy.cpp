@@ -121,10 +121,10 @@ void* listener(void* p)
          (param->dir_ == 2 && (remote_port != session.getRemotePort2() || remote_addr != session.getRemoteAddr2())))
       {
         if(gOpt.getNat() ||
-           (!gOpt.getNoNatOnce() && ((param->dir_ == 1 && session.getSeen1()) || 
-                                     (param->dir_ == 2 && session.getSeen2()))))
+           (!gOpt.getNoNatOnce() && ((param->dir_ == 1 && !session.getSeen1()) || 
+                                     (param->dir_ == 2 && !session.getSeen2()))))
         {
-          cLog.msg(Log::PRIO_NOTICE) << "listener(" << param->call_id_ << "/" << param->dir_ << ") setting remote host to"
+          cLog.msg(Log::PRIO_NOTICE) << "listener(" << param->call_id_ << "/" << param->dir_ << ") setting remote host to "
                                      << remote_addr << ":" << remote_port;
           if(param->dir_ == 1) {
             session.setRemotePort1(remote_port);
@@ -227,8 +227,8 @@ void* listenerManager(void* p)
     }
     catch(std::exception &e)
     {
-      cLog.msg(Log::PRIO_ERR) << "listenerManager restarting because: " << e.what();
-      usleep(1000);
+      cLog.msg(Log::PRIO_ERR) << "listenerManager restarting after exception: " << e.what();
+      usleep(500); // in case of an hard error don't block cpu (this is ugly)
     }
   }
   cLog.msg(Log::PRIO_ERR) << "listenerManager exiting because of unknown reason";
