@@ -40,8 +40,6 @@ RtpSession::RtpSession(const std::string& call_id) : in_sync_(false), call_id_(c
 
 void RtpSession::reinit()
 {
-  Lock lock(mutex_);
-
   gCallIdQueue.push(call_id_);
 }
 
