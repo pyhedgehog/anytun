@@ -202,6 +202,17 @@ public:
   int recv(void *buffer, int bufferLen) throw(SocketException);
 
   /**
+   *   Read into the given buffer up to bufferLen bytes data from this
+   *   socket.  Call connect() before recvNonBlocking().
+   *   @param buffer buffer to receive the data
+   *   @param bufferLen maximum number of bytes to read into buffer
+   *   @param timeout timout in ms
+   *   @return number of bytes read, 0 for timeout, and -1 for error
+   *   @exception SocketException thrown if unable to receive data
+   */
+  int recvNonBlocking(void *buffer, int bufferLen, int timeout) throw(SocketException);
+
+  /**
    *   Get the foreign address.  Call connect() before calling recv()
    *   @return foreign address
    *   @exception SocketException thrown if unable to fetch foreign address
@@ -346,6 +357,20 @@ public:
    */
   int recvFrom(void *buffer, int bufferLen, string &sourceAddress, 
                unsigned short &sourcePort) throw(SocketException);
+
+  /**
+   *   Read read up to bufferLen bytes data from this socket.  The given buffer
+   *   is where the data will be placed
+   *   @param buffer buffer to receive data
+   *   @param bufferLen maximum number of bytes to receive
+   *   @param sourceAddress address of datagram source
+   *   @param sourcePort port of data source
+   *   @param timeout int ms
+   *   @return number of bytes received and -1 for error
+   *   @exception SocketException thrown if unable to receive datagram
+   */
+  int recvFromNonBlocking(void *buffer, int bufferLen, string &sourceAddress, 
+                          unsigned short &sourcePort, int timeout) throw(SocketException);
 
   /**
    *   Set the multicast TTL

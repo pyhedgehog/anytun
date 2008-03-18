@@ -62,6 +62,7 @@
   #include <arpa/inet.h>       // For inet_addr()
   #include <unistd.h>          // For close()
   #include <netinet/in.h>      // For sockaddr_in
+  #include <poll.h>
   typedef void raw_type;       // Type used for raw data on this platform
 #endif
 
@@ -250,6 +251,24 @@ int CommunicatingSocket::recv(void *buffer, int bufferLen)
   return rtn;
 }
 
+int CommunicatingSocket::recvNonBlocking(void *buffer, int bufferLen, int timeOut)
+    throw(SocketException) 
+{
+  struct pollfd pfd[1];
+  pfd[0].fd = sockDesc;
+  pfd[0].events = POLLIN;  
+  int rtn = poll(pfd,1,timeOut);
+  if(rtn > 0) {
+    if ((rtn = ::recv(sockDesc, (raw_type *) buffer, bufferLen, 0)) < 0) {
+      throw SocketException("non blocking receive failed", true);
+    }
+    if(!rtn) {
+      throw SocketException("connection closed by peer", false);
+    }
+  }  
+  return rtn;
+}
+
 string CommunicatingSocket::getForeignAddress() 
     throw(SocketException) {
   sockaddr_in addr;
@@ -393,6 +412,29 @@ int UDPSocket::recvFrom(void *buffer, int bufferLen, string &sourceAddress,
                       (sockaddr *) &clntAddr, (socklen_t *) &addrLen)) < 0) {
     throw SocketException("Receive failed (recvfrom())", true);
   }
+  sourceAddress = inet_ntoa(clntAddr.sin_addr);
+  sourcePort = ntohs(clntAddr.sin_port);
+
+  return rtn;
+}
+
+int UDPSocket::recvFromNonBlocking(void *buffer, int bufferLen, string &sourceAddress,
+    unsigned short &sourcePort, int timeOut) throw(SocketException) {
+  sockaddr_in clntAddr;
+  socklen_t addrLen = sizeof(clntAddr);
+  struct pollfd pfd[1];
+  pfd[0].fd = sockDesc;
+  pfd[0].events = POLLIN;  
+  int rtn = poll(pfd,1,timeOut);
+  if(rtn > 0) {
+    if ((rtn = recvfrom(sockDesc, (raw_type *) buffer, bufferLen, 0, 
+                        (sockaddr *) &clntAddr, (socklen_t *) &addrLen)) < 0) {
+      throw SocketException("Receive failed (recvfrom())", true);
+    }
+    if(!rtn) {
+      throw SocketException("connection closed by peer", false);
+    }
+  }  
   sourceAddress = inet_ntoa(clntAddr.sin_addr);
   sourcePort = ntohs(clntAddr.sin_port);
 
