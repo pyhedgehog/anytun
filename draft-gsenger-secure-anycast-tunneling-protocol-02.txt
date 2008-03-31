@@ -204,7 +204,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
    It than gets decapsulated by the router.  This router makes a routing
    descision based on the underlying protocol and transmits a new SATP
    package to one or more unicast hosts depending on the routing
-   descition.
+   decision.
 
 
 
@@ -535,7 +535,7 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
    the SRTP protocol and these transforms might use the RTP padding
    format, so a RTP like padding is supported.  If the padding count
    field is present, than the padding count field MUST be set to the
-   padding lenght.
+   padding length.
 
 4.8.  padding count (OPTIONAL)
 
@@ -573,10 +573,10 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
    read SRTP RFC3711 section 3-9 [1] for details.
 
    The least significant bits of SSRC are replaced by the sender ID and
-   the rest is filled with zeros.  For the SRTP SEQ the 16 least
-   significant bits of the SATP sequence number are used and the 16 most
-   significant bits of the sequence number replace the 16 least
-   significant bits of the SRTP ROC.
+   the most significant bits are replaced by the mux.  For the SRTP SEQ
+   the 16 least significant bits of the SATP sequence number are used
+   and the 16 most significant bits of the sequence number replace the
+   16 least significant bits of the SRTP ROC.
 
    Difference between SRTP and SATP
 
@@ -619,8 +619,8 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 5.  Security Considerations
 
-   As SATP uses the same encrytion technics as SRTP [1], it shares the
-   same security issues.  This section will only discuss some small
+   As SATP uses the same encryption techniques as SRTP [1], it shares
+   the same security issues.  This section will only discuss some small
    changes.  Please read SRTP RFC3711 section 9 [1] for details.
 
 5.1.  Replay protection

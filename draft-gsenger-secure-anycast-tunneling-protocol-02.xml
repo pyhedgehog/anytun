@@ -76,7 +76,7 @@
   endpoint | using SATP    |  endpoint | using SATP    |  endpoint 
                  </artwork>
        </figure>
-	      <t>In this scenario the payload gets encapsuleted into a SATP packet by a unicast host and gets transmitted to one of the anycast routers. It than gets decapsulated by the router. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing descition.</t> 
+	      <t>In this scenario the payload gets encapsuleted into a SATP packet by a unicast host and gets transmitted to one of the anycast routers. It than gets decapsulated by the router. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing decision.</t> 
 	    </section>
 
 	    <section title='Tunneling from unicast hosts to anycast networks'>
@@ -234,7 +234,7 @@ HEX
        <section title="padding (OPTIONAL)">
        <t>Padding of max 255 octets.
 None of the pre-defined encryption transforms uses any padding; for
-   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If the padding count field is present, than the padding count field MUST be set to the padding lenght.</t>
+   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If the padding count field is present, than the padding count field MUST be set to the padding length.</t>
        </section>
        <section title="padding count (OPTIONAL)">
        <t>The number of octets of the padding field. This field is optional. It's presence is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.</t>
@@ -246,7 +246,7 @@ None of the pre-defined encryption transforms uses any padding; for
 	<t>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not of the MKI. On sender side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO calculate the authentication tag before decrypting the encrypted portion.</t>
 	</section>
     <section title="Encryption">
-     <t>Encryption is done in the same way as for <xref target="RFC3711">SRTP</xref>. This section will only discuss some small changes that HAVE TO be made. Please read  <xref target="RFC3711">SRTP RFC3711 section 3-9</xref> for details. </t><t>The least significant bits of SSRC are replaced by the sender ID and the rest is filled with zeros. For the SRTP SEQ the 16 least significant bits of the SATP sequence number are used and the 16 most significant bits of the sequence number replace the 16 least significant bits of the SRTP ROC.</t>
+     <t>Encryption is done in the same way as for <xref target="RFC3711">SRTP</xref>. This section will only discuss some small changes that HAVE TO be made. Please read  <xref target="RFC3711">SRTP RFC3711 section 3-9</xref> for details. </t><t>The least significant bits of SSRC are replaced by the sender ID and the most significant bits are replaced by the mux. For the SRTP SEQ the 16 least significant bits of the SATP sequence number are used and the 16 most significant bits of the sequence number replace the 16 least significant bits of the SRTP ROC.</t>
    <figure anchor="srtp_vs_satp">
       <preamble>Difference between SRTP and SATP</preamble>
       <artwork>
@@ -275,7 +275,7 @@ None of the pre-defined encryption transforms uses any padding; for
     </section>
   </section>
     <section title="Security Considerations">
-     <t>As SATP uses the same encrytion technics as <xref target="RFC3711">SRTP</xref>, it shares the same security issues. This section will only discuss some small changes. Please read  <xref target="RFC3711">SRTP RFC3711 section 9</xref> for details.</t>
+     <t>As SATP uses the same encryption techniques as <xref target="RFC3711">SRTP</xref>, it shares the same security issues. This section will only discuss some small changes. Please read  <xref target="RFC3711">SRTP RFC3711 section 9</xref> for details.</t>
       <section title="Replay protection">
       <t>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SHOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast receiver. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.</t>
       </section>
