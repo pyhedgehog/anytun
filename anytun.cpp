@@ -169,8 +169,13 @@ void* sender(void* p)
       a->setKey(session_auth_key);
       a->generate(encrypted_packet);
     }  
-
-    param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_host_, conn.remote_port_);
+    try
+		{
+      param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_host_, conn.remote_port_);
+		}
+		catch (Exception e)
+		{
+		}
   }
   pthread_exit(NULL);
 }
