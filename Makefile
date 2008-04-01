@@ -7,7 +7,7 @@ CCFLAGS = -g -Wall
 CCFLAGS += -DSOCKETS_NAMESPACE=sockets
 CCFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
 LD = g++
-LDFLAGS = -g -Wall -O2 -ldl -lpthread -lgcrypt -lssl -lboost_serialization
+LDFLAGS = -g -Wall -O2 -ldl -lpthread -lgcrypt -lboost_serialization
 
 OPENVPNDEPS = openvpn/tun.o \
               openvpn/error.o \

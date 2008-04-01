@@ -21,8 +21,8 @@ CFLAGS +=	-DLINUX
 
 
 LIBS +=		\
-		-lssl -lcrypto \
 		-lpthread
+#		-lssl -lcrypto \
 
 OBJS +=		Semaphore.o
 
