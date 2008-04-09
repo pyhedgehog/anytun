@@ -7,13 +7,13 @@ do
  local payload_types = {
        [0x0800] = "IPv4",
        [0x6558] = "Ethernet",
-       [0x56DD] = "IPv6"
+       [0x86DD] = "IPv6"
  }
 
  local payload_dissector = {
        [0x0800] = "ip",
        [0x6558] = "ethernet",
-       [0x56DD] = "ipv6"
+       [0x86DD] = "ipv6"
  }
 
  local field_seq = ProtoField.uint32("satp.seq","Sequence Number",base.DEC)

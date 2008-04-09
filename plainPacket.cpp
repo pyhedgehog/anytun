@@ -55,7 +55,18 @@ payload_type_t PlainPacket::getPayloadType() const
 
 void PlainPacket::setPayloadType(payload_type_t payload_type)
 {
-  if(payload_type_)
+  if(!payload_type_)
+    return;
+  
+  if(payload_type == PAYLOAD_TYPE_TUN)
+  {
+    struct ip* hdr = reinterpret_cast<struct ip*>(payload_);
+    if(hdr->ip_v == 4)
+      *payload_type_ = PAYLOAD_TYPE_T_HTON(PAYLOAD_TYPE_TUN4);
+    else if(hdr->ip_v == 6)
+      *payload_type_ = PAYLOAD_TYPE_T_HTON(PAYLOAD_TYPE_TUN6);
+  }
+  else
     *payload_type_ = PAYLOAD_TYPE_T_HTON(payload_type);
 }
 
@@ -106,7 +117,7 @@ NetworkAddress PlainPacket::getSrcAddr() const
         // TODO
     return NetworkAddress();
   }
-  else if(type == PAYLOAD_TYPE_TUN) // IPv4
+  else if(type == PAYLOAD_TYPE_TUN4) // IPv4
   {
     if(length_ < (sizeof(payload_type_t)+sizeof(struct ip)))
       return NetworkAddress();
@@ -135,7 +146,7 @@ NetworkAddress PlainPacket::getDstAddr() const
         // TODO
     return NetworkAddress();
   }
-  else if(type == PAYLOAD_TYPE_TUN) // IPv4
+  else if(type == PAYLOAD_TYPE_TUN4) // IPv4
   {
     if(length_ < (sizeof(payload_type_t)+sizeof(struct ip)))
       return NetworkAddress();

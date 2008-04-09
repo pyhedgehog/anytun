@@ -40,31 +40,32 @@
 
 
       // TODO: in should be const but does not work with getBuf() :(
-void Cipher::encrypt(PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id)
+void Cipher::encrypt(PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-	u_int32_t len = cipher(in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id);
+	u_int32_t len = cipher(in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
 	out.setSenderId(sender_id);
 	out.setSeqNr(seq_nr);
+  out.setMux(mux);
 	out.setPayloadLength(len);
 }
 
       // TODO: in should be const but does not work with getBuf() :(
 void Cipher::decrypt(EncryptedPacket & in, PlainPacket & out)
 {
-	u_int32_t len = decipher(in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId());
+	u_int32_t len = decipher(in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
 	out.setLength(len);
 }
 
 
 //******* NullCipher *******
 
-u_int32_t NullCipher::cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
+u_int32_t NullCipher::cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
 	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
 }
 
-u_int32_t NullCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
+u_int32_t NullCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
 	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
@@ -105,19 +106,19 @@ void AesIcmCipher::setSalt(Buffer& salt)
     salt_[u_int32_t(0)] = 1; // TODO: this is a outstandingly ugly workaround
 }
 
-u_int32_t AesIcmCipher::cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
+u_int32_t AesIcmCipher::cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  calc(in, ilen, out, olen, seq_nr, sender_id);
+  calc(in, ilen, out, olen, seq_nr, sender_id, mux);
   return (ilen < olen) ? ilen : olen;
 }
 
-u_int32_t AesIcmCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
+u_int32_t AesIcmCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  calc(in, ilen, out, olen, seq_nr, sender_id);
+  calc(in, ilen, out, olen, seq_nr, sender_id, mux);
   return (ilen < olen) ? ilen : olen;
 }
 
-void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id)
+void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
   if(!cipher_)
     return;
@@ -138,12 +139,15 @@ void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t o
 
   Mpi ctr(128);                                                // TODO: hardcoded size
   Mpi salt(salt_.getBuf(), salt_.getLength());
-  Mpi sid(32);                                                 // TODO: Q@OTTI add mux to sender_id????
-  sid = sender_id;
+  Mpi sid_mux(32);
+  sid_mux = sender_id;
+  Mpi mux_mpi(32);
+  mux_mpi = mux;
+  sid_mux = sid_mux ^ mux_mpi.mul2exp(16);
   Mpi seq(32);
   seq = seq_nr;
 
-  ctr = salt.mul2exp(16) ^ sid.mul2exp(64) ^ seq.mul2exp(16);  // TODO: hardcoded size
+  ctr = salt.mul2exp(16) ^ sid_mux.mul2exp(64) ^ seq.mul2exp(16);  // TODO: hardcoded size
 
   size_t written;
   u_int8_t *ctr_buf = ctr.getNewBuf(&written);             // TODO: hardcoded size

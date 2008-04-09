@@ -62,10 +62,10 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   remote_sync_addr_ = "";
   remote_addr_ = "";
   remote_port_ = 4444;
-  dev_name_ = "tap";
+  dev_name_ = "tun";
   dev_type_ = "";
-  ifconfig_param_local_ = "192.168.200.1";
-  ifconfig_param_remote_netmask_ = "255.255.255.0";
+  ifconfig_param_local_ = "";
+  ifconfig_param_remote_netmask_ = "";
   seq_window_size_ = 100;
   cipher_ = "aes-ctr";
   kd_prf_ = "aes-ctr";

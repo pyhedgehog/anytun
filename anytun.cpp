@@ -157,7 +157,7 @@ void* sender(void* p)
     c->setSalt(session_salt);
 
     // encrypt packet
-    c->encrypt(plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId());
+    c->encrypt(plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId(), mux);
 
     encrypted_packet.setHeader(conn.seq_nr_, gOpt.getSenderId(), mux);
     conn.seq_nr_++;
@@ -291,7 +291,8 @@ void* receiver(void* p)
     c->decrypt(encrypted_packet, plain_packet);
     
     // check payload_type
-    if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN) ||
+    if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN4 && 
+                                                       plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN6) ||
        (param->dev.getType() == TunDevice::TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
       continue;
 
@@ -374,7 +375,9 @@ int main(int argc, char* argv[])
   SignalController sig;
   sig.init();
   std::string dev_type(gOpt.getDevType()); 
-  TunDevice dev(gOpt.getDevName().c_str(), dev_type=="" ? NULL : dev_type.c_str(), gOpt.getIfconfigParamLocal().c_str(), gOpt.getIfconfigParamRemoteNetmask().c_str());
+  TunDevice dev(gOpt.getDevName().c_str(), dev_type=="" ? NULL : dev_type.c_str(), 
+                gOpt.getIfconfigParamLocal() =="" ? NULL : gOpt.getIfconfigParamLocal().c_str(), 
+                gOpt.getIfconfigParamRemoteNetmask() =="" ? NULL : gOpt.getIfconfigParamRemoteNetmask().c_str());
 
   PacketSource* src;
   if(gOpt.getLocalAddr() == "")

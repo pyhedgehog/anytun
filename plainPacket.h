@@ -43,7 +43,8 @@ class Cipher;
  */
 
 #define PAYLOAD_TYPE_TAP 0x6558
-#define PAYLOAD_TYPE_TUN 0x0800
+#define PAYLOAD_TYPE_TUN 0x0000
+#define PAYLOAD_TYPE_TUN4 0x0800
 #define PAYLOAD_TYPE_TUN6 0x86DD 
 
 class PlainPacket : public Buffer
