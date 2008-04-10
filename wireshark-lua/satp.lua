@@ -12,7 +12,7 @@ do
 
  local payload_dissector = {
        [0x0800] = "ip",
-       [0x6558] = "ethernet",
+       [0x6558] = "eth",
        [0x86DD] = "ipv6"
  }
 

@@ -58,8 +58,12 @@ void PlainPacket::setPayloadType(payload_type_t payload_type)
   if(!payload_type_)
     return;
   
-  if(payload_type == PAYLOAD_TYPE_TUN)
-  {
+  if(payload_type == PAYLOAD_TYPE_TUN) {
+    if(!payload_) {
+      *payload_type_ = PAYLOAD_TYPE_T_HTON(0);
+      return;
+    }
+
     struct ip* hdr = reinterpret_cast<struct ip*>(payload_);
     if(hdr->ip_v == 4)
       *payload_type_ = PAYLOAD_TYPE_T_HTON(PAYLOAD_TYPE_TUN4);
