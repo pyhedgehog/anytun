@@ -17,9 +17,6 @@ Building from source
 --------------------
 cd anytun
 ./configure
-cd Sockets
-make
-cd ..
 make
 
 
