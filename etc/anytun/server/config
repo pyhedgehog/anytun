@@ -10,7 +10,7 @@ port 4444
 ## local unicast(sync) ip address to bind to
 # sync-interface <ip-address>
 ## local unicast(sync) port to bind to
-#sync-port <port>
+#sync-port 1234
 ## remote hosts to sync with
 #sync-hosts <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]
 ## Device name
@@ -30,6 +30,8 @@ auth-algo sha1
 ## 1st argument the local address for the tun/tap device
 ## 2nd argument is either the remote address(tun) or netmask(tap)
 #ifconfig <local> <remote|netmask>
+## Controll Host for multi client support
+#control-host 127.0.0.1:4445
 
 ### Connection Parameters (for clients without config server)
 ## remote host
