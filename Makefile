@@ -117,7 +117,7 @@ ANYCTROBJS = log.o \
 						 syncConnectionCommand.o \
 						 $(SOCKETDEPS)
 
-EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
+EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables manpage
 
 all: $(EXECUTABLE) libAnysync.a anyrtpproxy
 
@@ -275,6 +275,7 @@ distclean: clean
 	rm -f config.sub config.guess
 
 cleanall: clean
+	@cd man ; make clean
 	make --directory=$(CURDIR)/Sockets clean
 	make --directory=$(CURDIR)/openvpn clean
 	rm -f Sockets/libSockets.a Sockets/Sockets-config
@@ -286,6 +287,9 @@ clean:
 	rm -f -r doc/latex/*
 	rm -f libAnysync.a
 	make --directory=$(CURDIR)/anyrtpproxy clean
+
+manpage:
+	@cd man ; make
 
 doxygen:
 	doxygen Doxyfile
