@@ -356,14 +356,14 @@ void chrootAndDrop(string const& chrootdir, string const& username)
       std::cerr << "can't chroot to " << chrootdir << std::endl;
       exit(-1);
 		}
-    std::cout << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
+    cLog.msg(Log::PRIO_NOTICE) << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
     chdir("/");
 		if (initgroups(pw->pw_name, pw->pw_gid) || setgid(pw->pw_gid) || setuid(pw->pw_uid)) 
 		{
 			std::cerr << "can't drop to user " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
 			exit(-1);
 		}
-    std::cout << "dropped user to " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
+    cLog.msg(Log::PRIO_NOTICE) << "dropped user to " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
 	}
 	else 
   {
@@ -382,7 +382,7 @@ void daemonize()
   pid = fork();
   if(pid) exit(0);
   
-  std::cout << "running in background now..." << std::endl;
+//  std::cout << "running in background now..." << std::endl;
 
   int fd;
   for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
@@ -395,40 +395,47 @@ void daemonize()
 
 void writePid(string const& pidFilename)
 {
-  std::ofstream pidFile(pidFilename.c_str());
-  if(!pidFile.is_open()) {
-    std::cout << "can't open pid file" << std::endl;
-    return;
-  }
-  pid_t pid = getpid();
-  pidFile << pid;
-  pidFile.close();
 }
  
 int main(int argc, char* argv[])
 {
-  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
+//  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
   if(!gOpt.parse(argc, argv))
   {
     gOpt.printUsage();
     exit(-1);
   }
 
-  if(gOpt.getChroot())
-    chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
-  if(gOpt.getDaemonize())
-    daemonize();
-  if(gOpt.getPidFile() != "")
-    writePid(gOpt.getPidFile());
-
   cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
 
-  SignalController sig;
-  sig.init();
+  std::ofstream pidFile;
+  if(gOpt.getPidFile() != "") {
+    pidFile.open(gOpt.getPidFile().c_str());
+    if(!pidFile.is_open()) {
+      std::cout << "can't open pid file" << std::endl;
+    }
+  }
+
   std::string dev_type(gOpt.getDevType()); 
   TunDevice dev(gOpt.getDevName().c_str(), dev_type=="" ? NULL : dev_type.c_str(), 
                 gOpt.getIfconfigParamLocal() =="" ? NULL : gOpt.getIfconfigParamLocal().c_str(), 
                 gOpt.getIfconfigParamRemoteNetmask() =="" ? NULL : gOpt.getIfconfigParamRemoteNetmask().c_str());
+  cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
+  cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << dev.getActualName() << "'";
+  cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
+
+  if(gOpt.getChroot())
+    chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
+  if(gOpt.getDaemonize())
+    daemonize();
+  if(pidFile.is_open()) {
+    pid_t pid = getpid();
+    pidFile << pid;
+    pidFile.close();
+  }
+
+  SignalController sig;
+  sig.init();
 
   PacketSource* src;
   if(gOpt.getLocalAddr() == "")
@@ -445,10 +452,6 @@ int main(int argc, char* argv[])
 
   ThreadParam p(dev, *src, cl, queue,*(new OptionConnectTo()));
     
-  cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
-  cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << p.dev.getActualName() << "'";
-  cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << p.dev.getTypeString() << "'";
-
   // this must be called before any other libgcrypt call
   if(!initLibGCrypt())
     return -1;
