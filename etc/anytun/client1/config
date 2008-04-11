@@ -18,14 +18,11 @@ sender-id 1
 # device type tun = ip/ipv6, tap = ethernet
 type tun
 ## payload encryption algorithm
-#cipher aes-ctr
-cipher null
-## key derivation pseudo random function
-#kd-prf aes-ctr
-kd-prf null
+cipher aes-ctr
+# cipher null
 ## message authentication algorithm
-#auth-algo sha1
-auth-algo null
+auth-algo sha1
+# auth-algo null
 ## Automaticaly configure the interface an set a route
 ## 1st argument the local address for the tun/tap device
 ## 2nd argument is either the remote address(tun) or netmask(tap)
@@ -44,6 +41,6 @@ window-size 0
 ## the multiplex id to use
 mux 1
 ## master key to use for encryption
-#key 0123456789ABCDEF0123456789ABCDEF
+key 0123456789ABCDEF0123456789ABCDEF
 ## master salt to use for encryption
-#salt 0123456789ABCD0123456789ABCD
+salt 0123456789ABCD0123456789ABCD
