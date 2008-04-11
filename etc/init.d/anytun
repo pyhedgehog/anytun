@@ -12,8 +12,11 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/anytun
+CHROOTDIR='/var/run/anytun'
+DAEMONOPTS="--chroot --username anytun --chroot-dir $CHROOTDIR"
 NAME=anytun
 DESC=anytun
+CONFIG_DIR=/etc/anytun
 
 test -x $DAEMON || exit 0
 
@@ -22,20 +25,70 @@ if [ -f /etc/default/anytun ] ; then
 	. /etc/default/anytun
 fi
 
-set -e
+start_vpn () {
+		STATUS=OK
+		if [ -f $CONFIG_DIR/$NAME/config ] ; then
+			DAEMONARG=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e '\w' | sed  's/^/ --/' | xargs echo`
+			$DAEMON --write-pid /var/run/anytun.$NAME.pid \
+			 	$DAEMONARG  > /dev/null || STATUS="FAILED"
+		else
+			STATUS="no config found"
+		fi
+    echo -n "($STATUS)"
+}
+stop_vpn () {
+  kill `cat $PIDFILE` || true
+  rm $PIDFILE
+}
 
+
+set -e
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
-	start-stop-daemon --start --quiet --pidfile /var/run/$NAME.pid \
-		--exec $DAEMON -- $DAEMON_OPTS
-	echo "$NAME."
+	test -d $CHROOTDIR || mkdir $CHROOTDIR
+  if test -z "$2" ; then
+		if [ -f $CONFIG_DIR/autostart ] ; then
+      for NAME in `sed 's/#.*//'  <  $CONFIG_DIR/autostart | grep -e '\w'`; do
+			  echo -n "$NAME"
+        start_vpn
+      done
+		else
+			echo "no config found"
+			exit 1;
+		fi
+	else
+		while shift ; do
+			NAME=$1
+		  start_vpn
+		done
+	fi
+	echo "."
 	;;
   stop)
-	echo -n "Stopping $DESC: "
-	start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid \
-		--exec $DAEMON
-	echo "$NAME."
+	echo -n "Stoping $DESC: "
+  if test -z "$2" ; then
+    for PIDFILE in `ls /var/run/anytun.*.pid 2> /dev/null`; do
+      NAME=`echo $PIDFILE | cut -c17-`
+      NAME=${NAME%%.pid}
+      stop_vpn
+      echo -n " $NAME"
+    done
+  else
+    while shift ; do
+      [ -z "$1" ] && break
+      if test -e /var/run/anytun.$1.pid ; then
+        PIDFILE=`ls /var/run/anytun.$1.pid 2> /dev/null`
+        NAME=`echo $PIDFILE | cut -c17-`
+        NAME=${NAME%%.pid}
+        stop_vpn
+        echo -n " $NAME"
+      else
+        echo -n " (failure: No such tunnel is running: $1)"
+      fi
+		done
+	fi
+	echo .
 	;;
   #reload)
 	#
