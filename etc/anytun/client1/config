@@ -1,0 +1,49 @@
+## Global Parameters
+## don't run in background
+#nodaemonize
+## the sender id to use (has to be unique for multible anycast servers)
+sender-id 1
+## local anycast ip address to bind to
+#interface <ip-address>
+## local anycast(data) port to bind to
+#port 4444
+## local unicast(sync) ip address to bind to
+# sync-interface <ip-address>
+## local unicast(sync) port to bind to
+#sync-port 1234
+## remote hosts to sync with
+#sync-hosts <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]
+## Device name
+#dev anytun0
+# device type tun = ip/ipv6, tap = ethernet
+type tun
+## payload encryption algorithm
+cipher aes-ctr
+# cipher null
+## key derivation pseudo random function
+kd-prf aes-ctr
+# kd-prf null
+## message authentication algorithm
+auth-algo sha1
+# auth-algo null
+## Automaticaly configure the interface an set a route
+## 1st argument the local address for the tun/tap device
+## 2nd argument is either the remote address(tun) or netmask(tap)
+#ifconfig <local> <remote|netmask>
+## Controll Host for multi client support
+#control-host 127.0.0.1:4445
+
+### Connection Parameters (for clients without config server)
+## remote host
+remote-host 127.0.0.1
+## remote port
+remote-port 4444
+##seqence number window size
+## 0 turns off replay protection (for manualk keying)
+window-size 0
+## the multiplex id to use
+mux 1
+## master key to use for encryption
+key 0123456789ABCDEF0123456789ABCDEF
+## master salt to use for encryption
+salt 0123456789ABCD0123456789ABCD
