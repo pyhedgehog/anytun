@@ -15,7 +15,7 @@ DAEMON=/usr/sbin/anytun
 ANYTUNCONFIG=/usr/bin/anytun-config
 CONTROLDAEMON=/usr/bin/anytun-controld
 CHROOTDIR='/var/run/anytun'
-DAEMONOPTS="--chroot --username nobody --chroot-dir $CHROOTDIR"
+# DAEMONOPTS="--chroot --username nobody --chroot-dir $CHROOTDIR"
 NAME=anytun
 DESC=anytun
 CONFIG_DIR=/etc/anytun
@@ -59,9 +59,9 @@ start_configd () {
 				$ANYTUNCONFIG $DAEMONARG >> $VARCONFIG_DIR/$NAME
 			done
 			CONTROLHOST=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e 'control-host' | sed  's/^/ --/'`
-			$CONTROLDAEMON -f $VARCONFIG_DIR/$NAME  $CONTROLHOST \
+			$CONTROLDAEMON -f $VARCONFIG_DIR/$NAME $DAEMONOPTS $CONTROLHOST \
 				--write-pid $VARCONFIG_DIR/$NAME.pid
-			rm -f $VARCONFIG_DIR/$NAME
+			# rm -f $VARCONFIG_DIR/$NAME
 		fi
 }
 stop_configd () {
