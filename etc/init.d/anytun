@@ -13,7 +13,7 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/anytun
 CHROOTDIR='/var/run/anytun'
-DAEMONOPTS="--chroot --username anytun --chroot-dir $CHROOTDIR"
+DAEMONOPTS="--chroot --username nobody --chroot-dir $CHROOTDIR"
 NAME=anytun
 DESC=anytun
 CONFIG_DIR=/etc/anytun
@@ -30,7 +30,7 @@ start_vpn () {
 		if [ -f $CONFIG_DIR/$NAME/config ] ; then
 			DAEMONARG=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e '\w' | sed  's/^/ --/' | xargs echo`
 			$DAEMON --write-pid /var/run/anytun.$NAME.pid \
-			 	$DAEMONARG  > /dev/null || STATUS="FAILED"
+			 	$DAEMONOPTS $DAEMONARG  > /dev/null || STATUS="FAILED"
 		else
 			STATUS="no config found"
 		fi
