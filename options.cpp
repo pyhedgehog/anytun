@@ -54,6 +54,10 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
 {
   progname_ = "anytun";
   daemonize_ = true;
+  chroot_ = false;
+  username_ = "nobody";
+  chroot_dir_ = "/var/run/anytun";
+  pid_file_ = "";
   sender_id_ = 0;
   local_addr_ = "";
   local_port_ = 4444;
@@ -152,6 +156,10 @@ bool Options::parse(int argc, char* argv[])
     if(str == "-h" || str == "--help")
       return false;
     PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_)
+    PARSE_BOOL_PARAM("-C","--chroot", chroot_)
+    PARSE_SCALAR_PARAM("-u","--username", username_)
+    PARSE_SCALAR_PARAM("-H","--chroot-dir", chroot_dir_)
+    PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_)
     PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_)
     PARSE_SCALAR_PARAM("-i","--interface", local_addr_)
     PARSE_SCALAR_PARAM("-p","--port", local_port_)
@@ -201,6 +209,10 @@ void Options::printUsage()
   std::cout << "anytun [-h|--help]                         prints this..." << std::endl;
 //  std::cout << "       [-f|--config] <file>                the config file" << std::endl;
   std::cout << "       [-D|--nodaemonize]                  don't run in background" << std::endl;
+  std::cout << "       [-C|--chroot]                       chroot and drop privileges" << std::endl;
+  std::cout << "       [-u|--username]                     if chroot change to this user" << std::endl;
+  std::cout << "       [-H|--chroot-dir]                   chroot to this directory" << std::endl;
+  std::cout << "       [-P|--write-pid]                    write pid to this file" << std::endl;
   std::cout << "       [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
   std::cout << "       [-i|--interface] <ip-address>       local anycast ip address to bind to" << std::endl;
   std::cout << "       [-p|--port] <port>                  local anycast(data) port to bind to" << std::endl;
@@ -228,6 +240,10 @@ void Options::printOptions()
   Lock lock(mutex);
   std::cout << "Options:" << std::endl;
   std::cout << "daemonize=" << daemonize_ << std::endl;
+  std::cout << "chroot=" << chroot_ << std::endl;
+  std::cout << "username='" << username_ << "'" << std::endl;
+  std::cout << "chroot_dir='" << chroot_dir_ << "'" << std::endl;
+  std::cout << "pid_file='" << pid_file_ << "'" << std::endl;
   std::cout << "sender_id='" << sender_id_ << "'" << std::endl;
   std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
   std::cout << "local_port='" << local_port_ << "'" << std::endl;
@@ -270,6 +286,56 @@ bool Options::getDaemonize()
 Options& Options::setDaemonize(bool d)
 {
   daemonize_ = d;
+  return *this;
+}
+
+bool Options::getChroot()
+{
+  return chroot_;
+}
+
+Options& Options::setChroot(bool c)
+{
+  chroot_ = c;
+  return *this;
+}
+
+std::string Options::getUsername()
+{
+  Lock lock(mutex);
+  return username_;
+}
+
+Options& Options::setUsername(std::string u)
+{
+  Lock lock(mutex);
+  username_ = u;
+  return *this;
+}
+
+std::string Options::getChrootDir()
+{
+  Lock lock(mutex);
+  return chroot_dir_;
+}
+
+Options& Options::setChrootDir(std::string c)
+{
+  Lock lock(mutex);
+  chroot_dir_ = c;
+  return *this;
+}
+
+std::string Options::getPidFile()
+{
+  Lock lock(mutex);
+  return pid_file_;
+}
+
+Options& Options::setPidFile(std::string p)
+{
+  Lock lock(mutex);
+  pid_file_ = p;
   return *this;
 }
 

@@ -57,6 +57,14 @@ public:
   Options& setProgname(std::string p);
   bool getDaemonize();
   Options& setDaemonize(bool d);
+  bool getChroot();
+  Options& setChroot(bool b);
+  std::string getUsername();
+  Options& setUsername(std::string u);
+  std::string getChrootDir();
+  Options& setChrootDir(std::string c);
+  std::string getPidFile();
+  Options& setPidFile(std::string p);
   sender_id_t getSenderId();
   Options& setSenderId(sender_id_t s);
   std::string getLocalAddr();
@@ -121,6 +129,10 @@ private:
 	ConnectToList connect_to_;
   std::string progname_;
   bool daemonize_;
+  bool chroot_;
+  std::string username_;
+  std::string chroot_dir_;
+  std::string pid_file_;
   sender_id_t sender_id_;
   std::string local_addr_;
   std::string local_sync_addr_;

@@ -29,8 +29,11 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <poll.h>
 #include <fcntl.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include <gcrypt.h>
 #include <cerrno>     // for ENOMEM
@@ -302,7 +305,7 @@ void* receiver(void* p)
   pthread_exit(NULL);
 }
 
-#define MIN_GCRYPT_VERSION "1.2.3"
+#define MIN_GCRYPT_VERSION "1.2.0"
 // make libgcrypt thread safe
 extern "C" {
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
@@ -338,6 +341,37 @@ bool initLibGCrypt()
   return true;
 }
 
+void chrootAndDrop(string const& chrootdir, string const& username)
+{
+	if (getuid() != 0)
+	{
+	  std::cerr << "this programm has to be run as root in order to run in a chroot" << std::endl;
+		exit(-1);
+	}	
+
+  struct passwd *pw = getpwnam(username.c_str());
+	if(pw) {
+		if(chroot(chrootdir.c_str()))
+		{
+      std::cerr << "can't chroot to " << chrootdir << std::endl;
+      exit(-1);
+		}
+    std::cout << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
+    chdir("/");
+		if (initgroups(pw->pw_name, pw->pw_gid) || setgid(pw->pw_gid) || setuid(pw->pw_uid)) 
+		{
+			std::cerr << "can't drop to user " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
+			exit(-1);
+		}
+    std::cout << "dropped user to " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
+	}
+	else 
+  {
+    std::cerr << "unknown user " << username << std::endl;
+    exit(-1);
+	}
+}
+
 void daemonize()
 {
   pid_t pid;
@@ -358,6 +392,18 @@ void daemonize()
   dup(fd);                            // stderr
   umask(027); 
 }
+
+void writePid(string const& pidFilename)
+{
+  std::ofstream pidFile(pidFilename.c_str());
+  if(!pidFile.is_open()) {
+    std::cout << "can't open pid file" << std::endl;
+    return;
+  }
+  pid_t pid = getpid();
+  pidFile << pid;
+  pidFile.close();
+}
  
 int main(int argc, char* argv[])
 {
@@ -367,8 +413,13 @@ int main(int argc, char* argv[])
     gOpt.printUsage();
     exit(-1);
   }
+
+  if(gOpt.getChroot())
+    chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
   if(gOpt.getDaemonize())
     daemonize();
+  if(gOpt.getPidFile() != "")
+    writePid(gOpt.getPidFile());
 
   cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
 
