@@ -36,8 +36,6 @@
 #include "threadUtils.hpp"
 #include <list>
 
-
-
 class Options
 {
 public:
@@ -47,12 +45,25 @@ public:
   void printUsage();
   void printOptions();
 
-  u_int16_t getLocalPort();
-  Options& setLocalPort(u_int16_t l);
   std::string getProgname();
   Options& setProgname(std::string p);
+  bool getDaemonize();
+  Options& setDaemonize(bool d);
+  bool getChroot();
+  Options& setChroot(bool b);
+  std::string getUsername();
+  Options& setUsername(std::string u);
+  std::string getChrootDir();
+  Options& setChrootDir(std::string c);
+  std::string getPidFile();
+  Options& setPidFile(std::string p);
   std::string getFileName();
   Options& setFileName(std::string f);
+  std::string getBindToAddr();
+  Options& setBindToAddr(std::string b);
+  uint16_t getBindToPort();
+  Options& setBindToPort(uint16_t b);
+
 
 private:
   Options();
@@ -72,8 +83,14 @@ private:
 
   Mutex mutex;
 
+	std::string bind_to_addr_;
+	uint16_t bind_to_port_;
   std::string progname_;
-  u_int16_t local_port_;
+  bool daemonize_;
+  bool chroot_;
+  std::string username_;
+  std::string chroot_dir_;
+  std::string pid_file_;
   std::string file_name_;
 };
 

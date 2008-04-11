@@ -342,7 +342,7 @@ bool initLibGCrypt()
   return true;
 }
 
-void chrootAndDrop(string const& chrootdir, string const& username)
+void chrootAndDrop(std::string const& chrootdir, std::string const& username)
 {
 	if (getuid() != 0)
 	{

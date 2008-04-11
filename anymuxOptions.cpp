@@ -52,9 +52,15 @@ Options& Options::instance()
 
 Options::Options()
 {
-  progname_ = "anymux";
-  local_port_ = 1234;
+  progname_ = "anytun-controld";
   file_name_ = "";
+  daemonize_ = true;
+  chroot_ = false;
+  username_ = "nobody";
+  chroot_dir_ = "/var/run/anytun-controld";
+  pid_file_ = "";
+  bind_to_addr_ = "127.0.0.1";
+  bind_to_port_ = 4445;
 }
 
 Options::~Options()
@@ -128,6 +134,7 @@ bool Options::parse(int argc, char* argv[])
   progname_ = argv[0];
   argc--;
 
+  std::string control_host("");
   for(int i=1; argc > 0; ++i)
   {
     std::string str(argv[i]);
@@ -135,10 +142,23 @@ bool Options::parse(int argc, char* argv[])
 
     if(str == "-h" || str == "--help")
       return false;
-    PARSE_SCALAR_PARAM("-p","--port", local_port_)
     PARSE_SCALAR_PARAM("-f","--file", file_name_)
+    PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_)
+    PARSE_BOOL_PARAM("-C","--chroot", chroot_)
+    PARSE_SCALAR_PARAM("-u","--username", username_)
+    PARSE_SCALAR_PARAM("-H","--chroot-dir", chroot_dir_)
+    PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_)
+    PARSE_SCALAR_PARAM("-X","--control-host", control_host)
     else 
       return false;
+  }
+
+  if(control_host != "") {
+		std::stringstream tmp_stream(control_host);
+		getline(tmp_stream,bind_to_addr_,':');
+		if(!tmp_stream.good())
+			return false;
+		tmp_stream >> bind_to_port_;
   }
 
   return true;
@@ -147,16 +167,25 @@ bool Options::parse(int argc, char* argv[])
 void Options::printUsage()
 {
   std::cout << "USAGE:" << std::endl;
-  std::cout << "anymux [-h|--help]                         prints this..." << std::endl;
-  std::cout << "       [-p|--port] <port>                  local port to bind to" << std::endl;
-  std::cout << "       [-f|--file] <path>                  path to file" << std::endl;
+  std::cout << "anytun-controld [-h|--help]                prints this..." << std::endl;
+  std::cout << "                [-D|--nodaemonize]         don't run in background" << std::endl;
+  std::cout << "                [-C|--chroot]              chroot and drop privileges" << std::endl;
+  std::cout << "                [-u|--username]            if chroot change to this user" << std::endl;
+  std::cout << "                [-H|--chroot-dir]          chroot to this directory" << std::endl;
+  std::cout << "                [-P|--write-pid]           write pid to this file" << std::endl;
+  std::cout << "                [-f|--file] <path>         path to file" << std::endl;
+
 }
 
 void Options::printOptions()
 {
   Lock lock(mutex);
   std::cout << "Options:" << std::endl;
-  std::cout << "local_port='" << local_port_ << "'" << std::endl;
+  std::cout << "daemonize=" << daemonize_ << std::endl;
+  std::cout << "chroot=" << chroot_ << std::endl;
+  std::cout << "username='" << username_ << "'" << std::endl;
+  std::cout << "chroot_dir='" << chroot_dir_ << "'" << std::endl;
+  std::cout << "pid_file='" << pid_file_ << "'" << std::endl;
 }
 
 std::string Options::getProgname()
@@ -173,12 +202,72 @@ Options& Options::setProgname(std::string p)
   return *this;
 }
 
+bool Options::getDaemonize()
+{
+  return daemonize_;
+}
+
+Options& Options::setDaemonize(bool d)
+{
+  daemonize_ = d;
+  return *this;
+}
+
+bool Options::getChroot()
+{
+  return chroot_;
+}
+
+Options& Options::setChroot(bool c)
+{
+  chroot_ = c;
+  return *this;
+}
+
+std::string Options::getUsername()
+{
+  Lock lock(mutex);
+  return username_;
+}
+
+Options& Options::setUsername(std::string u)
+{
+  Lock lock(mutex);
+  username_ = u;
+  return *this;
+}
+
+std::string Options::getChrootDir()
+{
+  Lock lock(mutex);
+  return chroot_dir_;
+}
+
+Options& Options::setChrootDir(std::string c)
+{
+  Lock lock(mutex);
+  chroot_dir_ = c;
+  return *this;
+}
+
+std::string Options::getPidFile()
+{
+  Lock lock(mutex);
+  return pid_file_;
+}
+
+Options& Options::setPidFile(std::string p)
+{
+  Lock lock(mutex);
+  pid_file_ = p;
+  return *this;
+}
+
 std::string Options::getFileName()
 {
   Lock lock(mutex);
   return file_name_;
 }
-
 
 Options& Options::setFileName(std::string f)
 {
@@ -187,13 +276,26 @@ Options& Options::setFileName(std::string f)
   return *this;
 }
 
-u_int16_t Options::getLocalPort()
+std::string Options::getBindToAddr()
 {
-  return local_port_;
+  Lock lock(mutex);
+  return bind_to_addr_;
 }
 
-Options& Options::setLocalPort(u_int16_t l)
+Options& Options::setBindToAddr(std::string b)
 {
-  local_port_ = l;
+  Lock lock(mutex);
+  bind_to_addr_ = b;
+  return *this;
+}
+
+uint16_t Options::getBindToPort()
+{
+  return bind_to_port_;  
+}
+
+Options& Options::setBindToPort(uint16_t b)
+{
+  bind_to_port_ = b;
   return *this;
 }

@@ -31,6 +31,9 @@
 #include <iostream>
 #include <fstream>
 #include <poll.h>
+#include <fcntl.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include "datatypes.h"
 
@@ -46,7 +49,8 @@
 class ThreadParam
 {
 public:
-  ThreadParam() : port(0) {};
+  ThreadParam() : addr(""), port(0) {};
+  std::string addr;
   u_int16_t port;
 };
 
@@ -57,7 +61,7 @@ void* syncListener(void* p )
 	SOCKETS_NAMESPACE::SocketHandler h;
 	SOCKETS_NAMESPACE::ListenSocket<MuxSocket> l(h,true);
 
-	if( l.Bind(param->port) )
+	if( l.Bind(param->addr, param->port) )
 		pthread_exit(NULL);
 
 	Utility::ResolveLocal(); // resolve local hostname
@@ -67,6 +71,60 @@ void* syncListener(void* p )
 		h.Select(1,0);
 	}
 }
+
+void chrootAndDrop(std::string const& chrootdir, std::string const& username)
+{
+	if (getuid() != 0)
+	{
+	  std::cerr << "this programm has to be run as root in order to run in a chroot" << std::endl;
+		exit(-1);
+	}	
+
+  struct passwd *pw = getpwnam(username.c_str());
+	if(pw) {
+		if(chroot(chrootdir.c_str()))
+		{
+      std::cerr << "can't chroot to " << chrootdir << std::endl;
+      exit(-1);
+		}
+    cLog.msg(Log::PRIO_NOTICE) << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
+    chdir("/");
+		if (initgroups(pw->pw_name, pw->pw_gid) || setgid(pw->pw_gid) || setuid(pw->pw_uid)) 
+		{
+			std::cerr << "can't drop to user " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
+			exit(-1);
+		}
+    cLog.msg(Log::PRIO_NOTICE) << "dropped user to " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
+	}
+	else 
+  {
+    std::cerr << "unknown user " << username << std::endl;
+    exit(-1);
+	}
+}
+
+void daemonize()
+{
+  pid_t pid;
+
+  pid = fork();
+  if(pid) exit(0);  
+  setsid();
+  pid = fork();
+  if(pid) exit(0);
+  
+//  std::cout << "running in background now..." << std::endl;
+
+  int fd;
+//  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
+  for (fd=0;fd<=2;fd++) // close all file descriptors
+    close(fd);
+  fd=open("/dev/null",O_RDWR);        // stdin
+  dup(fd);                            // stdout
+  dup(fd);                            // stderr
+  umask(027); 
+}
+
 int main(int argc, char* argv[])
 {
   if(!gOpt.parse(argc, argv))
@@ -84,11 +142,31 @@ int main(int argc, char* argv[])
     exit(-1);
   }
 
+  std::ofstream pidFile;
+  if(gOpt.getPidFile() != "") {
+    pidFile.open(gOpt.getPidFile().c_str());
+    if(!pidFile.is_open()) {
+      std::cout << "can't open pid file" << std::endl;
+    }
+  }
+  
+  if(gOpt.getChroot())
+    chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
+  if(gOpt.getDaemonize())
+    daemonize();
+
+  if(pidFile.is_open()) {
+    pid_t pid = getpid();
+    pidFile << pid;
+    pidFile.close();
+  }
+
   SignalController sig;
   sig.init();
 
   ThreadParam p;
-  p.port = gOpt.getLocalPort(); 
+  p.addr = gOpt.getBindToAddr();
+  p.port = gOpt.getBindToPort(); 
 	pthread_t syncListenerThread;
 	pthread_create(&syncListenerThread, NULL, syncListener, &p);  
 
