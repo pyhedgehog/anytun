@@ -52,7 +52,7 @@ Options& Options::instance()
 
 Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
 {
-  progname_ = "anyctr";
+  progname_ = "anytun-config";
   remote_addr_ = "";
   remote_port_ = 4444;
   ifconfig_param_remote_netmask_ = "255.255.255.0";
@@ -170,7 +170,8 @@ bool Options::parse(int argc, char* argv[])
 void Options::printUsage()
 {
   std::cout << "USAGE:" << std::endl;
-  std::cout << "anyctr [-h|--help]                         prints this..." << std::endl;
+  std::cout << "anytun-config" << std::endl;
+  std::cout << "       [-h|--help]                         prints this..." << std::endl;
   std::cout << "       [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
   std::cout << "       [-n|--prefix] <remote net>          remote subnet for route" << std::endl;
