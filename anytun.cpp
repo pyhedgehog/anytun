@@ -385,7 +385,8 @@ void daemonize()
 //  std::cout << "running in background now..." << std::endl;
 
   int fd;
-  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
+//  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
+  for (fd=0;fd<=2;fd++) // close all file descriptors
     close(fd);
   fd=open("/dev/null",O_RDWR);        // stdin
   dup(fd);                            // stdout
@@ -428,6 +429,7 @@ int main(int argc, char* argv[])
     chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
   if(gOpt.getDaemonize())
     daemonize();
+
   if(pidFile.is_open()) {
     pid_t pid = getpid();
     pidFile << pid;
