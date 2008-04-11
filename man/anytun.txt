@@ -1,0 +1,292 @@
+anytun(8)
+=========
+
+NAME
+----
+anytun - anycast tunneling daemon
+
+SYNOPSIS
+--------
+
+anytun [-h|--help]                         prints this...
+       [-D|--nodaemonize]                  don't run in background
+       [-s|--sender-id ] <sender id>       the sender id to use
+       [-i|--interface] <ip-address>       local anycast ip address to bind to
+       [-p|--port] <port>                  local anycast(data) port to bind to
+       [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to
+       [-S|--sync-port] <port>             local unicast(sync) port to bind to
+       [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]
+                                           remote hosts to sync with
+       [-r|--remote-host] <hostname|ip>    remote host
+       [-o|--remote-port] <port>           remote port
+       [-d|--dev] <name>                   device name
+       [-t|--type] <tun|tap>               device type
+       [-n|--ifconfig] <local>             the local address for the tun/tap device
+                       <remote|netmask>    the remote address(tun) or netmask(tap)
+       [-w|--window-size] <window size>    seqence number window size
+       [-c|--cipher] <cipher type>         payload encryption algorithm
+       [-K|--key] <master key>             master key to use for encryption
+       [-A|--salt] <master salt>           master salt to use for encryption
+       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function              
+       [-a|--auth-algo] <algo type>        message authentication algorithm
+
+DESCRIPTION
+-----------
+
+Anytun is an implementation of the Secure Anycast Tunneling Protocol
+(SATP). Anycast provides a complete VPN solution similar to OpenVPN or
+IPsec in tunnel mode. The main difference is that anycast enables the
+setup of tunnels between an arbitrary combination of anycast, unicast
+and multicast hosts.
+
+OPTIONS
+-------
+
+Anytun has been designed as a peer to peer application, so there is
+no difference between client and server. The following options can be
+passed to the daemon:
+
+	[-D|--nodaemonize]
+
+		This option instructs anytun to run in the foreground
+		instead of becoming a daemon.
+
+	[-s|--sender-id ] <sender id>
+
+		Each anycast tunnel endpoint needs a uniqe sender id
+		(1, 2, 3, ...). It is needed to distinguish the senders
+		in case of replay attacks. This option is ignored by
+		unicast endpoints.
+
+	[-i|--interface] <ip address>
+
+		This IP address is used as the sender address for outgoing
+		packets. In case of anycast tunnel endpoints, the anycast
+		IP has to be used. In case of unicast endpoints, the
+		address is usually derived correctly from the routing
+		table.
+
+	[-p|--port] <port>
+
+		local anycast(data) port to bind to
+
+		The local UDP port that is used to send and receive the
+		payload data. The two tunnel endpoints can use different
+		ports. If a tunnel endpoint consists of multiple anycast
+		hosts, all hosts have to use the same port.
+
+	[-I|--sync-interface] <ip-address>
+
+		local unicast(sync) ip address to bind to
+
+		This option is only needed for tunnel endpoints consisting
+		of multiple anycast hosts. The unicast IP address of
+		the anycast host can be used here. This is needed for
+		communication with the other anycast hosts.
+
+	[-S|--sync-port] <port>
+
+		local unicast(sync) port to bind to
+
+		This option is only needed for tunnel endpoints
+		consisting of multiple anycast hosts. This port is used
+		by anycast hosts to synchronize information about tunnel
+		endpoints. No payload data is transmitted via this port.
+
+		It is possible to obtain a list of active connections
+		by telnetting into this port. This port is read-only
+		and unprotected by default. It is advised to protect
+		this port using firewall rules and, eventually, IPsec.
+
+	[-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]
+
+		remote hosts to sync with
+
+		This option is only needed for tunnel endpoints consisting
+		of multiple anycast hosts. Here, one has to specify all
+		unicast IP addresses of all other anycast hosts that
+		comprise the anycast tunnel endpoint.
+
+	[-r|--remote-host] <hostname|ip>
+
+		remote host
+
+		This option can be used to specify the remote tunnel
+		endpoint. In case of anycast tunnel endpoints, the
+		anycast IP address has to be used. If you do not specify
+		an address, it is automatically determined after receiving
+		the first data packet.
+
+	[-o|--remote-port] <port>
+
+		remote port
+
+		The UDP port used for payload data by the remote host
+		(specified with -p on the remote host).
+
+	[-d|--dev] <name>
+
+		device name
+
+		By default, tap0 is used for Ethernet tunnel interfaces,
+		and tun0 for IP tunnels, respectively. This option can
+		be used to manually override these defaults.
+
+	[-t|--type] <tun|tap>
+
+		device type
+
+		Type of the tunnels to create. Use tap for Ethernet
+		tunnels, tun for IP tunnels.
+
+	[-n|--ifconfig]
+
+	[-n|--ifconfig] <local>			the local IP address
+	for the tun/tap
+						device
+			<remote|netmask>	the remote IP address
+			(tun) or netmask
+						(tap)
+
+		In tap/Ethernet tunnel mode:
+
+		The local IP address and subnet mask of the tunnel
+		interface, in ifconfig style. The remote tunnel endpoint
+		has to use a different IP address in the same subnet.
+
+		In tun/IP tunnel mode:
+
+		The local IP address of the tunnel interface ant the
+		IP address of the tunnel interface on the remote tunnel
+		endpoint.
+
+	[-w|--window-size] <window size>
+
+		seqence window size
+
+		Sometimes, packets arrive out of order on the receiver
+		side. This option defines the size of a list of received
+		packets' sequence numbers. If, according to this list,
+		a received packet has been previously received or has
+		been transmitted in the past, and is therefore not in
+		the list anymore, this is interpreted as a replay attack
+		and the packet is dropped. A value of 0 deactivates this
+		list and, as a consequence, the replay protection employed
+		by filtering packets according to their secuence number.
+
+	[-c|--cipher] <cipher type>
+
+		payload encryption algorithm
+
+		Encryption algorithm used for encrypting the payload
+
+		Possible values:
+
+		* null - no encryption
+		* aes-ctr - AES in counter mode
+
+	[-K|--key] <master key>
+
+		master key to use for encryption
+
+		Master key in hexadecimal notation, eg
+		01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
+		of 32 characters (16 bytes).
+
+	[-A|--salt] <master salt>
+
+		master salt to use for encryption
+
+		Master salt in hexadecimal notation, eg
+		01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
+		of 28 characters (14 bytes).
+
+	[-a|--auth-algo] <algo type>
+
+		message authentication algorithm
+
+		This option sets the message authentication algorithm.
+
+		Possible values:
+
+		* null - no message authentication
+		* sha1 - HMAC-SHA1
+
+		If HMAC-SHA1 is used, the packet length is increased by
+		10 bytes. These 10 bytes contain the authentication data.
+
+EXAMPLES
+--------
+
+One unicast and one anycast tunnel endpoint:
+
+Unicast tunnel endpoint:
+
+	anytun -r anycast.anytun.org -d anytun0 -t tun -n 192.0.2.2
+	192.0.2.1 -w 0 -c null
+
+
+Anycast tunnel endpoints:
+
+On the host with unicast hostname unicast1.anycast.anytun.org and anycast
+hostname anycast.anytun.org
+
+	anytun -i anycast.anytun.org -d anytun0 -t \
+	tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 -M \
+	unicast2.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
+
+On the host with unicast hostname unicast2.anycast.anytun.org and anycast
+hostname anycast.anytun.org
+
+	anytun -i anycast.anytun.org -d anytun0 -t \
+	tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 -M \
+	unicast1.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
+
+On the host with unicast hostname unicast3.anycast.anytun.org and anycast
+hostname anycast.anytun.org
+
+	anytun -i anycast.anytun.org -d anytun0 -t \
+	tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 -M \
+	unicast1.anycast.anytun.org:2342,unicast2.anycast.anytun.org:2342
+
+For more sophisticated examples (like multiple unicast endpoints to one
+anycast tunnel endpoint) please consult the man page of anytun-config(8).
+
+
+BUGS
+----
+
+SEE ALSO
+--------
+anytun-config(8), anytun-controld(8), anytun-showtables(8)
+
+AUTHORS
+-------
+Design of SATP and wizards of this implementation:
+
+Othmar Gsenger <otti@anytun.org>
+Erwin Nindl <nine@anytun.org>
+Christian Pointner <equinox@anytun.org>
+
+Debian packaging:
+
+Andreas Hirczy <ahi@itp.tu-graz.ac.at>
+
+Manual page:
+
+Alexander List <alex@debian.org>
+
+RESOURCES
+---------
+
+Main web site: http://www.anytun.org/
+
+
+COPYING
+-------
+
+Copyright (C) 2007-2008 Othmar Gsenger, Erwin Nindl and Christian
+Pointner. This  program  is  free software;  you  can redistribute
+it and/or modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+
