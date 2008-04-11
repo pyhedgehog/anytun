@@ -70,6 +70,7 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   dev_type_ = "";
   ifconfig_param_local_ = "";
   ifconfig_param_remote_netmask_ = "";
+  post_up_script_ = "";
   seq_window_size_ = 100;
   cipher_ = "aes-ctr";
   kd_prf_ = "aes-ctr";
@@ -172,6 +173,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-d","--dev", dev_name_)
     PARSE_SCALAR_PARAM("-t","--type", dev_type_)
     PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
+    PARSE_SCALAR_PARAM("-x","--post-up-script", post_up_script_)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
     PARSE_SCALAR_PARAM("-m","--mux", mux_)
     PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
@@ -180,6 +182,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
 		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
+		PARSE_CSLIST_PARAM("-X","--control-host", host_port_queue)
     else 
       return false;
   }
@@ -220,18 +223,21 @@ void Options::printUsage()
   std::cout << "       [-S|--sync-port] <port>             local unicast(sync) port to bind to" << std::endl;
   std::cout << "       [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]"<< std::endl;
 	std::cout << "                                           remote hosts to sync with" << std::endl;
+  std::cout << "       [-X|--control-host] <hostname|ip>:<port>"<< std::endl;
+	std::cout << "                                           fetch the config from this host" << std::endl;
   std::cout << "       [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
   std::cout << "       [-d|--dev] <name>                   device name" << std::endl;
   std::cout << "       [-t|--type] <tun|tap>               device type" << std::endl;
   std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
+  std::cout << "       [-x|--post-up-script] <script>      script gets called after interface is created" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
   std::cout << "       [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
   std::cout << "       [-c|--cipher] <cipher type>         payload encryption algorithm" << std::endl;
   std::cout << "       [-K|--key] <master key>             master key to use for encryption" << std::endl;
   std::cout << "       [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
-  std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
+//  std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
   std::cout << "       [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
 }
 
@@ -255,6 +261,7 @@ void Options::printOptions()
   std::cout << "dev_type='" << dev_type_ << "'" << std::endl;
   std::cout << "ifconfig_param_local='" << ifconfig_param_local_ << "'" << std::endl;
   std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
+  std::cout << "post_up_script='" << post_up_script_ << "'" << std::endl;
   std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
   std::cout << "mux_id='" << mux_ << "'" << std::endl;
   std::cout << "cipher='" << cipher_ << "'" << std::endl;
@@ -509,6 +516,19 @@ Options& Options::setIfconfigParamRemoteNetmask(std::string i)
 {
   Lock lock(mutex);
   ifconfig_param_remote_netmask_ = i;
+  return *this;
+}
+
+std::string Options::getPostUpScript()
+{
+  Lock lock(mutex);
+  return post_up_script_;
+}
+
+Options& Options::setPostUpScript(std::string p)
+{
+  Lock lock(mutex);
+  post_up_script_ = p;
   return *this;
 }
 

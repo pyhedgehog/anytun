@@ -34,6 +34,7 @@
 #include <fcntl.h>
 #include <pwd.h>
 #include <grp.h>
+#include <sys/wait.h>
 
 #include <gcrypt.h>
 #include <cerrno>     // for ENOMEM
@@ -394,21 +395,34 @@ void daemonize()
   umask(027); 
 }
 
-void writePid(string const& pidFilename)
+int execScript(string const& script, string const& ifname)
 {
+  pid_t pid;
+  pid = fork();
+  if(!pid) {
+    int fd;
+    for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
+      close(fd);
+    fd=open("/dev/null",O_RDWR);        // stdin
+    dup(fd);                            // stdout
+    dup(fd);                            // stderr
+    return execl("/bin/sh", "/bin/sh", script.c_str(), ifname.c_str(), NULL);
+  }
+  int status = 0;
+  waitpid(pid, &status, 0);
+  return status;
 }
  
 int main(int argc, char* argv[])
 {
 //  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
-  if(!gOpt.parse(argc, argv))
-  {
+  if(!gOpt.parse(argc, argv)) {
     gOpt.printUsage();
     exit(-1);
   }
-
+  
   cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
-
+  
   std::ofstream pidFile;
   if(gOpt.getPidFile() != "") {
     pidFile.open(gOpt.getPidFile().c_str());
@@ -416,7 +430,7 @@ int main(int argc, char* argv[])
       std::cout << "can't open pid file" << std::endl;
     }
   }
-
+  
   std::string dev_type(gOpt.getDevType()); 
   TunDevice dev(gOpt.getDevName().c_str(), dev_type=="" ? NULL : dev_type.c_str(), 
                 gOpt.getIfconfigParamLocal() =="" ? NULL : gOpt.getIfconfigParamLocal().c_str(), 
@@ -424,6 +438,10 @@ int main(int argc, char* argv[])
   cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
   cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << dev.getActualName() << "'";
   cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
+  if(gOpt.getPostUpScript() != "") {
+    int postup_ret = execScript(gOpt.getPostUpScript(), dev.getActualName());
+    cLog.msg(Log::PRIO_NOTICE) << "post up script '" << gOpt.getPostUpScript() << "' returned " << postup_ret;  
+  }
 
   if(gOpt.getChroot())
     chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
@@ -444,7 +462,7 @@ int main(int argc, char* argv[])
     src = new UDPPacketSource(gOpt.getLocalPort());
   else
     src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
-
+  
 	ConnectionList cl;
 	ConnectToList connect_to = gOpt.getConnectTo();
 	SyncQueue queue;
@@ -468,11 +486,10 @@ int main(int argc, char* argv[])
 		pthread_create(&syncListenerThread, NULL, syncListener, &p);  
 
 	std::list<pthread_t> connectThreads;
-	for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) 
-	{ 
-	 connectThreads.push_back(pthread_t());
-	 ThreadParam * point = new ThreadParam(dev, *src, cl, queue,*it);
-	 pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
+	for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
+    connectThreads.push_back(pthread_t());
+    ThreadParam * point = new ThreadParam(dev, *src, cl, queue,*it);
+    pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
 	}
   
 	int ret = sig.run();

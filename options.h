@@ -92,6 +92,8 @@ public:
   Options& setIfconfigParamLocal(std::string i);
   std::string getIfconfigParamRemoteNetmask();
   Options& setIfconfigParamRemoteNetmask(std::string i);
+  std::string getPostUpScript();
+  Options& setPostUpScript(std::string p);
   window_size_t getSeqWindowSize();
   Options& setSeqWindowSize(window_size_t s);
   std::string getCipher();
@@ -146,6 +148,7 @@ private:
   std::string dev_type_;
   std::string ifconfig_param_local_;
   std::string ifconfig_param_remote_netmask_;
+  std::string post_up_script_;
   window_size_t seq_window_size_;
   std::string cipher_;
   std::string kd_prf_;
