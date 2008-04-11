@@ -119,7 +119,7 @@ ANYCTROBJS = log.o \
 
 EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
 
-all: $(EXECUTABLE) libAnysync.a
+all: $(EXECUTABLE) libAnysync.a anyrtpproxy
 
 anytun: $(OBJS) anytun.o
 	$(LD) $(OBJS) anytun.o -o $@ $(LDFLAGS)
@@ -135,6 +135,9 @@ anytun-controld: $(ANYMUXOBJS) anytun-controld.o
 
 tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
+
+Sockets/libSockets.a:
+	make --directory=./Sockets
 
 packetSource.o: packetSource.cpp packetSource.h
 	$(C++) $(CCFLAGS) $< -c
@@ -263,11 +266,26 @@ libAnysync.a: $(OBJS)
 	ar cru $@ $(OBJS)
 	ranlib $@
 
+anyrtpproxy: anytun
+	@cd anyrtpproxy ; make
+
+distclean: clean
+	make --directory=$(CURDIR)/openvpn distclean
+	find -name *.o | xargs rm -f
+	rm -f config.sub config.guess
+
+cleanall: clean
+	make --directory=$(CURDIR)/Sockets clean
+	make --directory=$(CURDIR)/openvpn clean
+	rm -f Sockets/libSockets.a Sockets/Sockets-config
+
 clean:
 	rm -f *.o
 	rm -f $(EXECUTABLE)
 	rm -f -r doc/html/*
 	rm -f -r doc/latex/*
+	rm -f libAnysync.a
+	make --directory=$(CURDIR)/anyrtpproxy clean
 
 doxygen:
 	doxygen Doxyfile
