@@ -8,27 +8,27 @@ anytun - anycast tunneling daemon
 SYNOPSIS
 --------
 
-anytun [-h|--help]                         prints this...
-       [-D|--nodaemonize]                  don't run in background
-       [-s|--sender-id ] <sender id>       the sender id to use
-       [-i|--interface] <ip-address>       local anycast ip address to bind to
-       [-p|--port] <port>                  local anycast(data) port to bind to
-       [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to
-       [-S|--sync-port] <port>             local unicast(sync) port to bind to
+anytun [-h|--help]                         
+       [-D|--nodaemonize]                  
+       [-s|--sender-id ] <sender id>       
+       [-i|--interface] <ip-address>       
+       [-p|--port] <port>                  
+       [-I|--sync-interface] <ip-address>
+       [-S|--sync-port] <port>             
        [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]
-                                           remote hosts to sync with
-       [-r|--remote-host] <hostname|ip>    remote host
-       [-o|--remote-port] <port>           remote port
-       [-d|--dev] <name>                   device name
-       [-t|--type] <tun|tap>               device type
-       [-n|--ifconfig] <local>             the local address for the tun/tap device
-                       <remote|netmask>    the remote address(tun) or netmask(tap)
-       [-w|--window-size] <window size>    seqence number window size
-       [-c|--cipher] <cipher type>         payload encryption algorithm
-       [-K|--key] <master key>             master key to use for encryption
-       [-A|--salt] <master salt>           master salt to use for encryption
-       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function              
-       [-a|--auth-algo] <algo type>        message authentication algorithm
+                                          
+       [-r|--remote-host] <hostname|ip>   
+       [-o|--remote-port] <port>          
+       [-d|--dev] <name>                  
+       [-t|--type] <tun|tap>              
+       [-n|--ifconfig] <local>            
+                       <remote|netmask>   
+       [-w|--window-size] <window size>   
+       [-c|--cipher] <cipher type>        
+       [-K|--key] <master key>            
+       [-A|--salt] <master salt>          
+       [-k|--kd-prf] <kd-prf type>                   
+       [-a|--auth-algo] <algo type>       
 
 DESCRIPTION
 -----------
@@ -255,6 +255,8 @@ anycast tunnel endpoint) please consult the man page of anytun-config(8).
 
 BUGS
 ----
+Most likely there are some bugs in anytun. If you find a bug, please let
+the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO
 --------
