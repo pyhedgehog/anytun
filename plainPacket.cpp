@@ -31,7 +31,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <arpa/inet.h>
-#include <net/ethernet.h>
+#include <netinet/if_ether.h>
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
 
@@ -60,7 +60,7 @@ void PlainPacket::setPayloadType(payload_type_t payload_type)
   
   if(payload_type == PAYLOAD_TYPE_TUN) {
     if(!payload_) {
-      *payload_type_ = PAYLOAD_TYPE_T_HTON(0);
+      *payload_type_ = PAYLOAD_TYPE_T_HTON(PAYLOAD_TYPE_TUN);
       return;
     }
 

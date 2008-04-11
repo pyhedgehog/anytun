@@ -32,6 +32,7 @@
 #define _THREADUTILS_HPP_
 
 #include <stdexcept>
+#include <pthread.h>
 #include <semaphore.h>
 
 class Mutex 
