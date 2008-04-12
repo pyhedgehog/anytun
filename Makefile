@@ -269,13 +269,13 @@ libAnysync.a: $(OBJS)
 anyrtpproxy: anytun
 	@cd anyrtpproxy ; make
 
-distclean: clean
+distclean: cleanall
 	make --directory=$(CURDIR)/openvpn distclean
 	find -name *.o | xargs rm -f
 	rm -f config.sub config.guess
 
 cleanall: clean
-	@cd man ; make clean
+	make --directory=$(CURDIR)/man clean
 	make --directory=$(CURDIR)/Sockets clean
 	make --directory=$(CURDIR)/openvpn clean
 	rm -f Sockets/libSockets.a Sockets/Sockets-config

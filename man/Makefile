@@ -1,6 +1,6 @@
 all: manpage
 
-docbook: 	
+docbook: anytun.txt
 	asciidoc -b docbook -d manpage anytun.txt
 
 manpage: docbook	
