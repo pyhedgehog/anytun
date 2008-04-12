@@ -1,15 +1,4 @@
 #! /bin/sh
-#
-# skeleton	example file to build /etc/init.d/ scripts.
-#		This file should be used to construct scripts for /etc/init.d.
-#
-#		Written by Miquel van Smoorenburg <miquels@cistron.nl>.
-#		Modified for Debian 
-#		by Ian Murdock <imurdock@gnu.ai.mit.edu>.
-#
-# Version:	@(#)skeleton  1.9  26-Feb-2001  miquels@cistron.nl
-#
-
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/anytun
 ANYTUNCONFIG=/usr/bin/anytun-config
@@ -186,15 +175,15 @@ case "$1" in
 	echo .
 	;;
   restart)
+		SCRPIT=$0
 		shift
-		/etc/init.d/anytun stop
-	sleep 1
-		/etc/init.d/anytun start
+		$SCRIPT stop $*
+		sleep 1
+		$SCRIPT start $*
 	;;
   *)
 	N=/etc/init.d/$NAME
-	# echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
 	exit 1
 	;;
 esac
