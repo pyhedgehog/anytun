@@ -155,6 +155,7 @@ case "$1" in
       NAME=${NAME%%.pid}
       echo -n " $NAME"
       stop_vpn
+      sleep 1
 			start_vpn
     done
   else
