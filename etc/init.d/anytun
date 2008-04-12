@@ -50,7 +50,7 @@ stop_vpn () {
 
 start_configd () {
 		if [ -d $CONFIG_DIR/$NAME/conf.d ] ; then
-			test -d $VARCONFIG_DIR || mkdir $VARCONFIG_DIR
+			test -d $VARCONFIG_DIR || mkdir -p $VARCONFIG_DIR
 			chmod 700 $VARCONFIG_DIR
 			rm -f $VARCONFIG_DIR/$NAME 2>/dev/null
       for CLIENTNAME in `ls $CONFIG_DIR/$NAME/conf.d`; do
@@ -76,7 +76,7 @@ set -e
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
-	test -d $CHROOTDIR || mkdir $CHROOTDIR
+	test -d $CHROOTDIR || mkdir -p $CHROOTDIR
   if test -z "$2" ; then
 		if [ -f $CONFIG_DIR/autostart ] ; then
       for NAME in `sed 's/#.*//'  <  $CONFIG_DIR/autostart | grep -e '\w'`; do
@@ -184,16 +184,6 @@ case "$1" in
 		done
 	fi
 	echo .
-	#
-	#	If the "reload" option is implemented, move the "force-reload"
-	#	option to the "reload" entry above. If not, "force-reload" is
-	#	just the same as "restart" except that it does nothing if the
-	#   daemon isn't already running.
-	# check wether $DAEMON is running. If so, restart
-	start-stop-daemon --stop --test --quiet --pidfile \
-		/var/run/$NAME.pid --exec $DAEMON \
-	&& $0 restart \
-	|| exit 0
 	;;
   restart)
 		shift
