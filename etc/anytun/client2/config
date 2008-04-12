@@ -39,8 +39,8 @@ remote-port 4444
 ## 0 turns off replay protection (for manualk keying)
 window-size 0
 ## the multiplex id to use
-mux 1
+mux 2
 ## master key to use for encryption
-key 0123456789ABCDEF0123456789ABCDEF
+key 2123456789ABCDEF0123456789ABCDEF
 ## master salt to use for encryption
-salt 0123456789ABCD0123456789ABCD
+salt 2123456789ABCD0123456789ABCD

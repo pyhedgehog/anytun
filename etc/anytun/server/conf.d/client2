@@ -2,8 +2,8 @@ prefix 192.168.123.2
 prefix-len 32
 window-size 0
 mux 2
-key 0123456789ABCDEF0123456789ABCDEF
-salt 0123456789ABCD0123456789ABCD
+key 2123456789ABCDEF0123456789ABCDEF
+salt 2123456789ABCD0123456789ABCD
 ## remote host (autodetect if skiped)
 #remote-host <hostname|ip>
 ## remote host (autodetect if skiped)
