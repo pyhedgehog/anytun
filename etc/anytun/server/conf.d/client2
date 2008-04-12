@@ -1,5 +1,4 @@
-prefix 192.168.123.2
-prefix-len 32
+route 192.168.123.2/32
 window-size 0
 mux 2
 key 2123456789ABCDEF0123456789ABCDEF
