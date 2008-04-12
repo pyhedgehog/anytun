@@ -1,4 +1,0 @@
-#!/bin/bash
-cd /home/otti/anytun
-svn up | grep -v Revision && make
-exit 0
