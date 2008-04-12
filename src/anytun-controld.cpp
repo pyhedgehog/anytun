@@ -39,9 +39,9 @@
 
 #include "log.h"
 #include "signalController.h"
-#include "anymuxOptions.h"
+#include "anyCtrOptions.h"
 
-#include "muxSocket.h"
+#include "anyCtrSocket.h"
 #include "Sockets/ListenSocket.h"
 #include "Sockets/SocketHandler.h"
 

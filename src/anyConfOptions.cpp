@@ -34,7 +34,7 @@
 #include <sstream>
 
 #include "datatypes.h"
-#include "anyctrOptions.h"
+#include "anyConfOptions.h"
 
 Options* Options::inst = NULL;
 Mutex Options::instMutex;

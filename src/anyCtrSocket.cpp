@@ -3,10 +3,10 @@
 #include <fstream>
 #include <string>
 
-#include "anymuxOptions.h"
+#include "anyCtrOptions.h"
 
 #include "Sockets/Utility.h"
-#include "muxSocket.h"
+#include "anyCtrSocket.h"
 
 
 #ifdef SOCKETS_NAMESPACE

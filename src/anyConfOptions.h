@@ -28,13 +28,21 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _ANYMUX_OPTIONS_H_
-#define _ANYMUX_OPTIONS_H_
+#ifndef _ANY_CONF_OPTIONS_H_
+#define _ANY_CONF_OPTIONS_H_
 
 #include "datatypes.h"
 #include "buffer.h"
 #include "threadUtils.hpp"
 #include <list>
+
+typedef struct OptionRoute
+{
+  std::string net_addr;
+	uint16_t prefix_length;
+};
+
+typedef std::list<OptionRoute>  RouteList;
 
 class Options
 {
@@ -47,23 +55,23 @@ public:
 
   std::string getProgname();
   Options& setProgname(std::string p);
-  bool getDaemonize();
-  Options& setDaemonize(bool d);
-  bool getChroot();
-  Options& setChroot(bool b);
-  std::string getUsername();
-  Options& setUsername(std::string u);
-  std::string getChrootDir();
-  Options& setChrootDir(std::string c);
-  std::string getPidFile();
-  Options& setPidFile(std::string p);
-  std::string getFileName();
-  Options& setFileName(std::string f);
-  std::string getBindToAddr();
-  Options& setBindToAddr(std::string b);
-  uint16_t getBindToPort();
-  Options& setBindToPort(uint16_t b);
+  std::string getRemoteAddr();
+  Options& setRemoteAddr(std::string r);
+  u_int16_t getRemotePort();
+  Options& setRemotePort(u_int16_t r);
+  Options& setRemoteAddrPort(std::string addr, u_int16_t port);
 
+  window_size_t getSeqWindowSize();
+  Options& setSeqWindowSize(window_size_t s);
+  std::string getKdPrf();
+  Options& setKdPrf(std::string k);
+  Options& setMux(u_int16_t m);
+  u_int16_t getMux();
+  Options& setKey(std::string k);
+  Buffer getKey();
+  Options& setSalt(std::string s);
+  Buffer getSalt();
+  RouteList getRoutes();
 
 private:
   Options();
@@ -83,15 +91,16 @@ private:
 
   Mutex mutex;
 
-	std::string bind_to_addr_;
-	uint16_t bind_to_port_;
   std::string progname_;
-  bool daemonize_;
-  bool chroot_;
-  std::string username_;
-  std::string chroot_dir_;
-  std::string pid_file_;
-  std::string file_name_;
+  std::string remote_addr_;
+  u_int16_t remote_port_;
+  window_size_t seq_window_size_;
+  std::string kd_prf_;
+  u_int16_t mux_;
+  Buffer key_;
+  Buffer salt_;
+
+	RouteList routes_;
 };
 
 extern Options& gOpt;

@@ -82,13 +82,13 @@ OBJS = tunDevice.o \
        $(OPENVPNDEPS) \
 			 $(SOCKETDEPS)
 
-ANYMUXOBJS = muxSocket.o \
-						 anymuxOptions.o \
+ANYCTROBJS = anyCtrSocket.o \
+						 anyCtrOptions.o \
 						 signalController.o \
 						 log.o \
 						 $(SOCKETDEPS)
 
-ANYCTROBJS = log.o \
+ANYCONFOBJS = log.o \
 						 buffer.o \
 						 keyDerivation.o \
 						 mpi.o \
@@ -103,7 +103,7 @@ ANYCTROBJS = log.o \
 						 anyrtpproxy/callIdQueue.o \
 						 syncRtpCommand.o \
 						 PracticalSocket.o \
-						 anyctrOptions.o \
+						 anyConfOptions.o \
 						 router.o \
 						 routingTable.o \
 						 seqWindow.o \
@@ -127,11 +127,11 @@ anytun: $(OBJS) anytun.o
 anytun-showtables: $(OBJS) anytun-showtables.o
 	$(LD) $(OBJS) anytun-showtables.o -o $@ $(LDFLAGS)
 
-anytun-config: $(ANYCTROBJS) anytun-config.o
-	$(LD) $(ANYCTROBJS) anytun-config.o -o $@ $(LDFLAGS)
+anytun-config: $(ANYCONFOBJS) anytun-config.o
+	$(LD) $(ANYCONFOBJS) anytun-config.o -o $@ $(LDFLAGS)
 
-anytun-controld: $(ANYMUXOBJS) anytun-controld.o
-	$(LD) $(ANYMUXOBJS) anytun-controld.o -o $@ $(LDFLAGS)
+anytun-controld: $(ANYCTROBJS) anytun-controld.o
+	$(LD) $(ANYCTROBJS) anytun-controld.o -o $@ $(LDFLAGS)
 
 tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
@@ -163,13 +163,13 @@ encryptedPacket.o: encryptedPacket.cpp encryptedPacket.h buffer.h
 cipher.o: cipher.cpp cipher.h buffer.h 
 	$(C++) $(CCFLAGS) $< -c
 
-muxSocket.o: muxSocket.cpp muxSocket.h 
+anyCtrSocket.o: anyCtrSocket.cpp anyCtrSocket.h 
 	$(C++) $(CCFLAGS) $< -c
 
-anymuxOptions.o: anymuxOptions.cpp anymuxOptions.h
+anyCtrOptions.o: anyCtrOptions.cpp anyCtrOptions.h
 	$(C++) $(CCFLAGS) $< -c
 
-anyctrOptions.o: anyctrOptions.cpp anyctrOptions.h
+anyConfOptions.o: anyConfOptions.cpp anyConfOptions.h
 	$(C++) $(CCFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
