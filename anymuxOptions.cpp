@@ -101,12 +101,14 @@ Options::~Options()
       i+=2;                                              \
     }
 
-#define PARSE_HEXSTRING_PARAM(SHORT, LONG, VALUE)        \
+#define PARSE_HEXSTRING_PARAM_SEC(SHORT, LONG, VALUE)    \
     else if(str == SHORT || str == LONG)                 \
     {                                                    \
       if(argc < 1 || argv[i+1][0] == '-')                \
         return false;                                    \
       VALUE = Buffer(std::string(argv[i+1]));            \
+      for(size_t j=0; j < strlen(argv[i+1]); ++j)        \
+        argv[i+1][j] = '#';                              \
       argc--;                                            \
       i++;                                               \
     }
