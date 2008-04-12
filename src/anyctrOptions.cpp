@@ -55,11 +55,9 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   progname_ = "anytun-config";
   remote_addr_ = "";
   remote_port_ = 4444;
-  ifconfig_param_remote_netmask_ = "255.255.255.0";
   seq_window_size_ = 100;
   kd_prf_ = "aes-ctr";
   mux_ = 0;
-  network_prefix_length_ = 32;
 }
 
 Options::~Options()
@@ -134,7 +132,7 @@ bool Options::parse(int argc, char* argv[])
 
   progname_ = argv[0];
   argc--;
-  std::queue<std::string> host_port_queue;
+  std::queue<std::string> route_queue;
   for(int i=1; argc > 0; ++i)
   {
     std::string str(argv[i]);
@@ -144,27 +142,26 @@ bool Options::parse(int argc, char* argv[])
       return false;
     PARSE_SCALAR_PARAM("-r","--remote-host", remote_addr_)
     PARSE_SCALAR_PARAM("-o","--remote-port", remote_port_)
-    PARSE_SCALAR_PARAM("-n","--prefix", ifconfig_param_remote_netmask_)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
     PARSE_SCALAR_PARAM("-m","--mux", mux_)
-    PARSE_SCALAR_PARAM("-l","--prefix-len", network_prefix_length_)
     PARSE_HEXSTRING_PARAM_SEC("-K","--key", key_)
     PARSE_HEXSTRING_PARAM_SEC("-A","--salt", salt_)
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
+    PARSE_CSLIST_PARAM("-R","--route", route_queue)
     else 
       return false;
   }
 
-	while(!host_port_queue.empty())
+	while(!route_queue.empty())
 	{
-		std::stringstream tmp_stream(host_port_queue.front());
-		OptionConnectTo oct;
-		getline(tmp_stream,oct.host,':');
+		std::stringstream tmp_stream(route_queue.front());
+		OptionRoute rt;
+		getline(tmp_stream,rt.net_addr,'/');
 		if(!tmp_stream.good())
 			return false;
-		tmp_stream >> oct.port;
-		host_port_queue.pop();
-		connect_to_.push_back(oct);
+		tmp_stream >> rt.prefix_length;
+		route_queue.pop();
+		routes_.push_back(rt);
 	}
   return true;
 }
@@ -176,13 +173,12 @@ void Options::printUsage()
   std::cout << "       [-h|--help]                         prints this..." << std::endl;
   std::cout << "       [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
-  std::cout << "       [-n|--prefix] <remote net>          remote subnet for route" << std::endl;
   std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
   std::cout << "       [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
-  std::cout << "       [-l|--prefix-len] <prefix length>   network prefix length" << std::endl;
   std::cout << "       [-K|--key] <master key>             master key to use for encryption" << std::endl;
   std::cout << "       [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
-  std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
+//  std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
+  std::cout << "       [-R|--route] <net/prefix length>    add a route to connection, can be invoked several times" << std::endl;
 }
 
 void Options::printOptions()
@@ -191,14 +187,16 @@ void Options::printOptions()
   std::cout << "Options:" << std::endl;
   std::cout << "remote_addr='" << remote_addr_ << "'" << std::endl;
   std::cout << "remote_port='" << remote_port_ << "'" << std::endl;
-  std::cout << "ifconfig_param_local='" << ifconfig_param_local_ << "'" << std::endl;
-  std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
   std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
   std::cout << "mux_id='" << mux_ << "'" << std::endl;
-  std::cout << "network_prefix_length='" << network_prefix_length_ << "'" << std::endl;
   std::cout << "key=" << key_.getHexDumpOneLine() << std::endl;
   std::cout << "salt=" << salt_.getHexDumpOneLine() << std::endl;
   std::cout << "kd_prf='" << kd_prf_ << "'" << std::endl;
+
+  std::cout << "routes:" << std::endl;
+  RouteList::const_iterator rit;
+  for(rit = routes_.begin(); rit != routes_.end(); ++rit)
+    std::cout << "  " << rit->net_addr << "/" << rit->prefix_length << std::endl;
 }
 
 std::string Options::getProgname()
@@ -248,19 +246,6 @@ Options& Options::setRemoteAddrPort(std::string addr, u_int16_t port)
   return *this;
 }
 
-std::string Options::getIfconfigParamRemoteNetmask()
-{
-  Lock lock(mutex);
-  return ifconfig_param_remote_netmask_;
-}
-
-Options& Options::setIfconfigParamRemoteNetmask(std::string i)
-{
-  Lock lock(mutex);
-  ifconfig_param_remote_netmask_ = i;
-  return *this;
-}
-
 window_size_t Options::getSeqWindowSize()
 {
   return seq_window_size_;
@@ -299,19 +284,6 @@ Options& Options::setMux(u_int16_t m)
   return *this;
 }
 
-u_int16_t Options::getNetworkPrefixLength()
-{
-  Lock lock(mutex);
-  return network_prefix_length_;
-}
-
-Options& Options::setNetworkPrefixLength(u_int16_t l)
-{
-  Lock lock(mutex);
-  network_prefix_length_ = l;
-  return *this;
-}
-
 Buffer Options::getKey()
 {
   Lock lock(mutex);
@@ -336,4 +308,10 @@ Options& Options::setSalt(std::string s)
   Lock lock(mutex);
   salt_ = s;
   return *this;
+}
+
+RouteList Options::getRoutes()
+{
+  Lock lock(mutex);
+	return routes_;
 }

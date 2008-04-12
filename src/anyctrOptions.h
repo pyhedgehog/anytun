@@ -36,13 +36,13 @@
 #include "threadUtils.hpp"
 #include <list>
 
-typedef struct OptionConnectTo
+typedef struct OptionRoute
 {
-  std::string host;
-	uint16_t port;
+  std::string net_addr;
+	uint16_t prefix_length;
 };
 
-typedef std::list<OptionConnectTo>  ConnectToList;
+typedef std::list<OptionRoute>  RouteList;
 
 class Options
 {
@@ -60,8 +60,7 @@ public:
   u_int16_t getRemotePort();
   Options& setRemotePort(u_int16_t r);
   Options& setRemoteAddrPort(std::string addr, u_int16_t port);
-  std::string getIfconfigParamRemoteNetmask();
-  Options& setIfconfigParamRemoteNetmask(std::string i);
+
   window_size_t getSeqWindowSize();
   Options& setSeqWindowSize(window_size_t s);
   std::string getKdPrf();
@@ -72,8 +71,7 @@ public:
   Buffer getKey();
   Options& setSalt(std::string s);
   Buffer getSalt();
-  Options& setNetworkPrefixLength(u_int16_t l);
-  u_int16_t getNetworkPrefixLength();
+  RouteList getRoutes();
 
 private:
   Options();
@@ -93,18 +91,16 @@ private:
 
   Mutex mutex;
 
-	ConnectToList connect_to_;
   std::string progname_;
   std::string remote_addr_;
   u_int16_t remote_port_;
-  std::string ifconfig_param_local_;
-  std::string ifconfig_param_remote_netmask_;
   window_size_t seq_window_size_;
   std::string kd_prf_;
   u_int16_t mux_;
-  u_int16_t network_prefix_length_;
   Buffer key_;
   Buffer salt_;
+
+	RouteList routes_;
 };
 
 extern Options& gOpt;

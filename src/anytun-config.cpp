@@ -62,24 +62,30 @@ void createConnection(const std::string & remote_host, u_int16_t remote_port, Co
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
   ConnectionParam connparam ( (*kd), (*seq), seq_nr_, remote_host, remote_port );
   cl.addConnection( connparam, mux );
-  NetworkAddress addr( ipv4, gOpt.getIfconfigParamRemoteNetmask().c_str() );
-  NetworkPrefix prefix( addr,gOpt.getNetworkPrefixLength() );
 
-//TODO: FIX this not
-//	prefix.setNetworkPrefixLength(gOpt.getNetworkPrefixLength());
-
-  gRoutingTable.addRoute( prefix, mux );
   std::ostringstream sout;
   boost::archive::text_oarchive oa( sout );
   const SyncCommand scom( cl, mux );
-  const SyncCommand scom2( prefix );
 
   oa << scom;
   std::cout <<  std::setw(5) << std::setfill('0') << sout.str().size()<< ' ' << sout.str() << std::endl;
-	std::ostringstream sout2;
-	boost::archive::text_oarchive oa2( sout2 );
-  oa2 << scom2;
-  std::cout <<  std::setw(5) << std::setfill('0') << sout2.str().size()<< ' ' << sout2.str() << std::endl;
+
+  RouteList routes = gOpt.getRoutes();
+  RouteList::const_iterator rit;
+  for(rit = routes.begin(); rit != routes.end(); ++rit)
+  {
+    NetworkAddress addr( ipv4, rit->net_addr.c_str() );
+    NetworkPrefix prefix( addr, rit->prefix_length );
+    
+    gRoutingTable.addRoute( prefix, mux );
+    
+    std::ostringstream sout2;
+    boost::archive::text_oarchive oa2( sout2 );
+    const SyncCommand scom2( prefix );
+    
+    oa2 << scom2;
+    std::cout <<  std::setw(5) << std::setfill('0') << sout2.str().size()<< ' ' << sout2.str() << std::endl;
+  }    
 }
 
 int main(int argc, char* argv[])
