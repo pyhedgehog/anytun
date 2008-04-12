@@ -175,7 +175,7 @@ case "$1" in
 	echo .
 	;;
   restart)
-		SCRPIT=$0
+		SCRIPT=$0
 		shift
 		$SCRIPT stop $*
 		sleep 1
