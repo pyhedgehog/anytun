@@ -1,10 +1,12 @@
 all: manpage
 
-docbook: anytun.txt
+anytun.xml: anytun.txt
 	asciidoc -b docbook -d manpage anytun.txt
 
-manpage: docbook	
+anytun.8: anytun.xml	
 	xmlto man anytun.xml
+
+manpage: anytun.8
 
 clean:
 	rm -f anytun.8 anytun.xml
