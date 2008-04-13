@@ -1,0 +1,13 @@
+2008.4.12 -- Version 0.2svn490
+
+* updated to Internet Draft Revision 02
+  Mind that the this version is incompatible to version 0.1
+  However this is only the case if you use encryption. There
+  shouldn't be any Problem with NULL cipher
+* several fixes for tunneling IPv6
+	
+2008.3.18 -- Version 0.1svn441
+
+* Initial release.
+* IPv4 tunnel over UDP, with AES-CTR cipher and SHA1 HMAC signature.
+
