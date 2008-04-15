@@ -1,10 +1,7 @@
 all: manpage
 
-anytun.xml: anytun.txt
-	asciidoc -b docbook -d manpage anytun.txt
-
-anytun.8: anytun.xml	
-	xmlto man anytun.xml
+anytun.8: anytun.txt
+	a2x -f manpage anytun.txt
 
 manpage: anytun.8
 

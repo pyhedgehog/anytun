@@ -6,7 +6,6 @@ libgcrypt11-dev
 libboost-serialization-dev
 libboost-dev
 asciidoc
-xmlto
 
 Installation
 ========

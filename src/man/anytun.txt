@@ -8,27 +8,32 @@ anytun - anycast tunneling daemon
 SYNOPSIS
 --------
 
-anytun [-h|--help]                         
-       [-D|--nodaemonize]                  
-       [-s|--sender-id ] <sender id>       
-       [-i|--interface] <ip-address>       
-       [-p|--port] <port>                  
-       [-I|--sync-interface] <ip-address>
-       [-S|--sync-port] <port>             
-       [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]
-                                          
-       [-r|--remote-host] <hostname|ip>   
-       [-o|--remote-port] <port>          
-       [-d|--dev] <name>                  
-       [-t|--type] <tun|tap>              
-       [-n|--ifconfig] <local>            
-                       <remote|netmask>   
-       [-w|--window-size] <window size>   
-       [-c|--cipher] <cipher type>        
-       [-K|--key] <master key>            
-       [-A|--salt] <master salt>          
-       [-k|--kd-prf] <kd-prf type>                   
-       [-a|--auth-algo] <algo type>       
+*anytun*
+[ *-h|--help* ]
+[ *-D|--nodaemonize* ]
+[ *-C|--chroot* ]
+[ *-u|--username* <username> ]
+[ *-H|--chroot-dir* <directory> ]
+[ *-P|--write-pid* <filename> ]
+[ *-s|--sender-id* <sender id> ]
+[ *-i|--interface* <ip-address> ]
+[ *-p|--port* <port> ]
+[ *-I|--sync-interface* <ip-address> ]
+[ *-S|--sync-port* port> ]
+[ *-M|--sync-hosts* <hostname|ip>:<port>[,<hostname|ip>:<port>[...]] ]
+[ *-X|--control-host* <hostname|ip>:<port>
+[ *-r|--remote-host* <hostname|ip> ]
+[ *-o|--remote-port* <port> ]
+[ *-d|--dev* <name> ]
+[ *-t|--type* <tun|tap> ]
+[ *-n|--ifconfig* <local> <remote|netmask> ]
+[ *-x|--post-up-script* <script> ]
+[ *-w|--window-size* <window size> ]
+[ *-m|--mux* <mux-id> ]
+[ *-c|--cipher* <cipher type> ]
+[ *-K|--key* <master key> ]
+[ *-A|--salt* <master salt> ]
+[ *-a|--auth-algo* <algo type> ]
 
 DESCRIPTION
 -----------
@@ -46,208 +51,259 @@ Anytun has been designed as a peer to peer application, so there is
 no difference between client and server. The following options can be
 passed to the daemon:
 
-	[-D|--nodaemonize]
+-D|--nodaemonize
+~~~~~~~~~~~~~~~~
 
-		This option instructs anytun to run in the foreground
-		instead of becoming a daemon.
+This option instructs anytun to run in the foreground
+instead of becoming a daemon.
 
-	[-s|--sender-id ] <sender id>
 
-		Each anycast tunnel endpoint needs a uniqe sender id
-		(1, 2, 3, ...). It is needed to distinguish the senders
-		in case of replay attacks. This option is ignored by
-		unicast endpoints.
+-C|--chroot
+~~~~~~~~~~~
 
-	[-i|--interface] <ip address>
+chroot and drop privileges
 
-		This IP address is used as the sender address for outgoing
-		packets. In case of anycast tunnel endpoints, the anycast
-		IP has to be used. In case of unicast endpoints, the
-		address is usually derived correctly from the routing
-		table.
+-u|--username <username>
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-	[-p|--port] <port>
+if chroot change to this user
 
-		local anycast(data) port to bind to
+-H|--chroot-dir <directory>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		The local UDP port that is used to send and receive the
-		payload data. The two tunnel endpoints can use different
-		ports. If a tunnel endpoint consists of multiple anycast
-		hosts, all hosts have to use the same port.
+chroot to this directory
 
-	[-I|--sync-interface] <ip-address>
+-P|--write-pid <filename>
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		local unicast(sync) ip address to bind to
+write pid to this file
 
-		This option is only needed for tunnel endpoints consisting
-		of multiple anycast hosts. The unicast IP address of
-		the anycast host can be used here. This is needed for
-		communication with the other anycast hosts.
+-s|--sender-id  <sender id>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	[-S|--sync-port] <port>
+Each anycast tunnel endpoint needs a uniqe sender id
+(1, 2, 3, ...). It is needed to distinguish the senders
+in case of replay attacks. This option is ignored by
+unicast endpoints.
 
-		local unicast(sync) port to bind to
+-i|--interface <ip address>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		This option is only needed for tunnel endpoints
-		consisting of multiple anycast hosts. This port is used
-		by anycast hosts to synchronize information about tunnel
-		endpoints. No payload data is transmitted via this port.
+This IP address is used as the sender address for outgoing
+packets. In case of anycast tunnel endpoints, the anycast
+IP has to be used. In case of unicast endpoints, the
+address is usually derived correctly from the routing
+table.
 
-		It is possible to obtain a list of active connections
-		by telnetting into this port. This port is read-only
-		and unprotected by default. It is advised to protect
-		this port using firewall rules and, eventually, IPsec.
+-p|--port <port>
+~~~~~~~~~~~~~~~~
 
-	[-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]
+local anycast(data) port to bind to
 
-		remote hosts to sync with
+The local UDP port that is used to send and receive the
+payload data. The two tunnel endpoints can use different
+ports. If a tunnel endpoint consists of multiple anycast
+hosts, all hosts have to use the same port.
 
-		This option is only needed for tunnel endpoints consisting
-		of multiple anycast hosts. Here, one has to specify all
-		unicast IP addresses of all other anycast hosts that
-		comprise the anycast tunnel endpoint.
+-I|--sync-interface <ip-address>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	[-r|--remote-host] <hostname|ip>
+local unicast(sync) ip address to bind to
 
-		remote host
+This option is only needed for tunnel endpoints consisting
+of multiple anycast hosts. The unicast IP address of
+the anycast host can be used here. This is needed for
+communication with the other anycast hosts.
 
-		This option can be used to specify the remote tunnel
-		endpoint. In case of anycast tunnel endpoints, the
-		anycast IP address has to be used. If you do not specify
-		an address, it is automatically determined after receiving
-		the first data packet.
+-S|--sync-port <port>
+~~~~~~~~~~~~~~~~~~~~~
 
-	[-o|--remote-port] <port>
+local unicast(sync) port to bind to
 
-		remote port
+This option is only needed for tunnel endpoints
+consisting of multiple anycast hosts. This port is used
+by anycast hosts to synchronize information about tunnel
+endpoints. No payload data is transmitted via this port.
 
-		The UDP port used for payload data by the remote host
-		(specified with -p on the remote host).
+It is possible to obtain a list of active connections
+by telnetting into this port. This port is read-only
+and unprotected by default. It is advised to protect
+this port using firewall rules and, eventually, IPsec.
 
-	[-d|--dev] <name>
+-M|--sync-hosts <hostname|ip>:<port>,[<hostname|ip>:<port>[...]]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		device name
+remote hosts to sync with
 
-		By default, tap0 is used for Ethernet tunnel interfaces,
-		and tun0 for IP tunnels, respectively. This option can
-		be used to manually override these defaults.
+This option is only needed for tunnel endpoints consisting
+of multiple anycast hosts. Here, one has to specify all
+unicast IP addresses of all other anycast hosts that
+comprise the anycast tunnel endpoint.
 
-	[-t|--type] <tun|tap>
+-X|--control-host <hostname|ip>:<port>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		device type
+fetch the config from this host
 
-		Type of the tunnels to create. Use tap for Ethernet
-		tunnels, tun for IP tunnels.
+-r|--remote-host <hostname|ip>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	[-n|--ifconfig]
+remote host
 
-	[-n|--ifconfig] <local>			the local IP address
-	for the tun/tap
-						device
-			<remote|netmask>	the remote IP address
-			(tun) or netmask
-						(tap)
+This option can be used to specify the remote tunnel
+endpoint. In case of anycast tunnel endpoints, the
+anycast IP address has to be used. If you do not specify
+an address, it is automatically determined after receiving
+the first data packet.
 
-		In tap/Ethernet tunnel mode:
+-o|--remote-port <port>
+~~~~~~~~~~~~~~~~~~~~~~~
+remote port
 
-		The local IP address and subnet mask of the tunnel
-		interface, in ifconfig style. The remote tunnel endpoint
-		has to use a different IP address in the same subnet.
+The UDP port used for payload data by the remote host
+(specified with -p on the remote host).
 
-		In tun/IP tunnel mode:
+-d|--dev <name>
+~~~~~~~~~~~~~~~
+device name
 
-		The local IP address of the tunnel interface ant the
-		IP address of the tunnel interface on the remote tunnel
-		endpoint.
+By default, tap0 is used for Ethernet tunnel interfaces,
+and tun0 for IP tunnels, respectively. This option can
+be used to manually override these defaults.
 
-	[-w|--window-size] <window size>
+-t|--type <tun|tap>
+~~~~~~~~~~~~~~~~~~~
 
-		seqence window size
+device type
 
-		Sometimes, packets arrive out of order on the receiver
-		side. This option defines the size of a list of received
-		packets' sequence numbers. If, according to this list,
-		a received packet has been previously received or has
-		been transmitted in the past, and is therefore not in
-		the list anymore, this is interpreted as a replay attack
-		and the packet is dropped. A value of 0 deactivates this
-		list and, as a consequence, the replay protection employed
-		by filtering packets according to their secuence number.
+Type of the tunnels to create. Use tap for Ethernet
+tunnels, tun for IP tunnels.
 
-	[-c|--cipher] <cipher type>
+-n|--ifconfig <local> <remote|netmask>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		payload encryption algorithm
+*<local>* the local IP address for the tun/tap device
 
-		Encryption algorithm used for encrypting the payload
+*<remote|netmask>* the remote IP address (tun) or netmask (tap)
 
-		Possible values:
+In tap/Ethernet tunnel mode:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		* null - no encryption
-		* aes-ctr - AES in counter mode
+The local IP address and subnet mask of the tunnel
+interface, in ifconfig style. The remote tunnel endpoint
+has to use a different IP address in the same subnet.
 
-	[-K|--key] <master key>
+In tun/IP tunnel mode:
 
-		master key to use for encryption
+The local IP address of the tunnel interface ant the
+IP address of the tunnel interface on the remote tunnel
+endpoint.
 
-		Master key in hexadecimal notation, eg
-		01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
-		of 32 characters (16 bytes).
+-x|--post-up-script <script>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	[-A|--salt] <master salt>
+script gets called after interface is created
 
-		master salt to use for encryption
+-w|--window-size <window size>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		Master salt in hexadecimal notation, eg
-		01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
-		of 28 characters (14 bytes).
+seqence window size
 
-	[-a|--auth-algo] <algo type>
+Sometimes, packets arrive out of order on the receiver
+side. This option defines the size of a list of received
+packets' sequence numbers. If, according to this list,
+a received packet has been previously received or has
+been transmitted in the past, and is therefore not in
+the list anymore, this is interpreted as a replay attack
+and the packet is dropped. A value of 0 deactivates this
+list and, as a consequence, the replay protection employed
+by filtering packets according to their secuence number.
 
-		message authentication algorithm
+-m|--mux <mux-id>
+~~~~~~~~~~~~~~~~~
 
-		This option sets the message authentication algorithm.
+the multiplex id to use
 
-		Possible values:
+-c|--cipher <cipher type>
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		* null - no message authentication
-		* sha1 - HMAC-SHA1
+payload encryption algorithm
 
-		If HMAC-SHA1 is used, the packet length is increased by
-		10 bytes. These 10 bytes contain the authentication data.
+Encryption algorithm used for encrypting the payload
+
+Possible values:
+
+* *null* - no encryption
+* *aes-ctr* - AES in counter mode
+
+-K|--key <master key>
+~~~~~~~~~~~~~~~~~~~~~
+
+master key to use for encryption
+
+Master key in hexadecimal notation, eg
+01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
+of 32 characters (16 bytes).
+
+-A|--salt <master salt>
+~~~~~~~~~~~~~~~~~~~~~~~
+
+master salt to use for encryption
+
+Master salt in hexadecimal notation, eg
+01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
+of 28 characters (14 bytes).
+
+-a|--auth-algo <algo type>
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+message authentication algorithm
+
+This option sets the message authentication algorithm.
+
+Possible values:
+
+* *null* - no message authentication
+* *sha1* - HMAC-SHA1
+
+If HMAC-SHA1 is used, the packet length is increased by
+10 bytes. These 10 bytes contain the authentication data.
 
 EXAMPLES
 --------
 
 One unicast and one anycast tunnel endpoint:
-
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
 Unicast tunnel endpoint:
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-	anytun -r anycast.anytun.org -d anytun0 -t tun -n 192.0.2.2
-	192.0.2.1 -w 0 -c null
-
+anytun -r anycast.anytun.org -d anytun0 -t tun -n 192.0.2.2
+192.0.2.1 -w 0 -c null
 
 Anycast tunnel endpoints:
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-On the host with unicast hostname unicast1.anycast.anytun.org and anycast
-hostname anycast.anytun.org
-
-	anytun -i anycast.anytun.org -d anytun0 -t \
-	tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 -M \
-	unicast2.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
+On the host with unicast hostname unicast1.anycast.anytun.org and anycast 
+hostname anycast.anytun.org:
+--------------------------------------------------------------------------------------
+# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 \
+         -M unicast2.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
+--------------------------------------------------------------------------------------
 
 On the host with unicast hostname unicast2.anycast.anytun.org and anycast
-hostname anycast.anytun.org
-
-	anytun -i anycast.anytun.org -d anytun0 -t \
-	tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 -M \
-	unicast1.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
+hostname anycast.anytun.org:
+--------------------------------------------------------------------------------------
+# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 \
+         -M unicast1.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
+--------------------------------------------------------------------------------------
 
 On the host with unicast hostname unicast3.anycast.anytun.org and anycast
-hostname anycast.anytun.org
-
-	anytun -i anycast.anytun.org -d anytun0 -t \
-	tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 -M \
-	unicast1.anycast.anytun.org:2342,unicast2.anycast.anytun.org:2342
+hostname anycast.anytun.org:
+--------------------------------------------------------------------------------------
+# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 \
+         -M unicast1.anycast.anytun.org:2342,unicast2.anycast.anytun.org:2342
+--------------------------------------------------------------------------------------
 
 For more sophisticated examples (like multiple unicast endpoints to one
 anycast tunnel endpoint) please consult the man page of anytun-config(8).
@@ -287,7 +343,7 @@ Main web site: http://www.anytun.org/
 COPYING
 -------
 
-Copyright (C) 2007-2008 Othmar Gsenger, Erwin Nindl and Christian
+Copyright \(C) 2007-2008 Othmar Gsenger, Erwin Nindl and Christian
 Pointner. This  program  is  free software;  you  can redistribute
 it and/or modify it under the terms of the GNU General Public License
 version 2 as published by the Free Software Foundation.
