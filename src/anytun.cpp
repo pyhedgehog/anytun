@@ -61,12 +61,15 @@
 #include "networkAddress.h"
 
 #include "syncQueue.h"
+#include "syncCommand.h"
+
+#ifndef ANYTUN_NOSYNC
 #include "syncSocketHandler.h"
 #include "syncListenSocket.h"
 
 #include "syncSocket.h"
 #include "syncClientSocket.h"
-#include "syncCommand.h"
+#endif
 
 #include "threadParam.h"
 
@@ -173,17 +176,18 @@ void* sender(void* p)
       a->setKey(session_auth_key);
       a->generate(encrypted_packet);
     }  
-    try
-		{
+//    try
+//		{
       param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_host_, conn.remote_port_);
-		}
-		catch (Exception e)
-		{
-		}
+//		}
+//		catch (Exception e)
+//		{
+//		}
   }
   pthread_exit(NULL);
 }
 
+#ifndef ANYTUN_NOSYNC
 void* syncConnector(void* p )
 {
 	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
@@ -217,6 +221,7 @@ void* syncListener(void* p )
 		h.Select(1,0);
 	}
 }
+#endif
 
 void* receiver(void* p)
 {
@@ -480,7 +485,7 @@ int main(int argc, char* argv[])
   pthread_create(&senderThread, NULL, sender, &p);  
   pthread_t receiverThread;
   pthread_create(&receiverThread, NULL, receiver, &p);    
-
+#ifndef ANYTUN_NOSYNC
 	pthread_t syncListenerThread;
 	if ( gOpt.getLocalSyncPort())
 		pthread_create(&syncListenerThread, NULL, syncListener, &p);  
@@ -491,24 +496,27 @@ int main(int argc, char* argv[])
     ThreadParam * point = new ThreadParam(dev, *src, cl, queue,*it);
     pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
 	}
-  
+#endif
 	int ret = sig.run();
 
   pthread_cancel(senderThread);
   pthread_cancel(receiverThread);  
+#ifndef ANYTUN_NOSYNC
 	if ( gOpt.getLocalSyncPort())
 	  pthread_cancel(syncListenerThread);  
 	for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)
 		pthread_cancel(*it);
-  
+#endif
+
   pthread_join(senderThread, NULL);
   pthread_join(receiverThread, NULL);
+#ifndef ANYTUN_NOSYNC
 	if ( gOpt.getLocalSyncPort())
 	  pthread_join(syncListenerThread, NULL);
 
 	for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)
 	  pthread_join(*it, NULL);
-
+#endif
   delete src;
 	delete &p.connto;
 

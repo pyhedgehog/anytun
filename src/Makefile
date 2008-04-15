@@ -48,18 +48,11 @@ OBJS = tunDevice.o \
        packetSource.o \
        buffer.o \
        syncBuffer.o \
-       syncCommand.o \
-       syncRouteCommand.o \
-       syncRtpCommand.o \
-       syncConnectionCommand.o \
 			 plainPacket.o \
 			 encryptedPacket.o \
        cipher.o \
        authAlgo.o \
 			 keyDerivation.o \
-			 rtpSessionTable.o \
-			 rtpSession.o \
-       anyrtpproxy/callIdQueue.o \
 			 mpi.o \
 			 cipherFactory.o \
 			 authAlgoFactory.o \
@@ -72,14 +65,22 @@ OBJS = tunDevice.o \
 			 router.o \
 			 routingTable.o \
        signalController.o \
-       syncSocket.o \
-       syncSocketHandler.o \
-       syncClientSocket.o \
        syncQueue.o \
        log.o \
        options.o \
        seqWindow.o \
-       $(OPENVPNDEPS) \
+			 syncCommand.o \
+       syncRouteCommand.o \
+       syncRtpCommand.o \
+       syncConnectionCommand.o \
+			 rtpSessionTable.o \
+			 rtpSession.o \
+       anyrtpproxy/callIdQueue.o \
+       $(OPENVPNDEPS)
+
+SYNCOBJS= syncSocket.o \
+       syncSocketHandler.o \
+       syncClientSocket.o \
 			 $(SOCKETDEPS)
 
 ANYCTROBJS = anyCtrSocket.o \
@@ -121,8 +122,11 @@ EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables manpage
 
 all: $(EXECUTABLE) libAnysync.a anyrtpproxy
 
-anytun: $(OBJS) anytun.o
-	$(LD) $(OBJS) anytun.o -o $@ $(LDFLAGS)
+anytun: $(OBJS) $(SYNCOBJS) anytun.o
+	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
+
+anytun-nosync: $(OBJS) anytun-nosync.o
+	$(LD) $(OBJS) anytun-nosync.o -o $@ $(LDFLAGS)
 
 anytun-showtables: $(OBJS) anytun-showtables.o
 	$(LD) $(OBJS) anytun-showtables.o -o $@ $(LDFLAGS)
@@ -249,6 +253,9 @@ router.o: router.cpp router.h
 
 anytun.o: anytun.cpp
 	$(C++) $(CCFLAGS) $< -c
+
+anytun-nosync.o: anytun.cpp
+	$(C++) -g -Wall -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
 
 anytun-showtables.o: anytun-showtables.cpp
 	$(C++) $(CCFLAGS) $< -c
