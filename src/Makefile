@@ -278,7 +278,7 @@ anyrtpproxy: anytun
 
 distclean: cleanall
 	make --directory=$(CURDIR)/openvpn distclean
-	find -name *.o | xargs rm -f
+	find -name *.o -exec rm -f {}\;
 	rm -f config.sub config.guess
 
 cleanall: clean
@@ -290,6 +290,7 @@ cleanall: clean
 clean:
 	rm -f *.o
 	rm -f $(EXECUTABLE)
+	rm -f anytun-nosync
 	rm -f -r doc/html/*
 	rm -f -r doc/latex/*
 	rm -f libAnysync.a
