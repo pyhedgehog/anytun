@@ -1,0 +1,148 @@
+anytun-config(8)
+================
+
+NAME
+----
+anytun-config - anycast tunneling configuration utility
+
+SYNOPSIS
+--------
+
+*anytun-config*
+[ *-h|--help* ]
+[ *-r|--remote-host* <hostname|ip> ]
+[ *-o|--remote-port* <port> ]
+[ *-w|--window-size* <window size> ]
+[ *-m|--mux* <mux-id> ]
+[ *-K|--key* <master key> ]
+[ *-A|--salt* <master salt> ]
+[ *-R|--route* <net>/<prefix length> ]
+
+DESCRIPTION
+-----------
+
+Anytun is an implementation of the Secure Anycast Tunneling Protocol
+(SATP). Anycast provides a complete VPN solution similar to OpenVPN or
+IPsec in tunnel mode. The main difference is that anycast enables the
+setup of tunnels between an arbitrary combination of anycast, unicast
+and multicast hosts.
+
+OPTIONS
+-------
+
+Anytun has been designed as a peer to peer application, so there is
+no difference between client and server. The following options can be
+passed to the daemon:
+
+-r|--remote-host <hostname|ip>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+remote host
+
+This option can be used to specify the remote tunnel
+endpoint. In case of anycast tunnel endpoints, the
+anycast IP address has to be used. If you do not specify
+an address, it is automatically determined after receiving
+the first data packet.
+
+-o|--remote-port <port>
+~~~~~~~~~~~~~~~~~~~~~~~
+remote port
+
+The UDP port used for payload data by the remote host
+(specified with -p on the remote host).
+
+-w|--window-size <window size>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+seqence window size
+
+Sometimes, packets arrive out of order on the receiver
+side. This option defines the size of a list of received
+packets' sequence numbers. If, according to this list,
+a received packet has been previously received or has
+been transmitted in the past, and is therefore not in
+the list anymore, this is interpreted as a replay attack
+and the packet is dropped. A value of 0 deactivates this
+list and, as a consequence, the replay protection employed
+by filtering packets according to their secuence number.
+
+-m|--mux <mux-id>
+~~~~~~~~~~~~~~~~~
+
+the multiplex id to use
+
+-K|--key <master key>
+~~~~~~~~~~~~~~~~~~~~~
+
+master key to use for encryption
+
+Master key in hexadecimal notation, eg
+01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
+of 32 characters (16 bytes).
+
+-A|--salt <master salt>
+~~~~~~~~~~~~~~~~~~~~~~~
+
+master salt to use for encryption
+
+Master salt in hexadecimal notation, eg
+01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
+of 28 characters (14 bytes).
+
+-R|--route <net>/<prefix length>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+add a route to connection, can be invoked several times
+
+
+EXAMPLES
+--------
+
+Add a client with Connection ID (Mux) 12 and add 2 Routes to this client
+ 
+--------------------------------------------------------------------------------------
+# anytun -w 0 -m 12 -K 0123456789ABCDEFFEDCBA9876543210 -A 0123456789ABCDDCBA9876543210 \
+         -R 192.0.2.0/24 -R 192.168.1.1/32
+--------------------------------------------------------------------------------------
+
+
+BUGS
+----
+Most likely there are some bugs in anytun. If you find a bug, please let
+the developers know at satp@anytun.org. Of course, patches are preferred.
+
+SEE ALSO
+--------
+anytun(8), anytun-controld(8)
+
+AUTHORS
+-------
+Design of SATP and wizards of this implementation:
+
+Othmar Gsenger <otti@anytun.org>
+Erwin Nindl <nine@anytun.org>
+Christian Pointner <equinox@anytun.org>
+
+Debian packaging:
+
+Andreas Hirczy <ahi@itp.tu-graz.ac.at>
+
+Manual page:
+
+Alexander List <alex@debian.org>
+
+RESOURCES
+---------
+
+Main web site: http://www.anytun.org/
+
+
+COPYING
+-------
+
+Copyright \(C) 2007-2008 Othmar Gsenger, Erwin Nindl and Christian
+Pointner. This  program  is  free software;  you  can redistribute
+it and/or modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+

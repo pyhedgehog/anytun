@@ -1,0 +1,106 @@
+anytun-controld(8)
+==================
+
+NAME
+----
+anytun-controld - anycast tunneling control daemon
+
+SYNOPSIS
+--------
+
+*anytun-controld*
+[ *-h|--help* ]
+[ *-D|--nodaemonize* ]
+[ *-C|--chroot* ]
+[ *-u|--username* <username> ]
+[ *-H|--chroot-dir* <path> ]
+[ *-P|--write-pid* <path> ]
+[ *-f|--file* <path> ]
+
+DESCRIPTION
+-----------
+
+Anytun is an implementation of the Secure Anycast Tunneling Protocol
+(SATP). Anycast provides a complete VPN solution similar to OpenVPN or
+IPsec in tunnel mode. The main difference is that anycast enables the
+setup of tunnels between an arbitrary combination of anycast, unicast
+and multicast hosts.
+
+OPTIONS
+-------
+
+Anytun has been designed as a peer to peer application, so there is
+no difference between client and server. The following options can be
+passed to the daemon:
+
+-D|--nodaemonize
+~~~~~~~~~~~~~~~~
+
+This option instructs anytun to run in the foreground
+instead of becoming a daemon.
+
+-C|--chroot
+~~~~~~~~~~~
+
+chroot and drop privileges
+
+-u|--username <username>
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+if chroot change to this user
+
+-H|--chroot-dir <directory>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+chroot to this directory
+
+-P|--write-pid <path>
+~~~~~~~~~~~~~~~~~~~~~
+
+write pid to this file
+
+-P|--write-pid <path>
+~~~~~~~~~~~~~~~~~~~~~
+
+path to config file
+
+
+BUGS
+----
+Most likely there are some bugs in anytun. If you find a bug, please let
+the developers know at satp@anytun.org. Of course, patches are preferred.
+
+SEE ALSO
+--------
+anytun(8), anytun-config(8)
+
+AUTHORS
+-------
+Design of SATP and wizards of this implementation:
+
+Othmar Gsenger <otti@anytun.org>
+Erwin Nindl <nine@anytun.org>
+Christian Pointner <equinox@anytun.org>
+
+Debian packaging:
+
+Andreas Hirczy <ahi@itp.tu-graz.ac.at>
+
+Manual page:
+
+Alexander List <alex@debian.org>
+
+RESOURCES
+---------
+
+Main web site: http://www.anytun.org/
+
+
+COPYING
+-------
+
+Copyright \(C) 2007-2008 Othmar Gsenger, Erwin Nindl and Christian
+Pointner. This  program  is  free software;  you  can redistribute
+it and/or modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+
