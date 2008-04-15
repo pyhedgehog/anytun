@@ -169,16 +169,15 @@ bool Options::parse(int argc, char* argv[])
 void Options::printUsage()
 {
   std::cout << "USAGE:" << std::endl;
-  std::cout << "anytun-config" << std::endl;
-  std::cout << "       [-h|--help]                         prints this..." << std::endl;
-  std::cout << "       [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
-  std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;
-  std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
-  std::cout << "       [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
-  std::cout << "       [-K|--key] <master key>             master key to use for encryption" << std::endl;
-  std::cout << "       [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
-//  std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
-  std::cout << "       [-R|--route] <net/prefix length>    add a route to connection, can be invoked several times" << std::endl;
+  std::cout << "anytun-config [-h|--help]                         prints this..." << std::endl;
+  std::cout << "              [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
+  std::cout << "              [-o|--remote-port] <port>           remote port" << std::endl;
+  std::cout << "              [-w|--window-size] <window size>    seqence number window size" << std::endl;
+  std::cout << "              [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
+  std::cout << "              [-K|--key] <master key>             master key to use for encryption" << std::endl;
+  std::cout << "              [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
+//  std::cout << "              [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
+  std::cout << "              [-R|--route] <net>/<prefix length>  add a route to connection, can be invoked several times" << std::endl;
 }
 
 void Options::printOptions()

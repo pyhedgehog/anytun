@@ -216,8 +216,8 @@ void Options::printUsage()
   std::cout << "       [-D|--nodaemonize]                  don't run in background" << std::endl;
   std::cout << "       [-C|--chroot]                       chroot and drop privileges" << std::endl;
   std::cout << "       [-u|--username] <username>          if chroot change to this user" << std::endl;
-  std::cout << "       [-H|--chroot-dir] <directory>       chroot to this directory" << std::endl;
-  std::cout << "       [-P|--write-pid] <filename>         write pid to this file" << std::endl;
+  std::cout << "       [-H|--chroot-dir] <path>            chroot to this directory" << std::endl;
+  std::cout << "       [-P|--write-pid] <path>             write pid to this file" << std::endl;
   std::cout << "       [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
   std::cout << "       [-i|--interface] <ip-address>       local anycast ip address to bind to" << std::endl;
   std::cout << "       [-p|--port] <port>                  local anycast(data) port to bind to" << std::endl;

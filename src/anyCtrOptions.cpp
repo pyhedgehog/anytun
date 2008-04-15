@@ -169,13 +169,13 @@ bool Options::parse(int argc, char* argv[])
 void Options::printUsage()
 {
   std::cout << "USAGE:" << std::endl;
-  std::cout << "anytun-controld [-h|--help]                prints this..." << std::endl;
-  std::cout << "                [-D|--nodaemonize]         don't run in background" << std::endl;
-  std::cout << "                [-C|--chroot]              chroot and drop privileges" << std::endl;
-  std::cout << "                [-u|--username]            if chroot change to this user" << std::endl;
-  std::cout << "                [-H|--chroot-dir]          chroot to this directory" << std::endl;
-  std::cout << "                [-P|--write-pid]           write pid to this file" << std::endl;
-  std::cout << "                [-f|--file] <path>         path to file" << std::endl;
+  std::cout << "anytun-controld [-h|--help]                  prints this..." << std::endl;
+  std::cout << "                [-D|--nodaemonize]           don't run in background" << std::endl;
+  std::cout << "                [-C|--chroot]                chroot and drop privileges" << std::endl;
+  std::cout << "                [-u|--username] <username>   if chroot change to this user" << std::endl;
+  std::cout << "                [-H|--chroot-dir] <path>     chroot to this directory" << std::endl;
+  std::cout << "                [-P|--write-pid] <path>      write pid to this file" << std::endl;
+  std::cout << "                [-f|--file] <path>           path to file" << std::endl;
 
 }
 

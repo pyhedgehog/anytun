@@ -316,7 +316,7 @@ the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO
 --------
-anytun-config(8), anytun-controld(8), anytun-showtables(8)
+anytun-config(8), anytun-controld(8)
 
 AUTHORS
 -------
