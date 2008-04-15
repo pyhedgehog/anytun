@@ -33,7 +33,6 @@
 #include "log.h"
 #include "buffer.h"
 #include "keyDerivation.h"
-#include "options.h"
 #include "seqWindow.h"
 #include "connectionList.h"
 #include "routingTable.h"
@@ -80,11 +79,6 @@ void output(ConnectionList &cl)
 int main(int argc, char* argv[])
 {
   int ret = 0;
-  if(!gOpt.parse(argc, argv))
-  {
-    gOpt.printUsage();
-    exit(-1);
-  }
 
 	ConnectionList cl;
   std::stringstream iss_;
@@ -121,7 +115,7 @@ int main(int argc, char* argv[])
         missing_chars=-1;
         output(cl);
         delete[] buffer;
-        } 
+      } 
       else
         break;
     }

@@ -1,21 +1,14 @@
-anytun-controld(8)
-==================
+anytun-showtables(8)
+====================
 
 NAME
 ----
-anytun-controld - anycast tunneling control daemon
+anytun-showtables - anycast tunneling routeing table visualization utility
 
 SYNOPSIS
 --------
 
-*anytun-controld*
-[ *-h|--help* ]
-[ *-D|--nodaemonize* ]
-[ *-C|--chroot* ]
-[ *-u|--username* <username> ]
-[ *-H|--chroot-dir* <path> ]
-[ *-P|--write-pid* <path> ]
-[ *-f|--file* <path> ]
+*anytun-showtables*
 
 DESCRIPTION
 -----------
@@ -29,41 +22,23 @@ and multicast hosts.
 OPTIONS
 -------
 
-Anytun has been designed as a peer to peer application, so there is
-no difference between client and server. The following options can be
-passed to the daemon:
+This Tool does not take any Options. It takes the sync information from
+the standard input and prints the routing table to the standard output.
 
--D|--nodaemonize
-~~~~~~~~~~~~~~~~
+EXAMPLES
+--------
 
-This option instructs anytun to run in the foreground
-instead of becoming a daemon.
+Print routing table stored in local file
 
--C|--chroot
-~~~~~~~~~~~
+-----------------------------------------------------------------------------------
+# perl -ne 'chomp; print' < routingtable | ./anytun-showtables
+-----------------------------------------------------------------------------------
 
-chroot and drop privileges
+Print current routing table and watch changes
 
--u|--username <username>
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-if chroot change to this user
-
--H|--chroot-dir <directory>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-chroot to this directory
-
--P|--write-pid <path>
-~~~~~~~~~~~~~~~~~~~~~
-
-write pid to this file
-
--P|--write-pid <path>
-~~~~~~~~~~~~~~~~~~~~~
-
-path to config file
-
+-----------------------------------------------------------------------------------
+# nc unicast1.anycast.anytun.org 23 | ./anytun-showtables
+-----------------------------------------------------------------------------------
 
 BUGS
 ----
@@ -72,7 +47,7 @@ the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO
 --------
-anytun(8), anytun-config(8), anytun-showtables(8)
+anytun(8), anytun-controld(8), anytun-config(8)
 
 AUTHORS
 -------
