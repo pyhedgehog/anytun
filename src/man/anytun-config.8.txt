@@ -21,18 +21,10 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-Anytun is an implementation of the Secure Anycast Tunneling Protocol
-(SATP). Anycast provides a complete VPN solution similar to OpenVPN or
-IPsec in tunnel mode. The main difference is that anycast enables the
-setup of tunnels between an arbitrary combination of anycast, unicast
-and multicast hosts.
+anytun-config writes routing/connection table entries, that can be read by anytun-controld.
 
 OPTIONS
 -------
-
-Anytun has been designed as a peer to peer application, so there is
-no difference between client and server. The following options can be
-passed to the daemon:
 
 -r|--remote-host <hostname|ip>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,7 +95,7 @@ Add a client with Connection ID (Mux) 12 and add 2 Routes to this client
  
 --------------------------------------------------------------------------------------
 # anytun -w 0 -m 12 -K 0123456789ABCDEFFEDCBA9876543210 -A 0123456789ABCDDCBA9876543210 \
-         -R 192.0.2.0/24 -R 192.168.1.1/32
+         -R 192.0.2.0/24 -R 192.168.1.1/32 >> routingtable
 --------------------------------------------------------------------------------------
 
 
