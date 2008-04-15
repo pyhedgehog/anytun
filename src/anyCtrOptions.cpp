@@ -176,6 +176,7 @@ void Options::printUsage()
   std::cout << "                [-H|--chroot-dir] <path>     chroot to this directory" << std::endl;
   std::cout << "                [-P|--write-pid] <path>      write pid to this file" << std::endl;
   std::cout << "                [-f|--file] <path>           path to file" << std::endl;
+  std::cout << "                [-X|--control-host] <host:port>  local tcp port to bind to" << std::endl;
 
 }
 

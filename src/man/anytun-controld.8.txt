@@ -16,22 +16,25 @@ SYNOPSIS
 [ *-H|--chroot-dir* <path> ]
 [ *-P|--write-pid* <path> ]
 [ *-f|--file* <path> ]
+[-X|--control-host] <host:port>
 
 DESCRIPTION
 -----------
 
-Anytun is an implementation of the Secure Anycast Tunneling Protocol
-(SATP). Anycast provides a complete VPN solution similar to OpenVPN or
-IPsec in tunnel mode. The main difference is that anycast enables the
-setup of tunnels between an arbitrary combination of anycast, unicast
-and multicast hosts.
+anytun-controld provides the multi-connection support for anytun. It reads a connection/routing table and outputs it via a tcp socket to all connected anytun servers. When the control daemon is restarted with a new connection/routing table all anytun servers automatically load the new configuration. Please make sure to protect that information as it contains the connection keys.
 
 OPTIONS
 -------
 
-Anytun has been designed as a peer to peer application, so there is
-no difference between client and server. The following options can be
-passed to the daemon:
+-f|--file <path>
+~~~~~~~~~~~~~~~~
+
+path to config file
+
+-X|--control-host <host>:<port>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+local ip address and tcp port to bind to
 
 -D|--nodaemonize
 ~~~~~~~~~~~~~~~~
@@ -58,11 +61,6 @@ chroot to this directory
 ~~~~~~~~~~~~~~~~~~~~~
 
 write pid to this file
-
--P|--write-pid <path>
-~~~~~~~~~~~~~~~~~~~~~
-
-path to config file
 
 
 BUGS

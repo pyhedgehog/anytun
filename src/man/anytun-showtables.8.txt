@@ -3,7 +3,7 @@ anytun-showtables(8)
 
 NAME
 ----
-anytun-showtables - anycast tunneling routeing table visualization utility
+anytun-showtables - anycast tunneling routing table visualization utility
 
 SYNOPSIS
 --------
@@ -13,11 +13,7 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-Anytun is an implementation of the Secure Anycast Tunneling Protocol
-(SATP). Anycast provides a complete VPN solution similar to OpenVPN or
-IPsec in tunnel mode. The main difference is that anycast enables the
-setup of tunnels between an arbitrary combination of anycast, unicast
-and multicast hosts.
+*anytun-showtables* displays routing and connection tables used by anytun. It can be used to display a saved routing/connection table used by anytun-controld or to connect to a the sync port of anytun.
 
 OPTIONS
 -------
