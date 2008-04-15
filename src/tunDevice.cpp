@@ -93,9 +93,13 @@ TunDevice::TunDevice(const char* dev_name,const char* dev_type, const char* ifcf
 //   rp = inet_addr("192.168.199.1");
 
   dev_ = init_tun(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, lp, rp, 0, NULL);
-  struct frame frame; // just for win32
-  struct tuntap_options options; // win32 & linux
-  options.txqueuelen = 100; // just for linux
+  struct frame frame;
+  struct tuntap_options options;
+
+#ifdef TARGET_LINUX
+  options.txqueuelen = 100;
+#endif
+
   init_tun_post(dev_, &frame, &options);
   if(!dev_)
     throw std::runtime_error("can't init tun/tap device");
