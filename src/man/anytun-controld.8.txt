@@ -10,18 +10,18 @@ SYNOPSIS
 
 *anytun-controld*
 [ *-h|--help* ]
+[ *-f|--file* <path> ]
+[ *-X|--control-host* <host:port> ]
 [ *-D|--nodaemonize* ]
 [ *-C|--chroot* ]
 [ *-u|--username* <username> ]
 [ *-H|--chroot-dir* <path> ]
 [ *-P|--write-pid* <path> ]
-[ *-f|--file* <path> ]
-[-X|--control-host] <host:port>
 
 DESCRIPTION
 -----------
 
-anytun-controld provides the multi-connection support for anytun. It reads a connection/routing table and outputs it via a tcp socket to all connected anytun servers. When the control daemon is restarted with a new connection/routing table all anytun servers automatically load the new configuration. Please make sure to protect that information as it contains the connection keys.
+*anytun-controld* provides the multi-connection support for *anytun*. It reads a connection/routing table and outputs it via a tcp socket to all connected *anytun* servers. When the control daemon is restarted with a new connection/routing table all *anytun* servers automatically load the new configuration. Please make sure to protect that information as it contains the connection keys.
 
 OPTIONS
 -------
@@ -39,7 +39,7 @@ local ip address and tcp port to bind to
 -D|--nodaemonize
 ~~~~~~~~~~~~~~~~
 
-This option instructs anytun to run in the foreground
+This option instructs *anytun-controld* to run in the foreground
 instead of becoming a daemon.
 
 -C|--chroot
@@ -65,7 +65,7 @@ write pid to this file
 
 BUGS
 ----
-Most likely there are some bugs in anytun. If you find a bug, please let
+Most likely there are some bugs in *anytun*. If you find a bug, please let
 the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO

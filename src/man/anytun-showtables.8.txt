@@ -13,7 +13,7 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-*anytun-showtables* displays routing and connection tables used by anytun. It can be used to display a saved routing/connection table used by anytun-controld or to connect to a the sync port of anytun.
+*anytun-showtables* displays routing and connection tables used by *anytun*. It can be used to display a saved routing/connection table used by *anytun-controld* or to connect to a the sync port of *anytun*.
 
 OPTIONS
 -------
@@ -38,7 +38,7 @@ Print current routing table and watch changes
 
 BUGS
 ----
-Most likely there are some bugs in anytun. If you find a bug, please let
+Most likely there are some bugs in *anytun*. If you find a bug, please let
 the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO

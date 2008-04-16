@@ -21,7 +21,7 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-anytun-config writes routing/connection table entries, that can be read by anytun-controld.
+*anytun-config* writes routing/connection table entries, that can be read by *anytun-controld*.
 
 OPTIONS
 -------
@@ -101,7 +101,7 @@ Add a client with Connection ID (Mux) 12 and add 2 Routes to this client
 
 BUGS
 ----
-Most likely there are some bugs in anytun. If you find a bug, please let
+Most likely there are some bugs in *anytun*. If you find a bug, please let
 the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO

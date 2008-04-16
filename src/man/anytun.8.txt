@@ -38,7 +38,7 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-Anytun is an implementation of the Secure Anycast Tunneling Protocol
+*Anytun* is an implementation of the Secure Anycast Tunneling Protocol
 (SATP). Anycast provides a complete VPN solution similar to OpenVPN or
 IPsec in tunnel mode. The main difference is that anycast enables the
 setup of tunnels between an arbitrary combination of anycast, unicast
@@ -47,14 +47,14 @@ and multicast hosts.
 OPTIONS
 -------
 
-Anytun has been designed as a peer to peer application, so there is
+*Anytun* has been designed as a peer to peer application, so there is
 no difference between client and server. The following options can be
 passed to the daemon:
 
 -D|--nodaemonize
 ~~~~~~~~~~~~~~~~
 
-This option instructs anytun to run in the foreground
+This option instructs *anytun* to run in the foreground
 instead of becoming a daemon.
 
 
@@ -311,7 +311,7 @@ anycast tunnel endpoint) please consult the man page of anytun-config(8).
 
 BUGS
 ----
-Most likely there are some bugs in anytun. If you find a bug, please let
+Most likely there are some bugs in *anytun*. If you find a bug, please let
 the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO
