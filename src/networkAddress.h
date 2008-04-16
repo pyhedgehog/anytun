@@ -84,7 +84,14 @@ private:
 			ar & ipv4_address_.s_addr;
 		if (network_address_type_==ipv6)
 			for(int i=0;i<4;i++)
+#if defined(__GNUC__) && defined(__linux__)
 				ar & ipv6_address_.s6_addr32;
+#elif defined(__GNUC__) && defined(__OpenBSD__)
+        ar & ipv6_address_.__u6_addr.__u6_addr32;
+#else
+ #error Target not supported
+#endif
+
 		if (network_address_type_==ethernet)
 			ar & ethernet_address_;
    }

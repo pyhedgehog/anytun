@@ -35,7 +35,10 @@
 #include <pwd.h>
 #include <grp.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
+#include <pthread.h>
 #include <gcrypt.h>
 #include <cerrno>     // for ENOMEM
 
@@ -312,16 +315,20 @@ void* receiver(void* p)
 }
 
 #define MIN_GCRYPT_VERSION "1.2.0"
+#if defined(__GNUC__) && !defined(__OpenBSD__) // TODO: thread-safety on OpenBSD
 // make libgcrypt thread safe
 extern "C" {
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
 }
+#endif
 
 bool initLibGCrypt()
 {
   // make libgcrypt thread safe 
   // this must be called before any other libgcrypt call
+#if defined(__GNUC__) && !defined(__OpenBSD__) // TODO: thread-safety on OpenBSD
   gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread );
+#endif
 
   // this must be called right after the GCRYCTL_SET_THREAD_CBS command
   // no other function must be called till now
@@ -425,7 +432,7 @@ int main(int argc, char* argv[])
     gOpt.printUsage();
     exit(-1);
   }
-  
+
   cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
   
   std::ofstream pidFile;
@@ -467,7 +474,7 @@ int main(int argc, char* argv[])
     src = new UDPPacketSource(gOpt.getLocalPort());
   else
     src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
-  
+
 	ConnectionList cl;
 	ConnectToList connect_to = gOpt.getConnectTo();
 	SyncQueue queue;
@@ -497,6 +504,7 @@ int main(int argc, char* argv[])
     pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
 	}
 #endif
+
 	int ret = sig.run();
 
   pthread_cancel(senderThread);

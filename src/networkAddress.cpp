@@ -125,7 +125,13 @@ bool NetworkAddress::operator<(const NetworkAddress &right) const
 		return (ipv4_address_.s_addr < right.ipv4_address_.s_addr);
 	} else if (network_address_type_==ipv6) {
 		for(int i=0;i<4;i++)
+#if defined(__GNUC__) && defined(__linux__)
 			if (ipv6_address_.s6_addr32[i]<right.ipv6_address_.s6_addr32[i])
+#elif defined(__GNUC__) && defined(__OpenBSD__)
+			if (ipv6_address_.__u6_addr.__u6_addr32[i]<right.ipv6_address_.__u6_addr.__u6_addr32[i])
+#else
+ #error Target not supported
+#endif
 				return true;
 		return false;
 	} else if (network_address_type_==ethernet) {
@@ -148,9 +154,18 @@ NetworkAddress NetworkAddress::operator<<(uint8_t shift) const
 		in6_addr new_v6_addr;
 		for(int i=0;i<4;i++)
 		{
+#if defined(__GNUC__) && defined(__linux__)
 			new_v6_addr.s6_addr32[i]=ipv6_address_.s6_addr32[i]<<1;
 			if (i<3 && ipv6_address_.s6_addr32[i+1] || uint32_t (0x80000000))
 				new_v6_addr.s6_addr32[i] &=1;
+#elif defined(__GNUC__) && defined(__OpenBSD__)
+			new_v6_addr.__u6_addr.__u6_addr32[i]=ipv6_address_.__u6_addr.__u6_addr32[i]<<1;
+      if (i<3 && ipv6_address_.__u6_addr.__u6_addr32[i+1] || uint32_t (0x80000000))
+				new_v6_addr.__u6_addr.__u6_addr32[i] &=1;
+#else
+ #error Target not supported
+#endif
+
 		}
 		return NetworkAddress(new_v6_addr);
 	} else if (network_address_type_==ethernet) {
@@ -173,7 +188,14 @@ NetworkAddress NetworkAddress::operator&(const NetworkAddress &right) const
 	} else if (network_address_type_==ipv6) {
 		in6_addr new_v6_addr;
 		for(int i=0;i<4;i++)
+#if defined(__GNUC__) && defined(__linux__)
 			new_v6_addr.s6_addr32[i]=ipv6_address_.s6_addr32[i]&right.ipv6_address_.s6_addr32[i];
+#elif defined(__GNUC__) && defined(__OpenBSD__)
+      new_v6_addr.__u6_addr.__u6_addr32[i]=ipv6_address_.__u6_addr.__u6_addr32[i]&right.ipv6_address_.__u6_addr.__u6_addr32[i];
+#else
+ #error Target not supported
+#endif
+
 		return NetworkAddress(new_v6_addr);
 	} else if (network_address_type_==ethernet) {
 		//TODO
@@ -193,7 +215,14 @@ NetworkAddress NetworkAddress::operator&=(const NetworkAddress &right)
 		return *this;
 	} else if (network_address_type_==ipv6) {
 		for(int i=0;i<4;i++)
+#if defined(__GNUC__) && defined(__linux__)
 			ipv6_address_.s6_addr32[i]&=right.ipv6_address_.s6_addr32[i];
+#elif defined(__GNUC__) && defined(__OpenBSD__)
+			ipv6_address_.__u6_addr.__u6_addr32[i]&=right.ipv6_address_.__u6_addr.__u6_addr32[i];
+#else
+ #error Target not supported
+#endif
+
 		return *this;
 	} else if (network_address_type_==ethernet) {
 		//TODO

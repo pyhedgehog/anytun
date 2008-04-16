@@ -31,9 +31,14 @@
 #include <stdexcept>
 #include <iostream>
 #include <arpa/inet.h>
-#include <netinet/if_ether.h>
+#include <sys/socket.h>
+#include <netinet/in_systm.h>
+#include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
+#include <net/if.h>
+#include <net/if_arp.h>
+#include <netinet/if_ether.h>
 
 #include "datatypes.h"
 #include "plainPacket.h"

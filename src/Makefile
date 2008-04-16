@@ -1,5 +1,6 @@
+TARGET=$(shell uname -s)
 C = gcc
-CFLAGS = -g -Wall
+CFLAGS = -g
 CFLAGS += -DSOCKETS_NAMESPACE=sockets
 CFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
 C++ = g++
@@ -7,7 +8,16 @@ CCFLAGS = -g -Wall
 CCFLAGS += -DSOCKETS_NAMESPACE=sockets
 CCFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
 LD = g++
-LDFLAGS = -g -Wall -O2 -ldl -lpthread -lgcrypt -lboost_serialization
+LDFLAGS = -g -Wall -O2 -lpthread -lgcrypt -lgpg-error -lboost_serialization
+
+ifeq ($(TARGET),Linux)
+  LDFLAGS += -ldl
+endif
+ifeq ($(TARGET),OpenBSD)
+  CCFLAGS += -I/usr/local/include
+  LDFLAGS += -L/usr/local/lib
+endif
+
 
 OPENVPNDEPS = openvpn/tun.o \
               openvpn/error.o \
@@ -141,7 +151,7 @@ tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
 
 Sockets/libSockets.a:
-	make --directory=./Sockets
+	$(MAKE) --directory=./Sockets
 
 packetSource.o: packetSource.cpp packetSource.h
 	$(C++) $(CCFLAGS) $< -c
@@ -255,7 +265,7 @@ anytun.o: anytun.cpp
 	$(C++) $(CCFLAGS) $< -c
 
 anytun-nosync.o: anytun.cpp
-	$(C++) -g -Wall -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
+	$(C++) $(CCFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
 
 anytun-showtables.o: anytun-showtables.cpp
 	$(C++) $(CCFLAGS) $< -c
@@ -274,17 +284,17 @@ libAnysync.a: $(OBJS)
 	ranlib $@
 
 anyrtpproxy: anytun
-	@cd anyrtpproxy ; make
+	@cd anyrtpproxy ; $(MAKE)
 
 distclean: cleanall
-	make --directory=$(CURDIR)/openvpn distclean
-	find -name *.o -exec rm -f {}\;
+	$(MAKE) --directory=$(CURDIR)/openvpn distclean
+	find . -name *.o -exec rm -f {} \;
 	rm -f config.sub config.guess
 
 cleanall: clean
-	make --directory=$(CURDIR)/man clean
-	make --directory=$(CURDIR)/Sockets clean
-	make --directory=$(CURDIR)/openvpn clean
+	$(MAKE) --directory=$(CURDIR)/man clean
+	$(MAKE) --directory=$(CURDIR)/Sockets clean
+	$(MAKE) --directory=$(CURDIR)/openvpn clean
 	rm -f Sockets/libSockets.a Sockets/Sockets-config
 
 clean:
@@ -294,10 +304,10 @@ clean:
 	rm -f -r doc/html/*
 	rm -f -r doc/latex/*
 	rm -f libAnysync.a
-	make --directory=$(CURDIR)/anyrtpproxy clean
+	$(MAKE) --directory=$(CURDIR)/anyrtpproxy clean
 
 manpage:
-	@cd man ; make
+	@cd man ; $(MAKE)
 
 doxygen:
 	doxygen Doxyfile

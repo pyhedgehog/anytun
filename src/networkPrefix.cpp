@@ -57,7 +57,14 @@ void NetworkPrefix::setNetworkPrefixLength(uint8_t length )
 	} else if (network_address_type_==ipv6) {
 		in6_addr v6addr;
 		for(int i=0;i<4;i++)
+#if defined(__GNUC__) && defined(__linux__)
 			ipv6_address_.s6_addr32[i]=0xFFFFFFFF;
+#elif defined(__GNUC__) && defined(__OpenBSD__)
+      ipv6_address_.__u6_addr.__u6_addr32[i]=0xFFFFFFFF;
+#else
+ #error Target not supported
+#endif
+
 		*this &= (NetworkAddress(v6addr)<<(128-length));
 	} else if (network_address_type_==ethernet) {
 		//TODO
