@@ -130,8 +130,8 @@ case "$1" in
         stop_vpn
         start_vpn
       else
-        stop_config
-        start_config
+        stop_configd
+        start_configd
       fi
       echo -n " $NAME"
     done
@@ -147,8 +147,8 @@ case "$1" in
           stop_vpn
           start_vpn
         else
-          stop_config
-          start_config
+          stop_configd
+          start_configd
         fi
       else
         echo -n " (failure: No such tunnel is running: $1)"
