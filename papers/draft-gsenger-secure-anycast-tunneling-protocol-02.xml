@@ -10,7 +10,7 @@
     <!ENTITY rfc2003 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2003.xml'>
 ]>
 <?rfc toc='yes'?>
-    <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-01'>
+    <rfc ipr='full3978' docName='draft-gsenger-secure-anycast-tunneling-protocol-02'>
     <front>
         <title>secure anycast tunneling protocol (SATP)</title>
 
@@ -44,21 +44,21 @@
         <keyword>secure</keyword>
         <keyword>protocol</keyword>
         <abstract>
-            <t>The secure anycast tunneling protocol (SATP) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It allows tunneling of every ETHER TYPE protocol (ethernet, ip ...). SATP directly includes cryptography and message authentication based on the methodes used by SRTP. It can be used as an encrypted alternative to <xref target="RFC2003">IP Encapsulation within IP</xref> and <xref target="RFC2784">Generic Routing Encapsulation (GRE)</xref>. It supports both anycast receivers and senders.
+            <t>The secure anycast tunneling protocol (SATP) defines a protocol used for communication between any combination of unicast and anycast tunnel endpoints. It allows tunneling of every ETHER TYPE protocol (ethernet, ip ...). SATP directly includes cryptography and message authentication based on the methods used by the <xref target="RFC3711">Secure Real-time Transport Protocol(SRTP)</xref>. It can be used as an encrypted alternative to <xref target="RFC2003">IP Encapsulation within IP</xref> and <xref target="RFC2784">Generic Routing Encapsulation (GRE)</xref>. Both anycast receivers and senders are supported.
             </t>
         </abstract>
     </front>
     <middle>
     <section title='Introduction'>
-        <t>SATP is a mixture of a generic encapsulation protocol like <xref target="RFC2784">GRE</xref> and a secure tunneling protocol as <xref target="RFC2401">IPsec</xref> in tunnel mode.  It can be used to build redundant virtual private network (VPN) connections.  It supports peer to peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <xref target="RFC1546">Host Anycast Service</xref>. Encryption is done per packet, so the protocol is robust against packet loss and routing changes.
-				To save some header overhead it uses the encryption techniques of <xref target="RFC3711">SRTP</xref>. 
+        <t>SATP is a mixture of a generic encapsulation protocol like <xref target="RFC2784">GRE</xref> and a secure tunneling protocol as <xref target="RFC2401">IPsec</xref> in tunnel mode.  It can be used to build redundant virtual private network (VPN) connections.  It supports peer-to-peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <xref target="RFC1546">Host Anycast Service</xref>. Encryption is done per packet, so the protocol is robust against packet loss and routing changes.
+				To reduce header overhead ncryption techniques of <xref target="RFC3711">SRTP</xref> are being used. 
 				</t>
       <section title='Notational Conventions'>
         <t>The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in  <xref target="RFC2119">RFC2119</xref>.</t>
        </section>
     </section> 
     <section title="Motivation and usage scenarios">
-       <t>This section gives an overview of possible usage scenarios. Please note, that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.</t>
+       <t>This section gives an overview of possible usage scenarios. Please note that the protocols used in the figures are only examples and that SATP itself does not care about either transport protocols or encapsulated protocols. Routing is not done by SATP and each implemetation MAY choose it's own way of doing this task (e.g. using functions provided by the operating system). SATP is used only to encapsulate and encrypt data.</t>
        <section title="Usage scenarions">
     
             <section title='Tunneling from unicast hosts over anycast routers to other unicast hosts'>
@@ -76,7 +76,7 @@
   endpoint | using SATP    |  endpoint | using SATP    |  endpoint 
                  </artwork>
        </figure>
-	      <t>In this scenario the payload gets encapsuleted into a SATP packet by a unicast host and gets transmitted to one of the anycast routers. It than gets decapsulated by the router. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on the routing decision.</t> 
+	      <t>In this scenario the payload is encapsuleted into a SATP packet by a unicast host and gets transmitted to one of the anycast routers. After transmisson the packet gets decapsulated by the router. This router makes a routing descision based on the underlying protocol and transmits a new SATP package to one or more unicast hosts depending on this decision.</t> 
 	    </section>
 
 	    <section title='Tunneling from unicast hosts to anycast networks'>
@@ -101,7 +101,7 @@
 
                  </artwork>
                </figure>
-            <t>When the unicast hosts wants to transmit data to one of the anycast DNS servers, it encapsulates the data and sends a SATP packet to the anycast address of the routers. The packet arrives at one of the routers, gets decapsulated and routed to the DNS server. This method can be used to tunnel between a clients and networks providing anycast services. It can also be used the other way to virtually locate a unicast service within anycasted networks.</t>
+            <t>When the unicast hosts wants to transmit data to one of the anycast DNS servers, it encapsulates the data and sends a SATP packet to the anycast address of the routers. The packet arrives at one of the routers, gets decapsulated and is then forwarded to the DNS server. This method can be used to tunnel between clients and networks providing anycast services. It can also be used the other way to virtually locate a unicast service within anycasted networks.</t>
 	    </section>
       <section title='Redundant tunnel connection of 2 networks'>
               <figure anchor="connect_networks">
@@ -121,11 +121,11 @@
                  </artwork>
        </figure>
 
-               <t>Network A has multiple routers, that act as gateway/tunnel endpoints to another network B. This is done to build a redundant encrypted tunnel connection between the two networks. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address. When a packet from network A gets transmitted to network B, it first arrives on one of network A's border routers. Which router is used is determined by network A's internal routing. This router encapsulates the package and sends it to the anycast address of the network B routers. The SATP packet arrives at one of network B's routers and gets decapsulated and routed to it's destination within network B.</t>
+               <t>Network A has multiple routers which act as gateway/tunnel endpoints to another network B. This way a redundant encrypted tunnel connection between the two networks is built up. All tunnel endpoints of network A share the same anycast address and all tunnel endpoints of network B share another anycast address. When a packet from network A is transmitted to network B, it first arrives on one of network A's border routers. Which router is used is determined by network A's internal routing. This router encapsulates the package and sends it to the anycast address of network B's routers. After arrival the SATP packet gets decapsulated and routed to its destination within network B.</t>
       </section>
     </section>
 	<section title="Encapsulation">
-      <t>SATP does not depend on which lower layer protocols is used, but this section gives an example of how packets could look like.
+      <t>SATP does not depend on which lower layer protocol is used. This section only gives an example of how packets could look like.
       </t>
       <figure anchor="transport_udp">
         <preamble>Examples of SATP used with different lower layer and payload protocols</preamble>
@@ -168,8 +168,8 @@ Tunneling of IPv6 over IPv4 with RTP payload
   <section title="Using SATP on top of IP">
          <section title="Fragmentation">
          <t>
-           The only way of fully supporting fragmentation would be to synchronise fragments between all anycast servers. This is considered to be too much overhead, so there are two non perfect solutions for these problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the ip datagramm HAS TO be discarded. As routing changes are not expected to occure very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server. 
-         </t><t>If the payload type is IP and the ip headers's Don't Fragment (DF) bit is set, than the DF bit of the outer IP header HAS TO be set as well.</t>
+           The only way of fully supporting fragmentation would be to synchronise fragments between all anycast servers. This is considered to be too much overhead, so there are two non-perfect solutions for these problems. Either fragmentation HAS TO be disabled or if not all fragments arrive at the same server the IP datagramm HAS TO be discarded. As routing changes are not expected to occur very frequently, the encapsulated protocol can do a retransmission and all fragments will arrive at the new server. 
+         </t><t>If the payload type is IP and the IP headers' Don't Fragment (DF) bit is set, then the DF bit of the outer IP header HAS TO be set as well.</t>
          </section>
 	 <section title="ICMP messages">
 	   <t>ICMP messages MUST be relayed according to <xref target="RFC2003">rfc2003 section 4</xref>. This is needed for path MTU detection.</t>
@@ -204,18 +204,18 @@ Tunneling of IPv6 over IPv4 with RTP payload
 <t></t>
        </section>
        <section title="sequence number">
-       <t>The sequence number is a 32 bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value, it starts over from 0. This overrun causes the ROC to be increased.</t>
+       <t>The sequence number is a 32 bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value it starts over from 0. This overrun causes the ROC to be increased.</t>
        </section>
        <section title="sender ID">
-       <t>The sender ID is a 16 bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address</t>
+       <t>The sender ID is a 16 bit unsigned integer. It HAS TO be unique for every sender sharing the same anycast address.</t>
        </section>
        <section title="MUX">
-       <t>The MUX (multiplex) field is a 16 bit unsigned integer. It is used to destinguish multible tunnel connections.</t>
+       <t>The MUX (multiplex) field is a 16 bit unsigned integer. It is used to distinguish multiple tunnel connections.</t>
        </section>
-       <section title="payload type field">
+       <section title="payload type">
          <t>The payload type field defines the payload protocol. ETHER TYPE protocol numbers are used. <eref target="http://www.iana.org/assignments/ethernet-numbers">See IANA assigned ethernet numbers</eref> . The values 0000-05DC are reserverd and MUST NOT be used. 
         <figure anchor="prot_type_table">
-               <preamble>Some examples for protocol types</preamble>
+               <preamble>Some examples for protocol numbers</preamble>
                  <artwork>
 HEX
 0000 Reserved
@@ -229,24 +229,24 @@ HEX
 </t>
 	     </section>
        <section title="payload">
-       <t>A packet of the type payload type (e.g. an IP packet).</t>
+       <t>A packet of type payload type (e.g. an IP packet).</t>
        </section>
        <section title="padding (OPTIONAL)">
        <t>Padding of max 255 octets.
 None of the pre-defined encryption transforms uses any padding; for
-   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and these transforms might use the RTP padding format, so a RTP like padding is supported. If the padding count field is present, than the padding count field MUST be set to the padding length.</t>
+   these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and therefore might use the RTP padding format, so a RTP-like padding is supported. If the padding count field is present, the padding count field MUST be set to the padding length.</t>
        </section>
        <section title="padding count (OPTIONAL)">
-       <t>The number of octets of the padding field. This field is optional. It's presence is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.</t>
+       <t>The number of octets of the padding field. This field is optional. Its presence is signaled by the key management and not by this protocol. If this field isn't present, the padding field MUST NOT be present as well.</t>
        </section>
         <section title="MKI (OPTIONAL)">
-        <t>The MKI (Master Key Identifier) is OPTIONAL and of configurable length. See <xref target="RFC3711">SRTP Section 3.1</xref> for details</t>
+        <t>The MKI (Master Key Identifier) is OPTIONAL and of configurable length. See <xref target="RFC3711">SRTP Section 3.1</xref> for details.</t>
         </section>
 	<section title="authentication tag (RECOMMENDED)">
-	<t>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not of the MKI. On sender side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO calculate the authentication tag before decrypting the encrypted portion.</t>
+	<t>The authentication tag is RECOMMENDED and of configurable length. It contains a cryptographic checksum of the sender ID, sequence number and the encrypted portion, but not of the MKI. On transmitter side encryption HAS TO be done before calculating the authentication tag. A receiver HAS TO calculate the authentication tag before decrypting the encrypted portion.</t>
 	</section>
     <section title="Encryption">
-     <t>Encryption is done in the same way as for <xref target="RFC3711">SRTP</xref>. This section will only discuss some small changes that HAVE TO be made. Please read  <xref target="RFC3711">SRTP RFC3711 section 3-9</xref> for details. </t><t>The least significant bits of SSRC are replaced by the sender ID and the most significant bits are replaced by the mux. For the SRTP SEQ the 16 least significant bits of the SATP sequence number are used and the 16 most significant bits of the sequence number replace the 16 least significant bits of the SRTP ROC.</t>
+     <t>Encryption is done in the same way as for <xref target="RFC3711">SRTP</xref>. This section will only discuss some small changes that HAVE TO be made. Please read  <xref target="RFC3711">SRTP RFC3711 section 3-9</xref> for details. </t><t>The least significant bits of SSRC are replaced by the sender ID and the most significant bits are replaced by the MUX. For the SRTP SEQ the 16 least significant bits of the SATP sequence number are used and the 16 most significant bits of the sequence number replace the 16 least significant bits of the SRTP ROC.</t>
    <figure anchor="srtp_vs_satp">
       <preamble>Difference between SRTP and SATP</preamble>
       <artwork>
@@ -277,7 +277,7 @@ None of the pre-defined encryption transforms uses any padding; for
     <section title="Security Considerations">
      <t>As SATP uses the same encryption techniques as <xref target="RFC3711">SRTP</xref>, it shares the same security issues. This section will only discuss some small changes. Please read  <xref target="RFC3711">SRTP RFC3711 section 9</xref> for details.</t>
       <section title="Replay protection">
-      <t>Replay protection is done by a replay list. Every anycast receiver has it's own replay list, which SHOULDN'T be syncronised, because of massive overhead. This leads to an additional possible attack. A attacker is able to replay a captured packet once to every anycast receiver. This attack is considered of be very unlikely, because multiple attack hosts in different loactions are needed to reach the seperate anycast receivers and the number of replays is limited to the count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multible anycast receivers to limit this attack.</t>
+      <t>Replay protection is done by a replay list. Every anycast receiver has its own replay list, which SHOULDN'T be syncronised because of massive overhead. This leads to an additional possible attack. An attacker is able to replay a captured packet once to every anycast receiver. This attack is considered be very unlikely because multiple attack hosts in different locations are needed to reach seperate anycast receivers and the number of replays is limited to count of receivers - 1. Such replays might also happen because of routing problems, so a payload protocol HAS TO be robust against a small number of duplicated packages. The window size and position HAS TO be syncronised between multiple anycast receivers to limit this attack.</t>
       </section>
     </section>
     <section title="IANA Considerations">
