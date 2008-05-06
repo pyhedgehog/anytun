@@ -2,9 +2,8 @@
 
 
 Network Working Group                                         O. Gsenger
-Internet-Draft                                              January 2008
-Intended status: Informational
-Expires: July 4, 2008
+Internet-Draft                                               May 6, 2008
+Expires: November 7, 2008
 
 
                 secure anycast tunneling protocol (SATP)
@@ -33,11 +32,11 @@ Status of this Memo
    The list of Internet-Draft Shadow Directories can be accessed at
    http://www.ietf.org/shadow.html.
 
-   This Internet-Draft will expire on July 4, 2008.
+   This Internet-Draft will expire on November 7, 2008.
 
 Copyright Notice
 
-   Copyright (C) The Internet Society (2008).
+   Copyright (C) The IETF Trust (2008).
 
 
 
@@ -52,9 +51,10 @@ Copyright Notice
 
 
 
-Gsenger                   Expires July 4, 2008                  [Page 1]
+
+Gsenger                 Expires November 7, 2008                [Page 1]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 Abstract
@@ -108,9 +108,9 @@ Table of Contents
 
 
 
-Gsenger                   Expires July 4, 2008                  [Page 2]
+Gsenger                 Expires November 7, 2008                [Page 2]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 1.  Introduction
@@ -164,9 +164,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                  [Page 3]
+Gsenger                 Expires November 7, 2008                [Page 3]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 2.  Motivation and usage scenarios
@@ -220,9 +220,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                  [Page 4]
+Gsenger                 Expires November 7, 2008                [Page 4]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 2.1.2.  Tunneling from unicast hosts to anycast networks
@@ -276,9 +276,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                  [Page 5]
+Gsenger                 Expires November 7, 2008                [Page 5]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
                                  Figure 3
@@ -332,9 +332,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                  [Page 6]
+Gsenger                 Expires November 7, 2008                [Page 6]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
    Examples of SATP used with different lower layer and payload
@@ -388,9 +388,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                  [Page 7]
+Gsenger                 Expires November 7, 2008                [Page 7]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 3.  Using SATP on top of IP
@@ -444,9 +444,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                  [Page 8]
+Gsenger                 Expires November 7, 2008                [Page 8]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 4.  Protocol specification
@@ -500,9 +500,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                  [Page 9]
+Gsenger                 Expires November 7, 2008                [Page 9]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 4.5.  payload type
@@ -556,9 +556,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                 [Page 10]
+Gsenger                 Expires November 7, 2008               [Page 10]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
    encryption HAS TO be done before calculating the authentication tag.
@@ -612,9 +612,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                 [Page 11]
+Gsenger                 Expires November 7, 2008               [Page 11]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 5.  Security Considerations
@@ -668,9 +668,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                 [Page 12]
+Gsenger                 Expires November 7, 2008               [Page 12]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 6.  IANA Considerations
@@ -724,9 +724,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                 [Page 13]
+Gsenger                 Expires November 7, 2008               [Page 13]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 7.  References
@@ -780,9 +780,9 @@ Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
 
 
 
-Gsenger                   Expires July 4, 2008                 [Page 14]
+Gsenger                 Expires November 7, 2008               [Page 14]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 URIs
@@ -836,9 +836,9 @@ URIs
 
 
 
-Gsenger                   Expires July 4, 2008                 [Page 15]
+Gsenger                 Expires November 7, 2008               [Page 15]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 Author's Address
@@ -892,14 +892,14 @@ Author's Address
 
 
 
-Gsenger                   Expires July 4, 2008                 [Page 16]
+Gsenger                 Expires November 7, 2008               [Page 16]
 
-Internet-Draft  secure anycast tunneling protocol (SATP)    January 2008
+Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 
 Full Copyright Statement
 
-   Copyright (C) The Internet Society (2008).
+   Copyright (C) The IETF Trust (2008).
 
    This document is subject to the rights, licenses and restrictions
    contained in BCP 78, and except as set forth therein, the authors
@@ -907,10 +907,10 @@ Full Copyright Statement
 
    This document and the information contained herein are provided on an
    "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE REPRESENTS
-   OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE INTERNET
-   ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED,
-   INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE
-   INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED
+   OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY, THE IETF TRUST AND
+   THE INTERNET ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF
+   THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED
    WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 
@@ -948,5 +948,5 @@ Acknowledgment
 
 
 
-Gsenger                   Expires July 4, 2008                 [Page 17]
+Gsenger                 Expires November 7, 2008               [Page 17]
 
