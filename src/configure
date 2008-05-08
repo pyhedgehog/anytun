@@ -1,5 +1,27 @@
 #!/bin/sh
-cd openvpn
-./configure --disable-lzo --disable-crypto
-cd ..
 
+TARGET=$1
+if [ -z "$TARGET" ]; then
+    TARGET="ovpn"
+fi
+
+case $TARGET in 
+	linux)
+		rm -rf tunDevice.cpp
+		rm -rf tunDevice.h
+		ln -sf linux/tunDevice.cpp 
+		ln -sf linux/tunDevice.h 
+	;;
+	ovpn)
+		rm -rf tunDevice.cpp
+		rm -rf tunDevice.cpp
+		ln -sf ovpn/tunDevice.cpp 
+		ln -sf ovpn/tunDevice.h
+		cd openvpn
+		./configure --disable-lzo --disable-crypto
+		cd ..
+	;;
+	*)
+		echo "Usage: $0 (linux|ovpn)"
+	;;
+esac
