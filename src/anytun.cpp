@@ -455,6 +455,18 @@ int main(int argc, char* argv[])
     cLog.msg(Log::PRIO_NOTICE) << "post up script '" << gOpt.getPostUpScript() << "' returned " << postup_ret;  
   }
 
+
+//   Buffer buff(u_int32_t(1600));
+//   int len;
+//   while(1)
+//   {
+//     len = dev.read(buff.getBuf(), buff.getLength());
+//     cLog.msg(Log::PRIO_NOTICE) << "read " << len << " bytes form interface " << dev.getActualName();
+//   }
+
+//   exit(0);
+
+
   if(gOpt.getChroot())
     chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
   if(gOpt.getDaemonize())

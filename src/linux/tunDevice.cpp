@@ -28,41 +28,91 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <fcntl.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
+
+#include <linux/if_tun.h>
+#define DEFAULT_DEVICE "/dev/net/tun"
+
 #include "tunDevice.h"
 #include "threadUtils.hpp"
 
-TunDevice::TunDevice(const char* dev_name,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
-{
 
+TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
+{
+  fd_ = -1;
+  type_ = TYPE_UNDEF;
+
+	fd_ = ::open(DEFAULT_DEVICE, O_RDWR | O_NONBLOCK);
+
+	if(fd_ < 0)
+    throw std::runtime_error("can't init tun/tap device");
+
+	struct ifreq ifr;
+	memset(&ifr, 0, sizeof(ifr));
+
+// tun device
+  ifr.ifr_flags = IFF_TUN;
+  type_ = TYPE_TUN;
+
+// tap device
+//  ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
+//  type_ = TYPE_TAP;
+
+	if(dev_name)
+		strncpy(ifr.ifr_name, dev_name, IFNAMSIZ);
+
+	if(!ioctl(fd_, TUNSETIFF, &ifr)) {
+		actual_name_ = ifr.ifr_name;
+	} else if(!ioctl(fd_, (('T' << 8) | 202), &ifr)) {
+		actual_name_ = ifr.ifr_name;
+	} else
+    throw std::runtime_error("can't init tun/tap device");
 }
 
 TunDevice::~TunDevice()
 {
-
+  if(fd_ > 0)
+    ::close(fd_);
 }
 
 short TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
-  return 0;
+  if(fd_ < 0)
+    return -1;
+
+  return ::read(fd_, buf, len);
 }
 
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
-  return 0;
+  if(fd_ < 0)
+    return -1;
+
+  return ::write(fd_, buf, len);
 }
 
-char* TunDevice::getActualName()
+const char* TunDevice::getActualName()
 {
-  return NULL;
+  return actual_name_.c_str();
 }
 
 u_int32_t TunDevice::getType()
 {
-  return TYPE_UNDEF;
+  return type_;
 }
 
 const char* TunDevice::getTypeString()
 {
+  if(fd_ < 0)
+    return NULL;
+
+  switch(type_)
+  {
+  case TYPE_UNDEF: return "undef"; break;
+  case TYPE_TUN: return "tun"; break;
+  case TYPE_TAP: return "tap"; break;
+  }
   return NULL;
 }
-
