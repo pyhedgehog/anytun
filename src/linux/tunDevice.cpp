@@ -117,10 +117,10 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
     struct iphdr *hdr = reinterpret_cast<struct iphdr *>(buf);
     
     tpi.flags = 0;
-    if(hdr->version == 6)
-      tpi.proto = htons(ETH_P_IPV6);
-    else
+    if(hdr->version == 4)
       tpi.proto = htons(ETH_P_IP);
+    else
+      tpi.proto = htons(ETH_P_IPV6);
     
     iov[0].iov_base = &tpi;
     iov[0].iov_len = sizeof(tpi);

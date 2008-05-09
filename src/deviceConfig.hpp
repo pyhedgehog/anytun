@@ -40,6 +40,12 @@ class DeviceConfig
 public:
   DeviceConfig(const char* dev_name ,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
   {
+    guess_type(dev_name, dev_type);
+  }
+
+private:
+  void guess_type(const char* dev_name, const char* dev_type)
+  {
     type_ = TYPE_UNDEF;
     if(dev_type) {
       if(!strncmp(dev_type, "tun", 3))
@@ -47,17 +53,14 @@ public:
       else if(!strncmp(dev_type, "tap", 3))
         type_ = TYPE_TAP;
     }
-    else if(dev_name)
-    {
+    else if(dev_name) {
       if(!strncmp(dev_name, "tun", 3))
         type_ = TYPE_TUN;
       else if(!strncmp(dev_name, "tap", 3))
         type_ = TYPE_TAP;
     }
-    
   }
 
-private:
   device_type_t type_;
 
   friend class TunDevice;
