@@ -461,10 +461,13 @@ int main(int argc, char* argv[])
 //   while(1)
 //   {
 //     len = dev.read(buff.getBuf(), buff.getLength());
-//     cLog.msg(Log::PRIO_NOTICE) << "read " << len << " bytes form interface " << dev.getActualName();
+//     std::cout << "read " << len << " bytes form interface " << dev.getActualName() << std::endl;
+//     dev.write(buff.getBuf(), len);
 //   }
 
 //   exit(0);
+
+
 
 
   if(gOpt.getChroot())

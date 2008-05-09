@@ -29,9 +29,12 @@
  */
 
 #include <fcntl.h>
-#include <net/if.h>
 #include <sys/ioctl.h>
-
+#include <arpa/inet.h>
+#include <errno.h>
+#include <net/if.h>
+#include <linux/ip.h>
+#include <linux/if_ether.h>
 #include <linux/if_tun.h>
 #define DEFAULT_DEVICE "/dev/net/tun"
 
@@ -44,10 +47,13 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
   fd_ = -1;
   type_ = TYPE_UNDEF;
 
-	fd_ = ::open(DEFAULT_DEVICE, O_RDWR | O_NONBLOCK);
+	fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
 
-	if(fd_ < 0)
-    throw std::runtime_error("can't init tun/tap device");
+	if(fd_ < 0) {
+    std::string msg("can't open device file: ");
+    msg.append(strerror(errno));
+    throw std::runtime_error(msg);
+  }
 
 	struct ifreq ifr;
 	memset(&ifr, 0, sizeof(ifr));
@@ -67,8 +73,11 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
 		actual_name_ = ifr.ifr_name;
 	} else if(!ioctl(fd_, (('T' << 8) | 202), &ifr)) {
 		actual_name_ = ifr.ifr_name;
-	} else
-    throw std::runtime_error("can't init tun/tap device");
+	} else {
+    std::string msg("tun/tap device ioctl failed: ");
+    msg.append(strerror(errno));
+    throw std::runtime_error(msg);
+  }
 }
 
 TunDevice::~TunDevice()
@@ -82,7 +91,14 @@ short TunDevice::read(u_int8_t* buf, u_int32_t len)
   if(fd_ < 0)
     return -1;
 
-  return ::read(fd_, buf, len);
+  struct iovec iov[2];
+  struct tun_pi tpi;
+  
+  iov[0].iov_base = &tpi;
+  iov[0].iov_len = sizeof(tpi);
+  iov[1].iov_base = buf;
+  iov[1].iov_len = len;
+  return(::readv(fd_, iov, 2) - sizeof(tpi));
 }
 
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
@@ -90,7 +106,21 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
   if(fd_ < 0)
     return -1;
 
-  return ::write(fd_, buf, len);
+  struct iovec iov[2];
+  struct tun_pi tpi;
+  struct iphdr *hdr = reinterpret_cast<struct iphdr *>(buf);
+
+  tpi.flags = 0;
+  if(hdr->version == 6)
+    tpi.proto = htons(ETH_P_IPV6);
+  else
+    tpi.proto = htons(ETH_P_IP);
+
+  iov[0].iov_base = &tpi;
+  iov[0].iov_len = sizeof(tpi);
+  iov[1].iov_base = buf;
+  iov[1].iov_len = len;
+  return(writev(fd_, iov, 2) - sizeof(tpi));
 }
 
 const char* TunDevice::getActualName()
