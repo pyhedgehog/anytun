@@ -31,6 +31,7 @@
 #ifndef _DEVICE_CONFIG_HPP_
 #define _DEVICE_CONFIG_HPP_
 
+#include "networkAddress.h"
 class TunDevice;
 
 enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
@@ -38,13 +39,9 @@ enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
 class DeviceConfig 
 {
 public:
-  DeviceConfig(const char* dev_name ,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
-  {
-    guess_type(dev_name, dev_type);
-  }
-
-private:
-  void guess_type(const char* dev_name, const char* dev_type)
+  DeviceConfig(const char* dev_name ,const char* dev_type,
+               const char* ifcfg_lp, const char* ifcfg_rnmp) : local_(ipv4, ifcfg_lp), 
+                                                               remote_netmask_(ipv4, ifcfg_rnmp)
   {
     type_ = TYPE_UNDEF;
     if(dev_type) {
@@ -61,7 +58,9 @@ private:
     }
   }
 
+private:
   device_type_t type_;
+  NetworkAddress local_, remote_netmask_;
 
   friend class TunDevice;
 };
