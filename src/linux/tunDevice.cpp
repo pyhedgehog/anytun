@@ -42,13 +42,9 @@
 #include "threadUtils.hpp"
 
 
-TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
+TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp)
 {
-  fd_ = -1;
-  type_ = TYPE_UNDEF;
-
 	fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
-
 	if(fd_ < 0) {
     std::string msg("can't open device file: ");
     msg.append(strerror(errno));
@@ -58,13 +54,16 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
 	struct ifreq ifr;
 	memset(&ifr, 0, sizeof(ifr));
 
-// tun device
-  ifr.ifr_flags = IFF_TUN;
-  type_ = TYPE_TUN;
-
-// tap device
-//  ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
-//  type_ = TYPE_TAP;
+  if(conf_.type_ == TYPE_TUN) {
+    ifr.ifr_flags = IFF_TUN;
+    with_pi_ = true;
+  } 
+  else if(conf_.type_ == TYPE_TAP) {
+    ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
+    with_pi_ = false;
+  } 
+  else
+    throw std::runtime_error("unable to recognize type of device (tun or tap)");
 
 	if(dev_name)
 		strncpy(ifr.ifr_name, dev_name, IFNAMSIZ);
@@ -91,14 +90,19 @@ short TunDevice::read(u_int8_t* buf, u_int32_t len)
   if(fd_ < 0)
     return -1;
 
-  struct iovec iov[2];
-  struct tun_pi tpi;
-  
-  iov[0].iov_base = &tpi;
-  iov[0].iov_len = sizeof(tpi);
-  iov[1].iov_base = buf;
-  iov[1].iov_len = len;
-  return(::readv(fd_, iov, 2) - sizeof(tpi));
+  if(with_pi_)
+  {
+    struct iovec iov[2];
+    struct tun_pi tpi;
+    
+    iov[0].iov_base = &tpi;
+    iov[0].iov_len = sizeof(tpi);
+    iov[1].iov_base = buf;
+    iov[1].iov_len = len;
+    return(::readv(fd_, iov, 2) - sizeof(tpi));
+  }
+  else
+    return(::read(fd_, buf, len));
 }
 
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
@@ -106,21 +110,26 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
   if(fd_ < 0)
     return -1;
 
-  struct iovec iov[2];
-  struct tun_pi tpi;
-  struct iphdr *hdr = reinterpret_cast<struct iphdr *>(buf);
-
-  tpi.flags = 0;
-  if(hdr->version == 6)
-    tpi.proto = htons(ETH_P_IPV6);
+  if(with_pi_)
+  {
+    struct iovec iov[2];
+    struct tun_pi tpi;
+    struct iphdr *hdr = reinterpret_cast<struct iphdr *>(buf);
+    
+    tpi.flags = 0;
+    if(hdr->version == 6)
+      tpi.proto = htons(ETH_P_IPV6);
+    else
+      tpi.proto = htons(ETH_P_IP);
+    
+    iov[0].iov_base = &tpi;
+    iov[0].iov_len = sizeof(tpi);
+    iov[1].iov_base = buf;
+    iov[1].iov_len = len;
+    return(::writev(fd_, iov, 2) - sizeof(tpi));
+  }
   else
-    tpi.proto = htons(ETH_P_IP);
-
-  iov[0].iov_base = &tpi;
-  iov[0].iov_len = sizeof(tpi);
-  iov[1].iov_base = buf;
-  iov[1].iov_len = len;
-  return(writev(fd_, iov, 2) - sizeof(tpi));
+    return(::write(fd_, buf, len));
 }
 
 const char* TunDevice::getActualName()
@@ -128,9 +137,9 @@ const char* TunDevice::getActualName()
   return actual_name_.c_str();
 }
 
-u_int32_t TunDevice::getType()
+device_type_t TunDevice::getType()
 {
-  return type_;
+  return conf_.type_;
 }
 
 const char* TunDevice::getTypeString()
@@ -138,7 +147,7 @@ const char* TunDevice::getTypeString()
   if(fd_ < 0)
     return NULL;
 
-  switch(type_)
+  switch(conf_.type_)
   {
   case TYPE_UNDEF: return "undef"; break;
   case TYPE_TUN: return "tun"; break;

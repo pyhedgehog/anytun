@@ -28,34 +28,39 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _TUNDEVICE_H_
-#define _TUNDEVICE_H_
+#ifndef _DEVICE_CONFIG_HPP_
+#define _DEVICE_CONFIG_HPP_
 
-#include "buffer.h"
-#include "deviceConfig.hpp"
-#include "threadUtils.hpp"
+class TunDevice;
 
-class TunDevice
+enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
+
+class DeviceConfig 
 {
 public:
-  TunDevice(const char* dev,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp);
-  ~TunDevice();
-  
-  short read(u_int8_t* buf, u_int32_t len);
-  int write(u_int8_t* buf, u_int32_t len);
-
-  const char* getActualName();
-  device_type_t getType();
-  const char* getTypeString();
+  DeviceConfig(const char* dev_name ,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
+  {
+    type_ = TYPE_UNDEF;
+    if(dev_type) {
+      if(!strncmp(dev_type, "tun", 3))
+        type_ = TYPE_TUN;
+      else if(!strncmp(dev_type, "tap", 3))
+        type_ = TYPE_TAP;
+    }
+    else if(dev_name)
+    {
+      if(!strncmp(dev_name, "tun", 3))
+        type_ = TYPE_TUN;
+      else if(!strncmp(dev_name, "tap", 3))
+        type_ = TYPE_TAP;
+    }
+    
+  }
 
 private:
-  void operator=(const TunDevice &src);
-  TunDevice(const TunDevice &src);
+  device_type_t type_;
 
-  int fd_;
-  DeviceConfig conf_;
-  bool with_pi_;
-  std::string actual_name_;
+  friend class TunDevice;
 };
 
 #endif

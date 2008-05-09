@@ -140,9 +140,9 @@ void* sender(void* p)
     u_int32_t len = param->dev.read(plain_packet.getPayload(), plain_packet.getPayloadLength());
     plain_packet.setPayloadLength(len);
     // set payload type
-    if(param->dev.getType() == TunDevice::TYPE_TUN)
+    if(param->dev.getType() == TYPE_TUN)
       plain_packet.setPayloadType(PAYLOAD_TYPE_TUN);
-    else if(param->dev.getType() == TunDevice::TYPE_TAP)
+    else if(param->dev.getType() == TYPE_TAP)
       plain_packet.setPayloadType(PAYLOAD_TYPE_TAP);
     else 
       plain_packet.setPayloadType(0);
@@ -303,9 +303,9 @@ void* receiver(void* p)
     c->decrypt(encrypted_packet, plain_packet);
     
     // check payload_type
-    if((param->dev.getType() == TunDevice::TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN4 && 
-                                                       plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN6) ||
-       (param->dev.getType() == TunDevice::TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
+    if((param->dev.getType() == TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN4 && 
+                                            plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN6) ||
+       (param->dev.getType() == TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
       continue;
 
     // write it on the device
@@ -443,8 +443,8 @@ int main(int argc, char* argv[])
     }
   }
   
-  std::string dev_type(gOpt.getDevType()); 
-  TunDevice dev(gOpt.getDevName().c_str(), dev_type=="" ? NULL : dev_type.c_str(), 
+  TunDevice dev(gOpt.getDevName() =="" ? NULL : gOpt.getDevName().c_str(),
+                gOpt.getDevType() =="" ? NULL : gOpt.getDevType().c_str(), 
                 gOpt.getIfconfigParamLocal() =="" ? NULL : gOpt.getIfconfigParamLocal().c_str(), 
                 gOpt.getIfconfigParamRemoteNetmask() =="" ? NULL : gOpt.getIfconfigParamRemoteNetmask().c_str());
   cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
@@ -456,16 +456,16 @@ int main(int argc, char* argv[])
   }
 
 
-//   Buffer buff(u_int32_t(1600));
-//   int len;
-//   while(1)
-//   {
-//     len = dev.read(buff.getBuf(), buff.getLength());
-//     std::cout << "read " << len << " bytes form interface " << dev.getActualName() << std::endl;
-//     dev.write(buff.getBuf(), len);
-//   }
+  Buffer buff(u_int32_t(1600));
+  int len;
+  while(1)
+  {
+    len = dev.read(buff.getBuf(), buff.getLength());
+    std::cout << "read " << len << " bytes form interface " << dev.getActualName() << std::endl;
+    dev.write(buff.getBuf(), len);
+  }
 
-//   exit(0);
+  exit(0);
 
 
 

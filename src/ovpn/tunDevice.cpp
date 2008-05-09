@@ -144,7 +144,7 @@ char* TunDevice::getActualName()
   return dev_->actual_name;
 }
 
-u_int32_t TunDevice::getType()
+device_type_t TunDevice::getType()
 {
   if(!dev_)
     return TYPE_UNDEF;

@@ -32,6 +32,7 @@
 #define _TUNDEVICE_H_
 
 #include "buffer.h"
+#include "deviceConfig.hpp"
 #include "threadUtils.hpp"
 
 class TunDevice
@@ -48,7 +49,7 @@ public:
   int write(u_int8_t* buf, u_int32_t len);
 
   char* getActualName();
-  u_int32_t getType();
+  device_type_t getType();
   const char* getTypeString();
 
 private:

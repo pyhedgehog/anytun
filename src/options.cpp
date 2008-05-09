@@ -66,7 +66,7 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   remote_sync_addr_ = "";
   remote_addr_ = "";
   remote_port_ = 4444;
-  dev_name_ = "tun";
+  dev_name_ = "";
   dev_type_ = "";
   ifconfig_param_local_ = "";
   ifconfig_param_remote_netmask_ = "";
@@ -193,6 +193,9 @@ bool Options::parse(int argc, char* argv[])
     kd_prf_ = "null";
   if((cipher_ != "null" || auth_algo_ != "null") && kd_prf_ == "null")
     kd_prf_ = "aes-ctr";
+
+  if(dev_name_ == "" && dev_type_ == "")
+    dev_type_ = "tun";
 
 	while(!host_port_queue.empty())
 	{
