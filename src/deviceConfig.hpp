@@ -39,9 +39,7 @@ enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
 class DeviceConfig 
 {
 public:
-  DeviceConfig(const char* dev_name ,const char* dev_type,
-               const char* ifcfg_lp, const char* ifcfg_rnmp) : local_(ipv4, ifcfg_lp), 
-                                                               remote_netmask_(ipv4, ifcfg_rnmp)
+  DeviceConfig(const char* dev_name ,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
   {
     type_ = TYPE_UNDEF;
     if(dev_type) {
@@ -56,6 +54,11 @@ public:
       else if(!strncmp(dev_name, "tap", 3))
         type_ = TYPE_TAP;
     }
+
+    if(ifcfg_lp)
+      local_.setNetworkAddress(ipv4, ifcfg_lp);
+    if(ifcfg_rnmp)
+      remote_netmask_.setNetworkAddress(ipv4, ifcfg_rnmp);
   }
 
 private:

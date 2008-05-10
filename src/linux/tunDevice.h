@@ -52,6 +52,8 @@ private:
   void operator=(const TunDevice &src);
   TunDevice(const TunDevice &src);
 
+  void do_ifconfig();
+
   int fd_;
   DeviceConfig conf_;
   bool with_pi_;

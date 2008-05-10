@@ -77,6 +77,9 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
     msg.append(strerror(errno));
     throw std::runtime_error(msg);
   }
+
+  if(ifcfg_lp && ifcfg_rnmp)
+    do_ifconfig();
 }
 
 TunDevice::~TunDevice()
@@ -154,4 +157,23 @@ const char* TunDevice::getTypeString()
   case TYPE_TAP: return "tap"; break;
   }
   return NULL;
+}
+
+void TunDevice::do_ifconfig()
+{
+  std::string command("/sbin/ifconfig ");
+  command.append(actual_name_);
+  command.append(" ");
+  command.append(conf_.local_.toString());
+  command.append(" ");
+
+  if(conf_.type_ == TYPE_TUN)
+    command.append("pointopoint ");
+  else
+    command.append("netmask ");
+
+  command.append(conf_.remote_netmask_.toString());
+  command.append(" mtu 1400");
+
+  system(command.c_str());
 }

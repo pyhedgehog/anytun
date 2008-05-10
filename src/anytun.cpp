@@ -456,16 +456,16 @@ int main(int argc, char* argv[])
   }
 
 
-  Buffer buff(u_int32_t(1600));
-  int len;
-  while(1)
-  {
-    len = dev.read(buff.getBuf(), buff.getLength());
-    std::cout << "read " << len << " bytes form interface " << dev.getActualName() << std::endl;
-    dev.write(buff.getBuf(), len);
-  }
+//   Buffer buff(u_int32_t(1600));
+//   int len;
+//   while(1)
+//   {
+//     len = dev.read(buff.getBuf(), buff.getLength());
+//     std::cout << "read " << len << " bytes form interface " << dev.getActualName() << std::endl;
+//     dev.write(buff.getBuf(), len);
+//   }
 
-  exit(0);
+//   exit(0);
 
 
 
