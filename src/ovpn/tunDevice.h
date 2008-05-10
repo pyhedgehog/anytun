@@ -32,8 +32,8 @@
 #define _TUNDEVICE_H_
 
 #include "buffer.h"
-#include "deviceConfig.hpp"
 #include "threadUtils.hpp"
+#include "deviceConfig.hpp"
 
 class TunDevice
 {

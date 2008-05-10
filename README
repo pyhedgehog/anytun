@@ -15,8 +15,7 @@ OpenBSD
 
 libgcrypt
 libgpg-error
-boost-headers
-boost-libs
+boost
 gmake
 
 

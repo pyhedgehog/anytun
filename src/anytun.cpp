@@ -183,7 +183,7 @@ void* sender(void* p)
 		{
       param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_host_, conn.remote_port_);
 		}
-		catch (Exception e)
+		catch (std::exception e)
 		{
 		}
   }

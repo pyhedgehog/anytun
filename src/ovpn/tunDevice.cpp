@@ -31,14 +31,14 @@
 #include <stdexcept>
 #include <poll.h>
 
+#include "tunDevice.h"
+#include "threadUtils.hpp"
+
 extern "C" {
 #include "openvpn/config.h"
 #include "openvpn/syshead.h"
 #include "openvpn/tun.h"
 }
-
-#include "tunDevice.h"
-#include "threadUtils.hpp"
 
 
 TunDevice::TunDevice(const char* dev_name,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
