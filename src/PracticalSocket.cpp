@@ -80,7 +80,9 @@ SocketException::SocketException(const string &message, bool inclSysMsg)
   throw() : userMessage(message) {
   if (inclSysMsg) {
     userMessage.append(": ");
-    userMessage.append(strerror(errno));
+    char buf[NL_TEXTMAX];
+    strerror_r(errno, buf, NL_TEXTMAX);
+    userMessage.append(buf);
   }
 }
 

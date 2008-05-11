@@ -78,8 +78,10 @@ AesIcmCipher::AesIcmCipher() : cipher_(NULL)
 {
       // TODO: hardcoded keysize
   gcry_error_t err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
-  if( err )
-    cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher";
+  if( err ) {
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher" << gpg_strerror_r(err, buf, NL_TEXTMAX);
+  } 
 }
 
 
@@ -95,8 +97,10 @@ void AesIcmCipher::setKey(Buffer& key)
     return;
 
   gcry_error_t err = gcry_cipher_setkey( cipher_, key.getBuf(), key.getLength() );
-  if( err )
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher::setKey: Failed to set cipher key: " << gpg_strerror( err );
+  if( err ) {
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher::setKey: Failed to set cipher key: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
+  }
 }
 
 void AesIcmCipher::setSalt(Buffer& salt)
@@ -125,7 +129,8 @@ void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t o
 
   gcry_error_t err = gcry_cipher_reset( cipher_ );
   if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to reset cipher: " << gpg_strerror( err );
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to reset cipher: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
     return;
   }
 
@@ -154,13 +159,15 @@ void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t o
   err = gcry_cipher_setctr( cipher_, ctr_buf, written );        // TODO: hardcoded size 
   delete[] ctr_buf;
   if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: " << gpg_strerror( err );
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
     return;
   }
 
   err = gcry_cipher_encrypt( cipher_, out, olen, in, ilen );
   if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to generate cipher bitstream: " << gpg_strerror( err );
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to generate cipher bitstream: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
     return;
   }
 }

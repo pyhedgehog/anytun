@@ -49,7 +49,9 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
     std::string msg("can't open device file (");
     msg.append(DEFAULT_DEVICE);
     msg.append("): ");
-    msg.append(strerror(errno));
+    char buf[NL_TEXTMAX];
+    strerror_r(errno, buf, NL_TEXTMAX);
+    msg.append(buf);
     throw std::runtime_error(msg);
   }
 
@@ -76,7 +78,9 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
 		actual_name_ = ifr.ifr_name;
 	} else {
     std::string msg("tun/tap device ioctl failed: ");
-    msg.append(strerror(errno));
+    char buf[NL_TEXTMAX];
+    strerror_r(errno, buf, NL_TEXTMAX);
+    msg.append(buf);
     throw std::runtime_error(msg);
   }
 

@@ -70,8 +70,10 @@ void AesIcmKeyDerivation::updateMasterKey()
     return;
 
   gcry_error_t err = gcry_cipher_setkey( cipher_, master_key_.getBuf(), master_key_.getLength() );
-  if( err )
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << gpg_strerror( err );
+  if( err ) {
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
+  }
 }
 
 void AesIcmKeyDerivation::init(Buffer key, Buffer salt)
@@ -83,7 +85,8 @@ void AesIcmKeyDerivation::init(Buffer key, Buffer salt)
   // TODO: hardcoded size
   gcry_error_t err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
   if( err ) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to open cipher: " << gpg_strerror( err );
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::init: Failed to open cipher: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
     return;
   }
   
@@ -103,8 +106,10 @@ void AesIcmKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer
   }
 
   gcry_error_t err = gcry_cipher_reset( cipher_ );
-  if( err )
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror( err );
+  if( err ) {
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
+  }
 
   // see at: http://tools.ietf.org/html/rfc3711#section-4.3
   // *  Let r = index DIV key_derivation_rate (with DIV as defined above).
@@ -142,12 +147,16 @@ void AesIcmKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer
   err = gcry_cipher_setctr( cipher_ , ctr_buf, written );
   delete[] ctr_buf;
 
-  if( err )
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set CTR: " << gpg_strerror( err );
+  if( err ) {
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set CTR: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
+  }
 
   for(u_int32_t i=0; i < key.getLength(); ++i) key[i] = 0;
   err = gcry_cipher_encrypt( cipher_, key, key.getLength(), NULL, 0);
-  if( err ) 
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror( err );
+  if( err ) {
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
+  }
 }
 

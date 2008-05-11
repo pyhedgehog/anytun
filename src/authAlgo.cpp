@@ -73,8 +73,10 @@ void Sha1AuthAlgo::setKey(Buffer& key)
     return;
 
   gcry_error_t err = gcry_md_setkey( ctx_, key.getBuf(), key.getLength() );
-  if( err )
-    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set cipher key: " << gpg_strerror( err );
+  if( err ) {
+    char buf[NL_TEXTMAX];
+    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set cipher key: " << gpg_strerror_r(err, buf, NL_TEXTMAX);
+  }
 }
 
 void Sha1AuthAlgo::generate(EncryptedPacket& packet)
