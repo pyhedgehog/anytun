@@ -12,6 +12,12 @@ case $TARGET in
 		ln -sf linux/tunDevice.cpp 
 		ln -sf linux/tunDevice.h 
 	;;
+	bsd)
+		rm -rf tunDevice.cpp
+		rm -rf tunDevice.h
+		ln -sf bsd/tunDevice.cpp 
+		ln -sf bsd/tunDevice.h 
+	;;
 	ovpn)
 		rm -rf tunDevice.cpp
 		rm -rf tunDevice.cpp

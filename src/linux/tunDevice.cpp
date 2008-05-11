@@ -46,7 +46,9 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
 {
 	fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
 	if(fd_ < 0) {
-    std::string msg("can't open device file: ");
+    std::string msg("can't open device file (");
+    msg.append(DEFAULT_DEVICE);
+    msg.append("): ");
     msg.append(strerror(errno));
     throw std::runtime_error(msg);
   }
