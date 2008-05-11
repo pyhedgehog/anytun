@@ -28,6 +28,6 @@ case $TARGET in
 		cd ..
 	;;
 	*)
-		echo "Usage: $0 (linux|ovpn)"
+		echo "Usage: $0 (linux|bsd|ovpn)"
 	;;
 esac
