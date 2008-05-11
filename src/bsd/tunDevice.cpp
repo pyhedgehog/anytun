@@ -165,6 +165,13 @@ void TunDevice::init_post()
  #error Target not supported
 #endif
 
+int TunDevice::fix_return(int ret, size_t type_length)
+{
+  if(ret < 0)
+    return ret;
+
+  return (static_cast<size_t>(ret) > type_length ? (ret - type_length) : 0);
+}
 
 short TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
@@ -179,7 +186,7 @@ short TunDevice::read(u_int8_t* buf, u_int32_t len)
     iov[0].iov_len = sizeof(type);
     iov[1].iov_base = buf;
     iov[1].iov_len = len;
-    return(::readv(fd_, iov, 2) - sizeof(type));
+    return(fix_return(::readv(fd_, iov, 2), sizeof(type)));
   }
   else
     return(::read(fd_, buf, len));
@@ -205,7 +212,7 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
     iov[0].iov_len = sizeof(type);
     iov[1].iov_base = buf;
     iov[1].iov_len = len;
-    return(::writev(fd_, iov, 2) - sizeof(type));
+    return(fix_return(::writev(fd_, iov, 2), sizeof(type)));
   }
   else
     return(::write(fd_, buf, len));

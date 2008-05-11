@@ -54,6 +54,7 @@ private:
 
   void init_post();
   void do_ifconfig();
+  int fix_return(int ret, size_t type_length);
 
   int fd_;
   DeviceConfig conf_;
