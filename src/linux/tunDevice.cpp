@@ -90,7 +90,15 @@ TunDevice::~TunDevice()
     ::close(fd_);
 }
 
-short TunDevice::read(u_int8_t* buf, u_int32_t len)
+int TunDevice::fix_return(int ret, size_t pi_length)
+{
+  if(ret < 0)
+    return ret;
+
+  return (static_cast<size_t>(ret) > pi_length ? (ret - pi_length) : 0);
+}
+
+int TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
   if(fd_ < 0)
     return -1;
@@ -104,7 +112,7 @@ short TunDevice::read(u_int8_t* buf, u_int32_t len)
     iov[0].iov_len = sizeof(tpi);
     iov[1].iov_base = buf;
     iov[1].iov_len = len;
-    return(::readv(fd_, iov, 2) - sizeof(tpi));
+    return(fix_return(::readv(fd_, iov, 2), sizeof(tpi)));
   }
   else
     return(::read(fd_, buf, len));
@@ -131,7 +139,7 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
     iov[0].iov_len = sizeof(tpi);
     iov[1].iov_base = buf;
     iov[1].iov_len = len;
-    return(::writev(fd_, iov, 2) - sizeof(tpi));
+    return(fix_return(::writev(fd_, iov, 2), sizeof(tpi)));
   }
   else
     return(::write(fd_, buf, len));

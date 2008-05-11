@@ -41,7 +41,7 @@ public:
   TunDevice(const char* dev,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp);
   ~TunDevice();
   
-  short read(u_int8_t* buf, u_int32_t len);
+  int read(u_int8_t* buf, u_int32_t len);
   int write(u_int8_t* buf, u_int32_t len);
 
   const char* getActualName();
@@ -53,6 +53,7 @@ private:
   TunDevice(const TunDevice &src);
 
   void do_ifconfig();
+  int fix_return(int ret, size_t pi_length);
 
   int fd_;
   DeviceConfig conf_;

@@ -481,7 +481,7 @@ int main(int argc, char* argv[])
 //     while(1)
 //     {
 //       len = dev.read(buff.getBuf(), buff.getLength());
-//       std::cout << "read " << len << " bytes form interface " << dev.getActualName() << std::endl;
+//       std::cout << "read " << len << " bytes from interface " << dev.getActualName() << std::endl;
 //       dev.write(buff.getBuf(), len);
 //     }
     
