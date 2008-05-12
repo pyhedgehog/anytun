@@ -90,8 +90,8 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
       msg = "can't open device file (";
       msg.append(device_file);
       msg.append("): ");
-      char buf[NL_TEXTMAX];
-      strerror_r(errno, buf, NL_TEXTMAX);
+      char buf[STERROR_TEXT_MAX];
+      strerror_r(errno, buf, STERROR_TEXT_MAX);
       msg.append(buf);
     }
     throw std::runtime_error(msg);

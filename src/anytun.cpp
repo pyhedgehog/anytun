@@ -355,16 +355,16 @@ bool initLibGCrypt()
   
   gcry_error_t err = gcry_control (GCRYCTL_DISABLE_SECMEM, 0); 
   if( err ) {
-    char buf[NL_TEXTMAX];
-    std::cout << "initLibGCrypt: Failed to disable secure memory: " << gpg_strerror_r(err, buf, NL_TEXTMAX) << std::endl;
+    char buf[STERROR_TEXT_MAX];
+    std::cout << "initLibGCrypt: Failed to disable secure memory: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX) << std::endl;
     return false;
   }
     
   // Tell Libgcrypt that initialization has completed.
   err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
   if( err ) {
-    char buf[NL_TEXTMAX];
-    std::cout << "initLibGCrypt: Failed to finish initialization: " << gpg_strerror_r(err, buf, NL_TEXTMAX) << std::endl;
+    char buf[STERROR_TEXT_MAX];
+    std::cout << "initLibGCrypt: Failed to finish initialization: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX) << std::endl;
     return false;
   }
 

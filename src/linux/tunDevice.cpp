@@ -28,6 +28,10 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#define _XOPEN_SOURCE 600
+#include <string.h>
+#include <sstream>
+
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <arpa/inet.h>
@@ -37,8 +41,6 @@
 #include <linux/if_ether.h>
 #include <linux/if_tun.h>
 #define DEFAULT_DEVICE "/dev/net/tun"
-
-#include <sstream>
 
 #include "tunDevice.h"
 #include "threadUtils.hpp"
@@ -51,8 +53,8 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
     std::string msg("can't open device file (");
     msg.append(DEFAULT_DEVICE);
     msg.append("): ");
-    char buf[NL_TEXTMAX];
-    strerror_r(errno, buf, NL_TEXTMAX);
+    char buf[STERROR_TEXT_MAX];
+    strerror_r(errno, buf, STERROR_TEXT_MAX);
     msg.append(buf);
     throw std::runtime_error(msg);
   }
@@ -80,8 +82,8 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
 		actual_name_ = ifr.ifr_name;
 	} else {
     std::string msg("tun/tap device ioctl failed: ");
-    char buf[NL_TEXTMAX];
-    strerror_r(errno, buf, NL_TEXTMAX);
+    char buf[STERROR_TEXT_MAX];
+    strerror_r(errno, buf, STERROR_TEXT_MAX);
     msg.append(buf);
     throw std::runtime_error(msg);
   }

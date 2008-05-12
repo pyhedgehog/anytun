@@ -28,6 +28,8 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "datatypes.h"
+
 // this is from: http://cs.ecs.baylor.edu/~donahoo/practical/CSockets/practical/
 // and this is their header:
 /*
@@ -80,8 +82,8 @@ SocketException::SocketException(const string &message, bool inclSysMsg)
   throw() : userMessage(message) {
   if (inclSysMsg) {
     userMessage.append(": ");
-    char buf[NL_TEXTMAX];
-    strerror_r(errno, buf, NL_TEXTMAX);
+    char buf[STERROR_TEXT_MAX];
+    strerror_r(errno, buf, STERROR_TEXT_MAX);
     userMessage.append(buf);
   }
 }

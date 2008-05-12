@@ -60,4 +60,6 @@ typedef u_int16_t mux_t;
 //#define AUTH_TAG_T_NTOH(a) ntohl(a)
 //#define AUTH_TAG_T_HTON(a) htonl(a)
 //
+#define STERROR_TEXT_MAX 100
+
 #endif
