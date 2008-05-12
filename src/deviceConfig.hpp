@@ -39,8 +39,9 @@ enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
 class DeviceConfig 
 {
 public:
-  DeviceConfig(const char* dev_name ,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp)
+  DeviceConfig(const char* dev_name ,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp, u_int16_t mtu)
   {
+    mtu_ = mtu;
     type_ = TYPE_UNDEF;
     if(dev_type) {
       if(!strncmp(dev_type, "tun", 3))
@@ -64,6 +65,7 @@ public:
 private:
   device_type_t type_;
   NetworkAddress local_, remote_netmask_;
+  u_int16_t mtu_;
 
   friend class TunDevice;
 };

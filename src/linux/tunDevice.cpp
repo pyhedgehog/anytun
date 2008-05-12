@@ -38,11 +38,13 @@
 #include <linux/if_tun.h>
 #define DEFAULT_DEVICE "/dev/net/tun"
 
+#include <sstream>
+
 #include "tunDevice.h"
 #include "threadUtils.hpp"
 
 
-TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp)
+TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
 	fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
 	if(fd_ < 0) {
@@ -175,19 +177,15 @@ const char* TunDevice::getTypeString()
 
 void TunDevice::do_ifconfig()
 {
-  std::string command("/sbin/ifconfig ");
-  command.append(actual_name_);
-  command.append(" ");
-  command.append(conf_.local_.toString());
-  command.append(" ");
+  std::ostringstream command;
+  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.local_.toString();
 
   if(conf_.type_ == TYPE_TUN)
-    command.append("pointopoint ");
+    command << " pointopoint ";
   else
-    command.append("netmask ");
+    command << " netmask ";
 
-  command.append(conf_.remote_netmask_.toString());
-  command.append(" mtu 1400");
+  command << conf_.remote_netmask_.toString() << " mtu " << conf_.mtu_;
 
-  system(command.c_str());
+  system(command.str().c_str());
 }

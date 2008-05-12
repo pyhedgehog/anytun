@@ -49,7 +49,7 @@
 
 #include <iostream>
 
-TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp)
+TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
   std::string device_file = "/dev/";
   bool dynamic = true;
@@ -164,7 +164,7 @@ void TunDevice::init_post()
 }
 
 #else
- #error Target not supported
+ #error This Device works just for OpenBSD, FreeBSD or NetBSD
 #endif
 
 int TunDevice::fix_return(int ret, size_t type_length)
@@ -246,19 +246,29 @@ const char* TunDevice::getTypeString()
 
 void TunDevice::do_ifconfig()
 {
-//   std::string command("/sbin/ifconfig ");
-//   command.append(actual_name_);
-//   command.append(" ");
-//   command.append(conf_.local_.toString());
-//   command.append(" ");
+  std::ostringstream command;
+  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.local_.toString();
 
-//   if(conf_.type_ == TYPE_TUN)
-//     command.append("pointopoint ");
-//   else
-//     command.append("netmask ");
+  if(conf_.type_ == TYPE_TAP)
+    command << " netmask ";
+  else
+    command << " ";
 
-//   command.append(conf_.remote_netmask_.toString());
-//   command.append(" mtu 1400");
+  command << conf_.remote_netmask_.toString() << " mtu " << conf_.mtu_;
 
-//   system(command.c_str());
+  if(conf_.type_ == TYPE_TUN)
+    command << " netmask 255.255.255.255 up";
+  else {
+#if defined(__GNUC__) && defined(__OpenBSD__)
+    command << " link0";
+#elif defined(__GNUC__) && defined(__FreeBSD__)
+    command << " up";
+#elif defined(__GNUC__) && defined(__NetBSD__)
+    command << "";
+#else
+ #error This Device works just for OpenBSD, FreeBSD or NetBSD
+#endif
+  }
+
+  system(command.str().c_str());
 }
