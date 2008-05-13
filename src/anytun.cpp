@@ -191,6 +191,10 @@ void* sender(void* p)
       }
     }
   }
+  catch(std::runtime_error e)
+  {
+    cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught runtime_error: " << e.what();
+  }
   catch(std::exception e)
   {
     cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught exception: " << e.what();
@@ -322,6 +326,10 @@ void* receiver(void* p)
           // write it on the device
       param->dev.write(plain_packet.getPayload(), plain_packet.getLength());
     }
+  }
+  catch(std::runtime_error e)
+  {
+    cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught runtime_error: " << e.what();
   }
   catch(std::exception e)
   {
@@ -566,6 +574,13 @@ int main(int argc, char* argv[])
     delete &p.connto;
 
     return ret;    
+  }
+  catch(std::runtime_error e)
+  {
+    if(daemonized)
+      cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
+    else
+      std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
   catch(std::exception e)
   {

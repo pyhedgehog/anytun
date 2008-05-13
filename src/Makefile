@@ -11,6 +11,8 @@ LD = g++
 LDFLAGS = -g -Wall -O2 -lpthread -lgcrypt -lgpg-error -lboost_serialization
 
 ifeq ($(TARGET),Linux)
+#  CFLAGS += -D_XOPEN_SOURCE=600
+#  CCFLAGS += -D_XOPEN_SOURCE=600
   LDFLAGS += -ldl
 endif
 ifeq ($(TARGET),OpenBSD)
