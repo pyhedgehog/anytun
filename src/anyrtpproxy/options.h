@@ -83,6 +83,8 @@ public:
   std::string getChrootDir();
   bool getDaemonize();
   Host getControlInterface();
+  std::string getLocalAddr();
+  Options& setLocalAddr(std::string l);
   u_int16_t getLocalSyncPort();
 	Options& setLocalSyncPort(u_int16_t l);
   u_int16_t getRtpStartPort();
@@ -118,6 +120,7 @@ private:
   std::string chroot_dir_;
   bool daemonize_;
 	u_int16_t local_sync_port_;
+  std::string local_addr_;
 	u_int16_t rtp_start_port_;
 	u_int16_t rtp_end_port_;
 	ConnectToList connect_to_;

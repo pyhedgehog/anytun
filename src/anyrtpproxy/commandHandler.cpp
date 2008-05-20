@@ -41,6 +41,7 @@
 #include "../syncCommand.h"
 #include "../rtpSessionTable.h"
 #include "callIdQueue.h"
+#include "options.h"
 
 #define MAX_COMMAND_LENGTH 1000
 
@@ -179,7 +180,10 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
 				throw std::runtime_error("no free port found");
 			}
 
-      session.setLocalAddr("0.0.0.0"); // TODO: read this from config
+      if(gOpt.getLocalAddr() == "")
+        session.setLocalAddr("0.0.0.0");
+      else
+        session.setLocalAddr(gOpt.getLocalAddr());
       session.setLocalPort1(port1);
       session.setLocalPort2(port2);
     }

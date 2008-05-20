@@ -57,6 +57,7 @@ Options::Options() : control_interface_("0.0.0.0", 22222)
   username_ = "nobody";
   chroot_dir_ = "/var/run";
   daemonize_ = true;
+  local_addr_ = "";
 	local_sync_port_ = 0;
 	rtp_start_port_ = 34000;
 	rtp_end_port_ = 35000;
@@ -161,6 +162,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-u","--user", username_)
     PARSE_SCALAR_PARAM("-c","--chroot-dir", chroot_dir_)
     PARSE_INVERSE_BOOL_PARAM("-d","--nodaemonize", daemonize_)
+    PARSE_SCALAR_PARAM("-i","--interface", local_addr_)
     PARSE_STRING_PARAM("-s","--control", control_interface_)
     PARSE_SCALAR_PARAM2("-p","--port-range", rtp_start_port_, rtp_end_port_)
 		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
@@ -198,6 +200,7 @@ void Options::printUsage()
   std::cout << "  [-u|--username] <username>       in case of chroot run as this user" << std::endl;
   std::cout << "  [-c|--chroot-dir] <directory>    directory to make a chroot to" << std::endl;
   std::cout << "  [-d|--nodaemonize]               don't run in background" << std::endl;
+  std::cout << "  [-i|--interface] <ip-address>    local ip address to listen to for RTP packets" << std::endl;
   std::cout << "  [-s|--control] <addr[:port]>     the address/port to listen on for control commands" << std::endl;
   std::cout << "  [-p|--port-range] <start> <end>  port range used to relay rtp connections" << std::endl;
   std::cout << "  [-n|--nat]                       enable permantent automatic nat detection(use only with anytun)" << std::endl;
@@ -217,6 +220,7 @@ void Options::printOptions()
   std::cout << "chroot-dir='" << chroot_dir_ << "'" << std::endl;
   std::cout << "daemonize='" << daemonize_ << "'" << std::endl;
   std::cout << "control-interface='" << control_interface_.toString() << "'" << std::endl;
+  std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
 }
 
 std::string Options::getProgname()
@@ -265,6 +269,19 @@ Host Options::getControlInterface()
 {
   Lock lock(mutex);
   return control_interface_;
+}
+
+std::string Options::getLocalAddr()
+{
+  Lock lock(mutex);
+  return local_addr_;
+}
+
+Options& Options::setLocalAddr(std::string l)
+{
+  Lock lock(mutex);
+  local_addr_ = l;
+  return *this;
 }
 
 u_int16_t Options::getLocalSyncPort()
