@@ -1,6 +1,6 @@
 Index: connectionParam.h
 ===================================================================
---- connectionParam.h	(Revision 534)
+--- connectionParam.h	(Revision 535)
 +++ connectionParam.h	(Arbeitskopie)
 @@ -44,9 +44,10 @@
  {
@@ -27,9 +27,9 @@ Index: connectionParam.h
      ar & remote_host_;
 Index: anytun.cpp
 ===================================================================
---- anytun.cpp	(Revision 534)
+--- anytun.cpp	(Revision 535)
 +++ anytun.cpp	(Arbeitskopie)
-@@ -86,8 +86,12 @@
+@@ -86,10 +86,14 @@
  {
  	SeqWindow * seq= new SeqWindow(seqSize);
  	seq_nr_t seq_nr_=0;
@@ -42,8 +42,11 @@ Index: anytun.cpp
 +  kd_recv->init(gOpt.getKey(), gOpt.getSalt());
 +
    cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
- 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
+-	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
++	ConnectionParam connparam ( (*kd_send), (*kd_recv),  (*seq), seq_nr_, remote_host,  remote_port);
   	cl.addConnection(connparam,mux);
+ 	NetworkAddress addr(ipv4,gOpt.getIfconfigParamRemoteNetmask().c_str());
+ 	NetworkPrefix prefix(addr,32);
 @@ -162,8 +166,8 @@
        if(conn.remote_host_==""||!conn.remote_port_)
          continue;
@@ -86,7 +89,7 @@ Index: anytun.cpp
        
 Index: connectionList.cpp
 ===================================================================
---- connectionList.cpp	(Revision 534)
+--- connectionList.cpp	(Revision 535)
 +++ connectionList.cpp	(Arbeitskopie)
 @@ -103,9 +103,13 @@
  
@@ -107,7 +110,7 @@ Index: connectionList.cpp
  	return it->second;
 Index: connectionParam.cpp
 ===================================================================
---- connectionParam.cpp	(Revision 534)
+--- connectionParam.cpp	(Revision 535)
 +++ connectionParam.cpp	(Arbeitskopie)
 @@ -34,10 +34,10 @@
  //{
