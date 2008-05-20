@@ -28,7 +28,6 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define _XOPEN_SOURCE 600
 #include <string.h>
 #include <sstream>
 
@@ -54,6 +53,7 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
     msg.append(DEFAULT_DEVICE);
     msg.append("): ");
     char buf[STERROR_TEXT_MAX];
+    buf[0] = 0;
     strerror_r(errno, buf, STERROR_TEXT_MAX);
     msg.append(buf);
     throw std::runtime_error(msg);
@@ -83,6 +83,7 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
 	} else {
     std::string msg("tun/tap device ioctl failed: ");
     char buf[STERROR_TEXT_MAX];
+    buf[0] = 0;
     strerror_r(errno, buf, STERROR_TEXT_MAX);
     msg.append(buf);
     throw std::runtime_error(msg);

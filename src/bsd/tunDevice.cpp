@@ -91,6 +91,7 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
       msg.append(device_file);
       msg.append("): ");
       char buf[STERROR_TEXT_MAX];
+      buf[0] = 0;
       strerror_r(errno, buf, STERROR_TEXT_MAX);
       msg.append(buf);
     }

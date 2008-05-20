@@ -83,6 +83,7 @@ SocketException::SocketException(const string &message, bool inclSysMsg)
   if (inclSysMsg) {
     userMessage.append(": ");
     char buf[STERROR_TEXT_MAX];
+    buf[0] = 0;
     strerror_r(errno, buf, STERROR_TEXT_MAX);
     userMessage.append(buf);
   }
