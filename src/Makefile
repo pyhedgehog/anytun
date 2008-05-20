@@ -20,32 +20,6 @@ ifeq ($(TARGET),OpenBSD)
   LDFLAGS += -L/usr/local/lib
 endif
 
-ifndef NOOVPN
-OPENVPNDEPS = openvpn/tun.o \
-              openvpn/error.o \
-              openvpn/socket.o \
-              openvpn/buffer.o \
-              openvpn/misc.o \
-              openvpn/manage.o \
-              openvpn/fdmisc.o \
-              openvpn/otime.o \
-              openvpn/options.o \
-              openvpn/mtu.o \
-              openvpn/plugin.o \
-              openvpn/sig.o \
-              openvpn/proxy.o \
-              openvpn/socks.o \
-              openvpn/status.o \
-              openvpn/event.o \
-              openvpn/route.o \
-              openvpn/helper.o \
-              openvpn/init.o \
-              openvpn/interval.o \
-              openvpn/base64.o \
-              openvpn/shaper.o \
-              openvpn/fragment.o
-endif
-
 SOCKETDEPS = Sockets/libSockets.a
 
 #Sockets/TcpSocket.o \
@@ -88,8 +62,7 @@ OBJS = tunDevice.o \
        syncConnectionCommand.o \
 			 rtpSessionTable.o \
 			 rtpSession.o \
-       anyrtpproxy/callIdQueue.o \
-       $(OPENVPNDEPS)
+       anyrtpproxy/callIdQueue.o
 
 SYNCOBJS= syncSocket.o \
        syncSocketHandler.o \
@@ -290,9 +263,6 @@ anyrtpproxy: anytun
 	@cd anyrtpproxy ; $(MAKE)
 
 distclean: cleanall
-ifndef NOOVPN
-	$(MAKE) --directory=$(CURDIR)/openvpn distclean
-endif
 	find . -name *.o -exec rm -f {} \;
 	rm -f config.sub config.guess
 	rm -f tunDevice.cpp tunDevice.h
@@ -300,9 +270,6 @@ endif
 cleanall: clean
 	$(MAKE) --directory=$(CURDIR)/man clean
 	$(MAKE) --directory=$(CURDIR)/Sockets clean
-ifndef NOOVPN
-	$(MAKE) --directory=$(CURDIR)/openvpn clean
-endif
 	rm -f Sockets/libSockets.a Sockets/Sockets-config
 
 clean:
