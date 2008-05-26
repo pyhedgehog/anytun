@@ -1,0 +1,151 @@
+anyrtpproxy(8)
+==============
+
+NAME
+----
+anyrtpproxy - anycast rtpproxy
+
+SYNOPSIS
+--------
+
+*anyrtpproxy*
+[ *-h|--help* ]
+[ *-D|--nodaemonize* ]
+[ *-C|--chroot* ]
+[ *-u|--username* <username> ]
+[ *-H|--chroot-dir* <directory> ]
+[ *-P|--write-pid* <filename> ]
+[ *-i|--interface* <ip-address> ]
+[ *-s|--control* <hostname|ip>[:<port>] ]
+[ *-p|--port-range* <start> <end> ]
+[ *-n|--nat* ]
+[ *-o|--no-nat-once* ]
+[ *-S|--sync-port* port> ]
+[ *-M|--sync-hosts* <hostname|ip>:<port>[,<hostname|ip>:<port>[...]] ]
+
+
+DESCRIPTION
+-----------
+
+*anyrtpproxy* is a rtpproxy which can be used in combination with anycast
+
+OPTIONS
+-------
+
+-D|--nodaemonize
+~~~~~~~~~~~~~~~~
+
+This option instructs *anyrtpproxy* to run in the foreground
+instead of becoming a daemon.
+
+-C|--chroot
+~~~~~~~~~~~
+
+chroot and drop privileges
+
+-u|--username <username>
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+if chroot change to this user
+
+-H|--chroot-dir <directory>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+chroot to this directory
+
+-P|--write-pid <filename>
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+write pid to this file
+
+-i|--interface <ip address>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+-s|--control <hostname|ip>[:<port>]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+-p|--port-range <start> <end>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+-n|--nat
+~~~~~~~~
+
+TODO
+
+-o|--no-nat-once
+~~~~~~~~~~~~~~~~
+
+TODO
+
+-S|--sync-port <port>
+~~~~~~~~~~~~~~~~~~~~~
+
+local unicast(sync) port to bind to
+
+This port is used
+by anycast hosts to synchronize information about tunnel
+endpoints. No payload data is transmitted via this port.
+
+It is possible to obtain a list of active connections
+by telnetting into this port. This port is read-only
+and unprotected by default. It is advised to protect
+this port using firewall rules and, eventually, IPsec.
+
+-M|--sync-hosts <hostname|ip>:<port>,[<hostname|ip>:<port>[...]]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+remote hosts to sync with
+
+Here, one has to specify all unicast IP addresses of all 
+other anycast hosts that comprise the anycast tunnel endpoint.
+
+EXAMPLES
+--------
+
+TODO
+
+BUGS
+----
+Most likely there are some bugs in *anyrtpproxy*. If you find a bug, please let
+the developers know at satp@anytun.org. Of course, patches are preferred.
+
+SEE ALSO
+--------
+anytun(8)
+
+AUTHORS
+-------
+Design of SATP and wizards of this implementation:
+
+Othmar Gsenger <otti@anytun.org>
+Erwin Nindl <nine@anytun.org>
+Christian Pointner <equinox@anytun.org>
+
+Debian packaging:
+
+Andreas Hirczy <ahi@itp.tu-graz.ac.at>
+
+Manual page:
+
+Alexander List <alex@debian.org>
+
+RESOURCES
+---------
+
+Main web site: http://www.anytun.org/
+
+
+COPYING
+-------
+
+Copyright \(C) 2007-2008 Othmar Gsenger, Erwin Nindl and Christian
+Pointner. This  program  is  free software;  you  can redistribute
+it and/or modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+
