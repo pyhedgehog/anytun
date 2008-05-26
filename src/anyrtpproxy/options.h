@@ -81,6 +81,7 @@ public:
   bool getNoNatOnce();
   std::string getUsername();
   std::string getChrootDir();
+  std::string getPidFile();
   bool getDaemonize();
   Host getControlInterface();
   std::string getLocalAddr();
@@ -118,6 +119,7 @@ private:
   bool no_nat_once_;
   std::string username_;
   std::string chroot_dir_;
+  std::string pid_file_;
   bool daemonize_;
 	u_int16_t local_sync_port_;
   std::string local_addr_;

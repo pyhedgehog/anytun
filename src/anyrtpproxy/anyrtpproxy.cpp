@@ -57,7 +57,7 @@
 #include "options.h"
 #include "portWindow.h"
 #include <map>
-
+#include <fstream>
 
 #define MAX_PACKET_SIZE 1500
 
@@ -276,10 +276,11 @@ void daemonize()
   pid = fork();
   if(pid) exit(0);
   
-  std::cout << "running in background now..." << std::endl;
+//  std::cout << "running in background now..." << std::endl;
 
   int fd;
-  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
+//  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
+  for (fd=0;fd<=2;fd++) // close all file descriptors
     close(fd);
   fd=open("/dev/null",O_RDWR);        // stdin
   dup(fd);                            // stdout
@@ -324,11 +325,22 @@ void* syncListener(void* p )
 
 int main(int argc, char* argv[])
 {
-  std::cout << "anyrtpproxy" << std::endl;
+//  std::cout << "anyrtpproxy" << std::endl;
   if(!gOpt.parse(argc, argv))
   {
     gOpt.printUsage();
     exit(-1);
+  }
+
+  cLog.setLogName("anyrtpproxy");
+  cLog.msg(Log::PRIO_NOTICE) << "anyrtpproxy started...";
+
+  std::ofstream pidFile;
+  if(gOpt.getPidFile() != "") {
+    pidFile.open(gOpt.getPidFile().c_str());
+    if(!pidFile.is_open()) {
+      std::cout << "can't open pid file" << std::endl;
+    }
   }
 
   if(gOpt.getChroot())
@@ -336,8 +348,11 @@ int main(int argc, char* argv[])
   if(gOpt.getDaemonize())
     daemonize();
 
-  cLog.setLogName("anyrtpproxy");
-  cLog.msg(Log::PRIO_NOTICE) << "anyrtpproxy started...";
+  if(pidFile.is_open()) {
+    pid_t pid = getpid();
+    pidFile << pid;
+    pidFile.close();
+  }
   
   SignalController sig;
   sig.init();

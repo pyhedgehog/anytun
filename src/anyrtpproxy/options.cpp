@@ -57,6 +57,7 @@ Options::Options() : control_interface_("0.0.0.0", 22222)
   username_ = "nobody";
   chroot_dir_ = "/var/run";
   daemonize_ = true;
+  pid_file_ = "";
   local_addr_ = "";
 	local_sync_port_ = 0;
 	rtp_start_port_ = 34000;
@@ -162,6 +163,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-u","--user", username_)
     PARSE_SCALAR_PARAM("-c","--chroot-dir", chroot_dir_)
     PARSE_INVERSE_BOOL_PARAM("-d","--nodaemonize", daemonize_)
+    PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_)
     PARSE_SCALAR_PARAM("-i","--interface", local_addr_)
     PARSE_STRING_PARAM("-s","--control", control_interface_)
     PARSE_SCALAR_PARAM2("-p","--port-range", rtp_start_port_, rtp_end_port_)
@@ -200,6 +202,7 @@ void Options::printUsage()
   std::cout << "  [-u|--username] <username>       in case of chroot run as this user" << std::endl;
   std::cout << "  [-c|--chroot-dir] <directory>    directory to make a chroot to" << std::endl;
   std::cout << "  [-d|--nodaemonize]               don't run in background" << std::endl;
+  std::cout << "  [-P|--write-pid] <path>          write pid to this file" << std::endl;
   std::cout << "  [-i|--interface] <ip-address>    local ip address to listen to for RTP packets" << std::endl;
   std::cout << "  [-s|--control] <addr[:port]>     the address/port to listen on for control commands" << std::endl;
   std::cout << "  [-p|--port-range] <start> <end>  port range used to relay rtp connections" << std::endl;
@@ -219,6 +222,7 @@ void Options::printOptions()
   std::cout << "username='" << username_ << "'" << std::endl;
   std::cout << "chroot-dir='" << chroot_dir_ << "'" << std::endl;
   std::cout << "daemonize='" << daemonize_ << "'" << std::endl;
+  std::cout << "pid_file='" << pid_file_ << "'" << std::endl;
   std::cout << "control-interface='" << control_interface_.toString() << "'" << std::endl;
   std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
 }
@@ -263,6 +267,12 @@ bool Options::getDaemonize()
 {
   Lock lock(mutex);
   return daemonize_;
+}
+
+std::string Options::getPidFile()
+{
+  Lock lock(mutex);
+  return pid_file_;
 }
 
 Host Options::getControlInterface()
