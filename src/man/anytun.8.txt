@@ -282,7 +282,7 @@ anytun -r anycast.anytun.org -d anytun0 -t tun -n 192.0.2.2
 192.0.2.1 -w 0 -c null
 
 Anycast tunnel endpoints:
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 On the host with unicast hostname unicast1.anycast.anytun.org and anycast 
 hostname anycast.anytun.org:
