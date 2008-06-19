@@ -11,21 +11,22 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007 anytun.org <satp@wirdorange.org>
+ *  Copyright (C) 2007-2008 Othmar Gsenger, Erwin Nindl, 
+ *                          Christian Pointner <satp@wirdorange.org>
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation.
+ *  This file is part of Anytun.
  *
- *  This program is distributed in the hope that it will be useful,
+ *  Anytun is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ *
+ *  Anytun is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program (see the file COPYING included with this
- *  distribution); if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef _ROUTINGTABLE_H
