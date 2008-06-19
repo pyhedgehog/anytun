@@ -8,7 +8,7 @@ CCFLAGS = -g -Wall
 CCFLAGS += -DSOCKETS_NAMESPACE=sockets
 CCFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
 LD = g++
-LDFLAGS = -g -Wall -O2 -lpthread -lgcrypt -lgpg-error -lboost_serialization
+LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization
 
 ifeq ($(TARGET),Linux)
   CFLAGS += -D_XOPEN_SOURCE=600

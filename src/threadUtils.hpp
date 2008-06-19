@@ -27,149 +27,36 @@
  *  distribution); if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#ifndef _THREADUTILS_HPP_
-#define _THREADUTILS_HPP_
-
-#include <stdexcept>
-#include <pthread.h>
-#include <semaphore.h>
-
-class Mutex 
-{
-public:
-  Mutex() 
-  { 
-    if(pthread_mutex_init(&mutex,NULL)) 
-      throw std::runtime_error("can't create mutex");
-  }
-
-  ~Mutex()
-  {
-    pthread_mutex_destroy(&mutex);
-  }
-  
-private:
-  Mutex(const Mutex& src);
-  void operator=(const Mutex& src);
-  
-  void lock()
-  {
-    if(pthread_mutex_lock(&mutex)) 
-      throw std::runtime_error("can't lock mutex");
-  }
-  
-  void unlock()
-  {
-    if(pthread_mutex_unlock(&mutex)) 
-      throw std::runtime_error("can't unlock mutex");
-  }
-  friend class Lock;
-  friend class Condition;
-  pthread_mutex_t mutex;
-};
-
-
-class Lock
-{
-public:
-  Lock(Mutex &m) : mutex(m)
-  {
-    mutex.lock();
-  }
-  
-  ~Lock()
-  {
-    mutex.unlock();
-  }
-
-private:
-  Lock(const Lock& src);
-  void operator=(const Lock& src);
-
-  Mutex &mutex;
-};
-
-class Condition
-{
-public:
-  Condition()
-  {
-    if(pthread_cond_init(&cond, NULL)) 
-      throw std::runtime_error("can't create condition");
-  }
-
-  ~Condition()
-  {
-    pthread_cond_destroy(&cond);
-  }
-  
-  void wait()
-  {
-    mutex.lock();
-    if(pthread_cond_wait(&cond, &mutex.mutex)) 
-    {
-      mutex.unlock();
-      throw std::runtime_error("error on waiting for condition");
-    }
-    mutex.unlock();
-  }
-
-  void signal()
-  {
-    mutex.lock();
-    if(pthread_cond_signal(&cond)) 
-    {
-      mutex.unlock();
-      throw std::runtime_error("can't signal condition");
-    }
-    mutex.unlock();
-  }
-
-  void broadcast()
-  {
-    mutex.lock();
-    if(pthread_cond_broadcast(&cond)) 
-    {
-      mutex.unlock();
-      throw std::runtime_error("can't broadcast condition");
-    }
-    mutex.unlock();
-  }
-  
-private:
-  pthread_cond_t cond;
-  Mutex mutex;
-};
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#ifndef __THREADUTILS__
+#define __THREADUTILS__
+typedef boost::mutex::scoped_lock Lock;
+typedef boost::mutex Mutex;
 
 class Semaphore
 {
 public:
   Semaphore(unsigned int initVal=0)
-  {
-    if(sem_init(&sem, 0, initVal))
-      throw std::runtime_error("can't create semaphore");
-  }
-
-  ~Semaphore()
-  {
-    sem_destroy(&sem);
-  }
-  
-  void down()
-  {
-    if(sem_wait(&sem)) 
-      throw std::runtime_error("error on semaphore down");
-  }
-
+    :count_(initVal){};
   void up()
   {
-    if(sem_post(&sem)) 
-      throw std::runtime_error("error on semaphore up");
+     boost::mutex::scoped_lock lock(mutex_);
+     count_++;
+     lock.unlock();
+     cond_.notify_one();
   }
-
+  void down()
+  {
+     boost::mutex::scoped_lock lock(mutex_);
+     while (count_ <= 0)
+       cond_.wait(lock);
+     count_--;
+  }
 private:
-  sem_t sem;
+  boost::mutex mutex_;
+  boost::condition cond_;
+  int16_t count_;
 };
 
 #endif

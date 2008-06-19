@@ -38,7 +38,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <pthread.h>
+#include <boost/bind.hpp>
 #include <gcrypt.h>
 #include <cerrno>     // for ENOMEM
 
@@ -114,7 +114,7 @@ bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)
 	return true;
 }
 
-void* sender(void* p)
+void sender(void* p)
 {
   try 
   {
@@ -199,11 +199,10 @@ void* sender(void* p)
   {
     cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught exception: " << e.what();
   }
-  pthread_exit(NULL);
 }
   
 #ifndef ANYTUN_NOSYNC
-void* syncConnector(void* p )
+void syncConnector(void* p )
 {
 	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
@@ -216,10 +215,9 @@ void* syncConnector(void* p )
 	{
 		h.Select();
 	}
-  pthread_exit(NULL);
 }
 
-void* syncListener(void* p )
+void syncListener(void* p )
 {
 	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
@@ -227,7 +225,7 @@ void* syncListener(void* p )
 	SyncListenSocket<SyncSocket,ConnectionList> l(h,param->cl);
 
 	if (l.Bind(gOpt.getLocalSyncPort()))
-		pthread_exit(NULL);
+		return;
 
 	Utility::ResolveLocal(); // resolve local hostname
 	h.Add(&l);
@@ -238,7 +236,7 @@ void* syncListener(void* p )
 }
 #endif
 
-void* receiver(void* p)
+void receiver(void* p)
 {
   try
   {
@@ -335,7 +333,6 @@ void* receiver(void* p)
   {
     cLog.msg(Log::PRIO_ERR) << "receiver thread died due to an uncaught exception: " << e.what();
   }
-  pthread_exit(NULL);
 }
 
 #define MIN_GCRYPT_VERSION "1.2.0"
@@ -534,26 +531,26 @@ int main(int argc, char* argv[])
         // this must be called before any other libgcrypt call
     if(!initLibGCrypt())
       return -1;
-    
-    pthread_t senderThread;
-    pthread_create(&senderThread, NULL, sender, &p);  
-    pthread_t receiverThread;
-    pthread_create(&receiverThread, NULL, receiver, &p);    
+
+    boost::thread senderThread(boost::bind(sender,&p));
+    boost::thread receiverThread(boost::bind(receiver,&p)); 
 #ifndef ANYTUN_NOSYNC
-    pthread_t syncListenerThread;
+    boost::thread * syncListenerThread;
     if ( gOpt.getLocalSyncPort())
-      pthread_create(&syncListenerThread, NULL, syncListener, &p);  
+      syncListenerThread = new boost::thread(boost::bind(syncListener,&p));
     
-    std::list<pthread_t> connectThreads;
+    std::list<boost::thread *> connectThreads;
     for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
-      connectThreads.push_back(pthread_t());
       ThreadParam * point = new ThreadParam(dev, *src, cl, queue,*it);
-      pthread_create(& connectThreads.back(),  NULL, syncConnector, point);
+      connectThreads.push_back(new boost::thread(boost::bind(syncConnector,point)));
     }
 #endif
     
     int ret = sig.run();
     
+    return ret;    
+    // TODO cleanup here!
+    /*
     pthread_cancel(senderThread);
     pthread_cancel(receiverThread);  
 #ifndef ANYTUN_NOSYNC
@@ -575,7 +572,8 @@ int main(int argc, char* argv[])
     delete src;
     delete &p.connto;
 
-    return ret;    
+    return ret;  
+    */
   }
   catch(std::runtime_error e)
   {
