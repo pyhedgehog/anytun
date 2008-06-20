@@ -1,3 +1,13 @@
+2008.6.20 -- Version 0.2.1svn556
+
+* finished own tun/tap devices and removed openvpn source code
+  currently there are tun/tap devices for Linux, FreeBSD, OpenBSD
+  and NetBSD
+* several fixes for building on OpenBSD
+* added manpages for all binaries
+* switched to GPLv3
+
+
 2008.4.12 -- Version 0.2svn490
 
 * updated to Internet Draft Revision 02
