@@ -37,7 +37,7 @@ CCFLAGS = -g -Wall
 CCFLAGS += -DSOCKETS_NAMESPACE=sockets
 CCFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
 LD = g++
-LDFLAGS = -g -Wall -O2 -lpthread -lssl -lboost_serialization
+LDFLAGS = -g -Wall -O2 -lpthread -lboost_thread -lssl -lboost_serialization
 
 OBJS = anyrtpproxy.o \
        ../signalController.o \
