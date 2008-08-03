@@ -38,6 +38,7 @@
 #include <gcrypt.h>
 
 #include <iostream>
+#include <cstring>
 
 Mpi::Mpi() : val_(NULL)
 {

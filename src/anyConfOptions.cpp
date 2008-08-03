@@ -29,6 +29,7 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstring>
 #include <iostream>
 #include <queue>
 #include <string>

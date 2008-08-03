@@ -35,6 +35,7 @@
 #include "encryptedPacket.h"
 
 #include <iostream>
+#include <cstring>
 
 #include <gcrypt.h>
 

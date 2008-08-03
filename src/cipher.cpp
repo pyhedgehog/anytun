@@ -33,6 +33,7 @@
 #include <iostream>
 #include <string>
 #include <cstdio>
+#include <cstring>
 #include <gcrypt.h>
 
 #include "cipher.h"

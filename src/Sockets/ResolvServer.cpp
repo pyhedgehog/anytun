@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
 #endif
+#include <pthread.h>
 #include "ResolvServer.h"
 #ifdef ENABLE_RESOLVER
 #include "StdoutLog.h"

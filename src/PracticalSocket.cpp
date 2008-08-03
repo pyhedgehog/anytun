@@ -69,6 +69,7 @@
   typedef void raw_type;       // Type used for raw data on this platform
 #endif
 
+#include <cstring>             // for strerror_r
 #include <errno.h>             // For errno
 
 using namespace std;

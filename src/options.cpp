@@ -33,6 +33,7 @@
 #include <queue>
 #include <string>
 #include <sstream>
+#include <cstring>
 
 #include "datatypes.h"
 #include "options.h"
