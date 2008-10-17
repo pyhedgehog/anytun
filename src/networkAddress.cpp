@@ -157,11 +157,11 @@ NetworkAddress NetworkAddress::operator<<(uint8_t shift) const
 		{
 #if defined(__GNUC__) && defined(__linux__)
 			new_v6_addr.s6_addr32[i]=ipv6_address_.s6_addr32[i]<<1;
-			if (i<3 && ipv6_address_.s6_addr32[i+1] || uint32_t (0x80000000))
+			if (i<3 && (ipv6_address_.s6_addr32[i+1] & uint32_t (0x80000000)))
 				new_v6_addr.s6_addr32[i] &=1;
 #elif defined(__GNUC__) && defined(__OpenBSD__)
 			new_v6_addr.__u6_addr.__u6_addr32[i]=ipv6_address_.__u6_addr.__u6_addr32[i]<<1;
-      if (i<3 && ipv6_address_.__u6_addr.__u6_addr32[i+1] || uint32_t (0x80000000))
+      if (i<3 && (ipv6_address_.__u6_addr.__u6_addr32[i+1] & uint32_t (0x80000000)))
 				new_v6_addr.__u6_addr.__u6_addr32[i] &=1;
 #else
  #error Target not supported
