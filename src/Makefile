@@ -31,12 +31,8 @@
 TARGET=$(shell uname -s)
 C = gcc
 CFLAGS = -g
-CFLAGS += -DSOCKETS_NAMESPACE=sockets
-CFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
 C++ = g++
 CCFLAGS = -g -Wall
-CCFLAGS += -DSOCKETS_NAMESPACE=sockets
-CCFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
 LD = g++
 LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization
 
@@ -49,17 +45,6 @@ ifeq ($(TARGET),OpenBSD)
   CCFLAGS += -I/usr/local/include
   LDFLAGS += -L/usr/local/lib
 endif
-
-SOCKETDEPS = Sockets/libSockets.a
-
-#Sockets/TcpSocket.o \
-#             Sockets/Socket.o \
-#             Sockets/Thread.o \
-#             Sockets/SocketHandler.o \
-#             Sockets/Ipv4Address.o \
-#             Sockets/Mutex.o \
-#             Sockets/SSLInitializer.o
-
 
 OBJS = tunDevice.o \
        packetSource.o \
@@ -93,16 +78,15 @@ OBJS = tunDevice.o \
 			 rtpSession.o \
        anyrtpproxy/callIdQueue.o
 
-SYNCOBJS= syncSocket.o \
-       syncSocketHandler.o \
-       syncClientSocket.o \
-			 $(SOCKETDEPS)
+SYNCOBJS= syncServer.o \
+       syncClient.o \
+       syncTcpConnection.o
 
-ANYCTROBJS = anyCtrSocket.o \
-						 anyCtrOptions.o \
-						 signalController.o \
+ANYCTROBJS = signalController.o \
+							anyCtrOptions.o \
 						 log.o \
-						 $(SOCKETDEPS)
+						 controldTcpConnection.o \
+						 syncServer.o
 
 ANYCONFOBJS = log.o \
 						 buffer.o \
@@ -122,15 +106,11 @@ ANYCONFOBJS = log.o \
 						 router.o \
 						 routingTable.o \
 						 seqWindow.o \
-						 syncSocket.o \
-						 syncSocketHandler.o \
-						 syncClientSocket.o \
 						 syncQueue.o \
 						 syncBuffer.o \
 						 syncCommand.o \
 						 syncRouteCommand.o \
-						 syncConnectionCommand.o \
-						 $(SOCKETDEPS)
+						 syncConnectionCommand.o
 
 EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
 
@@ -164,6 +144,18 @@ buffer.o: buffer.cpp buffer.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncBuffer.o: syncBuffer.cpp syncBuffer.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncServer.o: syncServer.cpp syncServer.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncClient.o: syncClient.cpp syncClient.h
+	$(C++) $(CCFLAGS) $< -c
+
+syncTcpConnection.o: syncTcpConnection.cpp syncTcpConnection.h
+	$(C++) $(CCFLAGS) $< -c
+
+controldTcpConnection.cpp: controldTcpConnection.cpp syncTcpConnection.h
 	$(C++) $(CCFLAGS) $< -c
 
 rtpSessionTable.o: rtpSessionTable.cpp rtpSessionTable.h
@@ -211,12 +203,6 @@ keyDerivationFactory.o: keyDerivationFactory.cpp keyDerivationFactory.h keyDeriv
 routingTable.o: routingTable.cpp routingTable.h
 	$(C++) $(CCFLAGS) $< -c
 
-syncSocket.o: syncSocket.cpp syncSocket.h
-	$(C++) $(CCFLAGS) $< -c
-
-syncSocketHandler.o: syncSocketHandler.cpp syncSocketHandler.h
-	$(C++) $(CCFLAGS) $< -c
-
 syncCommand.o: syncCommand.cpp syncCommand.h
 	$(C++) $(CCFLAGS) $< -c
 
@@ -227,9 +213,6 @@ syncRtpCommand.o: syncRtpCommand.cpp syncRtpCommand.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncConnectionCommand.o: syncConnectionCommand.cpp syncConnectionCommand.h
-	$(C++) $(CCFLAGS) $< -c
-
-syncClientSocket.o: syncClientSocket.cpp syncClientSocket.h
 	$(C++) $(CCFLAGS) $< -c
 
 syncQueue.o: syncQueue.cpp syncQueue.h

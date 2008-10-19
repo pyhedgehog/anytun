@@ -46,6 +46,7 @@ class ConnectionList
 public:
 	ConnectionList();
 	~ConnectionList();
+	static ConnectionList& instance();
 	void addConnection(ConnectionParam &conn, u_int16_t mux);
 	const ConnectionMap::iterator getConnection(u_int16_t mux);
 	const ConnectionMap::iterator getEnd();
@@ -57,10 +58,20 @@ public:
   Mutex& getMutex();
 
 private:
-  ConnectionList(const ConnectionList &s);
+  static Mutex instMutex;
+	static ConnectionList* inst;
+  class instanceCleaner {
+    public: ~instanceCleaner() {
+     if(ConnectionList::inst != 0)
+       delete ConnectionList::inst;
+   }
+  };
+	ConnectionList(const ConnectionList &s);
   void operator=(const ConnectionList &s);
 	ConnectionMap connections_;
   Mutex mutex_;
 };
+
+extern ConnectionList& gConnectionList;
 
 #endif

@@ -45,11 +45,6 @@
 #include "networkAddress.h"
 
 #include "syncQueue.h"
-#include "syncSocketHandler.h"
-#include "syncListenSocket.h"
-
-#include "syncSocket.h"
-#include "syncClientSocket.h"
 #include "syncCommand.h"
 
 

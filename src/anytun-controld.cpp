@@ -42,9 +42,10 @@
 #include "signalController.h"
 #include "anyCtrOptions.h"
 
-#include "anyCtrSocket.h"
-#include "Sockets/ListenSocket.h"
-#include "Sockets/SocketHandler.h"
+#include "syncServer.h"
+//#include "anyCtrSocket.h"
+//#include "Sockets/ListenSocket.h"
+//#include "Sockets/SocketHandler.h"
 
 
 class ThreadParam
@@ -55,22 +56,21 @@ public:
   u_int16_t port;
 };
 
-
-void* syncListener(void* p )
+void syncListener(void* p )
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
-	SOCKETS_NAMESPACE::SocketHandler h;
-	SOCKETS_NAMESPACE::ListenSocket<MuxSocket> l(h,true);
 
-	if( l.Bind(param->addr, param->port) )
-		pthread_exit(NULL);
+  try
+  {
+    asio::io_service io_service;
+    SyncServer server(io_service,asio::ip::tcp::endpoint(asio::ip::tcp::v4(), param->port));
+    io_service.run();
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
 
-	Utility::ResolveLocal(); // resolve local hostname
-	h.Add(&l);
-	h.Select(1,0);
-	while (1) {
-		h.Select(1,0);
-	}
 }
 
 void chrootAndDrop(std::string const& chrootdir, std::string const& username)
@@ -168,14 +168,18 @@ int main(int argc, char* argv[])
   ThreadParam p;
   p.addr = gOpt.getBindToAddr();
   p.port = gOpt.getBindToPort(); 
-	pthread_t syncListenerThread;
-	pthread_create(&syncListenerThread, NULL, syncListener, &p);  
+  boost::thread * syncListenerThread;
+  syncListenerThread = new boost::thread(boost::bind(syncListener,&p));
+
+	syncListener(&p);
+//	pthread_t syncListenerThread;
+//	pthread_create(&syncListenerThread, NULL, syncListener, &p);  
 
 	int ret = sig.run();
 
-	pthread_cancel(syncListenerThread);  
+//	pthread_cancel(syncListenerThread);  
   
-	pthread_join(syncListenerThread, NULL);
+//	pthread_join(syncListenerThread, NULL);
 
   return ret;
 }

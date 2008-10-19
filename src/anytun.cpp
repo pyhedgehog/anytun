@@ -68,11 +68,8 @@
 #include "syncCommand.h"
 
 #ifndef ANYTUN_NOSYNC
-#include "syncSocketHandler.h"
-#include "syncListenSocket.h"
-
-#include "syncSocket.h"
-#include "syncClientSocket.h"
+#include "syncServer.h"
+#include "syncClient.h"
 #endif
 
 #include "threadParam.h"
@@ -207,33 +204,25 @@ void syncConnector(void* p )
 {
 	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
-	SocketHandler h;
-	SyncClientSocket sock(h,param->cl);
-	//	sock.EnableSSL();
-	sock.Open( param->connto.host, param->connto.port);
-	h.Add(&sock);
-	while (h.GetCount())
-	{
-		h.Select();
-	}
+	SyncClient sc ( param->connto.host, param->connto.port);
+	sc.run();
 }
 
 void syncListener(void* p )
 {
-	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
+//	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
-	SyncSocketHandler h(param->queue);
-	SyncListenSocket<SyncSocket,ConnectionList> l(h,param->cl);
+  try
+  {
+    asio::io_service io_service;
+    SyncServer server(io_service,asio::ip::tcp::endpoint(asio::ip::tcp::v4(), gOpt.getLocalSyncPort()));
+    io_service.run();
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
 
-	if (l.Bind(gOpt.getLocalSyncPort()))
-		return;
-
-	Utility::ResolveLocal(); // resolve local hostname
-	h.Add(&l);
-	h.Select(1,0);
-	while (1) {
-		h.Select(1,0);
-	}
 }
 #endif
 
@@ -508,7 +497,7 @@ int main(int argc, char* argv[])
     else
       src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
-    ConnectionList cl;
+    ConnectionList & cl (gConnectionList);
     ConnectToList connect_to = gOpt.getConnectTo();
     SyncQueue queue;
     
