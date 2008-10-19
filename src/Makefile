@@ -134,7 +134,7 @@ ANYCONFOBJS = log.o \
 						 syncConnectionCommand.o \
 						 $(SOCKETDEPS)
 
-EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables manpage
+EXECUTABLE = anytun anytun-config anytun-controld anytun-showtable
 
 all: $(EXECUTABLE) libAnysync.a anyrtpproxy
 
