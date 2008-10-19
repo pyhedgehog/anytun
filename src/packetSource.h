@@ -29,9 +29,10 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <asio.hpp>
+
 #include "datatypes.h"
 #include "buffer.h"
-#include "PracticalSocket.h"
 
 class PacketSource
 {
@@ -42,14 +43,17 @@ public:
   virtual void send(u_int8_t* buf, u_int32_t len, std::string addr, u_int16_t port) = 0;
 };
 
-class UDPPacketSource : public PacketSource, public UDPSocket
+class UDPPacketSource : public PacketSource
 {  
 public:
-  UDPPacketSource();
   UDPPacketSource(u_int16_t port);
   UDPPacketSource(std::string localaddr, u_int16_t port);
 
   u_int32_t recv(u_int8_t* buf, u_int32_t len, std::string& addr, u_int16_t &port);
   void send(u_int8_t* buf, u_int32_t len, std::string addr, u_int16_t port);
+
+private:
+  asio::io_service io_service_;
+  asio::ip::udp::socket sock_;
 };
 

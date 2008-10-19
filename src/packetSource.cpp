@@ -29,30 +29,57 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <asio.hpp>
+#include <sstream>
+
 #include "datatypes.h"
 
 #include "packetSource.h"
 #include "buffer.h"
-#include "PracticalSocket.h"
 
-UDPPacketSource::UDPPacketSource()
+UDPPacketSource::UDPPacketSource(u_int16_t port) : sock_(io_service_)
 {
+  std::stringstream ps;
+  ps << port;
+
+  asio::ip::udp::resolver resolver(io_service_);
+  asio::ip::udp::resolver::query query(ps.str());  
+  asio::ip::udp::endpoint e = *resolver.resolve(query);
+  sock_.open(e.protocol());
+  sock_.bind(e);
 }
 
-UDPPacketSource::UDPPacketSource(u_int16_t port) : UDPSocket(port)
+UDPPacketSource::UDPPacketSource(std::string localaddr, u_int16_t port) : sock_(io_service_)
 {
-}
+  std::stringstream ps;
+  ps << port;
 
-UDPPacketSource::UDPPacketSource(std::string localaddr, u_int16_t port) : UDPSocket(localaddr, port)
-{
+  asio::ip::udp::resolver resolver(io_service_);
+  asio::ip::udp::resolver::query query(localaddr, ps.str());  
+  asio::ip::udp::endpoint e = *resolver.resolve(query);
+  sock_.open(e.protocol());
+  sock_.bind(e);  
 }
 
 u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, std::string& addr, u_int16_t &port)
 {
-  return recvFrom(buf, len, addr, port);
+  asio::ip::udp::endpoint e;
+  u_int32_t rtn = sock_.receive_from(asio::buffer(buf, len), e);
+  
+  addr = e.address().to_string(); 
+  port = e.port();
+
+  return rtn;
 }
 
 void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, std::string addr, u_int16_t port)
 {
-  sendTo(buf, len, addr, port);
+  std::stringstream ps;
+  ps << port;
+
+  asio::ip::udp::resolver resolver(io_service_);
+  asio::ip::udp::resolver::query query(addr, ps.str());  
+  asio::ip::udp::endpoint e = *resolver.resolve(query);
+
+  sock_.send_to(asio::buffer(buf, len), e);
 }

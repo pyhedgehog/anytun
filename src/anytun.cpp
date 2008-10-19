@@ -186,17 +186,17 @@ void sender(void* p)
       {
         param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_host_, conn.remote_port_);
       }
-      catch (std::exception e)
+      catch (std::exception& e)
       {
             // ignoring icmp port unreachable :) and other socket errors :(
       }
     }
   }
-  catch(std::runtime_error e)
+  catch(std::runtime_error& e)
   {
     cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught runtime_error: " << e.what();
   }
-  catch(std::exception e)
+  catch(std::exception& e)
   {
     cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught exception: " << e.what();
   }
@@ -255,7 +255,7 @@ void receiver(void* p)
     
     while(1)
     {
-      string remote_host;
+      std::string remote_host;
       u_int16_t remote_port;
       
       plain_packet.setLength(MAX_PACKET_LENGTH);
@@ -326,11 +326,11 @@ void receiver(void* p)
       param->dev.write(plain_packet.getPayload(), plain_packet.getLength());
     }
   }
-  catch(std::runtime_error e)
+  catch(std::runtime_error& e)
   {
     cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught runtime_error: " << e.what();
   }
-  catch(std::exception e)
+  catch(std::exception& e)
   {
     cLog.msg(Log::PRIO_ERR) << "receiver thread died due to an uncaught exception: " << e.what();
   }
@@ -433,7 +433,7 @@ void daemonize()
   umask(027); 
 }
 
-int execScript(string const& script, string const& ifname)
+int execScript(std::string const& script, std::string const& ifname)
 {
   pid_t pid;
   pid = fork();
@@ -484,26 +484,14 @@ int main(int argc, char* argv[])
       int postup_ret = execScript(gOpt.getPostUpScript(), dev.getActualName());
       cLog.msg(Log::PRIO_NOTICE) << "post up script '" << gOpt.getPostUpScript() << "' returned " << postup_ret;  
     }
-    
-    
-//     Buffer buff(u_int32_t(1600));
-//     int len;
-//     while(1)
-//     {
-//       len = dev.read(buff.getBuf(), buff.getLength());
-//       std::cout << "read " << len << " bytes from interface " << dev.getActualName() << std::endl;
-//       dev.write(buff.getBuf(), len);
-//     }
-    
-//     return 0;
-    
-    
-    
+        
     if(gOpt.getChroot())
       chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
     if(gOpt.getDaemonize())
+    {
       daemonize();
-    daemonized = true;
+      daemonized = true;
+    }
 
     if(pidFile.is_open()) {
       pid_t pid = getpid();
@@ -519,7 +507,7 @@ int main(int argc, char* argv[])
       src = new UDPPacketSource(gOpt.getLocalPort());
     else
       src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
-    
+
     ConnectionList cl;
     ConnectToList connect_to = gOpt.getConnectTo();
     SyncQueue queue;
@@ -576,14 +564,14 @@ int main(int argc, char* argv[])
     return ret;  
     */
   }
-  catch(std::runtime_error e)
+  catch(std::runtime_error& e)
   {
     if(daemonized)
       cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
     else
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
-  catch(std::exception e)
+  catch(std::exception& e)
   {
     if(daemonized)
       cLog.msg(Log::PRIO_ERR) << "uncaught exception, exiting: " << e.what();

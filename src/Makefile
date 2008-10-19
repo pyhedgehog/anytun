@@ -78,7 +78,6 @@ OBJS = tunDevice.o \
 			 connectionParam.o \
 			 networkAddress.o \
 			 networkPrefix.o \
-       PracticalSocket.o \
 			 router.o \
 			 routingTable.o \
        signalController.o \
@@ -119,7 +118,6 @@ ANYCONFOBJS = log.o \
 						 rtpSession.o \
 						 anyrtpproxy/callIdQueue.o \
 						 syncRtpCommand.o \
-						 PracticalSocket.o \
 						 anyConfOptions.o \
 						 router.o \
 						 routingTable.o \
