@@ -10,6 +10,7 @@ libboost-serialization-dev
 libboost-thread-dev
 libboost-dev
 asciidoc
+libasio-dev
 
 OpenBSD
 -------
