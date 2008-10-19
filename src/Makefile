@@ -134,9 +134,6 @@ anytun-controld: $(ANYCTROBJS) anytun-controld.o
 tunDevice.o: tunDevice.cpp tunDevice.h
 	$(C++) $(CCFLAGS) $< -c
 
-Sockets/libSockets.a:
-	$(MAKE) --directory=./Sockets
-
 packetSource.o: packetSource.cpp packetSource.h
 	$(C++) $(CCFLAGS) $< -c
 
@@ -280,8 +277,6 @@ distclean: cleanall
 
 cleanall: clean
 	$(MAKE) --directory=$(CURDIR)/man clean
-	$(MAKE) --directory=$(CURDIR)/Sockets clean
-	rm -f Sockets/libSockets.a Sockets/Sockets-config
 
 clean:
 	rm -f *.o
