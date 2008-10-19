@@ -34,7 +34,8 @@
 
 #include <iostream>
 
-//#include "threadUtils.hpp"
+#include <boost/bind.hpp>
+#include "threadUtils.hpp"
 #include "signalController.h"
 #include "log.h"
 
@@ -85,9 +86,10 @@ SignalController::~SignalController()
 {
   for(HandlerMap::iterator it = handler.begin(); it != handler.end(); ++it)
     delete it->second;
+  if(thread) delete thread;
 }
 
-void* SignalController::handle(void *s)
+void SignalController::handle(void *s)
 {
   SignalController* self = reinterpret_cast<SignalController*>(s);
   sigset_t signal_set;
@@ -103,7 +105,6 @@ void* SignalController::handle(void *s)
     }
     self->sigQueueSem.up();
   }
-  pthread_exit(NULL);
 }
 
 void SignalController::init()
@@ -115,10 +116,9 @@ void SignalController::init()
   sigdelset(&signal_set, SIGSEGV);
   sigdelset(&signal_set, SIGBUS);
   sigdelset(&signal_set, SIGFPE);
-  pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
+  pthread_sigmask(SIG_BLOCK, &signal_set, NULL); // TODO: remove ugly workaround
 
-  pthread_create(&thread, NULL, handle, this);  
-  pthread_detach(thread);
+  thread = new boost::thread(boost::bind(handle, this));
 
   handler[SIGINT] = new SigIntHandler;
   handler[SIGQUIT] = new SigQuitHandler;

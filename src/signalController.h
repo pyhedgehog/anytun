@@ -98,9 +98,9 @@ public:
 class SignalController
 {
 public:
-  SignalController() {}
+  SignalController() { thread = NULL; }
   ~SignalController();
-  static void* handle(void* s);
+  static void handle(void* s);
 
   void init();
   int run();
@@ -115,7 +115,7 @@ private:
   Mutex sigQueueMutex;
   Semaphore sigQueueSem;
 
-  pthread_t thread;
+  boost::thread* thread;
   HandlerMap handler;
 };
 

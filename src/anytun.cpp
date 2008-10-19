@@ -40,6 +40,7 @@
 #include <unistd.h>
 
 #include <boost/bind.hpp>
+#include <boost/thread/detail/lock.hpp>
 #include <gcrypt.h>
 #include <cerrno>     // for ENOMEM
 
@@ -325,21 +326,52 @@ void receiver(void* p)
   }
 }
 
-#define MIN_GCRYPT_VERSION "1.2.0"
-#if defined(__GNUC__) && !defined(__OpenBSD__) // TODO: thread-safety on OpenBSD
-// make libgcrypt thread safe
-extern "C" {
-GCRY_THREAD_OPTION_PTHREAD_IMPL;
+// boost thread callbacks for libgcrypt
+
+typedef boost::detail::thread::lock_ops<boost::mutex> mutex_ops;
+
+static int boost_mutex_init(void **priv)
+{
+  int err = 0;
+  boost::mutex *lock = new boost::mutex();
+  
+  if (!lock)
+    err = ENOMEM;
+  if (!err)
+    *priv = lock;
+  return err;
 }
-#endif
+
+static int boost_mutex_destroy(void **lock)
+{ 
+  delete reinterpret_cast<boost::mutex*>(*lock); 
+  return 0;
+}
+
+static int boost_mutex_lock(void **lock) 
+{ 
+  mutex_ops::lock(*reinterpret_cast<boost::mutex*>(*lock));
+  return 0; 
+}
+
+static int boost_mutex_unlock(void **lock)
+{ 
+  mutex_ops::unlock(*reinterpret_cast<boost::mutex*>(*lock));
+  return 0; 
+}
+
+static struct gcry_thread_cbs gcry_threads_boost = 
+{ GCRY_THREAD_OPTION_USER, NULL, 
+  boost_mutex_init, boost_mutex_destroy, 
+  boost_mutex_lock, boost_mutex_unlock };
+
+#define MIN_GCRYPT_VERSION "1.2.0"
 
 bool initLibGCrypt()
 {
   // make libgcrypt thread safe 
   // this must be called before any other libgcrypt call
-#if defined(__GNUC__) && !defined(__OpenBSD__) // TODO: thread-safety on OpenBSD
-  gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread );
-#endif
+  gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_boost );
 
   // this must be called right after the GCRYCTL_SET_THREAD_CBS command
   // no other function must be called till now
