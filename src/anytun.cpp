@@ -332,14 +332,11 @@ typedef boost::detail::thread::lock_ops<boost::mutex> mutex_ops;
 
 static int boost_mutex_init(void **priv)
 {
-  int err = 0;
   boost::mutex *lock = new boost::mutex();
-  
   if (!lock)
-    err = ENOMEM;
-  if (!err)
-    *priv = lock;
-  return err;
+    return ENOMEM;
+  *priv = lock;
+  return 0;
 }
 
 static int boost_mutex_destroy(void **lock)
