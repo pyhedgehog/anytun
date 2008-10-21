@@ -327,7 +327,7 @@ void receiver(void* p)
 }
 
 // boost thread callbacks for libgcrypt
-
+#if defined(BOOST_HAS_PTHREADS)
 typedef boost::detail::thread::lock_ops<boost::mutex> mutex_ops;
 
 static int boost_mutex_init(void **priv)
@@ -361,6 +361,9 @@ static struct gcry_thread_cbs gcry_threads_boost =
 { GCRY_THREAD_OPTION_USER, NULL, 
   boost_mutex_init, boost_mutex_destroy, 
   boost_mutex_lock, boost_mutex_unlock };
+#else
+#error this libgcrypt thread callbacks only work with pthreads
+#endif
 
 #define MIN_GCRYPT_VERSION "1.2.0"
 

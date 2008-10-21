@@ -116,7 +116,12 @@ void SignalController::init()
   sigdelset(&signal_set, SIGSEGV);
   sigdelset(&signal_set, SIGBUS);
   sigdelset(&signal_set, SIGFPE);
-  pthread_sigmask(SIG_BLOCK, &signal_set, NULL); // TODO: remove ugly workaround
+
+#if defined(BOOST_HAS_PTHREADS)
+  pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
+#else
+#error The signalhandler works only with pthreads
+#endif
 
   thread = new boost::thread(boost::bind(handle, this));
 
