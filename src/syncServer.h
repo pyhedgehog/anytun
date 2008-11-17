@@ -5,6 +5,8 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/function.hpp>
+
 #include <asio.hpp>
 #include <list>
 #include "syncTcpConnection.h"
@@ -15,7 +17,7 @@ class SyncServer
 {
 public:
   SyncServer(asio::io_service& io_service,  asio::ip::tcp::endpoint tcp_endpoint );
-
+	boost::function<void(SyncTcpConnection *)> onConnect;
   std::list<SyncTcpConnection::pointer> conns_;
 	void send(std::string message);
 private:

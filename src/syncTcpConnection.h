@@ -2,6 +2,7 @@
 #define _SYNCTCPCONNECTION_H_
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/function.hpp>
 #include <asio.hpp>
 
 #include <string>
@@ -15,6 +16,7 @@ public:
 	{
 	   return pointer(new SyncTcpConnection(io_service));
 	};
+	boost::function<void(SyncTcpConnection *)> onConnect;
   asio::ip::tcp::socket& socket();
   void start();
 	void Send(std::string message);

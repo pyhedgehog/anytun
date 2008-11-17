@@ -71,6 +71,7 @@
 #ifndef ANYTUN_NOSYNC
 #include "syncServer.h"
 #include "syncClient.h"
+#include "syncOnConnect.hpp"
 #endif
 
 #include "threadParam.h"
@@ -217,6 +218,7 @@ void syncListener(SyncQueue * queue )
   {
     asio::io_service io_service;
     SyncServer server(io_service,asio::ip::tcp::endpoint(asio::ip::tcp::v4(), gOpt.getLocalSyncPort()));
+		server.onConnect=boost::bind(syncOnConnect,_1);
 		queue->setSyncServerPtr(&server);
     io_service.run();
   }

@@ -32,6 +32,7 @@ void  SyncServer::handle_accept(SyncTcpConnection::pointer new_connection,
 {
 	if (!error)
 	{
+		new_connection->onConnect=onConnect;
 		new_connection->start();
 		start_accept();
 	}
