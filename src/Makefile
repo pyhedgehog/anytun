@@ -109,6 +109,8 @@ ANYCONFOBJS = log.o \
 						 syncQueue.o \
 						 syncBuffer.o \
 						 syncCommand.o \
+						 syncServer.o \
+       			syncTcpConnection.o \
 						 syncRouteCommand.o \
 						 syncConnectionCommand.o
 
