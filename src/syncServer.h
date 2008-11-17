@@ -6,6 +6,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/function.hpp>
+#include "threadUtils.hpp"
+
 
 #include <asio.hpp>
 #include <list>
@@ -24,7 +26,7 @@ private:
   void start_accept();
   void handle_accept(SyncTcpConnection::pointer new_connection,
       const asio::error_code& error);
-
+	Mutex mutex_; //Mutex for list conns_
   asio::ip::tcp::acceptor acceptor_;
 };
 #endif

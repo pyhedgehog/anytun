@@ -124,8 +124,8 @@ anytun: $(OBJS) $(SYNCOBJS) anytun.o
 anytun-nosync: $(OBJS) anytun-nosync.o
 	$(LD) $(OBJS) anytun-nosync.o -o $@ $(LDFLAGS)
 
-anytun-showtables: $(OBJS) anytun-showtables.o
-	$(LD) $(OBJS) anytun-showtables.o -o $@ $(LDFLAGS)
+anytun-showtables: $(OBJS) $(SYNCOBJS) anytun-showtables.o
+	$(LD) $(OBJS) $(SYNCOBJS) anytun-showtables.o -o $@ $(LDFLAGS)
 
 anytun-config: $(ANYCONFOBJS) anytun-config.o
 	$(LD) $(ANYCONFOBJS) anytun-config.o -o $@ $(LDFLAGS)

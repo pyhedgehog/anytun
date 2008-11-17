@@ -10,6 +10,7 @@ SyncServer::SyncServer(asio::io_service& io_service, asio::ip::tcp::endpoint tcp
 
 void SyncServer::start_accept()
 {
+	Lock lock(mutex_);
 	SyncTcpConnection::pointer new_connection =
 		SyncTcpConnection::create(acceptor_.io_service());
   conns_.push_back(new_connection);
@@ -21,6 +22,7 @@ void SyncServer::start_accept()
 
 void SyncServer::send(std::string message)
 {
+	Lock lock(mutex_);
 for(std::list<SyncTcpConnection::pointer>::iterator it = conns_.begin() ;it != conns_.end(); ++it) {
 			(*it)->Send(message);
     }
