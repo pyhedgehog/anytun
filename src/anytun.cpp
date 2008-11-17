@@ -209,7 +209,7 @@ void syncConnector(void* p )
 	sc.run();
 }
 
-void syncListener(void* p )
+void syncListener(SyncQueue * queue )
 {
 //	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
@@ -217,6 +217,7 @@ void syncListener(void* p )
   {
     asio::io_service io_service;
     SyncServer server(io_service,asio::ip::tcp::endpoint(asio::ip::tcp::v4(), gOpt.getLocalSyncPort()));
+		queue->setSyncServerPtr(&server);
     io_service.run();
   }
   catch (std::exception& e)
@@ -547,7 +548,7 @@ int main(int argc, char* argv[])
 #ifndef ANYTUN_NOSYNC
     boost::thread * syncListenerThread;
     if ( gOpt.getLocalSyncPort())
-      syncListenerThread = new boost::thread(boost::bind(syncListener,&p));
+      syncListenerThread = new boost::thread(boost::bind(syncListener,&queue));
     
     std::list<boost::thread *> connectThreads;
     for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 

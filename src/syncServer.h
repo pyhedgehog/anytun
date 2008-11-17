@@ -17,6 +17,7 @@ public:
   SyncServer(asio::io_service& io_service,  asio::ip::tcp::endpoint tcp_endpoint );
 
   std::list<SyncTcpConnection::pointer> conns_;
+	void send(std::string message);
 private:
   void start_accept();
   void handle_accept(SyncTcpConnection::pointer new_connection,

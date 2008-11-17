@@ -19,6 +19,14 @@ void SyncServer::start_accept()
 				asio::placeholders::error));
 }
 
+void SyncServer::send(std::string message)
+{
+for(std::list<SyncTcpConnection::pointer>::iterator it = conns_.begin() ;it != conns_.end(); ++it) {
+			(*it)->Send(message);
+    }
+
+}
+
 void  SyncServer::handle_accept(SyncTcpConnection::pointer new_connection,
 		const asio::error_code& error)
 {

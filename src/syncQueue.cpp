@@ -41,34 +41,34 @@
 
 
 #include "syncQueue.h"
+
 void SyncQueue::push(const SyncCommand & scom )
 {
 	std::ostringstream sout;
 	boost::archive::text_oarchive oa(sout);
 	oa << scom;
 
-  Lock lock(mutex_);
   std::stringstream lengthout;
   lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
-	queue_.push(lengthout.str()+sout.str());
+	push(lengthout.str()+sout.str());
 }
 
 void SyncQueue::push(const std::string & str )
 {
   Lock lock(mutex_);
-	queue_.push(str);
+//	std::cout << "Debug" << std:endl;
+	if( syncServer_)
+	  syncServer_->send(str);
 }
 
-std::string SyncQueue::pop()
+void SyncQueue::setSyncServerPtr(SyncServer * ptr)
 {
-	Lock lock(mutex_);
-	std::string tmp = queue_.front();
-	queue_.pop();
-	return tmp;
+  Lock lock(mutex_);
+	syncServer_=ptr;
 }
 
 bool SyncQueue::empty()
 {
   Lock lock(mutex_);
-	return queue_.empty();
+	return 1;
 }

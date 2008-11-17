@@ -39,13 +39,15 @@
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
+#include "syncServer.h"
 
 class SyncQueue
 {
 public:
-	SyncQueue() {};
+	SyncQueue():syncServer_(NULL) {};
 	~SyncQueue() {};
 
+	void setSyncServerPtr(SyncServer *);
 	void push(const std::string & );
 	void push(const SyncCommand & );
 	std::string pop();
@@ -54,9 +56,8 @@ public:
 private:
   SyncQueue(const SyncQueue &s);
   void operator=(const SyncQueue &s);
-	typedef std::queue<std::string> StringQueue;
-	StringQueue queue_;
   Mutex mutex_;
+	SyncServer * syncServer_;
 };
 
 #endif
