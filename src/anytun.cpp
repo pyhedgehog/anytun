@@ -75,7 +75,6 @@
 #endif
 
 #include "threadParam.h"
-
 #define MAX_PACKET_LENGTH 1600
 
 #define SESSION_KEYLEN_AUTH 20   // TODO: hardcoded size

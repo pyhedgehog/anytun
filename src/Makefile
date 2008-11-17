@@ -85,7 +85,7 @@ SYNCOBJS= syncServer.o \
 ANYCTROBJS = signalController.o \
 							anyCtrOptions.o \
 						 log.o \
-						 controldTcpConnection.o \
+						 syncTcpConnection.o \
 						 syncServer.o
 
 ANYCONFOBJS = log.o \

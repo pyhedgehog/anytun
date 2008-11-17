@@ -35,6 +35,7 @@
 #include <fcntl.h>
 #include <pwd.h>
 #include <grp.h>
+#include <string>
 
 #include "datatypes.h"
 
@@ -43,10 +44,9 @@
 #include "anyCtrOptions.h"
 
 #include "syncServer.h"
-//#include "anyCtrSocket.h"
-//#include "Sockets/ListenSocket.h"
-//#include "Sockets/SocketHandler.h"
+#include "daemon.hpp"
 
+std::string filename;
 
 class ThreadParam
 {
@@ -56,6 +56,21 @@ public:
   u_int16_t port;
 };
 
+void syncOnConnect(SyncTcpConnection * connptr)
+{
+  std::ifstream file( filename.c_str() );
+  if( file.is_open() )
+	{
+	   std::string line;
+		 while (! file.eof() )
+		 {
+		   getline (file,line);
+			 connptr->Send(line);
+		 }
+	 file.close();
+	}
+}
+
 void syncListener(void* p )
 {
   ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
@@ -63,7 +78,8 @@ void syncListener(void* p )
   try
   {
     asio::io_service io_service;
-    SyncServer server(io_service,asio::ip::tcp::endpoint(asio::ip::tcp::v4(), param->port));
+    SyncServer server(io_service,asio::ip::tcp::endpoint(asio::ip::tcp::v6(), param->port));
+		server.onConnect=boost::bind(syncOnConnect,_1);
     io_service.run();
   }
   catch (std::exception& e)
@@ -71,59 +87,6 @@ void syncListener(void* p )
     std::cerr << e.what() << std::endl;
   }
 
-}
-
-void chrootAndDrop(std::string const& chrootdir, std::string const& username)
-{
-	if (getuid() != 0)
-	{
-	  std::cerr << "this programm has to be run as root in order to run in a chroot" << std::endl;
-		exit(-1);
-	}	
-
-  struct passwd *pw = getpwnam(username.c_str());
-	if(pw) {
-		if(chroot(chrootdir.c_str()))
-		{
-      std::cerr << "can't chroot to " << chrootdir << std::endl;
-      exit(-1);
-		}
-    cLog.msg(Log::PRIO_NOTICE) << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
-    chdir("/");
-		if (initgroups(pw->pw_name, pw->pw_gid) || setgid(pw->pw_gid) || setuid(pw->pw_uid)) 
-		{
-			std::cerr << "can't drop to user " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
-			exit(-1);
-		}
-    cLog.msg(Log::PRIO_NOTICE) << "dropped user to " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
-	}
-	else 
-  {
-    std::cerr << "unknown user " << username << std::endl;
-    exit(-1);
-	}
-}
-
-void daemonize()
-{
-  pid_t pid;
-
-  pid = fork();
-  if(pid) exit(0);  
-  setsid();
-  pid = fork();
-  if(pid) exit(0);
-  
-//  std::cout << "running in background now..." << std::endl;
-
-  int fd;
-//  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
-  for (fd=0;fd<=2;fd++) // close all file descriptors
-    close(fd);
-  fd=open("/dev/null",O_RDWR);        // stdin
-  dup(fd);                            // stdout
-  dup(fd);                            // stderr
-  umask(027); 
 }
 
 int main(int argc, char* argv[])
@@ -168,18 +131,11 @@ int main(int argc, char* argv[])
   ThreadParam p;
   p.addr = gOpt.getBindToAddr();
   p.port = gOpt.getBindToPort(); 
+  filename =  gOpt.getFileName(); 
   boost::thread * syncListenerThread;
   syncListenerThread = new boost::thread(boost::bind(syncListener,&p));
 
-	syncListener(&p);
-//	pthread_t syncListenerThread;
-//	pthread_create(&syncListenerThread, NULL, syncListener, &p);  
-
 	int ret = sig.run();
-
-//	pthread_cancel(syncListenerThread);  
-  
-//	pthread_join(syncListenerThread, NULL);
 
   return ret;
 }
