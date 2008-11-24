@@ -6,11 +6,8 @@ Linux
 
 build-essential
 libgcrypt11-dev
-libboost-serialization-dev
-libboost-thread-dev
-libboost-dev
-asciidoc
-libasio-dev
+libboost1.35-dev
+asciidoc (only for manpage)
 
 OpenBSD
 -------
