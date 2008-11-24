@@ -37,11 +37,11 @@
 #include "threadUtils.hpp"
 #include <list>
 
-typedef struct OptionConnectTo
+typedef struct
 {
   std::string host;
 	uint16_t port;
-};
+} OptionConnectTo;
 
 typedef std::list<OptionConnectTo>  ConnectToList;
 

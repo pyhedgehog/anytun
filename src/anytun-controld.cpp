@@ -77,7 +77,7 @@ void syncListener(void* p )
 
   try
   {
-    asio::io_service io_service;
+    boost::asio::io_service io_service;
     SyncServer server(io_service,asio::ip::tcp::endpoint(asio::ip::tcp::v6(), param->port));
 		server.onConnect=boost::bind(syncOnConnect,_1);
     io_service.run();
