@@ -50,11 +50,12 @@ SyncClient::SyncClient(std::string hostname,std::string port)
 
 void SyncClient::run()
 {
-  try
-  {
-    boost::asio::io_service io_service;
-		for(;;)
+	bool connected(false);
+	for(;;)
+	{
+		try
 		{
+			boost::asio::io_service io_service;
 			boost::asio::ip::tcp::resolver resolver(io_service);
 			boost::asio::ip::tcp::resolver::query query( hostname_, port_);
 			boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
@@ -69,35 +70,32 @@ void SyncClient::run()
 			}
 			if (error)
 				throw boost::system::system_error(error);
-
-			try
+			if (!connected)
+				cLog.msg(Log::PRIO_NOTICE) << "sync: connected to " << hostname_ <<":"<< port_;
+			connected=true;
+			for (;;)
 			{
-				for (;;)
-				{
-					boost::array<char, 1> buf;
-					boost::system::error_code error;
+				boost::array<char, 1> buf;
+				boost::system::error_code error;
 
-					size_t len = socket.read_some(boost::asio::buffer(buf), error);
+				size_t len = socket.read_some(boost::asio::buffer(buf), error);
 
-					if (error == boost::asio::error::eof)
-						break; // Connection closed cleanly by peer.
-					else if (error)
-						throw boost::system::system_error(error); // Some other error.
+				if (error == boost::asio::error::eof)
+					break; // Connection closed cleanly by peer.
+				else if (error)
+					throw boost::system::system_error(error); // Some other error.
 
-					OnRawData(buf.data(), len);
-				}
-			}
-			catch (std::exception& e)
-			{
-				cLog.msg(Log::PRIO_NOTICE) << e.what() << std::endl;
+				OnRawData(buf.data(), len);
 			}
 		}
-		sleep(10);
-  }
-  catch (std::exception& e)
-  {
-    cLog.msg(Log::PRIO_NOTICE) << e.what() << std::endl;
-  }
+		catch (std::exception& e)
+		{
+			if (connected) 
+				cLog.msg(Log::PRIO_NOTICE) << "sync: connection to " << hostname_ <<":"<< port_<< " lost ("<< e.what() << ") retrying every 10sec";
+			connected=false;
+			sleep(10);
+		}
+	}
 }
 
 void SyncClient::OnRawData(const char *buf,size_t len)
