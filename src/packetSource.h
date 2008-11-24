@@ -29,6 +29,9 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef _PACKET_SOURCE_H_
+#define _PACKET_SOURCE_H_
+
 #include <boost/asio.hpp>
 
 #include "datatypes.h"
@@ -59,3 +62,4 @@ private:
   boost::asio::ip::udp::socket sock_;
 };
 
+#endif

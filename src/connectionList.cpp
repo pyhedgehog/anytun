@@ -33,6 +33,7 @@
 #include "datatypes.h"
 #include "keyDerivationFactory.h"
 #include "options.h"
+#include "packetSource.h"
 
 #include "connectionList.h"
 
@@ -121,7 +122,7 @@ ConnectionParam & ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
   seq_nr_t seq_nr_=0;
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
-  ConnectionParam conn ( (*kd),  (*seq), seq_nr_, "",  0);
+  ConnectionParam conn ( (*kd),  (*seq), seq_nr_, PacketSourceEndpoint());
 	connections_.insert(ConnectionMap::value_type(mux, conn));
 	it = connections_.find(mux);
 	return it->second;

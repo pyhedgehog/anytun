@@ -80,19 +80,15 @@
 #define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
 #define SESSION_KEYLEN_SALT 14   // TODO: hardcoded size
 
-void createConnection(const std::string & remote_host, const std::string & remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
+void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
 {
 	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(gOpt.getKey(), gOpt.getSalt());
-  cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
-	boost::asio::io_service io_service;
-  boost::asio::ip::udp::resolver resolver(io_service);
-  boost::asio::ip::udp::resolver::query query(remote_host, remote_port);
-  boost::asio::ip::udp::endpoint endpoint = *resolver.resolve(query);
+  cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
 
-	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, endpoint);
+	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_end);
  	cl.addConnection(connparam,mux);
 	NetworkAddress addr(ipv4,gOpt.getIfconfigParamRemoteNetmask().c_str());
 	NetworkPrefix prefix(addr,32);
@@ -108,7 +104,7 @@ bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)
 	// compare sender_id and seq with window
 	if(conn.seq_window_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
 	{
-		cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_host_<<":"<< conn.remote_port_ 
+		cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_end_ 
                                << " seq:"<<pack.getSeqNr() << " sid: "<<pack.getSenderId();
 		return false;
 	}
@@ -162,8 +158,10 @@ void sender(void* p)
         continue;
       ConnectionParam & conn = cit->second;
       
-      if(conn.remote_host_==""||!conn.remote_port_)
+// TODO test if endpoint is not valid
+      if(conn.remote_end_.address().to_string()==""||!conn.remote_end_.port())
         continue;
+
           // generate packet-key TODO: do this only when needed
       conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key);
       conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt);
@@ -186,7 +184,7 @@ void sender(void* p)
       }  
       try
       {
-        param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_host_, conn.remote_port_);
+        param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
       }
       catch (std::exception& e)
       {
@@ -263,23 +261,22 @@ void receiver(void* p)
     
     while(1)
     {
-      std::string remote_host;
-      u_int16_t remote_port;
-      
+      PacketSourceEndpoint remote_end;
+
       plain_packet.setLength(MAX_PACKET_LENGTH);
       encrypted_packet.withAuthTag(false);
       encrypted_packet.setLength(MAX_PACKET_LENGTH);
       
           // read packet from socket
-      u_int32_t len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_host, remote_port);
+      u_int32_t len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
       encrypted_packet.setLength(len);
       
       mux_t mux = encrypted_packet.getMux();
           // autodetect peer
-      if(gOpt.getRemoteAddr() == "" && param->cl.empty())
+      if( param->cl.empty() && gOpt.getRemoteAddr() == "")
       {
-        cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_host << ":" << remote_port;
-        createConnection(remote_host, remote_port, param->cl, gOpt.getSeqWindowSize(),param->queue,mux);
+        cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_end;
+        createConnection(remote_end, param->cl, gOpt.getSeqWindowSize(),param->queue,mux);
       }
       
       ConnectionMap::iterator cit = param->cl.getConnection(mux);
@@ -301,12 +298,10 @@ void receiver(void* p)
       
           //Allow dynamic IP changes 
           //TODO: add command line option to turn this off
-      if (remote_host != conn.remote_host_ || remote_port != conn.remote_port_)
+      if (remote_end != conn.remote_end_)
       {
-        cLog.msg(Log::PRIO_NOTICE) << "connection "<< mux << " autodetected remote host ip changed " 
-                                   << remote_host << ":" << remote_port;
-        conn.remote_host_=remote_host;
-        conn.remote_port_=remote_port;
+        cLog.msg(Log::PRIO_NOTICE) << "connection "<< mux << " autodetected remote host ip changed " << remote_end;
+        conn.remote_end_=remote_end;
         SyncCommand sc (param->cl,mux);
         param->queue.push(sc);
       }	
@@ -523,6 +518,25 @@ int main(int argc, char* argv[])
       cLog.msg(Log::PRIO_NOTICE) << "post up script '" << gOpt.getPostUpScript() << "' returned " << postup_ret;  
     }
         
+    PacketSource* src;
+    if(gOpt.getLocalAddr() == "")
+      src = new UDPPacketSource(gOpt.getLocalPort());
+    else
+      src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
+
+    ConnectionList & cl (gConnectionList);
+    ConnectToList connect_to = gOpt.getConnectTo();
+    SyncQueue queue;
+    
+    if(gOpt.getRemoteAddr() != "")
+    {
+      boost::asio::io_service io_service;
+      boost::asio::ip::udp::resolver resolver(io_service);
+      boost::asio::ip::udp::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
+      boost::asio::ip::udp::endpoint endpoint = *resolver.resolve(query);
+      createConnection(endpoint,cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
+    }    
+
     if(gOpt.getChroot())
       chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
     if(gOpt.getDaemonize())
@@ -540,21 +554,8 @@ int main(int argc, char* argv[])
     SignalController sig;
     sig.init();
     
-    PacketSource* src;
-    if(gOpt.getLocalAddr() == "")
-      src = new UDPPacketSource(gOpt.getLocalPort());
-    else
-      src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
-
-    ConnectionList & cl (gConnectionList);
-    ConnectToList connect_to = gOpt.getConnectTo();
-    SyncQueue queue;
-    
-    if(gOpt.getRemoteAddr() != "")
-      createConnection(gOpt.getRemoteAddr(),gOpt.getRemotePort(),cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
-    
     ThreadParam p(dev, *src, cl, queue,*(new OptionConnectTo()));
-    
+
         // this must be called before any other libgcrypt call
     if(!initLibGCrypt())
       return -1;
@@ -563,7 +564,7 @@ int main(int argc, char* argv[])
     boost::thread receiverThread(boost::bind(receiver,&p)); 
 #ifndef ANYTUN_NOSYNC
     boost::thread * syncListenerThread;
-    if ( gOpt.getLocalSyncPort())
+    if(gOpt.getLocalSyncPort() != "")
       syncListenerThread = new boost::thread(boost::bind(syncListener,&queue));
     
     std::list<boost::thread *> connectThreads;
