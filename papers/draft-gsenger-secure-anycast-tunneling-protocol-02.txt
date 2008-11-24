@@ -297,8 +297,8 @@ Internet-Draft  secure anycast tunneling protocol (SATP)        May 2008
 
 2.2.  Encapsulation
 
-   SATP does not depend on which lower layer protocol is used.  This
-   section only gives an example of how packets could look like.
+   SATP does not depend on the lower layer protocol.  This section only
+   gives an example of how packets could look like.
 
 
 

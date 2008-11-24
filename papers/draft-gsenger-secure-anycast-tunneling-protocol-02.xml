@@ -125,7 +125,7 @@
       </section>
     </section>
 	<section title="Encapsulation">
-      <t>SATP does not depend on which lower layer protocol is used. This section only gives an example of how packets could look like.
+      <t>SATP does not depend on the lower layer protocol. This section only gives an example of how packets could look like.
       </t>
       <figure anchor="transport_udp">
         <preamble>Examples of SATP used with different lower layer and payload protocols</preamble>
