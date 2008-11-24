@@ -41,13 +41,13 @@
 class SyncClient
 {
 public:
-	SyncClient(std::string hostname,uint16_t port);
+	SyncClient(std::string hostname,std::string port);
 
 	void run();
 private:
 	void OnRawData(const char *buf,size_t len);
 	std::string hostname_;
-	uint16_t port_;
+	std::string port_;
 	std::stringstream iss_;
 	int32_t missing_chars;
 	int32_t buffer_size_;

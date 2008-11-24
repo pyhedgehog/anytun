@@ -45,13 +45,12 @@ class ConnectionParam
 {
 public:
 	ConnectionParam(const ConnectionParam & src);
-	ConnectionParam( KeyDerivation& kd, SeqWindow& seq_window, seq_nr_t seq_nr_, std::string remote_host, u_int16_t remote_port);
+	ConnectionParam( KeyDerivation& kd, SeqWindow& seq_window, seq_nr_t seq_nr_, boost::asio::ip::udp::endpoint endpoint);
 
   KeyDerivation& kd_;
   SeqWindow& seq_window_;
 	seq_nr_t seq_nr_;
-  std::string remote_host_;
-  u_int16_t remote_port_;
+	boost::asio::ip::udp::endpoint endpoint_;
 
 private:
   //TODO: check if this is ok

@@ -43,7 +43,7 @@
 #include <boost/array.hpp>
 
 
-SyncClient::SyncClient(std::string hostname,uint16_t port)
+SyncClient::SyncClient(std::string hostname,std::string port)
 :hostname_( hostname),port_(port)
 {
 }
@@ -55,10 +55,8 @@ void SyncClient::run()
     boost::asio::io_service io_service;
 		for(;;)
 		{
-			std::stringstream portsrt;
-			portsrt << port_;
 			boost::asio::ip::tcp::resolver resolver(io_service);
-			boost::asio::ip::tcp::resolver::query query( hostname_, portsrt.str());
+			boost::asio::ip::tcp::resolver::query query( hostname_, port_);
 			boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 			boost::asio::ip::tcp::resolver::iterator end;
 

@@ -80,14 +80,19 @@
 #define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
 #define SESSION_KEYLEN_SALT 14   // TODO: hardcoded size
 
-void createConnection(const std::string & remote_host, u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
+void createConnection(const std::string & remote_host, const std::string & remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
 {
 	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(gOpt.getKey(), gOpt.getSalt());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
-	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_host,  remote_port);
+	boost::asio::io_service io_service;
+  boost::asio::ip::udp::resolver resolver(io_service);
+  boost::asio::ip::udp::resolver::query query(remote_host, remote_port);
+  boost::asio::ip::udp::endpoint endpoint = *resolver.resolve(query);
+
+	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, endpoint);
  	cl.addConnection(connparam,mux);
 	NetworkAddress addr(ipv4,gOpt.getIfconfigParamRemoteNetmask().c_str());
 	NetworkPrefix prefix(addr,32);
