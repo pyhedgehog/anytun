@@ -40,7 +40,6 @@
 #include <unistd.h>
 
 #include <boost/bind.hpp>
-#include <boost/thread/detail/lock.hpp>
 #include <gcrypt.h>
 #include <cerrno>     // for ENOMEM
 
@@ -215,8 +214,8 @@ void syncListener(SyncQueue * queue )
 
   try
   {
-    asio::io_service io_service;
-    SyncServer server(io_service,asio::ip::tcp::endpoint(asio::ip::tcp::v4(), gOpt.getLocalSyncPort()));
+    boost::asio::io_service io_service;
+    SyncServer server(io_service,boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), gOpt.getLocalSyncPort()));
 		server.onConnect=boost::bind(syncOnConnect,_1);
 		queue->setSyncServerPtr(&server);
     io_service.run();
@@ -330,7 +329,6 @@ void receiver(void* p)
 
 // boost thread callbacks for libgcrypt
 #if defined(BOOST_HAS_PTHREADS)
-typedef boost::detail::thread::lock_ops<boost::mutex> mutex_ops;
 
 static int boost_mutex_init(void **priv)
 {
@@ -349,13 +347,13 @@ static int boost_mutex_destroy(void **lock)
 
 static int boost_mutex_lock(void **lock) 
 { 
-  mutex_ops::lock(*reinterpret_cast<boost::mutex*>(*lock));
+  reinterpret_cast<boost::mutex*>(*lock)->lock();
   return 0; 
 }
 
 static int boost_mutex_unlock(void **lock)
 { 
-  mutex_ops::unlock(*reinterpret_cast<boost::mutex*>(*lock));
+  reinterpret_cast<boost::mutex*>(*lock)->unlock();
   return 0; 
 }
 

@@ -52,37 +52,37 @@ void SyncClient::run()
 {
   try
   {
-    asio::io_service io_service;
+    boost::asio::io_service io_service;
 		for(;;)
 		{
 			std::stringstream portsrt;
 			portsrt << port_;
-			asio::ip::tcp::resolver resolver(io_service);
-			asio::ip::tcp::resolver::query query( hostname_, portsrt.str());
-			asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-			asio::ip::tcp::resolver::iterator end;
+			boost::asio::ip::tcp::resolver resolver(io_service);
+			boost::asio::ip::tcp::resolver::query query( hostname_, portsrt.str());
+			boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+			boost::asio::ip::tcp::resolver::iterator end;
 
-			asio::ip::tcp::socket socket(io_service);
-			asio::error_code error = asio::error::host_not_found;
+			boost::asio::ip::tcp::socket socket(io_service);
+			boost::system::error_code error = boost::asio::error::host_not_found;
 			while (error && endpoint_iterator != end)
 			{
 				socket.close();
 				socket.connect(*endpoint_iterator++, error);
 			}
 			if (error)
-				throw asio::system_error(error);
+				throw boost::system::system_error(error);
 
 			for (;;)
 			{
 				boost::array<char, 128> buf;
-				asio::error_code error;
+				boost::system::error_code error;
 
-				size_t len = socket.read_some(asio::buffer(buf), error);
+				size_t len = socket.read_some(boost::asio::buffer(buf), error);
 
-				if (error == asio::error::eof)
+				if (error == boost::asio::error::eof)
 					break; // Connection closed cleanly by peer.
 				else if (error)
-					throw asio::system_error(error); // Some other error.
+					throw boost::system::system_error(error); // Some other error.
 
 				OnRawData(buf.data(), len);
 			}

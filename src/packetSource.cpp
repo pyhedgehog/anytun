@@ -29,7 +29,7 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <asio.hpp>
+#include <boost/asio.hpp>
 #include <sstream>
 
 #include "datatypes.h"
@@ -42,9 +42,9 @@ UDPPacketSource::UDPPacketSource(u_int16_t port) : sock_(io_service_)
   std::stringstream ps;
   ps << port;
 
-  asio::ip::udp::resolver resolver(io_service_);
-  asio::ip::udp::resolver::query query(ps.str());  
-  asio::ip::udp::endpoint e = *resolver.resolve(query);
+  boost::asio::ip::udp::resolver resolver(io_service_);
+  boost::asio::ip::udp::resolver::query query(ps.str());  
+  boost::asio::ip::udp::endpoint e = *resolver.resolve(query);
   sock_.open(e.protocol());
   sock_.bind(e);
 }
@@ -54,17 +54,17 @@ UDPPacketSource::UDPPacketSource(std::string localaddr, u_int16_t port) : sock_(
   std::stringstream ps;
   ps << port;
 
-  asio::ip::udp::resolver resolver(io_service_);
-  asio::ip::udp::resolver::query query(localaddr, ps.str());  
-  asio::ip::udp::endpoint e = *resolver.resolve(query);
+  boost::asio::ip::udp::resolver resolver(io_service_);
+  boost::asio::ip::udp::resolver::query query(localaddr, ps.str());  
+  boost::asio::ip::udp::endpoint e = *resolver.resolve(query);
   sock_.open(e.protocol());
   sock_.bind(e);  
 }
 
 u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, std::string& addr, u_int16_t &port)
 {
-  asio::ip::udp::endpoint e;
-  u_int32_t rtn = sock_.receive_from(asio::buffer(buf, len), e);
+  boost::asio::ip::udp::endpoint e;
+  u_int32_t rtn = sock_.receive_from(boost::asio::buffer(buf, len), e);
   
   addr = e.address().to_string(); 
   port = e.port();
@@ -77,9 +77,9 @@ void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, std::string addr, u_int
   std::stringstream ps;
   ps << port;
 
-  asio::ip::udp::resolver resolver(io_service_);
-  asio::ip::udp::resolver::query query(addr, ps.str());  
-  asio::ip::udp::endpoint e = *resolver.resolve(query);
+  boost::asio::ip::udp::resolver resolver(io_service_);
+  boost::asio::ip::udp::resolver::query query(addr, ps.str());  
+  boost::asio::ip::udp::endpoint e = *resolver.resolve(query);
 
-  sock_.send_to(asio::buffer(buf, len), e);
+  sock_.send_to(boost::asio::buffer(buf, len), e);
 }

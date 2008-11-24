@@ -1,6 +1,6 @@
 #include "syncTcpConnection.h"
 #include <boost/bind.hpp>
-#include <asio.hpp>
+#include <boost/asio.hpp>
 
 #include <sstream>
 #include <iostream>
@@ -14,10 +14,10 @@
 #include "syncCommand.h"
 #include "buffer.h"
 
-  asio::ip::tcp::socket& SyncTcpConnection::socket()
-  {
-    return socket_;
-  }
+boost::asio::ip::tcp::socket& SyncTcpConnection::socket()
+{
+  return socket_;
+}
 
 void SyncTcpConnection::start()
 {
@@ -26,17 +26,17 @@ void SyncTcpConnection::start()
 
 void SyncTcpConnection::Send(std::string message)
 {
-    asio::async_write(socket_, asio::buffer(message),
+    boost::asio::async_write(socket_, boost::asio::buffer(message),
         boost::bind(&SyncTcpConnection::handle_write, shared_from_this(),
-          asio::placeholders::error,
-          asio::placeholders::bytes_transferred));
+          boost::asio::placeholders::error,
+          boost::asio::placeholders::bytes_transferred));
 }
-SyncTcpConnection::SyncTcpConnection(asio::io_service& io_service)
+SyncTcpConnection::SyncTcpConnection(boost::asio::io_service& io_service)
 	: socket_(io_service)
 {
 }
 
-void SyncTcpConnection::handle_write(const asio::error_code& /*error*/,
+void SyncTcpConnection::handle_write(const boost::system::error_code& /*error*/,
 		size_t /*bytes_transferred*/)
 {
 }

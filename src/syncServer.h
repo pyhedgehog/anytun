@@ -9,7 +9,7 @@
 #include "threadUtils.hpp"
 
 
-#include <asio.hpp>
+#include <boost/asio.hpp>
 #include <list>
 #include "syncTcpConnection.h"
 
@@ -18,15 +18,15 @@
 class SyncServer
 {
 public:
-  SyncServer(asio::io_service& io_service,  asio::ip::tcp::endpoint tcp_endpoint );
+  SyncServer(boost::asio::io_service& io_service,  boost::asio::ip::tcp::endpoint tcp_endpoint );
 	boost::function<void(SyncTcpConnection *)> onConnect;
   std::list<SyncTcpConnection::pointer> conns_;
 	void send(std::string message);
 private:
   void start_accept();
   void handle_accept(SyncTcpConnection::pointer new_connection,
-      const asio::error_code& error);
+      const boost::system::error_code& error);
 	Mutex mutex_; //Mutex for list conns_
-  asio::ip::tcp::acceptor acceptor_;
+  boost::asio::ip::tcp::acceptor acceptor_;
 };
 #endif
