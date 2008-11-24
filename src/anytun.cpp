@@ -131,6 +131,7 @@ void sender(void* p)
     
         //TODO replace mux
     u_int16_t mux = gOpt.getMux();
+    PacketSourceEndpoint emptyEndpoint;
     while(1)
     {
       plain_packet.setLength(MAX_PACKET_LENGTH);
@@ -158,9 +159,11 @@ void sender(void* p)
         continue;
       ConnectionParam & conn = cit->second;
       
-// TODO test if endpoint is not valid
-      if(conn.remote_end_.address().to_string()==""||!conn.remote_end_.port())
+      if(conn.remote_end_ == emptyEndpoint)
+			{
+        //cLog.msg(Log::PRIO_INFO) << "no remote address set";
         continue;
+      }
 
           // generate packet-key TODO: do this only when needed
       conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key);

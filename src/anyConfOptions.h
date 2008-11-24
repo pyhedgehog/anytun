@@ -37,11 +37,11 @@
 #include "threadUtils.hpp"
 #include <list>
 
-typedef struct OptionRoute
+typedef struct
 {
   std::string net_addr;
 	uint16_t prefix_length;
-};
+} OptionRoute;
 
 typedef std::list<OptionRoute>  RouteList;
 
@@ -58,9 +58,9 @@ public:
   Options& setProgname(std::string p);
   std::string getRemoteAddr();
   Options& setRemoteAddr(std::string r);
-  u_int16_t getRemotePort();
-  Options& setRemotePort(u_int16_t r);
-  Options& setRemoteAddrPort(std::string addr, u_int16_t port);
+  std::string getRemotePort();
+  Options& setRemotePort(std::string r);
+  Options& setRemoteAddrPort(std::string addr, std::string port);
 
   window_size_t getSeqWindowSize();
   Options& setSeqWindowSize(window_size_t s);
@@ -94,7 +94,7 @@ private:
 
   std::string progname_;
   std::string remote_addr_;
-  u_int16_t remote_port_;
+  std::string remote_port_;
   window_size_t seq_window_size_;
   std::string kd_prf_;
   u_int16_t mux_;

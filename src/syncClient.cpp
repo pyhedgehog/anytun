@@ -44,7 +44,7 @@
 
 
 SyncClient::SyncClient(std::string hostname,std::string port)
-:hostname_( hostname),port_(port)
+:hostname_( hostname),port_(port),missing_chars(-1)
 {
 }
 
@@ -70,26 +70,33 @@ void SyncClient::run()
 			if (error)
 				throw boost::system::system_error(error);
 
-			for (;;)
+			try
 			{
-				boost::array<char, 128> buf;
-				boost::system::error_code error;
+				for (;;)
+				{
+					boost::array<char, 1> buf;
+					boost::system::error_code error;
 
-				size_t len = socket.read_some(boost::asio::buffer(buf), error);
+					size_t len = socket.read_some(boost::asio::buffer(buf), error);
 
-				if (error == boost::asio::error::eof)
-					break; // Connection closed cleanly by peer.
-				else if (error)
-					throw boost::system::system_error(error); // Some other error.
+					if (error == boost::asio::error::eof)
+						break; // Connection closed cleanly by peer.
+					else if (error)
+						throw boost::system::system_error(error); // Some other error.
 
-				OnRawData(buf.data(), len);
+					OnRawData(buf.data(), len);
+				}
+			}
+			catch (std::exception& e)
+			{
+				cLog.msg(Log::PRIO_NOTICE) << e.what() << std::endl;
 			}
 		}
 		sleep(10);
   }
   catch (std::exception& e)
   {
-    std::cerr << e.what() << std::endl;
+    cLog.msg(Log::PRIO_NOTICE) << e.what() << std::endl;
   }
 }
 
@@ -113,7 +120,7 @@ void SyncClient::OnRawData(const char *buf,size_t len)
       std::stringstream tmp;
       tmp.write(buffer,6);
 			tmp>>missing_chars;
-//			cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion length from " << GetRemoteHostname() <<" "<<tmp.str()<<"bytes of data"<< std::endl;
+//			cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion "<<tmp.str()<<"bytes of data"<< std::endl;
 			delete[] buffer;
 			buffer_size_-=6;
 		} else

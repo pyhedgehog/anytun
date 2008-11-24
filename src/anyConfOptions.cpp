@@ -56,7 +56,7 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
 {
   progname_ = "anytun-config";
   remote_addr_ = "";
-  remote_port_ = 4444;
+  remote_port_ = "4444";
   seq_window_size_ = 100;
   kd_prf_ = "aes-ctr";
   mux_ = 0;
@@ -228,18 +228,18 @@ Options& Options::setRemoteAddr(std::string r)
   return *this;
 }
 
-u_int16_t Options::getRemotePort()
+std::string Options::getRemotePort()
 {
   return remote_port_;
 }
 
-Options& Options::setRemotePort(u_int16_t r)
+Options& Options::setRemotePort(std::string r)
 {
   remote_port_ = r;
   return *this;
 }
 
-Options& Options::setRemoteAddrPort(std::string addr, u_int16_t port)
+Options& Options::setRemoteAddrPort(std::string addr, std::string port)
 {
   Lock lock(mutex);
   remote_addr_ = addr;

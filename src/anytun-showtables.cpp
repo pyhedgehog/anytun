@@ -56,11 +56,11 @@ void output(ConnectionList &cl)
 		mux_t mux = it->first;
 		ConnectionParam &conn( it->second );
 		std::cout << "Client " << mux << ": " ;
-		if( conn.remote_host_=="")
+		if( conn.remote_end_==PacketSourceEndpoint())
 		{
 			std::cout<< "not registered";
 		} else {
-		  std::cout<< conn.remote_host_ << ':'<<conn.remote_port_;
+		  std::cout<< conn.remote_end_;
 		}
 		std::cout << std::endl;
     //std::cout << "Connection: Keyderivation-Type: " << conn.kd_.printType() << std::endl;
