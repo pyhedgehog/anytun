@@ -61,12 +61,17 @@ private:
   void serialize(Archive & ar, const unsigned int version)
 	{
 		Lock lock(mutex_);
+		std::string remote_host(remote_end_.address().to_string());
+		u_int16_t remote_port = remote_end_.port();
 		ar & kd_;
     ar & seq_window_;
     ar & seq_nr_;
-// TODO fix sync of remote_end_
-    ar & remote_host_;
-    ar & remote_port_;
+    ar & remote_host;
+    ar & remote_port;
+		boost::asio::ip::address addr;
+		addr.from_string(remote_host);
+		boost::asio::ip::udp::endpoint endpoint(addr, remote_port);
+		remote_end_ = endpoint;
 	}
 };
 
