@@ -29,20 +29,20 @@
 ##  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
 ##
 TARGET=$(shell uname -s)
-C = gcc
-CFLAGS = -g
-C++ = g++
-CCFLAGS = -g -Wall
+CC = gcc
+CCFLAGS = -g
+CXX = g++
+CXXFLAGS = -g -Wall
 LD = g++
 LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization
 
 ifeq ($(TARGET),Linux)
-  CFLAGS += -D_XOPEN_SOURCE=600
   CCFLAGS += -D_XOPEN_SOURCE=600
+  CXXFLAGS += -D_XOPEN_SOURCE=600
   LDFLAGS += -ldl
 endif
 ifeq ($(TARGET),OpenBSD)
-  CCFLAGS += -I/usr/local/include
+  CXXFLAGS += -I/usr/local/include
   LDFLAGS += -L/usr/local/lib
 endif
 
@@ -110,7 +110,7 @@ ANYCONFOBJS = log.o \
 						 syncBuffer.o \
 						 syncCommand.o \
 						 syncServer.o \
-       			syncTcpConnection.o \
+             syncTcpConnection.o \
 						 syncRouteCommand.o \
 						 syncConnectionCommand.o
 
@@ -134,136 +134,136 @@ anytun-controld: $(ANYCTROBJS) anytun-controld.o
 	$(LD) $(ANYCTROBJS) anytun-controld.o -o $@ $(LDFLAGS)
 
 tunDevice.o: tunDevice.cpp tunDevice.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 packetSource.o: packetSource.cpp packetSource.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 buffer.o: buffer.cpp buffer.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 syncBuffer.o: syncBuffer.cpp syncBuffer.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 syncServer.o: syncServer.cpp syncServer.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 syncClient.o: syncClient.cpp syncClient.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 syncTcpConnection.o: syncTcpConnection.cpp syncTcpConnection.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 controldTcpConnection.cpp: controldTcpConnection.cpp syncTcpConnection.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 rtpSessionTable.o: rtpSessionTable.cpp rtpSessionTable.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 rtpSession.o: rtpSession.cpp rtpSession.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 plainPacket.o: plainPacket.cpp plainPacket.h buffer.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 encryptedPacket.o: encryptedPacket.cpp encryptedPacket.h buffer.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 cipher.o: cipher.cpp cipher.h buffer.h 
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 anyCtrSocket.o: anyCtrSocket.cpp anyCtrSocket.h 
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 anyCtrOptions.o: anyCtrOptions.cpp anyCtrOptions.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 anyConfOptions.o: anyConfOptions.cpp anyConfOptions.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 keyDerivation.o: keyDerivation.cpp keyDerivation.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 mpi.o: mpi.cpp mpi.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 cipherFactory.o: cipherFactory.cpp cipherFactory.h cipher.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 authAlgoFactory.o: authAlgoFactory.cpp authAlgoFactory.h authAlgo.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 keyDerivationFactory.o: keyDerivationFactory.cpp keyDerivationFactory.h keyDerivation.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 routingTable.o: routingTable.cpp routingTable.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 syncCommand.o: syncCommand.cpp syncCommand.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 syncRouteCommand.o: syncRouteCommand.cpp syncRouteCommand.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 syncRtpCommand.o: syncRtpCommand.cpp syncRtpCommand.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 syncConnectionCommand.o: syncConnectionCommand.cpp syncConnectionCommand.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 syncQueue.o: syncQueue.cpp syncQueue.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 signalController.o: signalController.cpp signalController.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 PracticalSocket.o: PracticalSocket.cpp PracticalSocket.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 log.o: log.cpp log.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 options.o: options.cpp options.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 seqWindow.o: seqWindow.cpp seqWindow.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 connectionList.o: connectionList.cpp connectionList.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 connectionParam.o: connectionParam.cpp connectionParam.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 networkPrefix.o: networkPrefix.cpp networkPrefix.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 networkAddress.o: networkAddress.cpp networkAddress.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 router.o: router.cpp router.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 anytun.o: anytun.cpp
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 anytun-nosync.o: anytun.cpp
-	$(C++) $(CCFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
+	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
 
 anytun-showtables.o: anytun-showtables.cpp
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 anytun-config.o: anytun-config.cpp
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 anytun-controld.o: anytun-controld.cpp
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 cConnectionParam.o: cConnectionParam.cpp
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 libAnysync.a: $(OBJS)
 	ar cru $@ $(OBJS)
