@@ -34,23 +34,25 @@
 #include "datatypes.h"
 #include "buffer.h"
 
+typedef boost::asio::ip::udp::endpoint PacketSourceEndpoint;
+
 class PacketSource
 {
 public:
   virtual ~PacketSource() {}
 
-  virtual u_int32_t recv(u_int8_t* buf, u_int32_t len, std::string& addr, u_int16_t &port) = 0;
-  virtual void send(u_int8_t* buf, u_int32_t len, std::string addr, u_int16_t port) = 0;
+  virtual u_int32_t recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote) = 0;
+  virtual void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote) = 0;
 };
 
 class UDPPacketSource : public PacketSource
 {  
 public:
-  UDPPacketSource(u_int16_t port);
-  UDPPacketSource(std::string localaddr, u_int16_t port);
+  UDPPacketSource(std::string port);
+  UDPPacketSource(std::string localaddr, std::string port);
 
-  u_int32_t recv(u_int8_t* buf, u_int32_t len, std::string& addr, u_int16_t &port);
-  void send(u_int8_t* buf, u_int32_t len, std::string addr, u_int16_t port);
+  u_int32_t recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote);
+  void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote);
 
 private:
   boost::asio::io_service io_service_;

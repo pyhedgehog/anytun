@@ -30,56 +30,36 @@
  */
 
 #include <boost/asio.hpp>
-#include <sstream>
 
 #include "datatypes.h"
 
 #include "packetSource.h"
 #include "buffer.h"
 
-UDPPacketSource::UDPPacketSource(u_int16_t port) : sock_(io_service_)
+UDPPacketSource::UDPPacketSource(std::string port) : sock_(io_service_)
 {
-  std::stringstream ps;
-  ps << port;
-
   boost::asio::ip::udp::resolver resolver(io_service_);
-  boost::asio::ip::udp::resolver::query query(ps.str());  
+  boost::asio::ip::udp::resolver::query query(port);  
   boost::asio::ip::udp::endpoint e = *resolver.resolve(query);
   sock_.open(e.protocol());
   sock_.bind(e);
 }
 
-UDPPacketSource::UDPPacketSource(std::string localaddr, u_int16_t port) : sock_(io_service_)
+UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port) : sock_(io_service_)
 {
-  std::stringstream ps;
-  ps << port;
-
   boost::asio::ip::udp::resolver resolver(io_service_);
-  boost::asio::ip::udp::resolver::query query(localaddr, ps.str());  
+  boost::asio::ip::udp::resolver::query query(localaddr, port);  
   boost::asio::ip::udp::endpoint e = *resolver.resolve(query);
   sock_.open(e.protocol());
   sock_.bind(e);  
 }
 
-u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, std::string& addr, u_int16_t &port)
+u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote)
 {
-  boost::asio::ip::udp::endpoint e;
-  u_int32_t rtn = sock_.receive_from(boost::asio::buffer(buf, len), e);
-  
-  addr = e.address().to_string(); 
-  port = e.port();
-
-  return rtn;
+  return sock_.receive_from(boost::asio::buffer(buf, len), remote);
 }
 
-void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, std::string addr, u_int16_t port)
+void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote)
 {
-  std::stringstream ps;
-  ps << port;
-
-  boost::asio::ip::udp::resolver resolver(io_service_);
-  boost::asio::ip::udp::resolver::query query(addr, ps.str());  
-  boost::asio::ip::udp::endpoint e = *resolver.resolve(query);
-
-  sock_.send_to(boost::asio::buffer(buf, len), e);
+  sock_.send_to(boost::asio::buffer(buf, len), remote);
 }
