@@ -37,6 +37,7 @@
 #include "authAlgo.h"
 #include "seqWindow.h"
 #include "threadUtils.hpp"
+#include "packetSource.h"
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -45,12 +46,12 @@ class ConnectionParam
 {
 public:
 	ConnectionParam(const ConnectionParam & src);
-	ConnectionParam( KeyDerivation& kd, SeqWindow& seq_window, seq_nr_t seq_nr_, boost::asio::ip::udp::endpoint endpoint);
+	ConnectionParam( KeyDerivation& kd, SeqWindow& seq_window, seq_nr_t seq_nr_, PacketSourceEndpoint remote_end);
 
   KeyDerivation& kd_;
   SeqWindow& seq_window_;
 	seq_nr_t seq_nr_;
-	boost::asio::ip::udp::endpoint endpoint_;
+	PacketSourceEndpoint remote_end_;
 
 private:
   //TODO: check if this is ok
@@ -63,6 +64,7 @@ private:
 		ar & kd_;
     ar & seq_window_;
     ar & seq_nr_;
+// TODO fix sync of remote_end_
     ar & remote_host_;
     ar & remote_port_;
 	}

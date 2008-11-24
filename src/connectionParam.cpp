@@ -31,14 +31,10 @@
 
 #include "connectionParam.h"
 
-//ConnectionParam::ConnectionParam():kd_(*(new KeyDerivation)),seq_window_(*(new SeqWindow(0))),seq_nr_(0),remote_host_(""),remote_port_(0)
-//{
-//}
-
-ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq_window,seq_nr_t seq_nr, std::string remote_host, u_int16_t remote_port) : kd_(kd),seq_window_(seq_window),seq_nr_(seq_nr),remote_host_(remote_host), remote_port_(remote_port)
+ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq_window,seq_nr_t seq_nr, PacketSourceEndpoint remote_end) : kd_(kd),seq_window_(seq_window),seq_nr_(seq_nr), remote_end_(remote_end)
 {
 }
 
-ConnectionParam::ConnectionParam(const ConnectionParam & src) : kd_(src.kd_),seq_window_(src.seq_window_),seq_nr_(src.seq_nr_),remote_host_(src.remote_host_), remote_port_(src.remote_port_),mutex_()
+ConnectionParam::ConnectionParam(const ConnectionParam & src) : kd_(src.kd_),seq_window_(src.seq_window_),seq_nr_(src.seq_nr_),remote_end_(src.remote_end_),mutex_()
 {
 }
