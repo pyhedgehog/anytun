@@ -34,7 +34,7 @@ CCFLAGS = -g
 CXX = g++
 CXXFLAGS = -g -Wall
 LD = g++
-LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization
+LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization -lboost_system
 
 ifeq ($(TARGET),Linux)
   CCFLAGS += -D_XOPEN_SOURCE=600
