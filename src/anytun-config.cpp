@@ -43,20 +43,21 @@
 #include "connectionList.h"
 #include "routingTable.h"
 #include "networkAddress.h"
+#include "packetSource.h"
 
 #include "syncQueue.h"
 #include "syncCommand.h"
 
 
 
-void createConnection(const std::string & remote_host, u_int16_t remote_port, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
+void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
 {
   SeqWindow * seq = new SeqWindow(seqSize);
   seq_nr_t seq_nr_ = 0;
   KeyDerivation * kd = KeyDerivationFactory::create( gOpt.getKdPrf() );
   kd->init( gOpt.getKey(), gOpt.getSalt() );
-  cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_host << ":" << remote_port;
-  ConnectionParam connparam ( (*kd), (*seq), seq_nr_, remote_host, remote_port );
+  cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
+  ConnectionParam connparam ( (*kd), (*seq), seq_nr_, remote_end );
   cl.addConnection( connparam, mux );
 
   std::ostringstream sout;
@@ -99,7 +100,12 @@ int main(int argc, char* argv[])
 	ConnectionList cl;
 	SyncQueue queue;
 
-	createConnection(gOpt.getRemoteAddr(),gOpt.getRemotePort(),cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
+  boost::asio::io_service io_service;
+  boost::asio::ip::udp::resolver resolver(io_service);
+  boost::asio::ip::udp::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
+  boost::asio::ip::udp::endpoint endpoint = *resolver.resolve(query);
+  
+	createConnection(endpoint,cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
 
   return ret;
 }
