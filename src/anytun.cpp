@@ -215,7 +215,19 @@ void syncListener(SyncQueue * queue )
   try
   {
     boost::asio::io_service io_service;
-    SyncServer server(io_service,boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), gOpt.getLocalSyncPort()));
+		boost::asio::ip::tcp::resolver resolver(io_service);
+		boost::asio::ip::tcp::endpoint e;
+		if(gOpt.getLocalSyncAddr()!="")
+		{
+			boost::asio::ip::tcp::resolver::query query(gOpt.getLocalSyncAddr(), gOpt.getLocalSyncPort());
+			e = *resolver.resolve(query);
+		} else {
+			boost::asio::ip::tcp::resolver::query query(gOpt.getLocalSyncPort());
+			e = *resolver.resolve(query);
+		}
+
+
+    SyncServer server(io_service,e);
 		server.onConnect=boost::bind(syncOnConnect,_1);
 		queue->setSyncServerPtr(&server);
     io_service.run();

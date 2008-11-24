@@ -62,12 +62,12 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   pid_file_ = "";
   sender_id_ = 0;
   local_addr_ = "";
-  local_port_ = 4444;
-  local_sync_port_ = 0;
-  remote_sync_port_ = 0;
+  local_port_ = "4444";
+  local_sync_port_ = "";
+  remote_sync_port_ = "";
   remote_sync_addr_ = "";
   remote_addr_ = "";
-  remote_port_ = 4444;
+  remote_port_ = "4444";
   dev_name_ = "";
   dev_type_ = "";
   ifconfig_param_local_ = "";
@@ -396,34 +396,34 @@ Options& Options::setLocalSyncAddr(std::string l)
   return *this;
 }
 
-u_int16_t Options::getLocalPort()
+std::string Options::getLocalPort()
 {
   return local_port_;
 }
 
-Options& Options::setLocalPort(u_int16_t l)
+Options& Options::setLocalPort(std::string l)
 {
   local_port_ = l;
   return *this;
 }
 
-u_int16_t Options::getLocalSyncPort()
+std::string Options::getLocalSyncPort()
 {
   return local_sync_port_;
 }
 
-Options& Options::setLocalSyncPort(u_int16_t l)
+Options& Options::setLocalSyncPort(std::string l)
 {
   local_sync_port_ = l;
   return *this;
 }
 
-u_int16_t Options::getRemoteSyncPort()
+std::string Options::getRemoteSyncPort()
 {
   return remote_sync_port_;
 }
 
-Options& Options::setRemoteSyncPort(u_int16_t l)
+Options& Options::setRemoteSyncPort(std::string l)
 {
   remote_sync_port_ = l;
   return *this;
@@ -455,18 +455,18 @@ Options& Options::setRemoteAddr(std::string r)
   return *this;
 }
 
-u_int16_t Options::getRemotePort()
+std::string Options::getRemotePort()
 {
   return remote_port_;
 }
 
-Options& Options::setRemotePort(u_int16_t r)
+Options& Options::setRemotePort(std::string r)
 {
   remote_port_ = r;
   return *this;
 }
 
-Options& Options::setRemoteAddrPort(std::string addr, u_int16_t port)
+Options& Options::setRemoteAddrPort(std::string addr, std::string port)
 {
   Lock lock(mutex);
   remote_addr_ = addr;

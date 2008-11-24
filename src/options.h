@@ -40,7 +40,7 @@
 typedef struct
 {
   std::string host;
-	uint16_t port;
+	std::string port;
 } OptionConnectTo;
 
 typedef std::list<OptionConnectTo>  ConnectToList;
@@ -74,17 +74,17 @@ public:
   Options& setLocalSyncAddr(std::string l);
   std::string getRemoteSyncAddr();
   Options& setRemoteSyncAddr(std::string l);
-  u_int16_t getRemoteSyncPort();
-  Options& setRemoteSyncPort(u_int16_t l);
-  u_int16_t getLocalPort();
-  Options& setLocalPort(u_int16_t l);
+  std::string getRemoteSyncPort();
+  Options& setRemoteSyncPort(std::string l);
+  std::string getLocalPort();
+  Options& setLocalPort(std::string l);
   std::string getRemoteAddr();
   Options& setRemoteAddr(std::string r);
-  u_int16_t getLocalSyncPort();
-  Options& setLocalSyncPort(u_int16_t l);
-  u_int16_t getRemotePort();
-  Options& setRemotePort(u_int16_t r);
-  Options& setRemoteAddrPort(std::string addr, u_int16_t port);
+  std::string getLocalSyncPort();
+  Options& setLocalSyncPort(std::string l);
+  std::string getRemotePort();
+  Options& setRemotePort(std::string r);
+  Options& setRemoteAddrPort(std::string addr, std::string port);
   std::string getDevName();
   Options& setDevName(std::string d);
   std::string getDevType();
@@ -139,12 +139,12 @@ private:
   sender_id_t sender_id_;
   std::string local_addr_;
   std::string local_sync_addr_;
-  u_int16_t local_port_;
-  u_int16_t local_sync_port_;
+  std::string local_port_;
+  std::string local_sync_port_;
   std::string remote_sync_addr_;
-  u_int16_t remote_sync_port_;
+  std::string remote_sync_port_;
   std::string remote_addr_;
-  u_int16_t remote_port_;
+  std::string remote_port_;
   std::string dev_name_;
   std::string dev_type_;
   std::string ifconfig_param_local_;
