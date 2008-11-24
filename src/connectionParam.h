@@ -38,6 +38,7 @@
 #include "seqWindow.h"
 #include "threadUtils.hpp"
 #include "packetSource.h"
+#include "log.h"
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -68,9 +69,7 @@ private:
     ar & seq_nr_;
     ar & remote_host;
     ar & remote_port;
-		boost::asio::ip::address addr;
-		addr.from_string(remote_host);
-		boost::asio::ip::udp::endpoint endpoint(addr, remote_port);
+		boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::address::from_string(remote_host), remote_port);
 		remote_end_ = endpoint;
 	}
 };
