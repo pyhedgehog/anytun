@@ -13,12 +13,10 @@
 #include <list>
 #include "syncTcpConnection.h"
 
-//using boost::asio::ip::tcp;
-
 class SyncServer
 {
 public:
-  SyncServer(boost::asio::io_service& io_service,  boost::asio::ip::tcp::endpoint tcp_endpoint );
+  SyncServer(boost::asio::io_service& io_service, SyncTcpConnection::proto::endpoint tcp_endpoint );
 	boost::function<void(SyncTcpConnection *)> onConnect;
   std::list<SyncTcpConnection::pointer> conns_;
 	void send(std::string message);
@@ -27,6 +25,6 @@ private:
   void handle_accept(SyncTcpConnection::pointer new_connection,
       const boost::system::error_code& error);
 	Mutex mutex_; //Mutex for list conns_
-  boost::asio::ip::tcp::acceptor acceptor_;
+  SyncTcpConnection::proto::acceptor acceptor_;
 };
 #endif

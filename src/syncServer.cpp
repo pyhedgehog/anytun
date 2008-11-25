@@ -2,7 +2,7 @@
 
 //using asio::ip::tcp;
 
-SyncServer::SyncServer(boost::asio::io_service& io_service, boost::asio::ip::tcp::endpoint tcp_endpoint )
+SyncServer::SyncServer(boost::asio::io_service& io_service, SyncTcpConnection::proto::endpoint tcp_endpoint )
     : acceptor_(io_service, tcp_endpoint)
 {
   start_accept();

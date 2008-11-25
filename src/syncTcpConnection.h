@@ -12,12 +12,16 @@ class SyncTcpConnection
 {
 public:
   typedef boost::shared_ptr<SyncTcpConnection> pointer;
+  typedef boost::asio::ip::tcp proto;
+
   static pointer create(boost::asio::io_service& io_service)
 	{
 	   return pointer(new SyncTcpConnection(io_service));
 	};
+
 	boost::function<void(SyncTcpConnection *)> onConnect;
-  boost::asio::ip::tcp::socket& socket();
+  proto::socket& socket();
+
   void start();
 	void Send(std::string message);
 private:
@@ -25,6 +29,6 @@ private:
 
   void handle_write(const boost::system::error_code & /*error*/,
       size_t /*bytes_transferred*/);
-  boost::asio::ip::tcp::socket socket_;
+  proto::socket socket_;
 };
 #endif

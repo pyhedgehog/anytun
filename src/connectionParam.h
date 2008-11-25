@@ -69,7 +69,7 @@ private:
     ar & seq_nr_;
     ar & remote_host;
     ar & remote_port;
-		boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::address::from_string(remote_host), remote_port);
+		UDPPacketSource::proto::endpoint endpoint(boost::asio::ip::address::from_string(remote_host), remote_port);
 		remote_end_ = endpoint;
 	}
 };

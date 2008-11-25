@@ -14,7 +14,7 @@
 #include "syncCommand.h"
 #include "buffer.h"
 
-boost::asio::ip::tcp::socket& SyncTcpConnection::socket()
+SyncTcpConnection::proto::socket& SyncTcpConnection::socket()
 {
   return socket_;
 }

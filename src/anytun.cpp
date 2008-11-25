@@ -221,14 +221,14 @@ void syncListener(SyncQueue * queue )
   try
   {
     boost::asio::io_service io_service;
-		boost::asio::ip::tcp::resolver resolver(io_service);
-		boost::asio::ip::tcp::endpoint e;
+		SyncTcpConnection::proto::resolver resolver(io_service);
+		SyncTcpConnection::proto::endpoint e;
 		if(gOpt.getLocalSyncAddr()!="")
 		{
-			boost::asio::ip::tcp::resolver::query query(gOpt.getLocalSyncAddr(), gOpt.getLocalSyncPort());
+			SyncTcpConnection::proto::resolver::query query(gOpt.getLocalSyncAddr(), gOpt.getLocalSyncPort());
 			e = *resolver.resolve(query);
 		} else {
-			boost::asio::ip::tcp::resolver::query query(gOpt.getLocalSyncPort());
+			SyncTcpConnection::proto::resolver::query query(gOpt.getLocalSyncPort());
 			e = *resolver.resolve(query);
 		}
 
@@ -534,9 +534,9 @@ int main(int argc, char* argv[])
     if(gOpt.getRemoteAddr() != "")
     {
       boost::asio::io_service io_service;
-      boost::asio::ip::udp::resolver resolver(io_service);
-      boost::asio::ip::udp::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
-      boost::asio::ip::udp::endpoint endpoint = *resolver.resolve(query);
+      UDPPacketSource::proto::resolver resolver(io_service);
+      UDPPacketSource::proto::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
+      UDPPacketSource::proto::endpoint endpoint = *resolver.resolve(query);
       createConnection(endpoint,cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
     }    
 

@@ -35,8 +35,8 @@
 #include <boost/asio.hpp>
 
 #include "datatypes.h"
-#include "buffer.h"
 
+// TODO: fix this
 typedef boost::asio::ip::udp::endpoint PacketSourceEndpoint;
 
 class PacketSource
@@ -51,6 +51,8 @@ public:
 class UDPPacketSource : public PacketSource
 {  
 public:
+  typedef boost::asio::ip::udp proto;
+
   UDPPacketSource(std::string port);
   UDPPacketSource(std::string localaddr, std::string port);
 
@@ -58,8 +60,9 @@ public:
   void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote);
 
 private:
+
   boost::asio::io_service io_service_;
-  boost::asio::ip::udp::socket sock_;
+  proto::socket sock_;
 };
 
 #endif

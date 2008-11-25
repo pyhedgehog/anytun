@@ -100,12 +100,12 @@ int main(int argc, char* argv[])
 	ConnectionList cl;
 	SyncQueue queue;
 
-	boost::asio::ip::udp::endpoint endpoint;
+	UDPPacketSource::proto::endpoint endpoint;
 	if (gOpt.getRemoteAddr()!="" && gOpt.getRemotePort()!="")
 	{
 		boost::asio::io_service io_service;
-		boost::asio::ip::udp::resolver resolver(io_service);
-		boost::asio::ip::udp::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
+		UDPPacketSource::proto::resolver resolver(io_service);
+		UDPPacketSource::proto::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
 		endpoint = *resolver.resolve(query);
   }
 	createConnection(endpoint,cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());

@@ -39,6 +39,7 @@
 #include "log.h"
 //#include "connectionParam.h"
 #include "syncClient.h"
+#include "syncTcpConnection.h"
 #include "buffer.h"
 #include <boost/array.hpp>
 
@@ -56,12 +57,12 @@ void SyncClient::run()
 		try
 		{
 			boost::asio::io_service io_service;
-			boost::asio::ip::tcp::resolver resolver(io_service);
-			boost::asio::ip::tcp::resolver::query query( hostname_, port_);
-			boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-			boost::asio::ip::tcp::resolver::iterator end;
+			SyncTcpConnection::proto::resolver resolver(io_service);
+			SyncTcpConnection::proto::resolver::query query( hostname_, port_);
+		  SyncTcpConnection::proto::resolver::iterator endpoint_iterator = resolver.resolve(query);
+			SyncTcpConnection::proto::resolver::iterator end;
 
-			boost::asio::ip::tcp::socket socket(io_service);
+			SyncTcpConnection::proto::socket socket(io_service);
 			boost::system::error_code error = boost::asio::error::host_not_found;
 			while (error && endpoint_iterator != end)
 			{

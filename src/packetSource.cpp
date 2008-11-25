@@ -32,24 +32,22 @@
 #include <boost/asio.hpp>
 
 #include "datatypes.h"
-
 #include "packetSource.h"
-#include "buffer.h"
 
 UDPPacketSource::UDPPacketSource(std::string port) : sock_(io_service_)
 {
-  boost::asio::ip::udp::resolver resolver(io_service_);
-  boost::asio::ip::udp::resolver::query query(port);  
-  boost::asio::ip::udp::endpoint e = *resolver.resolve(query);
+  proto::resolver resolver(io_service_);
+  proto::resolver::query query(port);  
+  proto::endpoint e = *resolver.resolve(query);
   sock_.open(e.protocol());
   sock_.bind(e);
 }
 
 UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port) : sock_(io_service_)
 {
-  boost::asio::ip::udp::resolver resolver(io_service_);
-  boost::asio::ip::udp::resolver::query query(localaddr, port);  
-  boost::asio::ip::udp::endpoint e = *resolver.resolve(query);
+  proto::resolver resolver(io_service_);
+  proto::resolver::query query(localaddr, port);  
+  proto::endpoint e = *resolver.resolve(query);
   sock_.open(e.protocol());
   sock_.bind(e);  
 }
@@ -63,3 +61,4 @@ void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint re
 {
   sock_.send_to(boost::asio::buffer(buf, len), remote);
 }
+
