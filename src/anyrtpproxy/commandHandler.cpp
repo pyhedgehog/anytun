@@ -94,7 +94,7 @@ void CommandHandler::run(void* s)
       self->control_sock_.send_to(boost::asio::buffer(ret.c_str(), ret.length()), remote_end);
     }
   }
-  catch(SocketException &e)
+  catch(std::exception& e)
   {
     self->running_ = false;
   }

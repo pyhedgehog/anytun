@@ -191,7 +191,7 @@ bool Options::parse(int argc, char* argv[])
 
 bool Options::sanityCheck()
 {
-  if(!control_interface_.port_) control_interface_.port_ = 22222;
+  if(control_interface_.port_ == "") control_interface_.port_ = "22222";
   return true;
 }
 
