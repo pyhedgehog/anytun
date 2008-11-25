@@ -46,19 +46,9 @@
 #include "syncServer.h"
 #include "daemon.hpp"
 
-std::string filename;
-
-class ThreadParam
-{
-public:
-  ThreadParam() : addr(""), port(0) {};
-  std::string addr;
-  u_int16_t port;
-};
-
 void syncOnConnect(SyncTcpConnection * connptr)
 {
-  std::ifstream file( filename.c_str() );
+  std::ifstream file( gOpt.getFileName().c_str() );
   if( file.is_open() )
 	{
 	   std::string line;
@@ -71,72 +61,112 @@ void syncOnConnect(SyncTcpConnection * connptr)
 	}
 }
 
-void syncListener(void* p )
+bool syncListenerInit(boost::asio::io_service& io_service)
 {
-  ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
-
   try
   {
-    boost::asio::io_service io_service;
-    SyncServer server(io_service, SyncTcpConnection::proto::endpoint(SyncTcpConnection::proto::v6(), param->port));
+		SyncTcpConnection::proto::resolver resolver(io_service);
+		SyncTcpConnection::proto::endpoint e;
+		if(gOpt.getBindToAddr()!="")
+		{
+			SyncTcpConnection::proto::resolver::query query(gOpt.getBindToAddr(), gOpt.getBindToPort());
+			e = *resolver.resolve(query);
+		} else {
+			SyncTcpConnection::proto::resolver::query query(gOpt.getBindToPort());
+			e = *resolver.resolve(query);
+		}
+
+
+    SyncServer server(io_service,e);
 		server.onConnect=boost::bind(syncOnConnect,_1);
-    io_service.run();
   }
   catch (std::exception& e)
   {
-    std::cerr << e.what() << std::endl;
+    std::string addr = gOpt.getBindToAddr() == "" ? "*" : gOpt.getBindToAddr();
+    cLog.msg(Log::PRIO_ERR) << "cannot bind to " << addr << ":" << gOpt.getBindToPort()
+                            << " (" << e.what() << ")" << std::endl;
+    return false;
   }
+  return true;
+}
 
+void syncListener(boost::asio::io_service* io_service)
+{
+  io_service->run();
 }
 
 int main(int argc, char* argv[])
 {
-  if(!gOpt.parse(argc, argv))
+  bool daemonized=false;
+  try 
   {
-    gOpt.printUsage();
-    exit(-1);
-  }
-  
-  std::ifstream file( gOpt.getFileName().c_str() );
-  if( file.is_open() )
-    file.close();
-  else
-  {
-    std::cout << "ERROR: unable to open file!" << std::endl;
-    exit(-1);
-  }
-
-  std::ofstream pidFile;
-  if(gOpt.getPidFile() != "") {
-    pidFile.open(gOpt.getPidFile().c_str());
-    if(!pidFile.is_open()) {
-      std::cout << "can't open pid file" << std::endl;
+    
+    if(!gOpt.parse(argc, argv))
+    {
+      gOpt.printUsage();
+      exit(-1);
     }
+    
+    cLog.setLogName("anytun-controld");
+    cLog.msg(Log::PRIO_NOTICE) << "anytun-controld started...";
+    
+    std::ifstream file( gOpt.getFileName().c_str() );
+    if( file.is_open() )
+      file.close();
+    else
+    {
+      std::cout << "ERROR: unable to open file!" << std::endl;
+      exit(-1);
+    }
+    
+    std::ofstream pidFile;
+    if(gOpt.getPidFile() != "") {
+      pidFile.open(gOpt.getPidFile().c_str());
+      if(!pidFile.is_open()) {
+        std::cout << "can't open pid file" << std::endl;
+      }
+    }
+    
+    if(gOpt.getChroot())
+      chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
+    if(gOpt.getDaemonize())
+    {
+      daemonize();
+      daemonized = true;
+    }
+
+    if(pidFile.is_open()) {
+      pid_t pid = getpid();
+      pidFile << pid;
+      pidFile.close();
+    }
+    
+    SignalController sig;
+    sig.init();
+    
+    boost::asio::io_service io_service;
+    if(!syncListenerInit(io_service))
+      return -1;
+    boost::thread * syncListenerThread;
+    syncListenerThread = new boost::thread(boost::bind(syncListener, &io_service));
+    
+    int ret = sig.run();
+    
+    return ret;
   }
-  
-  if(gOpt.getChroot())
-    chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
-  if(gOpt.getDaemonize())
-    daemonize();
-
-  if(pidFile.is_open()) {
-    pid_t pid = getpid();
-    pidFile << pid;
-    pidFile.close();
+  catch(std::runtime_error& e)
+  {
+    if(daemonized)
+      cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
+    else
+      std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
-
-  SignalController sig;
-  sig.init();
-
-  ThreadParam p;
-  p.addr = gOpt.getBindToAddr();
-  p.port = gOpt.getBindToPort(); 
-  filename =  gOpt.getFileName(); 
-  boost::thread * syncListenerThread;
-  syncListenerThread = new boost::thread(boost::bind(syncListener,&p));
-
-	int ret = sig.run();
-
-  return ret;
+  catch(std::exception& e)
+  {
+    if(daemonized)
+      cLog.msg(Log::PRIO_ERR) << "uncaught exception, exiting: " << e.what();
+    else
+      std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
+  }
 }
 

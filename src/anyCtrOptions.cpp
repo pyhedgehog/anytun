@@ -61,7 +61,7 @@ Options::Options()
   chroot_dir_ = "/var/run/anytun-controld";
   pid_file_ = "";
   bind_to_addr_ = "127.0.0.1";
-  bind_to_port_ = 4445;
+  bind_to_port_ = "4445";
 }
 
 Options::~Options()
@@ -156,12 +156,61 @@ bool Options::parse(int argc, char* argv[])
       return false;
   }
 
-  if(control_host != "") {
-		std::stringstream tmp_stream(control_host);
-		getline(tmp_stream,bind_to_addr_,':');
-		if(!tmp_stream.good())
-			return false;
-		tmp_stream >> bind_to_port_;
+  if(control_host != "")
+    return splitAndSetHostPort(control_host);
+
+  return true;
+}
+
+bool Options::splitAndSetHostPort(std::string hostPort)
+{
+  if(hostPort.length() >= 2 && hostPort[0] == ':' && hostPort[1] != ':') {
+    bind_to_addr_ = "";
+    hostPort.erase(0,1);
+    std::stringstream tmp_stream(hostPort);    
+    tmp_stream >> bind_to_port_;
+    return true;
+  }
+
+  size_t pos = hostPort.find_first_of("[");
+
+  if(pos != std::string::npos && pos != 0)
+    return false; // an [ was found but not at the beginning
+
+  bool hasPort = false;
+  if(pos != std::string::npos) {
+    hostPort.erase(pos, 1);
+    pos = hostPort.find_first_of("]");
+
+    if(pos == std::string::npos)
+      return false; // no trailing ] although an leading [ was found
+
+    if(pos < hostPort.length()-2) {
+
+      if(hostPort[pos+1] != ':')
+        return false; // wrong port delimieter
+
+      hostPort[pos+1] = '/';
+      hasPort = true;
+    }
+    else if(pos != hostPort.length()-1)
+      return false; // to few characters left
+
+    hostPort.erase(pos, 1);
+  }
+
+  if(hasPort) {
+    std::stringstream tmp_stream(hostPort);
+
+    getline(tmp_stream, bind_to_addr_, '/');
+    if(!tmp_stream.good())
+      return false;
+
+    tmp_stream >> bind_to_port_;
+  }
+  else {
+    bind_to_addr_ = hostPort;
+    bind_to_port_ = "2323"; // default sync port
   }
 
   return true;
@@ -190,6 +239,8 @@ void Options::printOptions()
   std::cout << "username='" << username_ << "'" << std::endl;
   std::cout << "chroot_dir='" << chroot_dir_ << "'" << std::endl;
   std::cout << "pid_file='" << pid_file_ << "'" << std::endl;
+  std::cout << "bind_to_addr_='" << bind_to_addr_ << "'" << std::endl;
+  std::cout << "bind_to_port_='" << bind_to_port_ << "'" << std::endl;
 }
 
 std::string Options::getProgname()
@@ -293,12 +344,12 @@ Options& Options::setBindToAddr(std::string b)
   return *this;
 }
 
-uint16_t Options::getBindToPort()
+std::string Options::getBindToPort()
 {
   return bind_to_port_;  
 }
 
-Options& Options::setBindToPort(uint16_t b)
+Options& Options::setBindToPort(std::string b)
 {
   bind_to_port_ = b;
   return *this;

@@ -214,10 +214,8 @@ void syncConnector(void* p )
 	sc.run();
 }
 
-void syncListener(SyncQueue * queue )
+void syncListener(SyncQueue * queue)
 {
-//	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
-
   try
   {
     boost::asio::io_service io_service;
@@ -240,7 +238,9 @@ void syncListener(SyncQueue * queue )
   }
   catch (std::exception& e)
   {
-    std::cerr << e.what() << std::endl;
+    std::string addr = gOpt.getLocalSyncAddr() == "" ? "*" : gOpt.getLocalSyncAddr();
+    cLog.msg(Log::PRIO_ERR) << "sync: cannot bind to " << addr << ":" << gOpt.getLocalSyncPort()
+                            << " (" << e.what() << ")" << std::endl;
   }
 
 }
@@ -498,7 +498,7 @@ int main(int argc, char* argv[])
       gOpt.printUsage();
       exit(-1);
     }
-    
+
     cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
     
     std::ofstream pidFile;

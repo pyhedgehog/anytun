@@ -201,15 +201,57 @@ bool Options::parse(int argc, char* argv[])
 
 	while(!host_port_queue.empty())
 	{
-		std::stringstream tmp_stream(host_port_queue.front());
-		OptionConnectTo oct;
-		getline(tmp_stream,oct.host,':');
-		if(!tmp_stream.good())
-			return false;
-		tmp_stream >> oct.port;
-		host_port_queue.pop();
-		connect_to_.push_back(oct);
+    bool ret = splitAndAddHostPort(host_port_queue.front(), connect_to_);
+    if(!ret) return false;
+    host_port_queue.pop();
 	}
+  return true;
+}
+
+bool Options::splitAndAddHostPort(std::string hostPort, ConnectToList& list)
+{
+  OptionConnectTo oct;
+  size_t pos = hostPort.find_first_of("[");
+
+  if(pos != std::string::npos && pos != 0)
+    return false; // an [ was found but not at the beginning
+
+  bool hasPort = false;
+  if(pos != std::string::npos) {
+    hostPort.erase(pos, 1);
+    pos = hostPort.find_first_of("]");
+
+    if(pos == std::string::npos)
+      return false; // no trailing ] although an leading [ was found
+
+    if(pos < hostPort.length()-2) {
+
+      if(hostPort[pos+1] != ':')
+        return false; // wrong port delimieter
+
+      hostPort[pos+1] = '/';
+      hasPort = true;
+    }
+    else if(pos != hostPort.length()-1)
+      return false; // to few characters left
+
+    hostPort.erase(pos, 1);
+  }
+
+  if(hasPort) {
+    std::stringstream tmp_stream(hostPort);
+    getline(tmp_stream,oct.host,'/');
+    if(!tmp_stream.good())
+      return false;
+
+    tmp_stream >> oct.port;
+  }
+  else {
+    oct.host = hostPort;
+    oct.port = "2323"; // default sync port
+  }
+
+  list.push_back(oct);
   return true;
 }
 
@@ -276,6 +318,12 @@ void Options::printOptions()
   std::cout << "salt=" << salt_.getHexDumpOneLine() << std::endl;
   std::cout << "kd_prf='" << kd_prf_ << "'" << std::endl;
   std::cout << "auth_algo='" << auth_algo_ << "'" << std::endl;
+
+  std::cout << "connect_to=";
+  ConnectToList::const_iterator it = connect_to_.begin();
+  for(; it != connect_to_.end(); ++it)
+    std::cout << "'" << it->host << "','" << it->port << "';";
+  std::cout << std::endl;
 }
 
 std::string Options::getProgname()

@@ -127,6 +127,8 @@ private:
   };
   friend class instanceCleaner;
 
+  static bool splitAndAddHostPort(std::string hostPort, ConnectToList& list);
+
   ::Mutex mutex;
 
 	ConnectToList connect_to_;

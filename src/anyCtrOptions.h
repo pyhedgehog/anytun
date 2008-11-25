@@ -62,8 +62,8 @@ public:
   Options& setFileName(std::string f);
   std::string getBindToAddr();
   Options& setBindToAddr(std::string b);
-  uint16_t getBindToPort();
-  Options& setBindToPort(uint16_t b);
+  std::string getBindToPort();
+  Options& setBindToPort(std::string b);
 
 
 private:
@@ -82,10 +82,12 @@ private:
   };
   friend class instanceCleaner;
 
+  bool splitAndSetHostPort(std::string hostPort);
+
   Mutex mutex;
 
 	std::string bind_to_addr_;
-	uint16_t bind_to_port_;
+	std::string bind_to_port_;
   std::string progname_;
   bool daemonize_;
   bool chroot_;
