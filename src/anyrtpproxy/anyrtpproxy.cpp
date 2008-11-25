@@ -132,25 +132,12 @@ void listener(RtpSession::proto::socket* sock1, RtpSession::proto::socket* sock2
 class ListenerData
 {
 public:
-  ListenerData()
-  {
-    ios1_ = new boost::asio::io_service();
-    sock1_ = new RtpSession::proto::socket(*ios1_);
-    ios2_ = new boost::asio::io_service();
-    sock2_ = new RtpSession::proto::socket(*ios2_);
-  }
-  ~ListenerData()
-  {
-    if(sock1_) delete sock1_;
-    if(ios1_) delete ios1_;
-    if(sock2_) delete sock2_;
-    if(ios2_) delete ios2_;
-  }
+  ListenerData() : sock1_(ios1_), sock2_(ios2_) {}
 
-  boost::asio::io_service* ios1_;
-  boost::asio::io_service* ios2_;
-  RtpSession::proto::socket* sock1_;
-  RtpSession::proto::socket* sock2_;
+  boost::asio::io_service ios1_;
+  boost::asio::io_service ios2_;
+  RtpSession::proto::socket sock1_;
+  RtpSession::proto::socket sock2_;
   boost::thread* thread1_;
   boost::thread* thread2_;
   bool running1_;
@@ -179,14 +166,14 @@ void listenerManager(void* p)
       {        
         ListenerData* ld = new ListenerData();
 
-        ld->sock1_->open(session.getLocalEnd1().protocol());
-        ld->sock1_->bind(session.getLocalEnd1());
+        ld->sock1_.open(session.getLocalEnd1().protocol());
+        ld->sock1_.bind(session.getLocalEnd1());
 
-        ld->sock2_->open(session.getLocalEnd2().protocol());
-        ld->sock2_->bind(session.getLocalEnd2());
+        ld->sock2_.open(session.getLocalEnd2().protocol());
+        ld->sock2_.bind(session.getLocalEnd2());
 
-        ld->thread1_ = new boost::thread(boost::bind(listener, ld->sock1_, ld->sock2_, call_id, 1, queue_, &(ld->running1_)));
-        ld->thread2_ = new boost::thread(boost::bind(listener, ld->sock1_, ld->sock2_, call_id, 2, queue_, &(ld->running2_)));
+        ld->thread1_ = new boost::thread(boost::bind(listener, &(ld->sock1_), &(ld->sock2_), call_id, 1, queue_, &(ld->running1_)));
+        ld->thread2_ = new boost::thread(boost::bind(listener, &(ld->sock1_), &(ld->sock2_), call_id, 2, queue_, &(ld->running2_)));
 
         std::pair<std::map<std::string, ListenerData*>::iterator, bool> ret;
         ret = listenerMap.insert(std::map<std::string, ListenerData*>::value_type(call_id, ld));
