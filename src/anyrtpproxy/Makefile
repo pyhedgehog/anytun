@@ -28,29 +28,24 @@
 ##  You should have received a copy of the GNU General Public License
 ##  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
 ##
-C = gcc
-CFLAGS = -g -Wall
-CFLAGS += -DSOCKETS_NAMESPACE=sockets
-CFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
-C++ = g++
+CC = gcc
 CCFLAGS = -g -Wall
-CCFLAGS += -DSOCKETS_NAMESPACE=sockets
-CCFLAGS += -DSOCKETS_NAMESPACE_STR='"sockets"'
+CXX = g++
+CXXFLAGS = -g -Wall
 LD = g++
-LDFLAGS = -g -Wall -O2 -lpthread -lboost_thread -lssl -lboost_serialization
+LDFLAGS = -g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system
 
 OBJS = anyrtpproxy.o \
        ../signalController.o \
-       ../PracticalSocket.o \
        ../log.o \
        ../buffer.o \
        ../rtpSessionTable.o \
        ../rtpSession.o \
        connectionList.o \
-       ../syncSocketHandler.o \
-       ../syncClientSocket.o \
+       ../syncServer.o \
+       ../syncClient.o \
+       ../syncTcpConnection.o \
        ../syncQueue.o \
-       ../syncSocket.o \
        ../seqWindow.o \
        ../connectionParam.o \
        ../routingTable.o \
@@ -61,7 +56,6 @@ OBJS = anyrtpproxy.o \
        ../syncConnectionCommand.o \
        ../networkAddress.o \
        ../networkPrefix.o \
-       ../Sockets/libSockets.a \
        commandHandler.o \
        portWindow.o \
        callIdQueue.o \
@@ -75,22 +69,22 @@ anyrtpproxy: $(OBJS)
 	$(LD) $(OBJS) -o $@ $(LDFLAGS)
 
 options.o: options.cpp options.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 portWindow.o: portWindow.cpp portWindow.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 connectionList.o: connectionList.cpp connectionList.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 commandHandler.o: commandHandler.cpp commandHandler.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 callIdQueue.o: callIdQueue.cpp callIdQueue.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 anyrtpproxy.o: anyrtpproxy.cpp
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c
 
 clean:
 	rm -f *.o

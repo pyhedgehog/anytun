@@ -66,10 +66,10 @@ OBJS = tunDevice.o \
 			 router.o \
 			 routingTable.o \
        signalController.o \
-       syncQueue.o \
        log.o \
        options.o \
        seqWindow.o \
+       syncQueue.o \
 			 syncCommand.o \
        syncRouteCommand.o \
        syncRtpCommand.o \
