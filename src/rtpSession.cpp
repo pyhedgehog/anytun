@@ -34,8 +34,7 @@
 #include "anyrtpproxy/callIdQueue.h"
 
 RtpSession::RtpSession(const std::string& call_id) : in_sync_(false), call_id_(call_id) , dead_(false), complete_(false), 
-                                                     local_addr_("") , local_port1_(0), local_port2_(0),
-                                                     remote_addr1_(""), remote_addr2_(""), remote_port1_(0), remote_port2_(0),seen1_(false), seen2_(false)
+                                                     seen1_(false), seen2_(false)
 {  
 }
 
@@ -68,20 +67,6 @@ bool RtpSession::isComplete(bool c)
   return complete_ = c;
 }
 
-std::string RtpSession::getLocalAddr()
-{
-  Lock lock(mutex_);
-  return local_addr_;
-}
-
-RtpSession& RtpSession::setLocalAddr(std::string a)
-{
-  Lock lock(mutex_);
-  in_sync_ = false;
-  local_addr_ = a;
-  return *this;
-}
-
 bool RtpSession::getSeen1()
 {
   Lock lock(mutex_);
@@ -110,86 +95,60 @@ RtpSession& RtpSession::setSeen2()
   return *this;
 }
 
-u_int16_t RtpSession::getLocalPort1()
+RtpSession::proto::endpoint RtpSession::getLocalEnd1()
 {
   Lock lock(mutex_);
-  return local_port1_;
+  return local_end1_;
 }
 
-RtpSession& RtpSession::setLocalPort1(u_int16_t p)
+RtpSession& RtpSession::setLocalEnd1(RtpSession::proto::endpoint e)
 {
   Lock lock(mutex_);
   in_sync_ = false;
-  local_port1_ = p;
+  local_end1_ = e;
   return *this;
 }
 
-u_int16_t RtpSession::getLocalPort2()
+RtpSession::proto::endpoint RtpSession::getLocalEnd2()
 {
   Lock lock(mutex_);
-  return local_port2_;
+  return local_end2_;
 }
 
-RtpSession& RtpSession::setLocalPort2(u_int16_t p)
+RtpSession& RtpSession::setLocalEnd2(RtpSession::proto::endpoint e)
 {
   Lock lock(mutex_);
   in_sync_ = false;
-  local_port2_ = p;
+  local_end2_ = e;
   return *this;
 }
 
-u_int16_t RtpSession::getRemotePort1()
+RtpSession::proto::endpoint RtpSession::getRemoteEnd1()
 {
   Lock lock(mutex_);
-  return remote_port1_;
+  return remote_end1_;
 }
 
-RtpSession& RtpSession::setRemotePort1(u_int16_t p)
+RtpSession& RtpSession::setRemoteEnd1(RtpSession::proto::endpoint e)
 {
   Lock lock(mutex_);
   in_sync_ = false;
-  remote_port1_ = p;
+  remote_end1_ = e;
   return *this;
 }
 
-std::string RtpSession::getRemoteAddr1()
+RtpSession::proto::endpoint RtpSession::getRemoteEnd2()
 {
   Lock lock(mutex_);
-  return remote_addr1_;
+  return remote_end2_;
 }
 
-RtpSession& RtpSession::setRemoteAddr1(std::string a)
+RtpSession& RtpSession::setRemoteEnd2(RtpSession::proto::endpoint e)
 {
   Lock lock(mutex_);
   in_sync_ = false;
-  remote_addr1_ = a;
+  remote_end2_ = e;
   return *this;
 }
 
-u_int16_t RtpSession::getRemotePort2()
-{
-  Lock lock(mutex_);
-  return remote_port2_;
-}
 
-RtpSession& RtpSession::setRemotePort2(u_int16_t p)
-{
-  Lock lock(mutex_);
-  in_sync_ = false;
-  remote_port2_ = p;
-  return *this;
-}
-
-std::string RtpSession::getRemoteAddr2()
-{
-  Lock lock(mutex_);
-  return remote_addr2_;
-}
-
-RtpSession& RtpSession::setRemoteAddr2(std::string a)
-{
-  Lock lock(mutex_);
-  in_sync_ = false;
-  remote_addr2_ = a;
-  return *this;
-}

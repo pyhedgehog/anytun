@@ -32,6 +32,8 @@
 #ifndef _RTPSESSION_H_
 #define _RTPSESSION_H_
 
+#include <boost/asio.hpp>
+
 #include "threadUtils.hpp"
 
 #include <boost/archive/text_oarchive.hpp>
@@ -40,6 +42,8 @@
 class RtpSession
 {
 public:
+  typedef boost::asio::ip::udp proto;
+
 	RtpSession(const std::string& call_id);
 
   bool isDead();
@@ -48,23 +52,15 @@ public:
   bool isComplete();
   bool isComplete(bool c);
 
-  std::string getLocalAddr();
-  RtpSession& setLocalAddr(std::string a);
-  u_int16_t getLocalPort1();
-  RtpSession& setLocalPort1(u_int16_t p);
-  u_int16_t getLocalPort2();
-  RtpSession& setLocalPort2(u_int16_t p);
+  proto::endpoint getLocalEnd1();
+  RtpSession& setLocalEnd1(proto::endpoint e);
+  proto::endpoint getLocalEnd2();
+  RtpSession& setLocalEnd2(proto::endpoint e);
 
-
-  u_int16_t getRemotePort1();
-  RtpSession& setRemotePort1(u_int16_t p);
-  std::string getRemoteAddr1();
-  RtpSession& setRemoteAddr1(std::string a);
-
-  u_int16_t getRemotePort2();
-  RtpSession& setRemotePort2(u_int16_t p);
-  std::string getRemoteAddr2();
-  RtpSession& setRemoteAddr2(std::string a);
+  proto::endpoint getRemoteEnd1();
+  RtpSession& setRemoteEnd1(proto::endpoint e);
+  proto::endpoint getRemoteEnd2();
+  RtpSession& setRemoteEnd2(proto::endpoint e);
 
 	RtpSession& setSeen1();
   bool getSeen1();
@@ -84,17 +80,37 @@ private:
 	{    
     Lock lock(mutex_);
 
+        // address of local_end1 and local_end2 are always equal
+		std::string local_addr(local_end1_.address().to_string());
+		u_int16_t local_port1 = local_end1_.port();
+		u_int16_t local_port2 = local_end2_.port();
+
+		std::string remote_addr1(remote_end1_.address().to_string());
+		u_int16_t remote_port1 = remote_end1_.port();
+		std::string remote_addr2(remote_end2_.address().to_string());
+		u_int16_t remote_port2 = remote_end2_.port();
+
     ar & dead_;
     ar & complete_;
-    ar & local_addr_;
-    ar & local_port1_;
-    ar & local_port2_;
-    ar & remote_addr1_;
-    ar & remote_port1_;
-    ar & remote_addr2_;
-    ar & remote_port2_;
+    ar & local_addr;
+    ar & local_port1;
+    ar & local_port2;
+    ar & remote_addr1;
+    ar & remote_port1;
+    ar & remote_addr2;
+    ar & remote_port2;
 		ar & seen1_;
 		ar & seen2_;
+
+		proto::endpoint local_end1(boost::asio::ip::address::from_string(local_addr), local_port1);
+    local_end1_ = local_end1;
+		proto::endpoint local_end2(boost::asio::ip::address::from_string(local_addr), local_port2);
+		local_end2_ = local_end2;
+
+		proto::endpoint remote_end1(boost::asio::ip::address::from_string(remote_addr1), remote_port1);
+		remote_end1_ = remote_end1;
+		proto::endpoint remote_end2(boost::asio::ip::address::from_string(remote_addr2), remote_port2);
+		remote_end2_ = remote_end2;
 
     if(complete_ && !dead_)
       reinit();
@@ -108,10 +124,8 @@ private:
   const std::string& call_id_;
   bool dead_;
   bool complete_;
-  std::string local_addr_;
-  u_int16_t local_port1_, local_port2_;
-  std::string remote_addr1_, remote_addr2_;
-  u_int16_t remote_port1_, remote_port2_;
+  proto::endpoint local_end1_, local_end2_;
+  proto::endpoint remote_end1_, remote_end2_;
 	bool seen1_,seen2_; //has at least 1 packet been recieved?
 };
 

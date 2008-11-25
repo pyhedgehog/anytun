@@ -34,6 +34,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #include <boost/bind.hpp>
 
@@ -171,6 +172,7 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
 
   try 
   {
+    RtpSession::proto::resolver resolver(io_service_);
     bool is_new;
     RtpSession& session = gRtpSessionTable.getOrNewSession(call_id, is_new);
     if(is_new)
@@ -183,22 +185,32 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
 				if( port2) port_window_.freePort(port2);
 				throw std::runtime_error("no free port found");
 			}
+      std::stringstream ps1, ps2;
+      ps1 << port1;
+      ps2 << port2;
 
-      if(gOpt.getLocalAddr() == "")
-        session.setLocalAddr("0.0.0.0");
-      else
-        session.setLocalAddr(gOpt.getLocalAddr());
-      session.setLocalPort1(port1);
-      session.setLocalPort2(port2);
+      RtpSession::proto::endpoint e1, e2;
+      if(gOpt.getLocalAddr() == "") {
+        RtpSession::proto::resolver::query query1(ps1.str());
+        e1 = *resolver.resolve(query1);
+        RtpSession::proto::resolver::query query2(ps2.str());
+        e2 = *resolver.resolve(query2);
+      }
+      else {
+        RtpSession::proto::resolver::query query1(gOpt.getLocalAddr(),ps1.str());
+        e1 = *resolver.resolve(query1);
+        RtpSession::proto::resolver::query query2(gOpt.getLocalAddr(),ps2.str());
+        e2 = *resolver.resolve(query2);
+      }
+
+      session.setLocalEnd1(e1);
+      session.setLocalEnd2(e2);
     }
-    istringstream iss(port);
-    u_int16_t rport;
-    iss >> rport;
-    session.setRemotePort1(rport);
-    session.setRemoteAddr1(addr);
+    RtpSession::proto::resolver::query query(addr,port);
+    session.setRemoteEnd1(*resolver.resolve(query));
 
     ostringstream oss;
-    oss << session.getLocalPort2();
+    oss << session.getLocalEnd2().port();
     return oss.str();
   }
   catch(std::exception& e)
@@ -215,17 +227,15 @@ string CommandHandler::handleResponse(string modifiers, string call_id, string a
   try
   {
     RtpSession& session = gRtpSessionTable.getSession(call_id);
-    istringstream iss(port);
-    u_int16_t rport;
-    iss >> rport;
-    session.setRemotePort2(rport);
-    session.setRemoteAddr2(addr);
+    RtpSession::proto::resolver resolver(io_service_);
+    RtpSession::proto::resolver::query query(addr,port);
+    session.setRemoteEnd2(*resolver.resolve(query));
     session.isComplete(true);
     SyncCommand sc(call_id);
     queue_.push(sc);
 
     ostringstream oss;
-    oss << session.getLocalPort1();
+    oss << session.getLocalEnd1().port();
     return oss.str();
   }
   catch(std::exception& e)
