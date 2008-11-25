@@ -42,7 +42,9 @@ the first data packet.
 remote port
 
 The UDP port used for payload data by the remote host
-(specified with -p on the remote host).
+(specified with -p on the remote host). If you do not specify
+a port, it is automatically determined after receiving
+the first data packet.
 
 -w|--window-size <window size>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,11 +60,13 @@ the list anymore, this is interpreted as a replay attack
 and the packet is dropped. A value of 0 deactivates this
 list and, as a consequence, the replay protection employed
 by filtering packets according to their secuence number.
+By default the sequence window is disabled and therefore a
+window size of 0 is used.
 
 -m|--mux <mux-id>
 ~~~~~~~~~~~~~~~~~
 
-the multiplex id to use
+the multiplex id to use. default: 0
 
 -K|--key <master key>
 ~~~~~~~~~~~~~~~~~~~~~
@@ -85,7 +89,7 @@ of 28 characters (14 bytes).
 -R|--route <net>/<prefix length>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-add a route to connection, can be invoked several times
+add a route to connection. This can be invoked several times.
 
 
 EXAMPLES

@@ -20,8 +20,8 @@ SYNOPSIS
 [ *-p|--port* <port> ]
 [ *-I|--sync-interface* <ip-address> ]
 [ *-S|--sync-port* port> ]
-[ *-M|--sync-hosts* <hostname|ip>:<port>[,<hostname|ip>:<port>[...]] ]
-[ *-X|--control-host* <hostname|ip>:<port>
+[ *-M|--sync-hosts* <hostname|ip>[:<port>][,<hostname|ip>[:<port>][...]] ]
+[ *-X|--control-host* <hostname|ip>[:<port>]
 [ *-r|--remote-host* <hostname|ip> ]
 [ *-o|--remote-port* <port> ]
 [ *-d|--dev* <name> ]
@@ -55,28 +55,29 @@ passed to the daemon:
 ~~~~~~~~~~~~~~~~
 
 This option instructs *anytun* to run in the foreground
-instead of becoming a daemon.
-
+instead of becoming a daemon which is the default.
 
 -C|--chroot
 ~~~~~~~~~~~
 
-chroot and drop privileges
+Instruct *anytun* to run in a chroot chail and drop privileges. The 
+default is not to run in chroot.
 
 -u|--username <username>
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-if chroot change to this user
+if chroot change to this user. default: nobody
 
 -H|--chroot-dir <directory>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-chroot to this directory
+chroot to this directory. default: /var/run/anytun
 
 -P|--write-pid <filename>
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-write pid to this file
+Instruct *anytun* to write it's pid to this file. The default is 
+not to create a pid file.
 
 -s|--sender-id  <sender id>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,7 +85,7 @@ write pid to this file
 Each anycast tunnel endpoint needs a uniqe sender id
 (1, 2, 3, ...). It is needed to distinguish the senders
 in case of replay attacks. This option is ignored by
-unicast endpoints.
+unicast endpoints. default: 0
 
 -i|--interface <ip address>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +94,8 @@ This IP address is used as the sender address for outgoing
 packets. In case of anycast tunnel endpoints, the anycast
 IP has to be used. In case of unicast endpoints, the
 address is usually derived correctly from the routing
-table.
+table. The default is to not use a special inteface and just
+bind on all interfaces.
 
 -p|--port <port>
 ~~~~~~~~~~~~~~~~
@@ -103,7 +105,7 @@ local anycast(data) port to bind to
 The local UDP port that is used to send and receive the
 payload data. The two tunnel endpoints can use different
 ports. If a tunnel endpoint consists of multiple anycast
-hosts, all hosts have to use the same port.
+hosts, all hosts have to use the same port. default: 4444
 
 -I|--sync-interface <ip-address>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -113,7 +115,9 @@ local unicast(sync) ip address to bind to
 This option is only needed for tunnel endpoints consisting
 of multiple anycast hosts. The unicast IP address of
 the anycast host can be used here. This is needed for
-communication with the other anycast hosts.
+communication with the other anycast hosts. The default is to 
+not use a special inteface and just bind on all interfaces. However
+this is only the case if synchronisation is active see *--sync-port*.
 
 -S|--sync-port <port>
 ~~~~~~~~~~~~~~~~~~~~~
@@ -124,26 +128,38 @@ This option is only needed for tunnel endpoints
 consisting of multiple anycast hosts. This port is used
 by anycast hosts to synchronize information about tunnel
 endpoints. No payload data is transmitted via this port.
+By default the synchronisation is disabled an therefore the
+port is kept empty.
 
 It is possible to obtain a list of active connections
 by telnetting into this port. This port is read-only
 and unprotected by default. It is advised to protect
 this port using firewall rules and, eventually, IPsec.
 
--M|--sync-hosts <hostname|ip>:<port>,[<hostname|ip>:<port>[...]]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-M|--sync-hosts <hostname|ip>[:<port>],[<hostname|ip>[:<port>][...]]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 remote hosts to sync with
 
 This option is only needed for tunnel endpoints consisting
 of multiple anycast hosts. Here, one has to specify all
 unicast IP addresses of all other anycast hosts that
-comprise the anycast tunnel endpoint.
+comprise the anycast tunnel endpoint. By default synchronisation is
+disabled and therefore this is empty. Mind that the port can be
+omitted in which case port 2323 is used. If you want to specify an
+ipv6 address and a port you have to use [ and ] to seperate the address
+from the port, eg.: [::1]:1234. If you want to use the default port 
+[ and ] can be omitted.
 
--X|--control-host <hostname|ip>:<port>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-X|--control-host <hostname|ip>[:<port>]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-fetch the config from this host
+fetch the config from this host. The default is not to use a control
+host and therefore this is empty. Mind that the port can be omitted 
+in which case port 2323 is used. If you want to specify an
+ipv6 address and a port you have to use [ and ] to seperate the address
+from the port, eg.: [::1]:1234. If you want to use the default port 
+[ and ] can be omitted.
 
 -r|--remote-host <hostname|ip>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,7 +177,9 @@ the first data packet.
 remote port
 
 The UDP port used for payload data by the remote host
-(specified with -p on the remote host).
+(specified with -p on the remote host). If you do not specify
+a port, it is automatically determined after receiving
+the first data packet.
 
 -d|--dev <name>
 ~~~~~~~~~~~~~~~
@@ -195,14 +213,15 @@ has to use a different IP address in the same subnet.
 
 In tun/IP tunnel mode:
 
-The local IP address of the tunnel interface ant the
+The local IP address of the tunnel interface and the
 IP address of the tunnel interface on the remote tunnel
 endpoint.
 
 -x|--post-up-script <script>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-script gets called after interface is created
+This option instructs *anytun* to run this script after the interface 
+is created. By default no script will be executed.
 
 -w|--window-size <window size>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -218,11 +237,13 @@ the list anymore, this is interpreted as a replay attack
 and the packet is dropped. A value of 0 deactivates this
 list and, as a consequence, the replay protection employed
 by filtering packets according to their secuence number.
+By default the sequence window is disabled and therefore a
+window size of 0 is used.
 
 -m|--mux <mux-id>
 ~~~~~~~~~~~~~~~~~
 
-the multiplex id to use
+the multiplex id to use. default: 0
 
 -c|--cipher <cipher type>
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -234,7 +255,7 @@ Encryption algorithm used for encrypting the payload
 Possible values:
 
 * *null* - no encryption
-* *aes-ctr* - AES in counter mode
+* *aes-ctr* - AES in counter mode, default value
 
 -K|--key <master key>
 ~~~~~~~~~~~~~~~~~~~~~
@@ -264,7 +285,8 @@ This option sets the message authentication algorithm.
 Possible values:
 
 * *null* - no message authentication
-* *sha1* - HMAC-SHA1
+* *sha1* - HMAC-SHA1, default value
+
 
 If HMAC-SHA1 is used, the packet length is increased by
 10 bytes. These 10 bytes contain the authentication data.

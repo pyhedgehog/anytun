@@ -38,7 +38,6 @@
 #include "buffer.h"
 #include "keyDerivation.h"
 #include "keyDerivationFactory.h"
-#include "signalController.h"
 #include "anyConfOptions.h"
 #include "connectionList.h"
 #include "routingTable.h"
@@ -93,9 +92,6 @@ int main(int argc, char* argv[])
     gOpt.printUsage();
     exit(-1);
   }
-
-  SignalController sig;
-  sig.init();
 
 	ConnectionList cl;
 	SyncQueue queue;

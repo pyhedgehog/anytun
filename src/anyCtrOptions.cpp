@@ -61,7 +61,7 @@ Options::Options()
   chroot_dir_ = "/var/run/anytun-controld";
   pid_file_ = "";
   bind_to_addr_ = "127.0.0.1";
-  bind_to_port_ = "4445";
+  bind_to_port_ = "2323";
 }
 
 Options::~Options()
@@ -226,8 +226,8 @@ void Options::printUsage()
   std::cout << "                [-H|--chroot-dir] <path>     chroot to this directory" << std::endl;
   std::cout << "                [-P|--write-pid] <path>      write pid to this file" << std::endl;
   std::cout << "                [-f|--file] <path>           path to file" << std::endl;
-  std::cout << "                [-X|--control-host] <host:port>  local tcp port to bind to" << std::endl;
-
+  std::cout << "                [-X|--control-host] < <hostname|ip>[:<port>] | :<port> >" << std::endl;
+  std::cout << "                                             local tcp port and or ip address to bind to" << std::endl;
 }
 
 void Options::printOptions()

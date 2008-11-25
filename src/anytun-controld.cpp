@@ -84,7 +84,7 @@ bool syncListenerInit(boost::asio::io_service& io_service)
   {
     std::string addr = gOpt.getBindToAddr() == "" ? "*" : gOpt.getBindToAddr();
     cLog.msg(Log::PRIO_ERR) << "cannot bind to " << addr << ":" << gOpt.getBindToPort()
-                            << " (" << e.what() << ")" << std::endl;
+                            << " (" << e.what() << ") exiting.." << std::endl;
     return false;
   }
   return true;

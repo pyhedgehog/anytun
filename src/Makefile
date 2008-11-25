@@ -95,7 +95,6 @@ ANYCONFOBJS = log.o \
 						 keyDerivationFactory.o \
 						 networkAddress.o \
 						 networkPrefix.o \
-						 signalController.o \
 						 connectionList.o \
 						 connectionParam.o \
 						 rtpSessionTable.o \

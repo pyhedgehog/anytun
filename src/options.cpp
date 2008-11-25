@@ -270,9 +270,9 @@ void Options::printUsage()
   std::cout << "       [-p|--port] <port>                  local anycast(data) port to bind to" << std::endl;
   std::cout << "       [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to" << std::endl;
   std::cout << "       [-S|--sync-port] <port>             local unicast(sync) port to bind to" << std::endl;
-  std::cout << "       [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]"<< std::endl;
+  std::cout << "       [-M|--sync-hosts] <hostname|ip>[:<port>][,<hostname|ip>[:<port>][...]]"<< std::endl;
 	std::cout << "                                           remote hosts to sync with" << std::endl;
-  std::cout << "       [-X|--control-host] <hostname|ip>:<port>"<< std::endl;
+  std::cout << "       [-X|--control-host] <hostname|ip>[:<port>]"<< std::endl;
 	std::cout << "                                           fetch the config from this host" << std::endl;
   std::cout << "       [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
   std::cout << "       [-o|--remote-port] <port>           remote port" << std::endl;

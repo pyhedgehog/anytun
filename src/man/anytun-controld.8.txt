@@ -11,7 +11,7 @@ SYNOPSIS
 *anytun-controld*
 [ *-h|--help* ]
 [ *-f|--file* <path> ]
-[ *-X|--control-host* <host:port> ]
+[ *-X|--control-host* < <host>[:port>] | :<port> > ]
 [ *-D|--nodaemonize* ]
 [ *-C|--chroot* ]
 [ *-u|--username* <username> ]
@@ -21,7 +21,7 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-*anytun-controld* provides the multi-connection support for *anytun*. It reads a connection/routing table and outputs it via a tcp socket to all connected *anytun* servers. When the control daemon is restarted with a new connection/routing table all *anytun* servers automatically load the new configuration. Please make sure to protect that information as it contains the connection keys.
+*anytun-controld* configures the multi-connection support for *anytun*. It reads a connection/routing table and outputs it via a tcp socket to all connected *anytun* servers. When the control daemon is restarted with a new connection/routing table all *anytun* servers automatically load the new configuration. Please make sure to protect that information as it contains the connection keys.
 
 OPTIONS
 -------
@@ -29,38 +29,46 @@ OPTIONS
 -f|--file <path>
 ~~~~~~~~~~~~~~~~
 
-path to config file
+The path to the config file.
 
--X|--control-host <host>:<port>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-X|--control-host < <host>[:<port>] | :<port> >
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-local ip address and tcp port to bind to
+The local ip address and or tcp port to bind to. Mind that if an 
+address is given the port can be omitted in which case port 2323 
+is used. You can also specify to listen on an specific port but on
+all interfaces by omitting the address. If you want to specify an
+ipv6 address and a port you have to use [ and ] to seperate the address
+from the port, eg.: [::1]:1234. If you want to use the default port 
+[ and ] can be omitted. default: 127.0.0.1:2323
 
 -D|--nodaemonize
 ~~~~~~~~~~~~~~~~
 
 This option instructs *anytun-controld* to run in the foreground
-instead of becoming a daemon.
+instead of becoming a daemon which is the default.
 
 -C|--chroot
 ~~~~~~~~~~~
 
-chroot and drop privileges
+Instruct *anytun* to run in a chroot chail and drop privileges. The 
+default is not to run in chroot.
 
 -u|--username <username>
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-if chroot change to this user
+if chroot change to this user. default: nobody
 
 -H|--chroot-dir <directory>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-chroot to this directory
+chroot to this directory. default: /var/run/anytun-controld
 
 -P|--write-pid <path>
 ~~~~~~~~~~~~~~~~~~~~~
 
-write pid to this file
+Instruct *anytun-controld* to write it's pid to this file. 
+The default is not to create a pid file.
 
 
 BUGS
