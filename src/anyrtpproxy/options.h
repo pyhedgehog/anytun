@@ -48,11 +48,8 @@ class Host
 {
 public:
   Host(std::string addr, std::string port) : addr_(addr), port_(port) {}
-  Host(std::string addr_port)
-  {
-    std::istringstream iss(addr_port);
-    getline(iss, addr_, ':');
-    if(!(iss >> port_)) port_ = "";
+  Host(std::string addr_port) {
+    splitAndSetAddrPort(addr_port);
   } 
   std::string toString() const
   {
@@ -63,6 +60,9 @@ public:
   
   std::string addr_;
 	std::string port_;
+
+protected:
+  void splitAndSetAddrPort(std::string addr_port);
 };
 
 typedef std::list<Host> HostList;

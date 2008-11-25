@@ -50,6 +50,59 @@ Options& Options::instance()
   return *inst;
 }
 
+void Host::splitAndSetAddrPort(std::string addr_port)
+{
+  if(addr_port.length() >= 2 && addr_port[0] == ':' && addr_port[1] != ':') {
+    addr_ = "";
+    addr_port.erase(0,1);
+    std::stringstream tmp_stream(addr_port);    
+    tmp_stream >> port_;
+    return;
+  }
+
+  size_t pos = addr_port.find_first_of("[");
+
+  if(pos != std::string::npos && pos != 0)
+    return; // an [ was found but not at the beginning
+
+  bool hasPort = false;
+  if(pos != std::string::npos) {
+    addr_port.erase(pos, 1);
+    pos = addr_port.find_first_of("]");
+
+    if(pos == std::string::npos)
+      return; // no trailing ] although an leading [ was found
+
+    if(pos < addr_port.length()-2) {
+
+      if(addr_port[pos+1] != ':')
+        return; // wrong port delimieter
+
+      addr_port[pos+1] = '/';
+      hasPort = true;
+    }
+    else if(pos != addr_port.length()-1)
+      return; // to few characters left
+
+    addr_port.erase(pos, 1);
+  }
+
+  if(hasPort) {
+    std::stringstream tmp_stream(addr_port);
+
+    getline(tmp_stream, addr_, '/');
+    if(!tmp_stream.good())
+      return;
+
+    tmp_stream >> port_;
+  }
+  else {
+    addr_ = addr_port;
+    port_ = "2323"; // default sync port
+  }
+}
+
+
 Options::Options() : control_interface_("0.0.0.0", "22222")
 
 {
