@@ -46,13 +46,13 @@
 
 #define MAX_COMMAND_LENGTH 1000
 
-CommandHandler::CommandHandler(SyncQueue& q, u_int16_t lp,PortWindow & pw) : queue_(q), running_(true), control_sock_(lp), 
-                                                             local_address_("0.0.0.0"), local_port_(lp),port_window_(pw)
+CommandHandler::CommandHandler(SyncQueue& q, std::string lp,PortWindow & pw) : queue_(q), running_(true), control_sock_(lp), 
+                                                             local_address_(""), local_port_(lp),port_window_(pw)
 {
   pthread_create(&thread_, NULL, run, this);
 }
 
-CommandHandler::CommandHandler(SyncQueue& q, string la, u_int16_t lp,PortWindow & pw) : queue_(q), running_(true), control_sock_(la, lp), 
+CommandHandler::CommandHandler(SyncQueue& q, string la, std::string lp, PortWindow & pw) : queue_(q), running_(true), control_sock_(la, lp), 
                                                                         local_address_(la), local_port_(lp),port_window_(pw)
 {
   pthread_create(&thread_, NULL, run, this);

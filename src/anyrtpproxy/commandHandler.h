@@ -38,13 +38,11 @@
 #include "../syncQueue.h"
 #include "portWindow.h"
 
-using std::string;
-
 class CommandHandler
 {
 public:
-  CommandHandler(SyncQueue& q, u_int16_t lp, PortWindow &);
-  CommandHandler(SyncQueue& q, string la, u_int16_t lp, PortWindow &);
+  CommandHandler(SyncQueue& q, std::string lp, PortWindow &);
+  CommandHandler(SyncQueue& q, std::string la, std::string lp, PortWindow &);
   ~CommandHandler();
   
   bool isRunning();
@@ -67,22 +65,22 @@ private:
   void operator=(const CommandHandler &c);
 
   static void* run(void* s);
-  string handle(string command);
+  std::string handle(std::string command);
   
-  string handleRequest(string modifiers, string call_id, string addr, string port, string from_tag, string to_tag);
-  string handleResponse(string modifiers, string call_id, string addr, string port, string from_tag, string to_tag);
-  string handleDelete(string call_id, string from_tag, string to_tag);
-  string handleVersion();
-  string handleVersionF(string date_code);
-  string handleInfo();
+  std::string handleRequest(std::string modifiers, std::string call_id, std::string addr, std::string port, std::string from_tag, std::string to_tag);
+  std::string handleResponse(std::string modifiers, std::string call_id, std::string addr, std::string port, std::string from_tag, std::string to_tag);
+  std::string handleDelete(std::string call_id, std::string from_tag, std::string to_tag);
+  std::string handleVersion();
+  std::string handleVersionF(std::string date_code);
+  std::string handleInfo();
 
   pthread_t thread_;
   SyncQueue& queue_;
 
   bool running_;
   UDPSocket control_sock_;
-  string local_address_;
-  u_int16_t local_port_;
+  std::string local_address_;
+  std::string local_port_;
 	PortWindow& port_window_;
 };
 

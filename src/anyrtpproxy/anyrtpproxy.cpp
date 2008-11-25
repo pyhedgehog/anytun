@@ -45,6 +45,7 @@
 #include "../syncCommand.h"
 #include "../syncQueue.h"
 #include "../syncClient.h"
+//#include "../syncOnConnect.h"
 
 #include "../threadUtils.hpp"
 
@@ -311,7 +312,7 @@ void syncListener(SyncQueue * queue)
 
 
     SyncServer server(io_service,e);
-		server.onConnect=boost::bind(syncOnConnect,_1);
+//		server.onConnect=boost::bind(syncOnConnect,_1);
 		queue->setSyncServerPtr(&server);
     io_service.run();
   }
