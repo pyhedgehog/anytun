@@ -50,7 +50,7 @@ Options& Options::instance()
   return *inst;
 }
 
-Options::Options() : control_interface_("0.0.0.0", 22222)
+Options::Options() : control_interface_("0.0.0.0", "22222")
 
 {
   progname_ = "anyrtpproxy";
@@ -60,7 +60,7 @@ Options::Options() : control_interface_("0.0.0.0", 22222)
   daemonize_ = true;
   pid_file_ = "";
   local_addr_ = "";
-	local_sync_port_ = 0;
+	local_sync_port_ = "";
 	rtp_start_port_ = 34000;
 	rtp_end_port_ = 35000;
 	no_nat_once_ = false;
@@ -170,7 +170,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM2("-p","--port-range", rtp_start_port_, rtp_end_port_)
 		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
     PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_port_)
-//    PARSE_SCALAR_PARAM("-I","--sync-interface", local_sync_addr_)
+    PARSE_SCALAR_PARAM("-I","--sync-interface", local_sync_addr_)
     else 
       return false;
   }
@@ -205,11 +205,11 @@ void Options::printUsage()
   std::cout << "  [-d|--nodaemonize]               don't run in background" << std::endl;
   std::cout << "  [-P|--write-pid] <path>          write pid to this file" << std::endl;
   std::cout << "  [-i|--interface] <ip-address>    local ip address to listen to for RTP packets" << std::endl;
-  std::cout << "  [-s|--control] <addr[:port]>     the address/port to listen on for control commands" << std::endl;
+  std::cout << "  [-s|--control] <addr>[:<port>]   the address/port to listen on for control commands" << std::endl;
   std::cout << "  [-p|--port-range] <start> <end>  port range used to relay rtp connections" << std::endl;
   std::cout << "  [-n|--nat]                       enable permantent automatic nat detection(use only with anytun)" << std::endl;
   std::cout << "  [-o|--no-nat-once]               disable automatic nat detection for new connections" << std::endl;
-//  std::cout << "       [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to" << std::endl;
+  std::cout << "  [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to" << std::endl;
   std::cout << "  [-S|--sync-port] <port>          local unicast(sync) port to bind to" << std::endl;
   std::cout << "  [-M|--sync-hosts] <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]"<< std::endl;
   std::cout << "                                   List of Remote Sync Hosts/Ports"<< std::endl;
@@ -226,6 +226,10 @@ void Options::printOptions()
   std::cout << "pid_file='" << pid_file_ << "'" << std::endl;
   std::cout << "control-interface='" << control_interface_.toString() << "'" << std::endl;
   std::cout << "local_addr='" << local_addr_ << "'" << std::endl;
+  std::cout << "rtp_start_port=" << rtp_start_port_ << std::endl;
+  std::cout << "rtp_end_port=" << rtp_end_port_ << std::endl;
+  std::cout << "local_sync_addr='" << local_sync_addr_ << "'" << std::endl;
+  std::cout << "local_sync_port='" << local_sync_port_ << "'" << std::endl;
 }
 
 std::string Options::getProgname()
@@ -295,13 +299,28 @@ Options& Options::setLocalAddr(std::string l)
   return *this;
 }
 
-u_int16_t Options::getLocalSyncPort()
+std::string Options::getLocalSyncAddr()
 {
+  Lock lock(mutex);
+  return local_sync_addr_;
+}
+
+Options& Options::setLocalSyncAddr(std::string l)
+{
+  Lock lock(mutex);
+  local_sync_addr_ = l;
+  return *this;
+}
+
+std::string Options::getLocalSyncPort()
+{
+  Lock lock(mutex);
   return local_sync_port_;
 }
 
-Options& Options::setLocalSyncPort(u_int16_t l)
+Options& Options::setLocalSyncPort(std::string l)
 {
+  Lock lock(mutex);
   local_sync_port_ = l;
   return *this;
 }

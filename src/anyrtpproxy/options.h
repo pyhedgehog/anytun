@@ -39,7 +39,7 @@
 typedef struct OptionConnectTo
 {
   std::string host;
-  uint16_t port;
+  std::string port;
 };
 
 typedef std::list<OptionConnectTo>  ConnectToList;
@@ -47,12 +47,12 @@ typedef std::list<OptionConnectTo>  ConnectToList;
 class Host
 {
 public:
-  Host(std::string addr, u_int16_t port) : addr_(addr), port_(port) {}
+  Host(std::string addr, std::string port) : addr_(addr), port_(port) {}
   Host(std::string addr_port)
   {
     std::istringstream iss(addr_port);
     getline(iss, addr_, ':');
-    if(!(iss >> port_)) port_ = 0;
+    if(!(iss >> port_)) port_ = "";
   } 
   std::string toString() const
   {
@@ -62,7 +62,7 @@ public:
   }
   
   std::string addr_;
-	u_int16_t port_;
+	std::string port_;
 };
 
 typedef std::list<Host> HostList;
@@ -87,8 +87,10 @@ public:
   Host getControlInterface();
   std::string getLocalAddr();
   Options& setLocalAddr(std::string l);
-  u_int16_t getLocalSyncPort();
-	Options& setLocalSyncPort(u_int16_t l);
+  std::string getLocalSyncAddr();
+	Options& setLocalSyncAddr(std::string l);
+  std::string getLocalSyncPort();
+	Options& setLocalSyncPort(std::string l);
   u_int16_t getRtpStartPort();
 	Options& setRtpStartPort(u_int16_t l);
   u_int16_t getRtpEndPort();
@@ -122,7 +124,8 @@ private:
   std::string chroot_dir_;
   std::string pid_file_;
   bool daemonize_;
-	u_int16_t local_sync_port_;
+	std::string local_sync_addr_;
+	std::string local_sync_port_;
   std::string local_addr_;
 	u_int16_t rtp_start_port_;
 	u_int16_t rtp_end_port_;
