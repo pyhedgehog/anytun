@@ -35,6 +35,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include <boost/bind.hpp>
+
 #include "commandHandler.h"
 #include "../buffer.h"
 #include "../log.h"
@@ -46,56 +48,57 @@
 
 #define MAX_COMMAND_LENGTH 1000
 
-CommandHandler::CommandHandler(SyncQueue& q, std::string lp,PortWindow & pw) : queue_(q), running_(true), control_sock_(lp), 
-                                                             local_address_(""), local_port_(lp),port_window_(pw)
+CommandHandler::CommandHandler(SyncQueue& q, std::string lp,PortWindow & pw) : thread_(boost::bind(run,this)), 
+                                                                               queue_(q), running_(true), control_sock_(io_service_), 
+                                                                               local_address_(""), local_port_(lp),port_window_(pw)
 {
-  pthread_create(&thread_, NULL, run, this);
+  proto::resolver resolver(io_service_);
+  proto::resolver::query query(local_port_);  
+  proto::endpoint e = *resolver.resolve(query);
+  control_sock_.open(e.protocol());
+  control_sock_.bind(e);
 }
 
-CommandHandler::CommandHandler(SyncQueue& q, string la, std::string lp, PortWindow & pw) : queue_(q), running_(true), control_sock_(la, lp), 
-                                                                        local_address_(la), local_port_(lp),port_window_(pw)
+CommandHandler::CommandHandler(SyncQueue& q, string la, std::string lp, PortWindow & pw) : thread_(boost::bind(run,this)), 
+                                                                                           queue_(q), running_(true), control_sock_(io_service_), 
+                                                                                           local_address_(la), local_port_(lp),port_window_(pw)
 {
-  pthread_create(&thread_, NULL, run, this);
+  proto::resolver resolver(io_service_);
+  proto::resolver::query query(local_address_, local_port_);  
+  proto::endpoint e = *resolver.resolve(query);
+  control_sock_.open(e.protocol());
+  control_sock_.bind(e);
 }
 
-CommandHandler::~CommandHandler()
-{
-  pthread_cancel(thread_);
-  pthread_join(thread_, NULL);
-}
-
-void* CommandHandler::run(void* s)
+void CommandHandler::run(void* s)
 {
   CommandHandler* self = reinterpret_cast<CommandHandler*>(s);
 
   Buffer buf(u_int32_t(MAX_COMMAND_LENGTH));
   try
   {
-    string remote_host;
-    u_int16_t remote_port;
- 
+    proto::endpoint remote_end;
+
     int len;
     while(1)
     {
       buf.setLength(MAX_COMMAND_LENGTH);
-      len = self->control_sock_.recvFrom(buf.getBuf(), buf.getLength(), remote_host, remote_port);
+
+      len = self->control_sock_.receive_from(boost::asio::buffer(buf.getBuf(), buf.getLength()), remote_end);
       buf.setLength(len);
 
       std::string ret = self->handle(std::string(reinterpret_cast<char*>(buf.getBuf()), buf.getLength())); // TODO: reinterpret is ugly
 
-      cLog.msg(Log::PRIO_DEBUG) << "CommandHandler received Command from " << remote_host << ":" << remote_port 
-                                << ", ret='" << ret << "'";
+      cLog.msg(Log::PRIO_DEBUG) << "CommandHandler received Command from " << remote_end << ", ret='" << ret << "'";
 
-      self->control_sock_.sendTo(ret.c_str(), ret.length(), remote_host, remote_port);
+      self->control_sock_.send_to(boost::asio::buffer(ret.c_str(), ret.length()), remote_end);
     }
   }
   catch(SocketException &e)
   {
     self->running_ = false;
-    pthread_exit(NULL);
   }
   self->running_ = false;
-  pthread_exit(NULL);
 }
 
 bool CommandHandler::isRunning()

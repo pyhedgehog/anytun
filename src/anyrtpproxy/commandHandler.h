@@ -32,6 +32,8 @@
 #ifndef _COMMAND_HANDLER_H_
 #define _COMMAND_HANDLER_H_
 
+#include <boost/asio.hpp>
+
 #include <string>
 #include "../datatypes.h"
 #include "../PracticalSocket.h"
@@ -41,9 +43,10 @@
 class CommandHandler
 {
 public:
+  typedef boost::asio::ip::udp proto;
+
   CommandHandler(SyncQueue& q, std::string lp, PortWindow &);
   CommandHandler(SyncQueue& q, std::string la, std::string lp, PortWindow &);
-  ~CommandHandler();
   
   bool isRunning();
 
@@ -64,7 +67,7 @@ private:
   CommandHandler(const CommandHandler &c);
   void operator=(const CommandHandler &c);
 
-  static void* run(void* s);
+  static void run(void* s);
   std::string handle(std::string command);
   
   std::string handleRequest(std::string modifiers, std::string call_id, std::string addr, std::string port, std::string from_tag, std::string to_tag);
@@ -74,11 +77,12 @@ private:
   std::string handleVersionF(std::string date_code);
   std::string handleInfo();
 
-  pthread_t thread_;
+  boost::thread thread_;
   SyncQueue& queue_;
 
   bool running_;
-  UDPSocket control_sock_;
+  boost::asio::io_service io_service_;
+  proto::socket control_sock_;
   std::string local_address_;
   std::string local_port_;
 	PortWindow& port_window_;
