@@ -7,7 +7,11 @@ Linux
 build-essential
 libgcrypt11-dev
 libboost1.35-dev
+libboost-thread1.35-dev
+libboost-system1.35-dev
+libboost-regex1.35-dev
 asciidoc (only for manpage)
+
 
 OpenBSD
 -------
