@@ -46,7 +46,7 @@
 #include "threadUtils.hpp"
 
 
-TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
+TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
 	fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
 	if(fd_ < 0) {
@@ -74,8 +74,8 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
   else
     throw std::runtime_error("unable to recognize type of device (tun or tap)");
 
-	if(dev_name)
-		strncpy(ifr.ifr_name, dev_name, IFNAMSIZ);
+	if(dev_name != "")
+		strncpy(ifr.ifr_name, dev_name.c_str(), IFNAMSIZ);
 
 	if(!ioctl(fd_, TUNSETIFF, &ifr)) {
 		actual_name_ = ifr.ifr_name;
@@ -90,7 +90,7 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
     throw std::runtime_error(msg);
   }
 
-  if(ifcfg_lp && ifcfg_rnmp)
+  if(ifcfg_lp != "" && ifcfg_rnmp != "")
     do_ifconfig();
 }
 
@@ -155,28 +155,9 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
     return(::write(fd_, buf, len));
 }
 
-const char* TunDevice::getActualName()
+void TunDevice::init_post()
 {
-  return actual_name_.c_str();
-}
-
-device_type_t TunDevice::getType()
-{
-  return conf_.type_;
-}
-
-const char* TunDevice::getTypeString()
-{
-  if(fd_ < 0)
-    return NULL;
-
-  switch(conf_.type_)
-  {
-  case TYPE_UNDEF: return "undef"; break;
-  case TYPE_TUN: return "tun"; break;
-  case TYPE_TAP: return "tap"; break;
-  }
-  return NULL;
+// nothing to be done here
 }
 
 void TunDevice::do_ifconfig()

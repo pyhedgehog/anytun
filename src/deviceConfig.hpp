@@ -40,27 +40,27 @@ enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
 class DeviceConfig 
 {
 public:
-  DeviceConfig(const char* dev_name ,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp, u_int16_t mtu)
+  DeviceConfig(std::string dev_name ,std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp, u_int16_t mtu)
   {
     mtu_ = mtu;
     type_ = TYPE_UNDEF;
-    if(dev_type) {
-      if(!strncmp(dev_type, "tun", 3))
+    if(dev_type != "") {
+      if(!dev_type.compare(0,3,"tun"))
         type_ = TYPE_TUN;
-      else if(!strncmp(dev_type, "tap", 3))
+      else if (!dev_type.compare(0,3,"tap"))
         type_ = TYPE_TAP;
     }
-    else if(dev_name) {
-      if(!strncmp(dev_name, "tun", 3))
+    else if(dev_name != "") {
+      if(!dev_name.compare(0,3,"tun"))
         type_ = TYPE_TUN;
-      else if(!strncmp(dev_name, "tap", 3))
+      else if(!dev_name.compare(0,3,"tap"))
         type_ = TYPE_TAP;
     }
 
-    if(ifcfg_lp)
-      local_.setNetworkAddress(ipv4, ifcfg_lp);
-    if(ifcfg_rnmp)
-      remote_netmask_.setNetworkAddress(ipv4, ifcfg_rnmp);
+    if(ifcfg_lp != "")
+      local_.setNetworkAddress(ipv4, ifcfg_lp.c_str());
+    if(ifcfg_rnmp != "")
+      remote_netmask_.setNetworkAddress(ipv4, ifcfg_rnmp.c_str());
   }
 
 private:

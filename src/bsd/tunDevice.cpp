@@ -50,11 +50,11 @@
 
 #include <iostream>
 
-TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
+TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
   std::string device_file = "/dev/";
   bool dynamic = true;
-  if(dev_name) {
+  if(dev_name != "") {
     device_file.append(dev_name);
     dynamic = false;
   }
@@ -110,7 +110,7 @@ TunDevice::TunDevice(const char* dev_name, const char* dev_type, const char* ifc
   
   init_post();
 
-  if(ifcfg_lp && ifcfg_rnmp)
+  if(ifcfg_lp != "" && ifcfg_rnmp != "")
     do_ifconfig();
 }
 
@@ -124,9 +124,9 @@ TunDevice::~TunDevice()
 
 void TunDevice::init_post()
 {
-  with_type_ = true;
+  with_pi_ = true;
   if(conf_.type_ == TYPE_TAP)
-    with_type_ = false;
+    with_pi_ = false;
   
   struct tuninfo ti;  
 
@@ -143,9 +143,9 @@ void TunDevice::init_post()
 
 void TunDevice::init_post()
 {
-  with_type_ = true;
+  with_pi_ = true;
   if(conf_.type_ == TYPE_TAP)
-    with_type_ = false;
+    with_pi_ = false;
 
   int arg = 0;
   ioctl(fd_, TUNSLMODE, &arg);
@@ -157,7 +157,7 @@ void TunDevice::init_post()
 
 void TunDevice::init_post()
 {
-  with_type_ = false;
+  with_pi_ = false;
 
   int arg = IFF_POINTOPOINT|IFF_MULTICAST;
   ioctl(fd_, TUNSIFMODE, &arg);
@@ -169,7 +169,7 @@ void TunDevice::init_post()
  #error This Device works just for OpenBSD, FreeBSD or NetBSD
 #endif
 
-int TunDevice::fix_return(int ret, size_t type_length)
+int TunDevice::fix_return(int ret, size_t pi_length)
 {
   if(ret < 0)
     return ret;
@@ -177,12 +177,12 @@ int TunDevice::fix_return(int ret, size_t type_length)
   return (static_cast<size_t>(ret) > type_length ? (ret - type_length) : 0);
 }
 
-short TunDevice::read(u_int8_t* buf, u_int32_t len)
+int TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
   if(fd_ < 0)
     return -1;
   
-  if(with_type_) {
+  if(with_pi_) {
     struct iovec iov[2];
     u_int32_t type;
     
@@ -201,7 +201,7 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
   if(fd_ < 0)
     return -1;
   
-  if(with_type_) {
+  if(with_pi_) {
     struct iovec iov[2];
     u_int32_t type;
     struct ip *hdr = reinterpret_cast<struct ip*>(buf);
@@ -220,30 +220,6 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
   }
   else
     return(::write(fd_, buf, len));
-}
-
-const char* TunDevice::getActualName()
-{
-  return actual_name_.c_str();
-}
-
-device_type_t TunDevice::getType()
-{
-  return conf_.type_;
-}
-
-const char* TunDevice::getTypeString()
-{
-  if(fd_ < 0)
-    return NULL;
-
-  switch(conf_.type_)
-  {
-  case TYPE_UNDEF: return "undef"; break;
-  case TYPE_TUN: return "tun"; break;
-  case TYPE_TAP: return "tap"; break;
-  }
-  return NULL;
 }
 
 void TunDevice::do_ifconfig()

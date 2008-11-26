@@ -274,7 +274,7 @@ anyrtpproxy: anytun
 distclean: cleanall
 	find . -name *.o -exec rm -f {} \;
 	rm -f config.sub config.guess
-	rm -f tunDevice.cpp tunDevice.h
+	rm -f tunDevice.cpp
 
 cleanall: clean
 	$(MAKE) --directory=$(CURDIR)/man clean

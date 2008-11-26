@@ -39,20 +39,34 @@
 class TunDevice
 {
 public:
-  TunDevice(const char* dev,const char* dev_type, const char* ifcfg_lp, const char* ifcfg_rnmp);
+  TunDevice(std::string dev,std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp);
   ~TunDevice();
   
   int read(u_int8_t* buf, u_int32_t len);
   int write(u_int8_t* buf, u_int32_t len);
 
-  const char* getActualName();
-  device_type_t getType();
-  const char* getTypeString();
+  std::string getActualName() { return actual_name_.c_str(); }
+  device_type_t getType() { return conf_.type_; }
+  std::string getTypeString()
+  {
+    if(fd_ < 0)
+      return NULL;
+    
+    switch(conf_.type_)
+    {
+    case TYPE_UNDEF: return "undef"; break;
+    case TYPE_TUN: return "tun"; break;
+    case TYPE_TAP: return "tap"; break;
+    }
+    return NULL;
+  }
+
 
 private:
   void operator=(const TunDevice &src);
   TunDevice(const TunDevice &src);
 
+  void init_post();
   void do_ifconfig();
   int fix_return(int ret, size_t pi_length);
 

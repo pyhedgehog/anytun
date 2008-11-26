@@ -509,10 +509,7 @@ int main(int argc, char* argv[])
       }
     }
     
-    TunDevice dev(gOpt.getDevName() =="" ? NULL : gOpt.getDevName().c_str(),
-                  gOpt.getDevType() =="" ? NULL : gOpt.getDevType().c_str(), 
-                  gOpt.getIfconfigParamLocal() =="" ? NULL : gOpt.getIfconfigParamLocal().c_str(), 
-                  gOpt.getIfconfigParamRemoteNetmask() =="" ? NULL : gOpt.getIfconfigParamRemoteNetmask().c_str());
+    TunDevice dev(gOpt.getDevName(), gOpt.getDevType(), gOpt.getIfconfigParamLocal(), gOpt.getIfconfigParamRemoteNetmask());
     cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
     cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << dev.getActualName() << "'";
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
