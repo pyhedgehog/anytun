@@ -32,7 +32,7 @@ TARGET=$(shell uname -s)
 CC = gcc
 CCFLAGS = -g
 CXX = g++
-CXXFLAGS = -g -Wall
+CXXFLAGS = -g -Wall -O2
 LD = g++
 LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization -lboost_system
 
@@ -119,6 +119,10 @@ all: $(EXECUTABLE) libAnysync.a #anyrtpproxy
 
 anytun: $(OBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
+
+anytun-static: $(OBJS) $(SYNCOBJS) anytun.o
+	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS) -lpthread -static
+	strip -s anytun-static
 
 anytun-nosync: $(OBJS) anytun-nosync.o
 	$(LD) $(OBJS) anytun-nosync.o -o $@ $(LDFLAGS)
