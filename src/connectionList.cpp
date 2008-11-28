@@ -81,6 +81,7 @@ void ConnectionList::addConnection(ConnectionParam &conn, u_int16_t mux )
 
 const ConnectionMap::iterator ConnectionList::getEnd()
 {
+    Lock lock(mutex_);
 	return connections_.end();
 }
 
@@ -88,6 +89,13 @@ ConnectionMap::iterator ConnectionList::getBeginUnlocked()
 {
   return connections_.begin();
 }
+
+const ConnectionMap::iterator ConnectionList::getBegin()
+{
+  Lock lock(mutex_);
+  return connections_.begin();
+}
+
 
 ConnectionMap::iterator ConnectionList::getEndUnlocked()
 {

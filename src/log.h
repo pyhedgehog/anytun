@@ -34,7 +34,9 @@
 
 #include <string>
 #include <sstream>
+#ifndef NOSYSLOG
 #include <syslog.h>
+#endif
 
 #include "threadUtils.hpp"
 
@@ -59,6 +61,7 @@ private:
 class Log : public std::ostringstream
 {
 public:
+#ifndef NOSYSLOG
   static const int FAC_USER = LOG_USER;
   static const int FAC_MAIL = LOG_MAIL;
   static const int FAC_DAEMON = LOG_DAEMON;
@@ -87,6 +90,36 @@ public:
   static const int PRIO_NOTICE = LOG_NOTICE;
   static const int PRIO_INFO = LOG_INFO;
   static const int PRIO_DEBUG = LOG_DEBUG;
+#else
+  static const int FAC_USER = 0;
+  static const int FAC_MAIL = 0;
+  static const int FAC_DAEMON = 0;
+  static const int FAC_AUTH = 0;
+  static const int FAC_SYSLOG = 0;
+  static const int FAC_LPR = 0;
+  static const int FAC_NEWS = 0;
+  static const int FAC_UUCP = 0;
+  static const int FAC_CRON = 0;
+  static const int FAC_AUTHPRIV = 0;
+  static const int FAC_FTP = 0;
+  static const int FAC_LOCAL0 = 0;
+  static const int FAC_LOCAL1 = 0;
+  static const int FAC_LOCAL2 = 0;
+  static const int FAC_LOCAL3 = 0;
+  static const int FAC_LOCAL4 = 0;
+  static const int FAC_LOCAL5 = 0;
+  static const int FAC_LOCAL6 = 0;
+  static const int FAC_LOCAL7 = 0;
+
+  static const int PRIO_EMERG = 0;
+  static const int PRIO_ALERT = 0;
+  static const int PRIO_CRIT = 0;
+  static const int PRIO_ERR = 0;
+  static const int PRIO_WARNING = 0;
+  static const int PRIO_NOTICE = 0;
+  static const int PRIO_INFO = 0;
+  static const int PRIO_DEBUG = 0;
+#endif
 
   static Log& instance();
 

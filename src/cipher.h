@@ -37,8 +37,9 @@
 #include "encryptedPacket.h"
 #include "plainPacket.h"
 
+#ifndef NOCRYPT
 #include <gcrypt.h>
-
+#endif
 
 class Cipher
 {

@@ -33,6 +33,7 @@
 #include "log.h"
 #include "keyDerivation.h"
 #include "threadUtils.hpp"
+#include "datatypes.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -43,7 +44,7 @@
 #include "mpi.h"
 #endif
 
-void KeyDerivation::setLogKDRate(const uint8_t log_rate)
+void KeyDerivation::setLogKDRate(const u_int8_t log_rate)
 {
   Lock lock(mutex_);
   if( log_rate < 49 )

@@ -31,13 +31,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <poll.h>
-#include <fcntl.h>
-#include <pwd.h>
-#include <grp.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <unistd.h>
+
 
 #include <boost/bind.hpp>
 #ifndef NOCRYPT
@@ -57,14 +51,18 @@
 #include "cipherFactory.h"
 #include "authAlgoFactory.h"
 #include "keyDerivationFactory.h"
+#ifndef NOSIGNALCONTROLLER
 #include "signalController.h"
+#endif
 #include "packetSource.h"
 #include "tunDevice.h"
 #include "options.h"
 #include "seqWindow.h"
 #include "connectionList.h"
+#ifndef NOROUTING
 #include "routingTable.h"
 #include "networkAddress.h"
+#endif
 
 #include "syncQueue.h"
 #include "syncCommand.h"
@@ -96,9 +94,11 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
 
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_end);
  	cl.addConnection(connparam,mux);
+#ifndef NOROUTING
 	NetworkAddress addr(ipv4,gOpt.getIfconfigParamRemoteNetmask().c_str());
 	NetworkPrefix prefix(addr,32);
 	gRoutingTable.addRoute(prefix,mux);
+#endif
   SyncCommand sc (cl,mux);
 	queue.push(sc);
   SyncCommand sc2 (prefix);
@@ -158,9 +158,14 @@ void sender(void* p)
       if(param->cl.empty())
         continue;
           //std::cout << "got Packet for plain "<<plain_packet.getDstAddr().toString();
+#ifndef NOROUTING
       mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
           //std::cout << " -> "<<mux << std::endl;
       ConnectionMap::iterator cit = param->cl.getConnection(mux);
+#else
+      ConnectionMap::iterator cit = param->cl.getBegin();
+#endif
+
       if(cit==param->cl.getEnd())
         continue;
       ConnectionParam & conn = cit->second;
@@ -416,9 +421,11 @@ int main(int argc, char* argv[])
       pidFile << pid;
       pidFile.close();
     }
-    
+
+#ifndef NOSIGNALCONTROLLER
     SignalController sig;
     sig.init();
+#endif
     
     ThreadParam p(dev, *src, cl, queue,*(new OptionConnectTo()));
 

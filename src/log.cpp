@@ -31,7 +31,6 @@
 
 #include <iostream>
 #include <string>
-#include <syslog.h>
 
 #include "log.h"
 
@@ -54,7 +53,9 @@ LogStringBuilder::LogStringBuilder(Log& l, int p) : log(l), prio(p)
 LogStringBuilder::~LogStringBuilder() 
 {
   Lock lock(log.mutex);
+#ifndef NOSYSLOG
   syslog(prio | log.getFacility(), stream.str().c_str());  
+#endif
 }
 
 Log& Log::instance()
@@ -69,19 +70,23 @@ Log& Log::instance()
 
 Log::Log()
 {
-  facility = LOG_DAEMON;
+  facility = FAC_DAEMON;
   logName = "anytun";
   open();
 }
 
 Log::~Log()
 {
+#ifndef NOSYSLOG
   closelog();
+#endif
 }
 
 void Log::open()
 {
+#ifndef NOSYSLOG
   openlog(logName.c_str(), LOG_PID, facility);
+#endif
 }
 
 Log& Log::setLogName(std::string newLogName)

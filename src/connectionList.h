@@ -51,7 +51,8 @@ public:
 	const ConnectionMap::iterator getConnection(u_int16_t mux);
 	const ConnectionMap::iterator getEnd();
 	ConnectionMap::iterator getEndUnlocked();
-	ConnectionMap::iterator getBeginUnlocked();
+	ConnectionMap::iterator getBeginUnlocked();	
+	const ConnectionMap::iterator getBegin();
 	ConnectionParam & getOrNewConnectionUnlocked(u_int16_t mux);
 	bool empty();
 	void clear();

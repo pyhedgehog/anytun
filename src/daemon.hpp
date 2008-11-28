@@ -2,6 +2,14 @@
 #define _DAEMON_HPP
 #ifndef NODAEMON
 
+#include <poll.h>
+#include <fcntl.h>
+#include <pwd.h>
+#include <grp.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 void chrootAndDrop(std::string const& chrootdir, std::string const& username)
 {
   if (getuid() != 0)
