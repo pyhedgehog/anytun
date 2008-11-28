@@ -37,7 +37,9 @@
 #include "threadUtils.hpp"
 #include "syncBuffer.h"
 
+#ifndef NOCRYPT
 #include <gcrypt.h>
+#endif
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 

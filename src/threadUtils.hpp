@@ -30,6 +30,7 @@
  */
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
+#include "datatypes.h"
 #ifndef __THREADUTILS__
 #define __THREADUTILS__
 typedef boost::mutex::scoped_lock Lock;

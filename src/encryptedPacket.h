@@ -135,7 +135,11 @@ private:
     seq_nr_t seq_nr;
     sender_id_t sender_id;
     mux_t mux;
-  }__attribute__((__packed__));
+  }
+#ifndef NOPACKED
+  __attribute__((__packed__))
+#endif	  
+;
 
   struct HeaderStruct* header_;
 	u_int8_t * payload_;

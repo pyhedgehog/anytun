@@ -36,7 +36,9 @@
 #include "buffer.h"
 #include "encryptedPacket.h"
 
+#ifndef NOCRYPT
 #include <gcrypt.h>
+#endif
 
 class AuthAlgo
 {
