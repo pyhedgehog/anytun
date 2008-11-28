@@ -40,7 +40,7 @@
 typedef struct
 {
   std::string net_addr;
-	uint16_t prefix_length;
+	u_int16_t prefix_length;
 } OptionRoute;
 
 typedef std::list<OptionRoute>  RouteList;
