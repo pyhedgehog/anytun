@@ -40,8 +40,10 @@ KeyDerivation* KeyDerivationFactory::create(std::string const& type)
 {
   if( type == "null" )
     return new NullKeyDerivation();
+#ifndef NOCRYPT
   else if( type == "aes-ctr" )
     return new AesIcmKeyDerivation();
+#endif
   else
     throw std::invalid_argument("key derivation prf not available");
 }

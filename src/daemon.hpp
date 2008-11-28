@@ -1,3 +1,6 @@
+#ifndef _DAEMON_HPP
+#define _DAEMON_HPP
+#ifndef NODAEMON
 
 void chrootAndDrop(std::string const& chrootdir, std::string const& username)
 {
@@ -51,5 +54,6 @@ void daemonize()
   dup(fd);                            // stderr
   umask(027);
 }
-
+#endif
+#endif
 

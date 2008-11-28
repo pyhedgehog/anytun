@@ -40,8 +40,10 @@ AuthAlgo* AuthAlgoFactory::create(std::string const& type)
 {
   if( type == "null" )
     return new NullAuthAlgo();
+#ifndef NOCRYPT
   else if( type == "sha1" )
     return new Sha1AuthAlgo();
+#endif
   else
     throw std::invalid_argument("auth algo not available");
 }

@@ -81,7 +81,7 @@ public:
   static const u_int32_t MAX_LENGTH_ = 0;
 };
 
-
+#ifndef NOCRYPT
 //****** Sha1AuthAlgo ******
 //* HMAC SHA1 Auth Tag Generator Class
 
@@ -101,5 +101,6 @@ public:
 private:
   gcry_md_hd_t ctx_;
 };
+#endif
 
 #endif

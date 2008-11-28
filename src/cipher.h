@@ -70,6 +70,7 @@ protected:
   u_int32_t decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 };
 
+#ifndef NOCRYPT
 //****** AesIcmCipher ******
 
 class AesIcmCipher : public Cipher
@@ -90,6 +91,6 @@ private:
   gcry_cipher_hd_t cipher_;
   Buffer salt_;
 };
-
+#endif
 
 #endif

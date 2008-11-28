@@ -40,7 +40,9 @@
 #include <unistd.h>
 
 #include <boost/bind.hpp>
+#ifndef NOCRYPT
 #include <gcrypt.h>
+#endif
 #include <cerrno>     // for ENOMEM
 
 #include "datatypes.h"
@@ -75,6 +77,10 @@
 
 #include "threadParam.h"
 #define MAX_PACKET_LENGTH 1600
+
+#include "cryptinit.hpp"
+#include "daemon.hpp"
+#include "sysexec.hpp"
 
 #define SESSION_KEYLEN_AUTH 20   // TODO: hardcoded size
 #define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
@@ -342,150 +348,6 @@ void receiver(void* p)
   }
 }
 
-// boost thread callbacks for libgcrypt
-#if defined(BOOST_HAS_PTHREADS)
-
-static int boost_mutex_init(void **priv)
-{
-  boost::mutex *lock = new boost::mutex();
-  if (!lock)
-    return ENOMEM;
-  *priv = lock;
-  return 0;
-}
-
-static int boost_mutex_destroy(void **lock)
-{ 
-  delete reinterpret_cast<boost::mutex*>(*lock); 
-  return 0;
-}
-
-static int boost_mutex_lock(void **lock) 
-{ 
-  reinterpret_cast<boost::mutex*>(*lock)->lock();
-  return 0; 
-}
-
-static int boost_mutex_unlock(void **lock)
-{ 
-  reinterpret_cast<boost::mutex*>(*lock)->unlock();
-  return 0; 
-}
-
-static struct gcry_thread_cbs gcry_threads_boost = 
-{ GCRY_THREAD_OPTION_USER, NULL, 
-  boost_mutex_init, boost_mutex_destroy, 
-  boost_mutex_lock, boost_mutex_unlock };
-#else
-#error this libgcrypt thread callbacks only work with pthreads
-#endif
-
-#define MIN_GCRYPT_VERSION "1.2.0"
-
-bool initLibGCrypt()
-{
-  // make libgcrypt thread safe 
-  // this must be called before any other libgcrypt call
-  gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_boost );
-
-  // this must be called right after the GCRYCTL_SET_THREAD_CBS command
-  // no other function must be called till now
-  if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
-    std::cout << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
-    return false;
-  }
-  
-  gcry_error_t err = gcry_control (GCRYCTL_DISABLE_SECMEM, 0); 
-  if( err ) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    std::cout << "initLibGCrypt: Failed to disable secure memory: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX) << std::endl;
-    return false;
-  }
-    
-  // Tell Libgcrypt that initialization has completed.
-  err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
-  if( err ) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    std::cout << "initLibGCrypt: Failed to finish initialization: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX) << std::endl;
-    return false;
-  }
-
-  cLog.msg(Log::PRIO_NOTICE) << "initLibGCrypt: libgcrypt init finished";
-  return true;
-}
-
-void chrootAndDrop(std::string const& chrootdir, std::string const& username)
-{
-	if (getuid() != 0)
-	{
-	  std::cerr << "this programm has to be run as root in order to run in a chroot" << std::endl;
-		exit(-1);
-	}	
-
-  struct passwd *pw = getpwnam(username.c_str());
-	if(pw) {
-		if(chroot(chrootdir.c_str()))
-		{
-      std::cerr << "can't chroot to " << chrootdir << std::endl;
-      exit(-1);
-		}
-    cLog.msg(Log::PRIO_NOTICE) << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
-    chdir("/");
-		if (initgroups(pw->pw_name, pw->pw_gid) || setgid(pw->pw_gid) || setuid(pw->pw_uid)) 
-		{
-			std::cerr << "can't drop to user " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
-			exit(-1);
-		}
-    cLog.msg(Log::PRIO_NOTICE) << "dropped user to " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
-	}
-	else 
-  {
-    std::cerr << "unknown user " << username << std::endl;
-    exit(-1);
-	}
-}
-
-void daemonize()
-{
-  pid_t pid;
-
-  pid = fork();
-  if(pid) exit(0);  
-  setsid();
-  pid = fork();
-  if(pid) exit(0);
-  
-//  std::cout << "running in background now..." << std::endl;
-
-  int fd;
-//  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
-  for (fd=0;fd<=2;fd++) // close all file descriptors
-    close(fd);
-  fd=open("/dev/null",O_RDWR);        // stdin
-  dup(fd);                            // stdout
-  dup(fd);                            // stderr
-  umask(027); 
-}
-
-int execScript(std::string const& script, std::string const& ifname)
-{
-  pid_t pid;
-  pid = fork();
-  if(!pid) {
-    int fd;
-    for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
-      close(fd);
-    fd=open("/dev/null",O_RDWR);        // stdin
-    dup(fd);                            // stdout
-    dup(fd);                            // stderr
-    return execl("/bin/sh", "/bin/sh", script.c_str(), ifname.c_str(), NULL);
-  }
-  int status = 0;
-  waitpid(pid, &status, 0);
-  return status;
-}
  
 int main(int argc, char* argv[])
 {
@@ -513,10 +375,12 @@ int main(int argc, char* argv[])
     cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
     cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << dev.getActualName() << "'";
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
+#ifndef NOEXEC
     if(gOpt.getPostUpScript() != "") {
       int postup_ret = execScript(gOpt.getPostUpScript(), dev.getActualName());
       cLog.msg(Log::PRIO_NOTICE) << "post up script '" << gOpt.getPostUpScript() << "' returned " << postup_ret;  
     }
+#endif
         
     PacketSource* src;
     if(gOpt.getLocalAddr() == "")
@@ -537,6 +401,7 @@ int main(int argc, char* argv[])
       createConnection(endpoint,cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
     }    
 
+#ifndef NODAEMON
     if(gOpt.getChroot())
       chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
     if(gOpt.getDaemonize())
@@ -544,6 +409,7 @@ int main(int argc, char* argv[])
       daemonize();
       daemonized = true;
     }
+#endif
 
     if(pidFile.is_open()) {
       pid_t pid = getpid();
@@ -556,9 +422,11 @@ int main(int argc, char* argv[])
     
     ThreadParam p(dev, *src, cl, queue,*(new OptionConnectTo()));
 
-        // this must be called before any other libgcrypt call
+#ifndef NOCRYPT
+// this must be called before any other libgcrypt call
     if(!initLibGCrypt())
       return -1;
+#endif
 
     boost::thread senderThread(boost::bind(sender,&p));
     boost::thread receiverThread(boost::bind(receiver,&p)); 

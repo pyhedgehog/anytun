@@ -54,6 +54,7 @@ u_int32_t NullAuthAlgo::getMaxLength()
   return MAX_LENGTH_;
 }
 
+#ifndef NOCRYPT
 //****** Sha1AuthAlgo ******
 
 Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
@@ -128,3 +129,5 @@ u_int32_t Sha1AuthAlgo::getMaxLength()
 {
   return MAX_LENGTH_;
 }
+#endif
+

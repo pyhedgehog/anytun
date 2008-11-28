@@ -32,15 +32,16 @@
 
 #include "log.h"
 #include "keyDerivation.h"
-#include "mpi.h"
 #include "threadUtils.hpp"
 
 #include <stdexcept>
 #include <iostream>
 #include <string>
 
+#ifndef NOCRYPT
 #include <gcrypt.h>
-
+#include "mpi.h"
+#endif
 
 void KeyDerivation::setLogKDRate(const uint8_t log_rate)
 {
@@ -56,6 +57,7 @@ void NullKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& 
   for(u_int32_t i=0; i < key.getLength(); ++i) key[i] = 0;
 }
 
+#ifndef NOCRYPT
 //****** AesIcmKeyDerivation ******
 
 AesIcmKeyDerivation::~AesIcmKeyDerivation()
@@ -165,4 +167,5 @@ void AesIcmKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
   }
 }
+#endif
 

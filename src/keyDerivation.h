@@ -111,6 +111,7 @@ private:
 
 };
 
+#ifndef NOCRYPT
 //****** AesIcmKeyDerivation ******
 
 class AesIcmKeyDerivation : public KeyDerivation
@@ -136,6 +137,8 @@ private:
 
   gcry_cipher_hd_t cipher_;
 };
+
+#endif
 
 #endif
 

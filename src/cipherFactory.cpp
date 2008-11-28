@@ -40,8 +40,10 @@ Cipher* CipherFactory::create(std::string const& type)
 {
   if( type == "null" )
     return new NullCipher();
+#ifndef NOCRYPT
   else if( type == "aes-ctr" )
     return new AesIcmCipher();
+#endif
   else
     throw std::invalid_argument("cipher not available");
 }

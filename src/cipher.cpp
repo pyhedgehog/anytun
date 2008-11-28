@@ -34,10 +34,12 @@
 #include <string>
 #include <cstdio>
 #include <cstring>
+#ifndef NOCRYPT
 #include <gcrypt.h>
+#include "mpi.h"
+#endif
 
 #include "cipher.h"
-#include "mpi.h"
 #include "log.h"
 
 
@@ -73,7 +75,7 @@ u_int32_t NullCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_in
   return (ilen < olen) ? ilen : olen;
 }
 
-
+#ifndef NOCRYPT
 //****** AesIcmCipher ****** 
 
 AesIcmCipher::AesIcmCipher() : cipher_(NULL)
@@ -178,4 +180,5 @@ void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t o
     return;
   }
 }
+#endif
 
