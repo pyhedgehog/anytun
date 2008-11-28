@@ -35,7 +35,7 @@
 #include "datatypes.h"
 #include "buffer.h"
 
-//#include "networkAddress.h"
+#include "networkAddress.h"
 
 class Cipher;
 /**
@@ -93,8 +93,8 @@ public:
    */
   u_int8_t* getPayload();
 
-//  NetworkAddress getSrcAddr() const;
-//  NetworkAddress getDstAddr() const;
+  NetworkAddress getSrcAddr() const;
+  NetworkAddress getDstAddr() const;
 
 private:
   PlainPacket();

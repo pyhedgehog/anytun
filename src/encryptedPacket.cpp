@@ -31,7 +31,7 @@
 
 #include <stdexcept>
 #include <iostream>
-//#include <arpa/inet.h>
+#include <arpa/inet.h>
 #include <cstdio>       // for std::memcpy
 
 #include "encryptedPacket.h"
