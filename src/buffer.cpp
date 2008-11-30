@@ -86,10 +86,10 @@ Buffer::Buffer(std::string hex_data, bool allow_realloc) : length_(hex_data.size
   
   for(u_int32_t i=0; i<length_; ++i)
   {
-    u_int8_t tmp;
+    u_int32_t tmp;
     std::istringstream ss(std::string(hex_data.c_str(), i*2, 2));
     if(!(ss >> std::hex >> tmp)) tmp = 0;
-    buf_[i] = tmp;
+    buf_[i] = static_cast<u_int8_t>(tmp);
   }
 }
 
