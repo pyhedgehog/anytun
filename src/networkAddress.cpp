@@ -35,23 +35,35 @@
 
 #include "networkAddress.h"
 
-NetworkAddress::NetworkAddress()
+NetworkAddress::NetworkAddress():ipv4_address_(),ipv6_address_()
 {
 	network_address_type_=ipv4;
-	ipv4_address_.s_addr=0;
 }
 
 NetworkAddress::NetworkAddress(const NetworkAddress & ref) : mutex_(),ipv4_address_(ref.ipv4_address_),ipv6_address_(ref.ipv6_address_),ethernet_address_(ref.ethernet_address_),network_address_type_(ref.network_address_type_)
 {
 }
 
-NetworkAddress::NetworkAddress(in6_addr ipv6_address)
+NetworkAddress::NetworkAddress(const std::string & address)
+{
+	boost::asio::ip::address addr = boost::asio::ip::address::from_string(address);
+	if (addr.is_v4())
+	{
+		network_address_type_=ipv4;
+		ipv4_address_ = addr.to_v4();
+	} else {
+		network_address_type_=ipv6;
+		ipv6_address_ = addr.to_v6();
+	}
+}
+
+NetworkAddress::NetworkAddress(boost::asio::ip::address_v6 ipv6_address)
 {
 	network_address_type_=ipv6;
 	ipv6_address_ = ipv6_address;
 }
 
-NetworkAddress::NetworkAddress(in_addr ipv4_address)
+NetworkAddress::NetworkAddress(boost::asio::ip::address_v4 ipv4_address)
 {
 	network_address_type_=ipv4;
 	ipv4_address_ = ipv4_address;
@@ -73,23 +85,19 @@ NetworkAddress::NetworkAddress(const network_address_type_t type, const char * a
 	setNetworkAddress( type, address);
 }
 
-void NetworkAddress::setNetworkAddress(const network_address_type_t type, const char * address )
+void NetworkAddress::setNetworkAddress(const network_address_type_t type, const std::string & address )
 {
 	if (type==ipv4)
 	{
-		inet_pton(AF_INET, address, &ipv4_address_);
+		ipv4_address_=boost::asio::ip::address_v4::from_string(address);
 	} else if (type==ipv6) {
-		inet_pton(AF_INET6, address, &ipv6_address_);
+		ipv6_address_=boost::asio::ip::address_v6::from_string(address);
 	} else if (type==ethernet) {
 		//TODO
 	} else {
 		//TODO
 	}
 	network_address_type_ = type;
-}
-
-void NetworkAddress::getNetworkAddress(const char *)
-{
 }
 
 network_address_type_t NetworkAddress::getNetworkAddressType()
@@ -100,16 +108,10 @@ network_address_type_t NetworkAddress::getNetworkAddressType()
 std::string NetworkAddress::toString() const
 {
 	if (network_address_type_==ipv4){
-    char buf[INET_ADDRSTRLEN];
-    if(!inet_ntop(AF_INET, &ipv4_address_, buf, sizeof(buf)))
-      return std::string("");
-    return std::string(buf);
+		return ipv4_address_.to_string();
 	} 
   else if (network_address_type_==ipv6) {
-    char buf[INET6_ADDRSTRLEN];
-    if(!inet_ntop(AF_INET6, &ipv6_address_, buf, sizeof(buf)))
-      return std::string("");
-    return std::string(buf);
+		return ipv6_address_.to_string();
 	} 
   else if (network_address_type_==ethernet) {
         // TODO
@@ -123,112 +125,14 @@ bool NetworkAddress::operator<(const NetworkAddress &right) const
 		return false;
 	if (network_address_type_==ipv4)
 	{
-		return (ipv4_address_.s_addr < right.ipv4_address_.s_addr);
+		return (ipv4_address_ < right.ipv4_address_);
 	} else if (network_address_type_==ipv6) {
-		for(int i=0;i<4;i++)
-#if defined(__GNUC__) && defined(__linux__)
-			if (ipv6_address_.s6_addr32[i]<right.ipv6_address_.s6_addr32[i])
-#elif defined(__GNUC__) && defined(__OpenBSD__)
-			if (ipv6_address_.__u6_addr.__u6_addr32[i]<right.ipv6_address_.__u6_addr.__u6_addr32[i])
-#else
- #error Target not supported
-#endif
-				return true;
-		return false;
+		return (ipv6_address_ < right.ipv6_address_);
 	} else if (network_address_type_==ethernet) {
-		//TODO
+		 return (ethernet_address_ < right.ethernet_address_);
 	} else {
 		//TODO
 	}
 	return false;
 }
 
-
-NetworkAddress NetworkAddress::operator<<(uint8_t shift) const
-{
-	if (network_address_type_==ipv4)
-	{
-		in_addr new_v4_addr;
-		new_v4_addr.s_addr = ipv4_address_.s_addr << shift;
-		return (NetworkAddress(new_v4_addr));
-	} else if (network_address_type_==ipv6) {
-		in6_addr new_v6_addr;
-		for(int i=0;i<4;i++)
-		{
-#if defined(__GNUC__) && defined(__linux__)
-			new_v6_addr.s6_addr32[i]=ipv6_address_.s6_addr32[i]<<1;
-			if (i<3 && (ipv6_address_.s6_addr32[i+1] & uint32_t (0x80000000)))
-				new_v6_addr.s6_addr32[i] &=1;
-#elif defined(__GNUC__) && defined(__OpenBSD__)
-			new_v6_addr.__u6_addr.__u6_addr32[i]=ipv6_address_.__u6_addr.__u6_addr32[i]<<1;
-      if (i<3 && (ipv6_address_.__u6_addr.__u6_addr32[i+1] & uint32_t (0x80000000)))
-				new_v6_addr.__u6_addr.__u6_addr32[i] &=1;
-#else
- #error Target not supported
-#endif
-
-		}
-		return NetworkAddress(new_v6_addr);
-	} else if (network_address_type_==ethernet) {
-		//TODO
-	} else {
-		//TODO
-	}
-	return false;
-}
-
-NetworkAddress NetworkAddress::operator&(const NetworkAddress &right) const
-{
-	if (network_address_type_!=right.network_address_type_)
-		throw std::runtime_error("network_address_types did not match");
-	if (network_address_type_==ipv4)
-	{
-		in_addr new_v4_addr;
-		new_v4_addr.s_addr = ipv4_address_.s_addr & right.ipv4_address_.s_addr;
-		return (NetworkAddress(new_v4_addr));
-	} else if (network_address_type_==ipv6) {
-		in6_addr new_v6_addr;
-		for(int i=0;i<4;i++)
-#if defined(__GNUC__) && defined(__linux__)
-			new_v6_addr.s6_addr32[i]=ipv6_address_.s6_addr32[i]&right.ipv6_address_.s6_addr32[i];
-#elif defined(__GNUC__) && defined(__OpenBSD__)
-      new_v6_addr.__u6_addr.__u6_addr32[i]=ipv6_address_.__u6_addr.__u6_addr32[i]&right.ipv6_address_.__u6_addr.__u6_addr32[i];
-#else
- #error Target not supported
-#endif
-
-		return NetworkAddress(new_v6_addr);
-	} else if (network_address_type_==ethernet) {
-		//TODO
-	} else {
-		//TODO
-	}
-	return false;
-}
-
-NetworkAddress NetworkAddress::operator&=(const NetworkAddress &right)
-{
-	if (network_address_type_!=right.network_address_type_)
-		throw std::runtime_error("network_address_types did not match");
-	if (network_address_type_==ipv4)
-	{
-		ipv4_address_.s_addr &= right.ipv4_address_.s_addr;
-		return *this;
-	} else if (network_address_type_==ipv6) {
-		for(int i=0;i<4;i++)
-#if defined(__GNUC__) && defined(__linux__)
-			ipv6_address_.s6_addr32[i]&=right.ipv6_address_.s6_addr32[i];
-#elif defined(__GNUC__) && defined(__OpenBSD__)
-			ipv6_address_.__u6_addr.__u6_addr32[i]&=right.ipv6_address_.__u6_addr.__u6_addr32[i];
-#else
- #error Target not supported
-#endif
-
-		return *this;
-	} else if (network_address_type_==ethernet) {
-		//TODO
-	} else {
-		//TODO
-	}
-	return false;
-}

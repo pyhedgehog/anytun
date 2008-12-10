@@ -115,6 +115,7 @@ u_int8_t* PlainPacket::getPayload()
   return payload_;
 }
 
+/*
 NetworkAddress PlainPacket::getSrcAddr() const
 {
   if(!payload_type_ || !payload_)
@@ -142,33 +143,39 @@ NetworkAddress PlainPacket::getSrcAddr() const
     return NetworkAddress(hdr->ip6_src);
   }
   return NetworkAddress();
-}
+}*/
 
 NetworkAddress PlainPacket::getDstAddr() const
 {
-  if(!payload_type_ || !payload_)
-    return NetworkAddress();
+	if(!payload_type_ || !payload_)
+		return NetworkAddress();
 
-  payload_type_t type = PAYLOAD_TYPE_T_NTOH(*payload_type_);
+	payload_type_t type = PAYLOAD_TYPE_T_NTOH(*payload_type_);
 
-  if(type == PAYLOAD_TYPE_TAP) // Ehternet
-  {
-        // TODO
-    return NetworkAddress();
-  }
-  else if(type == PAYLOAD_TYPE_TUN4) // IPv4
-  {
-    if(length_ < (sizeof(payload_type_t)+sizeof(struct ip)))
-      return NetworkAddress();
-    struct ip* hdr = reinterpret_cast<struct ip*>(payload_);
-    return NetworkAddress(hdr->ip_dst);
-  }
-  else if(type == PAYLOAD_TYPE_TUN6) // IPv6
-  {
-    if(length_ < (sizeof(payload_type_t)+sizeof(struct ip6_hdr)))
-      return NetworkAddress();
-    struct ip6_hdr* hdr = reinterpret_cast<struct ip6_hdr*>(payload_);
-    return NetworkAddress(hdr->ip6_dst);
-  }
-  return NetworkAddress();
+	if(type == PAYLOAD_TYPE_TAP) // Ehternet
+	{
+		// TODO
+		return NetworkAddress();
+	}
+	else if(type == PAYLOAD_TYPE_TUN4) // IPv4
+	{
+		if(length_ < (sizeof(payload_type_t)+5*4))
+			return NetworkAddress();
+		char * hdr = reinterpret_cast<char *>(payload_);
+		boost::asio::ip::address_v4::bytes_type ip_octets;
+		for (int i=0; i<4;i++)
+			ip_octets[i]=hdr[4*4+i];
+		return NetworkAddress(boost::asio::ip::address_v4(ip_octets));
+	}
+	else if(type == PAYLOAD_TYPE_TUN6) // IPv6
+	{
+		if(length_ < (sizeof(payload_type_t)+2*16+2*4))
+			return NetworkAddress();
+		char * hdr = reinterpret_cast<char *>(payload_);
+		boost::asio::ip::address_v6::bytes_type ip_octets;
+		for (int i=0; i<16;i++)
+			ip_octets[i]=hdr[2*4+16+i];
+		return NetworkAddress(boost::asio::ip::address_v6(ip_octets));
+	}
+	return NetworkAddress();
 }

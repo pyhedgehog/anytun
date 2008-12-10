@@ -93,7 +93,7 @@ public:
    */
   u_int8_t* getPayload();
 
-  NetworkAddress getSrcAddr() const;
+//  NetworkAddress getSrcAddr() const;
   NetworkAddress getDstAddr() const;
 
 private:

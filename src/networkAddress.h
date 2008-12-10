@@ -41,6 +41,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string>
+#include <boost/asio.hpp>
 
 enum network_address_type_t
 {
@@ -54,24 +55,20 @@ class NetworkAddress
 public:
 	NetworkAddress();
 	NetworkAddress(const NetworkAddress &);
-	NetworkAddress(in6_addr);
-	NetworkAddress(in_addr);
+	NetworkAddress(const std::string &);
+	NetworkAddress(boost::asio::ip::address_v6);
+	NetworkAddress(boost::asio::ip::address_v4);
 	NetworkAddress(uint64_t);
 	NetworkAddress(const network_address_type_t type, const char * address );
 	~NetworkAddress();
-	void setNetworkAddress(const network_address_type_t type, const char * address );
-	void getNetworkAddress(const char *);
+	void setNetworkAddress(const network_address_type_t type, const std::string & address );
 	network_address_type_t getNetworkAddressType();
   std::string toString() const;
-  bool operator<(const NetworkAddress &s) const;
-  NetworkAddress operator&(const NetworkAddress &s) const;
-  NetworkAddress operator&=(const NetworkAddress &s);
-  NetworkAddress operator<<(uint8_t shift) const;
-
+	bool operator<(const NetworkAddress &s) const;
 protected:
   Mutex mutex_;
-	in_addr ipv4_address_;
-	in6_addr ipv6_address_;
+	boost::asio::ip::address_v4 ipv4_address_;
+	boost::asio::ip::address_v6 ipv6_address_;
 	uint64_t ethernet_address_;
 	network_address_type_t network_address_type_;
 private:
@@ -82,20 +79,28 @@ private:
   {
     ar & network_address_type_;
 		if (network_address_type_==ipv4)
-			ar & ipv4_address_.s_addr;
+		{
+			std::string ip(ipv4_address_.to_string());
+			ar & ip;
+			ipv4_address_=boost::asio::ip::address_v4::from_string(ip);
+		}
 		if (network_address_type_==ipv6)
-			for(int i=0;i<4;i++)
-#if defined(__GNUC__) && defined(__linux__)
-				ar & ipv6_address_.s6_addr32;
-#elif defined(__GNUC__) && defined(__OpenBSD__)
-        ar & ipv6_address_.__u6_addr.__u6_addr32;
-#else
- #error Target not supported
-#endif
-
+		{
+			std::string ip(ipv6_address_.to_string());
+			ar & ip;
+			ipv6_address_=boost::asio::ip::address_v6::from_string(ip);
+		}
 		if (network_address_type_==ethernet)
 			ar & ethernet_address_;
    }
 };
 
+//			for(int i=0;i<4;i++)
+//#if defined(__GNUC__) && defined(__linux__)
+//				ar & ipv6_address_.s6_addr32;
+//#elif defined(__GNUC__) && defined(__OpenBSD__)
+//        ar & ipv6_address_.__u6_addr.__u6_addr32;
+//#else
+// #error Target not supported
+//#endif
 #endif
