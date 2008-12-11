@@ -63,7 +63,6 @@ OBJS = tunDevice.o \
 			 connectionParam.o \
 			 networkAddress.o \
 			 networkPrefix.o \
-			 router.o \
 			 routingTable.o \
        signalController.o \
        log.o \
@@ -102,7 +101,6 @@ ANYCONFOBJS = log.o \
 						 anyrtpproxy/callIdQueue.o \
 						 syncRtpCommand.o \
 						 anyConfOptions.o \
-						 router.o \
 						 routingTable.o \
 						 seqWindow.o \
 						 syncQueue.o \
@@ -245,9 +243,6 @@ networkPrefix.o: networkPrefix.cpp networkPrefix.h
 	$(CXX) $(CXXFLAGS) $< -c
 
 networkAddress.o: networkAddress.cpp networkAddress.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-router.o: router.cpp router.h
 	$(CXX) $(CXXFLAGS) $< -c
 
 anytun.o: anytun.cpp
