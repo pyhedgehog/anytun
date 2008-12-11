@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="NOCRYPT;NODAEMON;NOEXEC;NOPACKED;NOSYSLOG;NOROUTING;NOSIGNALCONTROLLER"
+				PreprocessorDefinitions="NOCRYPT;NODAEMON;NOEXEC;NOPACKED;NOSYSLOG;NOSIGNALCONTROLLER;WIN32_LEAN_AND_MEAN"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -113,7 +113,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="NOCRYPT;NODAEMON;NOEXEC;NOPACKED"
+				PreprocessorDefinitions="NOCRYPT;NODAEMON;NOEXEC;NOPACKED;NOSYSLOG;NOSIGNALCONTROLLER"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -235,6 +235,10 @@
 			</File>
 			<File
 				RelativePath=".\plainPacket.h"
+				>
+			</File>
+			<File
+				RelativePath=".\routingTable.h"
 				>
 			</File>
 			<File
@@ -386,6 +390,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\routingTable.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\rtpSession.cpp"
 				>
 			</File>
@@ -431,6 +439,10 @@
 			</File>
 			<File
 				RelativePath=".\syncTcpConnection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\tunDevice.cpp"
 				>
 			</File>
 		</Filter>

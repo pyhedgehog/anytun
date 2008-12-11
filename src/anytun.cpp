@@ -84,7 +84,7 @@
 #define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
 #define SESSION_KEYLEN_SALT 14   // TODO: hardcoded size
 
-void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
+void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & cl, window_size_t seqSize, SyncQueue & queue, mux_t mux)
 {
 	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
@@ -414,13 +414,13 @@ int main(int argc, char* argv[])
       daemonize();
       daemonized = true;
     }
-#endif
 
     if(pidFile.is_open()) {
       pid_t pid = getpid();
       pidFile << pid;
       pidFile.close();
     }
+#endif
 
 #ifndef NOSIGNALCONTROLLER
     SignalController sig;
@@ -436,7 +436,9 @@ int main(int argc, char* argv[])
 #endif
 
     boost::thread senderThread(boost::bind(sender,&p));
+#ifndef NOSIGNALCONTROLLER
     boost::thread receiverThread(boost::bind(receiver,&p)); 
+#endif
 #ifndef ANYTUN_NOSYNC
     boost::thread * syncListenerThread;
     if(gOpt.getLocalSyncPort() != "")
@@ -448,10 +450,13 @@ int main(int argc, char* argv[])
       connectThreads.push_back(new boost::thread(boost::bind(syncConnector,point)));
     }
 #endif
-    
-    int ret = sig.run();
-    
+
+#ifndef NOSIGNALCONTROLLER
+    int ret = sig.run();  
     return ret;    
+#else
+	receiver(&p);
+#endif
     // TODO cleanup here!
     /*
     pthread_cancel(senderThread);

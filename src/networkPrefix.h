@@ -43,16 +43,16 @@ class NetworkPrefix : public NetworkAddress
 {
 public:
 	NetworkPrefix();
-	NetworkPrefix(const NetworkAddress &, uint8_t length);
+	NetworkPrefix(const NetworkAddress &, u_int8_t length);
 	NetworkPrefix(const NetworkPrefix &);
-	void setNetworkPrefixLength(uint8_t length );
-	uint8_t getNetworkPrefixLength();
+	void setNetworkPrefixLength(u_int8_t length );
+	u_int8_t getNetworkPrefixLength();
   bool operator<(const NetworkPrefix &s) const;
 
 private:
 	operator NetworkAddress();
   void operator=(const NetworkPrefix &s);
-	uint8_t length_;
+	u_int8_t length_;
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)

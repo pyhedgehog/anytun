@@ -55,7 +55,7 @@ public:
 	void clear();
   Mutex& getMutex();
 	u_int16_t* getOrNewRoutingTEUnlocked(const NetworkPrefix & addr);
-	uint16_t getCountUnlocked();
+	u_int16_t getCountUnlocked();
 	RoutingMap::iterator getBeginUnlocked();
 	RoutingMap::iterator getEndUnlocked();
 

@@ -55,7 +55,7 @@ public:
 	NetworkAddress(const std::string &);
 	NetworkAddress(boost::asio::ip::address_v6);
 	NetworkAddress(boost::asio::ip::address_v4);
-	NetworkAddress(uint64_t);
+	NetworkAddress(u_int64_t);
 	NetworkAddress(const network_address_type_t type, const char * address );
 	~NetworkAddress();
 	void setNetworkAddress(const network_address_type_t type, const std::string & address );
@@ -66,7 +66,7 @@ protected:
   Mutex mutex_;
 	boost::asio::ip::address_v4 ipv4_address_;
 	boost::asio::ip::address_v6 ipv6_address_;
-	uint64_t ethernet_address_;
+	u_int64_t ethernet_address_;
 	network_address_type_t network_address_type_;
 private:
 	NetworkAddress operator=(const NetworkAddress &s);

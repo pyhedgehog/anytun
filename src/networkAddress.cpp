@@ -69,7 +69,7 @@ NetworkAddress::NetworkAddress(boost::asio::ip::address_v4 ipv4_address)
 	ipv4_address_ = ipv4_address;
 }
 
-NetworkAddress::NetworkAddress(uint64_t ethernet_address)
+NetworkAddress::NetworkAddress(u_int64_t ethernet_address)
 {
 	network_address_type_=ethernet;
 	ethernet_address_=ethernet_address;

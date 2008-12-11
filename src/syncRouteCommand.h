@@ -46,7 +46,7 @@ public:
 
 private:
 	SyncRouteCommand(const SyncRouteCommand &);
-	uint16_t count_;
+	u_int16_t count_;
 	NetworkPrefix addr_;
   friend class boost::serialization::access;
   template<class Archive>
