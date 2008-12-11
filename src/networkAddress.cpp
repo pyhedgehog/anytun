@@ -122,7 +122,7 @@ std::string NetworkAddress::toString() const
 bool NetworkAddress::operator<(const NetworkAddress &right) const
 {
 	if (network_address_type_!=right.network_address_type_)
-		return false;
+		throw std::runtime_error("NetworkAddress::operator<() address types don't match");
 	if (network_address_type_==ipv4)
 	{
 		return (ipv4_address_ < right.ipv4_address_);
