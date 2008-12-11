@@ -94,7 +94,7 @@ void SyncClient::run()
 			if (connected) 
 				cLog.msg(Log::PRIO_NOTICE) << "sync: connection to " << hostname_ <<":"<< port_<< " lost ("<< e.what() << ") retrying every 10sec";
 			connected=false;
-			sleep(10);
+			boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
 		}
 	}
 }
