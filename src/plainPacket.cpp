@@ -31,15 +31,15 @@
 
 #include <stdexcept>
 #include <iostream>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/in_systm.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/ip6.h>
-#include <net/if.h>
-#include <net/if_arp.h>
-#include <netinet/if_ether.h>
+//#include <arpa/inet.h>
+//#include <sys/socket.h>
+//#include <netinet/in_systm.h>
+//#include <netinet/in.h>
+//#include <netinet/ip.h>
+//#include <netinet/ip6.h>
+//#include <net/if.h>
+//#include <net/if_arp.h>
+//#include <netinet/if_ether.h>
 
 #include "datatypes.h"
 #include "plainPacket.h"
@@ -70,10 +70,10 @@ void PlainPacket::setPayloadType(payload_type_t payload_type)
       return;
     }
 
-    struct ip* hdr = reinterpret_cast<struct ip*>(payload_);
-    if(hdr->ip_v == 4)
+    char * ip_version = reinterpret_cast<char *>(payload_);
+    if(ip_version[0] == 4)
       *payload_type_ = PAYLOAD_TYPE_T_HTON(PAYLOAD_TYPE_TUN4);
-    else if(hdr->ip_v == 6)
+    else if(ip_version[0] == 6)
       *payload_type_ = PAYLOAD_TYPE_T_HTON(PAYLOAD_TYPE_TUN6);
   }
   else
