@@ -39,7 +39,7 @@ NetworkPrefix::NetworkPrefix(): NetworkAddress(),length_(0)
 {
 }
 
-NetworkPrefix::NetworkPrefix(const NetworkAddress & src,uint8_t length): NetworkAddress(src),length_(length)
+NetworkPrefix::NetworkPrefix(const NetworkAddress & src,u_int8_t length): NetworkAddress(src),length_(length)
 {
 }
 
@@ -47,12 +47,12 @@ NetworkPrefix::NetworkPrefix(const NetworkPrefix & src): NetworkAddress(src),len
 {
 }
 
-void NetworkPrefix::setNetworkPrefixLength(uint8_t length )
+void NetworkPrefix::setNetworkPrefixLength(u_int8_t length )
 {
 	length_ = length;
 }
 
-uint8_t NetworkPrefix::getNetworkPrefixLength()
+u_int8_t NetworkPrefix::getNetworkPrefixLength()
 {
 	return length_;
 }
