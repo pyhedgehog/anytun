@@ -37,7 +37,9 @@
 #include <iostream>
 #include <cstring>
 
+#ifndef NOCRYPT
 #include <gcrypt.h>
+#endif
 
 //****** NullAuthAlgo ******
 void NullAuthAlgo::generate(EncryptedPacket& packet)
