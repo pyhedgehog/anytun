@@ -80,7 +80,7 @@ NetworkAddress::~NetworkAddress()
 {
 }
 
-NetworkAddress::NetworkAddress(const network_address_type_t type, const char * address )
+NetworkAddress::NetworkAddress(const network_address_type_t type, const std::string & address )
 {
 	setNetworkAddress( type, address);
 }

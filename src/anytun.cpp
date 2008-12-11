@@ -94,15 +94,18 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
 
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_end);
  	cl.addConnection(connparam,mux);
-#ifndef NOROUTING
-	NetworkAddress addr(ipv4,gOpt.getIfconfigParamRemoteNetmask().c_str());
-	NetworkPrefix prefix(addr,32);
-	gRoutingTable.addRoute(prefix,mux);
-#endif
   SyncCommand sc (cl,mux);
 	queue.push(sc);
-  SyncCommand sc2 (prefix);
-	queue.push(sc2);
+#ifndef NOROUTING
+	if (gOpt.getIfconfigParamRemoteNetmask() != "")
+	{
+		NetworkAddress addr(gOpt.getIfconfigParamRemoteNetmask());
+		NetworkPrefix prefix(addr,32);
+		gRoutingTable.addRoute(prefix,mux);
+  	SyncCommand sc2 (prefix);
+		queue.push(sc2);
+	}
+#endif
 }
 
 bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)

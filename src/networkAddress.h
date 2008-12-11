@@ -56,7 +56,7 @@ public:
 	NetworkAddress(boost::asio::ip::address_v6);
 	NetworkAddress(boost::asio::ip::address_v4);
 	NetworkAddress(u_int64_t);
-	NetworkAddress(const network_address_type_t type, const char * address );
+	NetworkAddress(const network_address_type_t type, const std::string & address );
 	~NetworkAddress();
 	void setNetworkAddress(const network_address_type_t type, const std::string & address );
 	network_address_type_t getNetworkAddressType();
