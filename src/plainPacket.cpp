@@ -70,10 +70,12 @@ void PlainPacket::setPayloadType(payload_type_t payload_type)
       return;
     }
 
-    char * ip_version = reinterpret_cast<char *>(payload_);
-    if(ip_version[0] == 4)
+    char * ip_version_ptr = reinterpret_cast<char *>(payload_);
+		char ip_version = ip_version_ptr[0];
+		ip_version >>=4;
+    if(ip_version == 4)
       *payload_type_ = PAYLOAD_TYPE_T_HTON(PAYLOAD_TYPE_TUN4);
-    else if(ip_version[0] == 6)
+    else if(ip_version == 6)
       *payload_type_ = PAYLOAD_TYPE_T_HTON(PAYLOAD_TYPE_TUN6);
   }
   else
