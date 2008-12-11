@@ -37,9 +37,6 @@
 #include "threadUtils.hpp"
 #include "datatypes.h"
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <string>
 #include <boost/asio.hpp>
 
