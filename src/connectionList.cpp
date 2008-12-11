@@ -116,12 +116,12 @@ ConnectionParam & ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
 	if(it!=connections_.end())
 		return it->second;
 
-  uint8_t key[] = {
+  u_int8_t key[] = {
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
   'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
   };
   
-  uint8_t salt[] = {
+  u_int8_t salt[] = {
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
   'i', 'j', 'k', 'l', 'm', 'n'
   };
