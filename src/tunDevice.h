@@ -50,7 +50,7 @@ public:
   std::string getTypeString()
   {
     if(fd_ < 0)
-      return NULL;
+      return "";
     
     switch(conf_.type_)
     {
@@ -58,7 +58,7 @@ public:
     case TYPE_TUN: return "tun"; break;
     case TYPE_TAP: return "tap"; break;
     }
-    return NULL;
+    return "";
   }
 
 

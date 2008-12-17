@@ -468,7 +468,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tunDevice.cpp"
+				RelativePath=".\win32\tunDevice.cpp"
 				>
 			</File>
 		</Filter>

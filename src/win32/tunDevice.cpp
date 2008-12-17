@@ -51,14 +51,17 @@ TunDevice::~TunDevice()
 int TunDevice::fix_return(int ret, size_t pi_length)
 {
 // nothing to be done here
+	return 0;
 }
 
 int TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
+	return 0;
 }
 
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
+	return 0;
 }
 
 void TunDevice::init_post()
