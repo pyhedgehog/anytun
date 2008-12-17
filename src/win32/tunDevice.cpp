@@ -31,8 +31,8 @@
 
 #include <string.h>
 
-#include "tunDevice.h"
-#include "threadUtils.hpp"
+#include "../tunDevice.h"
+#include "../threadUtils.hpp"
 
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
