@@ -152,6 +152,7 @@ bool Options::parse(int argc, char* argv[])
 
   progname_ = argv[0];
   argc--;
+	std::queue<std::string> route_queue;
   std::queue<std::string> host_port_queue;
   for(int i=1; argc > 0; ++i)
   {
@@ -187,6 +188,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
 		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
 		PARSE_CSLIST_PARAM("-X","--control-host", host_port_queue)
+    PARSE_CSLIST_PARAM("-R","--route", route_queue)
     else 
       return false;
   }
@@ -205,6 +207,17 @@ bool Options::parse(int argc, char* argv[])
     if(!ret) return false;
     host_port_queue.pop();
 	}
+	while(!route_queue.empty())
+  {
+    std::stringstream tmp_stream(route_queue.front());
+    OptionRoute rt;
+    getline(tmp_stream,rt.net_addr,'/');
+    if(!tmp_stream.good())
+      return false;
+    tmp_stream >> rt.prefix_length;
+    route_queue.pop();
+    routes_.push_back(rt);
+  }
   return true;
 }
 
@@ -288,6 +301,7 @@ void Options::printUsage()
   std::cout << "       [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
 //  std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
   std::cout << "       [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
+  std::cout << "              [-R|--route] <net>/<prefix length>  add a route to connection, can be invoked several times" << std::endl;
 }
 
 void Options::printOptions()
@@ -324,6 +338,10 @@ void Options::printOptions()
   for(; it != connect_to_.end(); ++it)
     std::cout << "'" << it->host << "','" << it->port << "';";
   std::cout << std::endl;
+  std::cout << "routes:" << std::endl;
+  RouteList::const_iterator rit;
+  for(rit = routes_.begin(); rit != routes_.end(); ++rit)
+    std::cout << "  " << rit->net_addr << "/" << rit->prefix_length << std::endl;
 }
 
 std::string Options::getProgname()
@@ -675,3 +693,10 @@ Options& Options::setSalt(std::string s)
   salt_ = s;
   return *this;
 }
+
+RouteList Options::getRoutes()
+{
+  Lock lock(mutex);
+  return routes_;
+}
+

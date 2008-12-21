@@ -409,6 +409,15 @@ int main(int argc, char* argv[])
       createConnection(endpoint,cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
     }    
 
+		RouteList routes = gOpt.getRoutes();
+		RouteList::const_iterator rit;
+		for(rit = routes.begin(); rit != routes.end(); ++rit)
+		{
+			NetworkAddress addr( rit->net_addr );
+			NetworkPrefix prefix( addr, rit->prefix_length );
+			gRoutingTable.addRoute( prefix, gOpt.getMux() );
+		}
+
 #ifndef NODAEMON
     if(gOpt.getChroot())
       chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());

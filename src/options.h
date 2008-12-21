@@ -43,6 +43,15 @@ typedef struct
 	std::string port;
 } OptionConnectTo;
 
+typedef struct
+{
+  std::string net_addr;
+  u_int16_t prefix_length;
+} OptionRoute;
+
+typedef std::list<OptionRoute>  RouteList;
+
+
 typedef std::list<OptionConnectTo>  ConnectToList;
 
 class Options
@@ -110,6 +119,8 @@ public:
   Buffer getKey();
   Options& setSalt(std::string s);
   Buffer getSalt();
+  RouteList getRoutes();
+
 
 private:
   Options();
@@ -159,6 +170,7 @@ private:
   u_int16_t mux_;
   Buffer key_;
   Buffer salt_;
+  RouteList routes_;
 };
 
 extern Options& gOpt;
