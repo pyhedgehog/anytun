@@ -59,14 +59,16 @@ RoutingTable::~RoutingTable()
 
 void RoutingTable::addRoute(const NetworkPrefix & pref,u_int16_t mux )
 {
+	if ( pref.getNetworkAddressType()!=ipv4 && pref.getNetworkAddressType() != ipv6)
+		return; //TODO add ETHERNET support
   Lock lock(mutex_);
 	
 	
-  std::pair<RoutingMap::iterator, bool> ret = routes_.insert(RoutingMap::value_type(pref,mux));
+  std::pair<RoutingMap::iterator, bool> ret = routes_[pref.getNetworkAddressType()].insert(RoutingMap::value_type(pref,mux));
   if(!ret.second)
   {
-    routes_.erase(ret.first);
-    routes_.insert(RoutingMap::value_type(pref,mux));
+    routes_[pref.getNetworkAddressType()].erase(ret.first);
+    routes_[pref.getNetworkAddressType()].insert(RoutingMap::value_type(pref,mux));
   }
 }
 
@@ -75,64 +77,64 @@ void RoutingTable::delRoute(const NetworkPrefix & pref )
 {
   Lock lock(mutex_);
 	
-  routes_.erase(routes_.find(pref));	
+  routes_[pref.getNetworkAddressType()].erase(routes_[pref.getNetworkAddressType()].find(pref));	
 }
 
 u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
 {
 	Lock lock(mutex_);
-	if (routes_.empty())
+	if (routes_[addr.getNetworkAddressType()].empty())
   	return 0;
-	NetworkPrefix prefix(addr,32);
 	//TODO Routing algorithem isnt working!!!
-	RoutingMap::iterator it = routes_.lower_bound(prefix);
+	NetworkPrefix prefix(addr,128);
+	RoutingMap::iterator it = routes_[addr.getNetworkAddressType()].lower_bound(prefix);
 //	it--;
-	if (it!=routes_.end())
+	if (it!=routes_[addr.getNetworkAddressType()].end())
 		return it->second;
-	it=routes_.begin();
+	it=routes_[addr.getNetworkAddressType()].begin();
 	return it->second;
 }
 
 u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix & addr)
 {
-  RoutingMap::iterator it = routes_.find(addr);
-  if(it!=routes_.end())
+  RoutingMap::iterator it = routes_[addr.getNetworkAddressType()].find(addr);
+  if(it!=routes_[addr.getNetworkAddressType()].end())
     return &(it->second);
 
-  routes_.insert(RoutingMap::value_type(addr, 1));
-  it = routes_.find(addr);
+  routes_[addr.getNetworkAddressType()].insert(RoutingMap::value_type(addr, 1));
+  it = routes_[addr.getNetworkAddressType()].find(addr);
   return &(it->second);
 }
 
-u_int16_t RoutingTable::getCountUnlocked()
+u_int16_t RoutingTable::getCountUnlocked(network_address_type_t type)
 {
-	RoutingMap::iterator it = routes_.begin();
+	RoutingMap::iterator it = routes_[type].begin();
 	u_int16_t routes=0;
-	for (;it!=routes_.end();++it)
+	for (;it!=routes_[type].end();++it)
 		routes++;
 	return routes;
 }
 
-RoutingMap::iterator RoutingTable::getBeginUnlocked()
+RoutingMap::iterator RoutingTable::getBeginUnlocked(network_address_type_t type)
 {
-	return routes_.begin();
+	return routes_[type].begin();
 }
 
-RoutingMap::iterator RoutingTable::getEndUnlocked()
+RoutingMap::iterator RoutingTable::getEndUnlocked(network_address_type_t type)
 {
-	return routes_.end();
+	return routes_[type].end();
 }
 
-void RoutingTable::clear()
+void RoutingTable::clear(network_address_type_t type)
 {
   Lock lock(mutex_);
-	routes_.clear();
+	routes_[type].clear();
 }
 
-bool RoutingTable::empty()
+bool RoutingTable::empty(network_address_type_t type)
 {
   Lock lock(mutex_);
-	return routes_.empty();
+	return routes_[type].empty();
 }
 
 Mutex& RoutingTable::getMutex()

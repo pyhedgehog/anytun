@@ -100,7 +100,7 @@ void NetworkAddress::setNetworkAddress(const network_address_type_t type, const 
 	network_address_type_ = type;
 }
 
-network_address_type_t NetworkAddress::getNetworkAddressType()
+network_address_type_t NetworkAddress::getNetworkAddressType() const
 {
 	return network_address_type_;
 }

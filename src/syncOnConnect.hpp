@@ -44,20 +44,25 @@ void syncOnConnect(SyncTcpConnection * connptr)
     connptr->Send(lengthout.str());
     connptr->Send(sout.str());
   }
-  //TODO Locking here
-  RoutingMap::iterator it = gRoutingTable.getBeginUnlocked();
-  for (;it!=gRoutingTable.getEndUnlocked();++it)
-  {
-    NetworkPrefix tmp(it->first);
-    std::ostringstream sout;
-    boost::archive::text_oarchive oa(sout);
-    const SyncCommand scom(tmp);
-    oa << scom;
-    std::stringstream lengthout;
-    lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
-    connptr->Send(lengthout.str());
-    connptr->Send(sout.str());
-  }
+  //TODO Locking here	
+	network_address_type_t types[] = {ipv4,ipv6,ethernet};
+	for (int types_idx=0; types_idx<3; types_idx++)
+	{
+		network_address_type_t type = types[types_idx];
+		RoutingMap::iterator it = gRoutingTable.getBeginUnlocked(type);
+		for (;it!=gRoutingTable.getEndUnlocked(type);++it)
+		{
+			NetworkPrefix tmp(it->first);
+			std::ostringstream sout;
+			boost::archive::text_oarchive oa(sout);
+			const SyncCommand scom(tmp);
+			oa << scom;
+			std::stringstream lengthout;
+			lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
+			connptr->Send(lengthout.str());
+			connptr->Send(sout.str());
+		}
+	}
   //TODO Locking here
   RtpSessionMap::iterator rit = gRtpSessionTable.getBeginUnlocked();
   for (;rit!=gRtpSessionTable.getEndUnlocked();++rit)

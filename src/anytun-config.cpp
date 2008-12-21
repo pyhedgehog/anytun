@@ -70,7 +70,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
   RouteList::const_iterator rit;
   for(rit = routes.begin(); rit != routes.end(); ++rit)
   {
-    NetworkAddress addr( ipv4, rit->net_addr.c_str() );
+    NetworkAddress addr( rit->net_addr.c_str() );
     NetworkPrefix prefix( addr, rit->prefix_length );
     
     gRoutingTable.addRoute( prefix, mux );

@@ -42,9 +42,9 @@
 
 enum network_address_type_t
 {
-	ipv4,
-	ipv6,
-	ethernet
+	ipv4=0,
+	ipv6=1,
+	ethernet=2
 };
 
 class NetworkAddress
@@ -59,7 +59,7 @@ public:
 	NetworkAddress(const network_address_type_t type, const std::string & address );
 	~NetworkAddress();
 	void setNetworkAddress(const network_address_type_t type, const std::string & address );
-	network_address_type_t getNetworkAddressType();
+	network_address_type_t getNetworkAddressType() const;
   std::string toString() const;
 	bool operator<(const NetworkAddress &s) const;
 protected:

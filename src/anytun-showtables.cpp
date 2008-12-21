@@ -65,15 +65,21 @@ void output(ConnectionList &cl)
 		std::cout << std::endl;
     //std::cout << "Connection: Keyderivation-Type: " << conn.kd_.printType() << std::endl;
     cl.clear();
-	} 
-  else if( !gRoutingTable.empty() ) 
-  {
-		RoutingMap::iterator it = gRoutingTable.getBeginUnlocked();
-		NetworkPrefix pref( it->first );
-    std::cout << "Route: " << pref.toString() << "/" << pref.getNetworkPrefixLength() << " -> ";
-		mux_t mux = it->second;
-    std::cout << mux << std::endl;
-    gRoutingTable.clear();
+	} else {
+	  network_address_type_t types[] = {ipv4,ipv6,ethernet};
+		for (int types_idx=0; types_idx<3; types_idx++)
+		{ 
+			network_address_type_t type = types[types_idx];
+			if( !gRoutingTable.empty(type) ) 
+			{
+				RoutingMap::iterator it = gRoutingTable.getBeginUnlocked(type);
+				NetworkPrefix pref( it->first );
+				std::cout << "Route: " << pref.toString() << "/" << pref.getNetworkPrefixLength() << " -> ";
+				mux_t mux = it->second;
+				std::cout << mux << std::endl;
+				gRoutingTable.clear(type);
+			}
+		}
 	}
 }
 

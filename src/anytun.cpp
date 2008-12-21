@@ -100,7 +100,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
 	if (gOpt.getIfconfigParamRemoteNetmask() != "")
 	{
 		NetworkAddress addr(gOpt.getIfconfigParamRemoteNetmask());
-		NetworkPrefix prefix(addr,32);
+		NetworkPrefix prefix(addr,128);
 		gRoutingTable.addRoute(prefix,mux);
   	SyncCommand sc2 (prefix);
 		queue.push(sc2);

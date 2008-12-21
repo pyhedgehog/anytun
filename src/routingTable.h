@@ -37,7 +37,6 @@
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
-//#include "routingTableEntry.h"
 #include "networkAddress.h"
 #include "networkPrefix.h"
 typedef std::map<NetworkPrefix,u_int16_t> RoutingMap;
@@ -51,13 +50,13 @@ public:
 	void addRoute(const NetworkPrefix & ,u_int16_t);
 	void delRoute(const NetworkPrefix & );
 	u_int16_t getRoute(const NetworkAddress &);
-	bool empty();
-	void clear();
+	bool empty(network_address_type_t type);
+	void clear(network_address_type_t type);
   Mutex& getMutex();
 	u_int16_t* getOrNewRoutingTEUnlocked(const NetworkPrefix & addr);
-	u_int16_t getCountUnlocked();
-	RoutingMap::iterator getBeginUnlocked();
-	RoutingMap::iterator getEndUnlocked();
+	u_int16_t getCountUnlocked(network_address_type_t type);
+	RoutingMap::iterator getBeginUnlocked(network_address_type_t type);
+	RoutingMap::iterator getEndUnlocked(network_address_type_t type);
 
 private:
   static Mutex instMutex;
@@ -70,7 +69,7 @@ private:
 	};
 	RoutingTable(const RoutingTable &s);
   void operator=(const RoutingTable &s);
-	RoutingMap routes_;
+	RoutingMap routes_[3];
   Mutex mutex_;
 };
 
