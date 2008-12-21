@@ -48,8 +48,9 @@
 #include <boost/archive/text_iarchive.hpp>
 
 
-void output(ConnectionList &cl)
+void output()
 {
+	ConnectionList &cl(gConnectionList);
 	if( !cl.empty() )
 	{
 		ConnectionMap::iterator it = cl.getBeginUnlocked();
@@ -74,7 +75,7 @@ void output(ConnectionList &cl)
 			{
 				RoutingMap::iterator it = gRoutingTable.getBeginUnlocked(type);
 				NetworkPrefix pref( it->first );
-				std::cout << "Route: " << pref.toString() << "/" << pref.getNetworkPrefixLength() << " -> ";
+				std::cout << "Route: " << pref.toString() << "/" << (int)pref.getNetworkPrefixLength() << " -> ";
 				mux_t mux = it->second;
 				std::cout << mux << std::endl;
 				gRoutingTable.clear(type);
@@ -83,49 +84,43 @@ void output(ConnectionList &cl)
 	}
 }
 
+void readExactly(size_t toread, std::iostream & result)
+{
+  size_t hasread = 0;
+  while (toread > hasread && std::cin.good())
+  {
+			char a[1];
+			std::cin.read(a,1);
+      result.write(a,1);
+      hasread++;
+  }
+}
+
+void readAndProcessOne()
+{
+  size_t message_lenght ;
+	std::stringstream message_lenght_stream;
+	readExactly(5,message_lenght_stream);
+	message_lenght_stream >> message_lenght;
+	std::stringstream void_stream;
+	readExactly(1,void_stream); //skip space
+	std::stringstream sync_command_stream;
+	readExactly(message_lenght, sync_command_stream);
+	//std::cout << message_lenght << std::endl;
+	//std::cout << sync_command_stream.str()<< std::endl;
+	boost::archive::text_iarchive ia(sync_command_stream);
+	SyncCommand scom(gConnectionList);
+	ia >> scom;
+}
+
 int main(int argc, char* argv[])
 {
   int ret = 0;
 
-	ConnectionList cl;
-  std::stringstream iss_;
-  int32_t missing_chars=-1;
-  int32_t buffer_size_=0;
   while( std::cin.good() )
   {
-    char c;
-    std::cin.get(c);
-    iss_ << c;
-    buffer_size_++;
-    while (1)
-    {
-      if(missing_chars==-1 && buffer_size_>5)
-      {
-        char * buffer = new char [6+1];
-        iss_.read(buffer,6);
-        std::stringstream tmp;
-        tmp.write(buffer,6);
-        tmp>>missing_chars;
-        delete[] buffer;
-        buffer_size_-=6;
-      } 
-      else if( missing_chars>0 && missing_chars<=buffer_size_ )
-      {
-        char * buffer = new char [missing_chars+1];
-        iss_.read(buffer,missing_chars);
-        std::stringstream tmp;
-        tmp.write(buffer,missing_chars);
-        boost::archive::text_iarchive ia(tmp);
-        SyncCommand scom(cl);
-        ia >> scom;
-        buffer_size_-=missing_chars;
-        missing_chars=-1;
-        output(cl);
-        delete[] buffer;
-      } 
-      else
-        break;
-    }
+		readAndProcessOne();
+		output();
   }
   return ret;
 }

@@ -45,7 +45,7 @@
 
 
 SyncClient::SyncClient(std::string hostname,std::string port)
-:hostname_( hostname),port_(port),missing_chars(-1)
+:hostname_( hostname),port_(port)
 {
 }
 
@@ -74,20 +74,7 @@ void SyncClient::run()
 			if (!connected)
 				cLog.msg(Log::PRIO_NOTICE) << "sync: connected to " << hostname_ <<":"<< port_;
 			connected=true;
-			for (;;)
-			{
-				boost::array<char, 1> buf;
-				boost::system::error_code error;
-
-				size_t len = socket.read_some(boost::asio::buffer(buf), error);
-
-				if (error == boost::asio::error::eof)
-					break; // Connection closed cleanly by peer.
-				else if (error)
-					throw boost::system::system_error(error); // Some other error.
-
-				OnRawData(buf.data(), len);
-			}
+			readAndProcess(socket); //endless loop
 		}
 		catch (std::exception& e)
 		{
@@ -99,59 +86,41 @@ void SyncClient::run()
 	}
 }
 
-void SyncClient::OnRawData(const char *buf,size_t len)
-//void SyncClientSocket::OnLine(const std::string& line)
+void SyncClient::readAndProcess(SyncTcpConnection::proto::socket & socket)
 {
 	ConnectionList & cl_ (gConnectionList);
-	for(size_t index=0;index<len;index++)
+	size_t message_lenght ;
+	for (;;)
 	{
-//		std::cout << buf[index];
-		iss_ << buf[index];
-		buffer_size_++;
+		std::stringstream message_lenght_stream;
+		readExactly(socket,5,message_lenght_stream);
+		message_lenght_stream >> message_lenght;
+		std::stringstream void_stream;
+		readExactly(socket,1,void_stream); //skip space
+		std::stringstream sync_command_stream;
+		readExactly(socket,message_lenght, sync_command_stream);
+		//cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion "<<tmp.str()<< std::endl;
+		boost::archive::text_iarchive ia(sync_command_stream);
+		SyncCommand scom(cl_);
+		ia >> scom;
 	}
-	while (1)
-	{
-//		cLog.msg(Log::PRIO_NOTICE) << "buffer size "<< buffer_size_ << " missing_chars " << missing_chars;
-		if(missing_chars==-1 && buffer_size_>5)
-		{
-      char * buffer = new char [6+1];
-      iss_.read(buffer,6);
-      std::stringstream tmp;
-      tmp.write(buffer,6);
-			tmp>>missing_chars;
-//			cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion "<<tmp.str()<<"bytes of data"<< std::endl;
-			delete[] buffer;
-			buffer_size_-=6;
-		} else
-		if(missing_chars>0 && missing_chars<=buffer_size_)
-		{
-			char * buffer = new char [missing_chars+1];
-			iss_.read(buffer,missing_chars);
-			std::stringstream tmp;
-			tmp.write(buffer,missing_chars);
-//			cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion from " << GetRemoteHostname() <<" \""<<tmp.str()<<'"'<< std::endl;
-			boost::archive::text_iarchive ia(tmp);
-			SyncCommand scom(cl_);
-			ia >> scom;
-			buffer_size_-=missing_chars;
-			missing_chars=-1;
-			delete[] buffer;
-		} else
-		break;
-	}
-
-	//u_int16_t mux = scom.getMux();
-	//const ConnectionParam & conn = cl_.getConnection(mux)->second;
-  //cLog.msg(Log::PRIO_NOTICE) << "sync connection #"<<mux<<" remote host " << conn.remote_host_ << ":" << conn.remote_port_ << std::endl;
 }
 
-//void StatusClientSocket::InitSSLServer()
-//{
-//	InitializeContext("server.pem", "keypwd", SSLv23_method());
-//}
-//
-//
-//void StatusClientSocket::Init()
-//{
-//	EnableSSL();
-//}
+void SyncClient::readExactly(SyncTcpConnection::proto::socket & socket,size_t toread, std::iostream & result)
+{
+	size_t hasread = 0;
+	while (toread > hasread)
+	{
+			//TODO read bigger buffers
+			boost::array<char, 1> buf;
+			boost::system::error_code error;
+			size_t len = socket.read_some(boost::asio::buffer(buf), error);
+			if (error == boost::asio::error::eof)
+				break; // Connection closed cleanly by peer.
+			else if (error)
+				throw boost::system::system_error(error); // Some other error.
+			//for (size_t pos=0; pos<len; pos++)
+				result<<buf[0];
+			hasread+=len;
+	}
+}

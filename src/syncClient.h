@@ -36,8 +36,8 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-#include <boost/asio.hpp>
-
+//#include <boost/asio.hpp>
+#include "syncTcpConnection.h"
 class SyncClient
 {
 public:
@@ -45,12 +45,10 @@ public:
 
 	void run();
 private:
-	void OnRawData(const char *buf,size_t len);
+	void readAndProcess(SyncTcpConnection::proto::socket & socket);
+	void readExactly(SyncTcpConnection::proto::socket & socket,size_t toread, std::iostream &);
 	std::string hostname_;
 	std::string port_;
-	std::stringstream iss_;
-	int32_t missing_chars;
-	int32_t buffer_size_;
 };
 
 
