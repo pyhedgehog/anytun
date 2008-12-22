@@ -60,7 +60,7 @@ RoutingTable::~RoutingTable()
 
 void RoutingTable::updateRouteTree(const NetworkPrefix & pref)
 {
-  Lock lock(mutex_);
+  //Lock lock(mutex_); //deadlock
 
 	u_int8_t length=pref.getNetworkPrefixLength();
 	network_address_type_t type=pref.getNetworkAddressType();

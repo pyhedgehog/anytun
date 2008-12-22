@@ -50,7 +50,7 @@ public:
 	RoutingTable();
 	~RoutingTable();
 	void addRoute(const NetworkPrefix & ,u_int16_t);
-	void updateRouteTree(const NetworkPrefix & pref);
+	void updateRouteTree(const NetworkPrefix & pref); //Warning Unlocked!!!
 	void delRoute(const NetworkPrefix & );
 	u_int16_t getRoute(const NetworkAddress &);
 	bool empty(network_address_type_t type);
