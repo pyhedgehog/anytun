@@ -60,6 +60,8 @@ RoutingTable::~RoutingTable()
 
 void RoutingTable::updateRouteTree(const NetworkPrefix & pref)
 {
+  Lock lock(mutex_);
+
 	u_int8_t length=pref.getNetworkPrefixLength();
 	network_address_type_t type=pref.getNetworkAddressType();
 	u_int16_t mux = routes_[pref.getNetworkAddressType()].find(pref)->second;
@@ -86,20 +88,26 @@ void RoutingTable::updateRouteTree(const NetworkPrefix & pref)
 	//root_[type].print(0);
 }
 
-void RoutingTable::addRoute(const NetworkPrefix & pref,u_int16_t mux )
+void RoutingTable::addRoute(const NetworkPrefix & pref, u_int16_t mux)
 {
-	if ( pref.getNetworkAddressType()!=ipv4 && pref.getNetworkAddressType() != ipv6)
-		return; //TODO add ETHERNET support
   Lock lock(mutex_);
 	
-	
-  std::pair<RoutingMap::iterator, bool> ret = routes_[pref.getNetworkAddressType()].insert(RoutingMap::value_type(pref,mux));
-  if(!ret.second)
-  {
-    routes_[pref.getNetworkAddressType()].erase(ret.first);
-    routes_[pref.getNetworkAddressType()].insert(RoutingMap::value_type(pref,mux));
-  }
-	updateRouteTree(pref);
+	network_address_type_t type=pref.getNetworkAddressType();	
+
+	if (type==ipv4 || type==ipv6)
+	{
+    std::pair<RoutingMap::iterator, bool> ret = routes_[type].insert(RoutingMap::value_type(pref,mux));
+    if(!ret.second)
+    {
+      routes_[pref.getNetworkAddressType()].erase(ret.first);
+      routes_[pref.getNetworkAddressType()].insert(RoutingMap::value_type(pref,mux));
+    }
+    updateRouteTree(pref);
+	} else if (type==ethernet) {
+    return; // TODO: add support for ethernet
+	} else {
+		throw std::runtime_error("illegal protocoll type");	
+	}
 }
 
 
