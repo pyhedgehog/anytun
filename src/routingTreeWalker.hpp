@@ -34,7 +34,7 @@ template <class BinaryType>
 u_int16_t routingTreeFinder(BinaryType bytes ,RoutingTreeNode & root )
 {
 	bool valid=0;
-	u_int16_t mux;
+	u_int16_t mux=0;
 	RoutingTreeNode * node = &root;
 	if (root.valid_)
 	{
