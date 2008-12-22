@@ -161,16 +161,24 @@ void sender(void* p)
       if(param->cl.empty())
         continue;
           //std::cout << "got Packet for plain "<<plain_packet.getDstAddr().toString();
+			ConnectionMap::iterator cit;
 #ifndef NOROUTING
-      mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
-          //std::cout << " -> "<<mux << std::endl;
-      ConnectionMap::iterator cit = param->cl.getConnection(mux);
+			try
+			{
+				mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
+						//std::cout << " -> "<<mux << std::endl;
+				cit = param->cl.getConnection(mux);
+			}
+			catch (std::exception& e)
+			{
+				continue; // no route
+			}
 #else
-      ConnectionMap::iterator cit = param->cl.getBegin();
+      cit = param->cl.getBegin();
 #endif
 
       if(cit==param->cl.getEnd())
-        continue;
+        continue; //no connection
       ConnectionParam & conn = cit->second;
       
       if(conn.remote_end_ == emptyEndpoint)
