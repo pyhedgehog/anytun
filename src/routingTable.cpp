@@ -58,7 +58,7 @@ RoutingTable::~RoutingTable()
 {
 } 
 
-void RoutingTable::updateRouteTree(const NetworkPrefix & pref)
+void RoutingTable::updateRouteTreeUnlocked(const NetworkPrefix & pref)
 {
   //Lock lock(mutex_); //deadlock
 
@@ -102,7 +102,7 @@ void RoutingTable::addRoute(const NetworkPrefix & pref, u_int16_t mux)
       routes_[pref.getNetworkAddressType()].erase(ret.first);
       routes_[pref.getNetworkAddressType()].insert(RoutingMap::value_type(pref,mux));
     }
-    updateRouteTree(pref);
+    updateRouteTreeUnlocked(pref);
 	} else if (type==ethernet) {
     return; // TODO: add support for ethernet
 	} else {

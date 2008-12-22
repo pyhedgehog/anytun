@@ -57,7 +57,7 @@ private:
 //		u_int16_t & mux (gRoutingTable.getOrNewRoutingTEUnlocked(addr_));
 //		ar & mux;
 		ar & (*(gRoutingTable.getOrNewRoutingTEUnlocked(addr_)));
-		gRoutingTable.updateRouteTree(addr_);
+		gRoutingTable.updateRouteTreeUnlocked(addr_);
 	};
 };
 
