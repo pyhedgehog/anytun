@@ -39,6 +39,8 @@
 #include "datatypes.h"
 #include "networkAddress.h"
 #include "networkPrefix.h"
+#include "routingTreeNode.h"
+#include "boost/array.hpp"
 typedef std::map<NetworkPrefix,u_int16_t> RoutingMap;
 
 class RoutingTable
@@ -48,6 +50,7 @@ public:
 	RoutingTable();
 	~RoutingTable();
 	void addRoute(const NetworkPrefix & ,u_int16_t);
+	void updateRouteTree(const NetworkPrefix & pref);
 	void delRoute(const NetworkPrefix & );
 	u_int16_t getRoute(const NetworkAddress &);
 	bool empty(network_address_type_t type);
@@ -69,7 +72,8 @@ private:
 	};
 	RoutingTable(const RoutingTable &s);
   void operator=(const RoutingTable &s);
-	RoutingMap routes_[3];
+	boost::array<RoutingMap,3> routes_;
+	boost::array<RoutingTreeNode,3> root_;
   Mutex mutex_;
 };
 

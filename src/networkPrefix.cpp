@@ -52,7 +52,7 @@ void NetworkPrefix::setNetworkPrefixLength(u_int8_t length )
 	length_ = length;
 }
 
-u_int8_t NetworkPrefix::getNetworkPrefixLength()
+u_int8_t NetworkPrefix::getNetworkPrefixLength() const
 {
 	return length_;
 }

@@ -75,6 +75,7 @@ OBJS = tunDevice.o \
        syncConnectionCommand.o \
 			 rtpSessionTable.o \
 			 rtpSession.o \
+			 routingTreeNode.o \
        anyrtpproxy/callIdQueue.o
 
 SYNCOBJS= syncServer.o \
@@ -98,6 +99,7 @@ ANYCONFOBJS = log.o \
 						 connectionParam.o \
 						 rtpSessionTable.o \
 						 rtpSession.o \
+						 routingTreeNode.o \
 						 anyrtpproxy/callIdQueue.o \
 						 syncRtpCommand.o \
 						 anyConfOptions.o \
@@ -164,6 +166,9 @@ rtpSessionTable.o: rtpSessionTable.cpp rtpSessionTable.h
 rtpSession.o: rtpSession.cpp rtpSession.h
 	$(CXX) $(CXXFLAGS) $< -c
 
+routingTreeNode.o: routingTreeNode.cpp routingTreeNode.h
+	$(CXX) $(CXXFLAGS) $< -c
+
 plainPacket.o: plainPacket.cpp plainPacket.h buffer.h
 	$(CXX) $(CXXFLAGS) $< -c
 
@@ -200,7 +205,7 @@ authAlgoFactory.o: authAlgoFactory.cpp authAlgoFactory.h authAlgo.h
 keyDerivationFactory.o: keyDerivationFactory.cpp keyDerivationFactory.h keyDerivation.h
 	$(CXX) $(CXXFLAGS) $< -c
 
-routingTable.o: routingTable.cpp routingTable.h
+routingTable.o: routingTable.cpp routingTable.h routingTreeWalker.hpp
 	$(CXX) $(CXXFLAGS) $< -c
 
 syncCommand.o: syncCommand.cpp syncCommand.h

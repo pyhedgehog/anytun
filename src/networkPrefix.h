@@ -46,7 +46,7 @@ public:
 	NetworkPrefix(const NetworkAddress &, u_int8_t length);
 	NetworkPrefix(const NetworkPrefix &);
 	void setNetworkPrefixLength(u_int8_t length );
-	u_int8_t getNetworkPrefixLength();
+	u_int8_t getNetworkPrefixLength() const;
   bool operator<(const NetworkPrefix &s) const;
 
 private:

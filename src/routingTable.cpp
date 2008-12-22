@@ -33,6 +33,7 @@
 #include "datatypes.h"
 
 #include "routingTable.h"
+#include "routingTreeWalker.hpp"
 
 RoutingTable* RoutingTable::inst = NULL;
 Mutex RoutingTable::instMutex;
@@ -57,6 +58,34 @@ RoutingTable::~RoutingTable()
 {
 } 
 
+void RoutingTable::updateRouteTree(const NetworkPrefix & pref)
+{
+	u_int8_t length=pref.getNetworkPrefixLength();
+	network_address_type_t type=pref.getNetworkAddressType();
+	u_int16_t mux = routes_[pref.getNetworkAddressType()].find(pref)->second;
+	RoutingTreeNode * node = &(root_[type]);
+	if (type==ipv4)
+	{
+		ipv4_bytes_type bytes(pref.to_bytes_v4());
+		if (length>32)
+			length=32;
+		routingTreeWalker(bytes, node, length, mux);
+	} else if  (type==ipv6) {
+		ipv6_bytes_type bytes(pref.to_bytes_v6());
+		if (length>128)
+			length=128;
+		routingTreeWalker(bytes, node, length, mux);
+	} else if (type==ethernet) {
+		ethernet_bytes_type bytes(pref.to_bytes_ethernet());
+		if (length>48)
+			length=48;
+		routingTreeWalker(bytes, node, length, mux);
+	} else {
+		throw std::runtime_error("illegal protocoll type");	
+	}
+	//root_[type].print(0);
+}
+
 void RoutingTable::addRoute(const NetworkPrefix & pref,u_int16_t mux )
 {
 	if ( pref.getNetworkAddressType()!=ipv4 && pref.getNetworkAddressType() != ipv6)
@@ -70,6 +99,7 @@ void RoutingTable::addRoute(const NetworkPrefix & pref,u_int16_t mux )
     routes_[pref.getNetworkAddressType()].erase(ret.first);
     routes_[pref.getNetworkAddressType()].insert(RoutingMap::value_type(pref,mux));
   }
+	updateRouteTree(pref);
 }
 
 
@@ -83,16 +113,26 @@ void RoutingTable::delRoute(const NetworkPrefix & pref )
 u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
 {
 	Lock lock(mutex_);
-	if (routes_[addr.getNetworkAddressType()].empty())
-  	return 0;
-	//TODO Routing algorithem isnt working!!!
-	NetworkPrefix prefix(addr,128);
-	RoutingMap::iterator it = routes_[addr.getNetworkAddressType()].lower_bound(prefix);
-//	it--;
-	if (it!=routes_[addr.getNetworkAddressType()].end())
-		return it->second;
-	it=routes_[addr.getNetworkAddressType()].begin();
-	return it->second;
+	network_address_type_t type=addr.getNetworkAddressType();
+	
+	if (routes_[type].empty())
+  	throw std::runtime_error("no route");
+
+	if (type==ipv4)
+	{
+		ipv4_bytes_type bytes(addr.to_bytes_v4());
+		return routingTreeFinder(bytes, root_[type]);
+	} else if  (type==ipv6) {
+		ipv6_bytes_type bytes(addr.to_bytes_v6());
+		return routingTreeFinder(bytes, root_[type]);
+	} else if (type==ethernet) {
+		//TODO Our model wont fit to ethernet addresses well.
+		// maybe use hashmap or something like that instead
+		ethernet_bytes_type bytes(addr.to_bytes_ethernet());
+		return routingTreeFinder(bytes, root_[type]);
+	} else {
+		throw std::runtime_error("illegal protocoll type");	
+	}
 }
 
 u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix & addr)

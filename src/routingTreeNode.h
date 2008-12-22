@@ -28,38 +28,26 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SYNCROUTECOMMAND_H
-#define _SYNCROUTECOMMAND_H
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
+
+#ifndef _ROUTINGTREENODE_H
+#define _ROUTINGTREENODE_H
+
 
 #include "threadUtils.hpp"
+#include "datatypes.h"
+#include "networkAddress.h"
 #include "networkPrefix.h"
-#include "routingTable.h"
 
-class SyncRouteCommand
+class RoutingTreeNode
 {
 public:
-	SyncRouteCommand(const NetworkPrefix & );
-	SyncRouteCommand();
-	NetworkPrefix getPrefix() const;
-
+	RoutingTreeNode();
+	~RoutingTreeNode();
+	u_int16_t mux_;
+	bool valid_;
+	boost::array<RoutingTreeNode *,256> nodes_;
+	void print(int) const;
 private:
-	SyncRouteCommand(const SyncRouteCommand &);
-	u_int16_t count_;
-	NetworkPrefix addr_;
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version)
-  {
-		Lock lock(gRoutingTable.getMutex());
-		ar & addr_;
-//		u_int16_t & mux (gRoutingTable.getOrNewRoutingTEUnlocked(addr_));
-//		ar & mux;
-		ar & (*(gRoutingTable.getOrNewRoutingTEUnlocked(addr_)));
-		gRoutingTable.updateRouteTree(addr_);
-	};
+  Mutex mutex_;
 };
-
-
-#endif // _SYNCCOMMAND_H
+#endif

@@ -119,6 +119,28 @@ std::string NetworkAddress::toString() const
   return std::string("");
 }
 
+ipv4_bytes_type	NetworkAddress::to_bytes_v4() const
+{
+	return ipv4_address_.to_bytes();
+}
+
+ipv6_bytes_type	NetworkAddress::to_bytes_v6() const
+{
+	return ipv6_address_.to_bytes();
+}
+
+ethernet_bytes_type	NetworkAddress::to_bytes_ethernet() const
+{
+	boost::array<unsigned char,6> result;
+	u_int64_t ether=ethernet_address_;
+	for (int i = 0; i < 6; i++)
+	{
+		result[i] = (unsigned char) (ether && 0xff);
+			ether >>= 8;
+	}
+	return result;
+}
+
 bool NetworkAddress::operator<(const NetworkAddress &right) const
 {
 	if (network_address_type_!=right.network_address_type_)

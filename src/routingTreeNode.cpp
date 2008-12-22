@@ -28,38 +28,37 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SYNCROUTECOMMAND_H
-#define _SYNCROUTECOMMAND_H
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
+#include "routingTreeNode.h"
 
-#include "threadUtils.hpp"
-#include "networkPrefix.h"
-#include "routingTable.h"
-
-class SyncRouteCommand
+RoutingTreeNode::RoutingTreeNode():mux_(0),valid_(false)
 {
-public:
-	SyncRouteCommand(const NetworkPrefix & );
-	SyncRouteCommand();
-	NetworkPrefix getPrefix() const;
+	for(int i=0; i<256; i++)
+		nodes_[i]=NULL;
+}
 
-private:
-	SyncRouteCommand(const SyncRouteCommand &);
-	u_int16_t count_;
-	NetworkPrefix addr_;
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version)
-  {
-		Lock lock(gRoutingTable.getMutex());
-		ar & addr_;
-//		u_int16_t & mux (gRoutingTable.getOrNewRoutingTEUnlocked(addr_));
-//		ar & mux;
-		ar & (*(gRoutingTable.getOrNewRoutingTEUnlocked(addr_)));
-		gRoutingTable.updateRouteTree(addr_);
-	};
-};
+void RoutingTreeNode::print(int level) const
+{
+	if (valid_)
+	{	
+		std::cout << " -> " <<mux_ ;
+	}
+	std::cout  << std::endl;
+  for(int i=0; i<256; i++)
+	{
+		if ( nodes_[i])
+		{
+			for(int l=0;l<level;l++)
+				std::cout << " ";
+			std::cout << (int) i;
+			nodes_[i]->print(level+1);
+		}
+	}
+}
 
 
-#endif // _SYNCCOMMAND_H
+RoutingTreeNode::~RoutingTreeNode()
+{
+	for(int i=0; i<256; i++)
+		if(nodes_[i])
+			delete nodes_[i];
+} 

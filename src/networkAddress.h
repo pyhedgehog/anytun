@@ -39,6 +39,11 @@
 
 #include <string>
 #include <boost/asio.hpp>
+#include <boost/array.hpp>
+
+typedef boost::array<unsigned char,6> ethernet_bytes_type;
+typedef boost::asio::ip::address_v4::bytes_type ipv4_bytes_type;
+typedef boost::asio::ip::address_v6::bytes_type ipv6_bytes_type;
 
 enum network_address_type_t
 {
@@ -62,6 +67,9 @@ public:
 	network_address_type_t getNetworkAddressType() const;
   std::string toString() const;
 	bool operator<(const NetworkAddress &s) const;
+	ipv4_bytes_type to_bytes_v4() const;	
+	ipv6_bytes_type to_bytes_v6() const;	
+	ethernet_bytes_type to_bytes_ethernet() const;	
 protected:
   Mutex mutex_;
 	boost::asio::ip::address_v4 ipv4_address_;
