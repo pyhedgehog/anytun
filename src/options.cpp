@@ -250,6 +250,14 @@ bool Options::splitAndAddHostPort(std::string hostPort, ConnectToList& list)
 
     hostPort.erase(pos, 1);
   }
+  else {
+    pos = hostPort.find_first_of(":");
+    if(pos != std::string::npos && pos == hostPort.find_last_of(":")) {
+      // an ':' has been found and it is the only one -> assuming port present
+      hasPort = true;
+      hostPort[pos] = '/';
+    }
+  }
 
   if(hasPort) {
     std::stringstream tmp_stream(hostPort);
