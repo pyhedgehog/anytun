@@ -37,14 +37,20 @@ u_int16_t routingTreeFinder(BinaryType bytes ,RoutingTreeNode & root )
 	u_int16_t mux;
 	RoutingTreeNode * node = &root;
 	if (root.valid_)
+	{
 		mux=root.mux_;
+		valid=1;
+	}
 	for (size_t level=0;level<bytes.size();level++)
 	{
 		if (node->nodes_[bytes[level]])
 		{
 			node=node->nodes_[bytes[level]];
 			if(node->valid_)
+			{
 				mux=node->mux_;
+				valid=1;
+			}
 		} else {
 		 break;
 		}
