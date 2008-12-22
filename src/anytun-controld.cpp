@@ -61,8 +61,9 @@ void syncOnConnect(SyncTcpConnection * connptr)
 	}
 }
 
-bool syncListenerInit(boost::asio::io_service& io_service)
+void syncListener()
 {
+ boost::asio::io_service io_service;
   try
   {
 		SyncTcpConnection::proto::resolver resolver(io_service);
@@ -86,14 +87,9 @@ bool syncListenerInit(boost::asio::io_service& io_service)
     std::string addr = gOpt.getBindToAddr() == "" ? "*" : gOpt.getBindToAddr();
     cLog.msg(Log::PRIO_ERR) << "cannot bind to " << addr << ":" << gOpt.getBindToPort()
                             << " (" << e.what() << ") exiting.." << std::endl;
-    return false;
+    //return false;
   }
-  return true;
-}
-
-void syncListener(boost::asio::io_service* io_service)
-{
-  io_service->run();
+  //return true;
 }
 
 int main(int argc, char* argv[])
@@ -145,11 +141,8 @@ int main(int argc, char* argv[])
     SignalController sig;
     sig.init();
     
-    boost::asio::io_service io_service;
-    if(!syncListenerInit(io_service))
-      return -1;
     boost::thread * syncListenerThread;
-    syncListenerThread = new boost::thread(boost::bind(syncListener, &io_service));
+    syncListenerThread = new boost::thread(boost::bind(syncListener));
     
     int ret = sig.run();
     
