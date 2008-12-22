@@ -29,8 +29,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ROUTINGTREENODE_H
-#define _ROUTINGTREENODE_H
+#ifndef _ROUTING_TREE_NODE_H
+#define _ROUTING_TREE_NODE_H
 
 
 #include "threadUtils.hpp"
@@ -38,16 +38,22 @@
 #include "networkAddress.h"
 #include "networkPrefix.h"
 
+class RoutingTree;
+
 class RoutingTreeNode
 {
 public:
 	RoutingTreeNode();
 	~RoutingTreeNode();
+	void print(int) const;
+
+private:
+//  Mutex mutex_;
 	u_int16_t mux_;
 	bool valid_;
 	boost::array<RoutingTreeNode *,256> nodes_;
-	void print(int) const;
-private:
-  Mutex mutex_;
+
+  friend class RoutingTree;
 };
+
 #endif

@@ -205,7 +205,7 @@ authAlgoFactory.o: authAlgoFactory.cpp authAlgoFactory.h authAlgo.h
 keyDerivationFactory.o: keyDerivationFactory.cpp keyDerivationFactory.h keyDerivation.h
 	$(CXX) $(CXXFLAGS) $< -c
 
-routingTable.o: routingTable.cpp routingTable.h routingTreeWalker.hpp
+routingTable.o: routingTable.cpp routingTable.h routingTree.hpp
 	$(CXX) $(CXXFLAGS) $< -c
 
 syncCommand.o: syncCommand.cpp syncCommand.h

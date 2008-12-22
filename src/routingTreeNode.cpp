@@ -28,6 +28,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "routingTreeNode.h"
 
 RoutingTreeNode::RoutingTreeNode():mux_(0),valid_(false)
@@ -54,7 +55,6 @@ void RoutingTreeNode::print(int level) const
 		}
 	}
 }
-
 
 RoutingTreeNode::~RoutingTreeNode()
 {

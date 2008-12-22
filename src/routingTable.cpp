@@ -33,7 +33,7 @@
 #include "datatypes.h"
 
 #include "routingTable.h"
-#include "routingTreeWalker.hpp"
+#include "routingTree.hpp"
 
 RoutingTable* RoutingTable::inst = NULL;
 Mutex RoutingTable::instMutex;
@@ -69,17 +69,17 @@ void RoutingTable::updateRouteTree(const NetworkPrefix & pref)
 		ipv4_bytes_type bytes(pref.to_bytes_v4());
 		if (length>32)
 			length=32;
-		routingTreeWalker(bytes, node, length, mux);
+		RoutingTree::walk(bytes, node, length, mux);
 	} else if  (type==ipv6) {
 		ipv6_bytes_type bytes(pref.to_bytes_v6());
 		if (length>128)
 			length=128;
-		routingTreeWalker(bytes, node, length, mux);
+		RoutingTree::walk(bytes, node, length, mux);
 	} else if (type==ethernet) {
 		ethernet_bytes_type bytes(pref.to_bytes_ethernet());
 		if (length>48)
 			length=48;
-		routingTreeWalker(bytes, node, length, mux);
+		RoutingTree::walk(bytes, node, length, mux);
 	} else {
 		throw std::runtime_error("illegal protocoll type");	
 	}
@@ -121,15 +121,15 @@ u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
 	if (type==ipv4)
 	{
 		ipv4_bytes_type bytes(addr.to_bytes_v4());
-		return routingTreeFinder(bytes, root_[type]);
+		return RoutingTree::find(bytes, root_[type]);
 	} else if  (type==ipv6) {
 		ipv6_bytes_type bytes(addr.to_bytes_v6());
-		return routingTreeFinder(bytes, root_[type]);
+		return RoutingTree::find(bytes, root_[type]);
 	} else if (type==ethernet) {
 		//TODO Our model wont fit to ethernet addresses well.
 		// maybe use hashmap or something like that instead
 		ethernet_bytes_type bytes(addr.to_bytes_ethernet());
-		return routingTreeFinder(bytes, root_[type]);
+		return RoutingTree::find(bytes, root_[type]);
 	} else {
 		throw std::runtime_error("illegal protocoll type");	
 	}
