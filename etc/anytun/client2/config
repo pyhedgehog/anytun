@@ -31,6 +31,10 @@ auth-algo sha1
 #control-host 127.0.0.1:4445
 
 ### Connection Parameters (for clients without config server)
+## Allow all ipv4 and ipv6 traffic 
+## this does not set operating system routes
+route 0.0.0.0/0
+route ::/0
 ## remote host
 remote-host example.com
 ## remote port

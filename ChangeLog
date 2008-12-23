@@ -1,3 +1,17 @@
+2008.12.23 -- Version 0.3_rc1_svn655
+* IMPORTANT: no automatic default route
+	if you are using anytun in single connection mode
+	(without configuration server)
+	make sure to add
+	route 0.0.0.0/0 for ipv4 and
+	route ::/0 for ipv6 to your config
+* changed used libarys (to boost)
+* full ipv6 support
+ - ipv6 multible connection routing
+ - syncronisation over ipv6
+ - 4in6,6in6 tunnels
+* code cleanup for easier porting
+
 2008.6.20 -- Version 0.2.1svn556
 
 * finished own tun/tap devices and removed openvpn source code
