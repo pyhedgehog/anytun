@@ -431,7 +431,7 @@ int main(int argc, char* argv[])
 			std::cout << "anytun won't be able to send any data"<< std::endl;
 			std::cout << "most likely you want to add --route 0.0.0.0/0 --route ::/0"<< std::endl;
 			std::cout << "to your command line to allow both ipv4 and ipv6 traffic"<< std::endl;
-			std::cout << "(this does not set operation system routes, use the post-up script"<< std::endl;
+			std::cout << "(this does not set operating system routes, use the post-up script"<< std::endl;
 			std::cout << " to set them)"<< std::endl;
 			return -1;
 		}
