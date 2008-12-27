@@ -54,7 +54,7 @@ LogStringBuilder::~LogStringBuilder()
 {
   Lock lock(log.mutex);
 #ifndef NOSYSLOG
-  syslog(prio | log.getFacility(), stream.str().c_str());  
+  syslog(prio | log.getFacility(), "%s", stream.str().c_str());  
 #endif
 }
 

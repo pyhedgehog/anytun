@@ -44,7 +44,7 @@
 
 #include "tunDevice.h"
 #include "threadUtils.hpp"
-
+#include "log.h"
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
@@ -172,5 +172,9 @@ void TunDevice::do_ifconfig()
 
   command << conf_.remote_netmask_.toString() << " mtu " << conf_.mtu_;
 
-  system(command.str().c_str());
+  int result = system(command.str().c_str());
+  if(result == -1)
+    cLog.msg(Log::PRIO_ERR) << "Execution of ifconfig failed";
+  else
+    cLog.msg(Log::PRIO_NOTICE) << "ifconfig returned " << WEXITSTATUS(result);
 }
