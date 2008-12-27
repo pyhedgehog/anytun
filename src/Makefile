@@ -115,7 +115,7 @@ ANYCONFOBJS = log.o \
 
 EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
 
-all: $(EXECUTABLE) libAnysync.a #anyrtpproxy
+all: $(EXECUTABLE) #libAnysync.a #anyrtpproxy
 
 anytun: $(OBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
