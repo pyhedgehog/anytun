@@ -29,27 +29,26 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DATATYPES_H_
-#define _DATATYPES_H_
+#ifndef _ENDIAN_HPP_
+#define _ENDIAN_HPP_
 
-#include<boost/cstdint.hpp>
+#ifndef _WIN32
+#include <arpa/inet.h>
+#endif
 
-typedef boost::uint8_t u_int8_t;
-typedef boost::uint16_t u_int16_t;
-typedef boost::uint32_t u_int32_t;
-typedef boost::uint64_t u_int64_t;
-typedef boost::int8_t int8_t;
-typedef boost::int16_t int16_t;
-typedef boost::int32_t int32_t;
-typedef boost::int64_t int64_t;
+#define SEQ_NR_T_NTOH(a) ntohl(a)
+#define SEQ_NR_T_HTON(a) htonl(a)
 
-typedef u_int32_t window_size_t;
+#define SENDER_ID_T_NTOH(a) ntohs(a)
+#define SENDER_ID_T_HTON(a) htons(a)
 
-typedef u_int32_t seq_nr_t;
-typedef u_int16_t sender_id_t;
-typedef u_int16_t payload_type_t;
-typedef u_int16_t mux_t;
-//typedef u_int32_t auth_tag_t;
-#define STERROR_TEXT_MAX 100
+#define PAYLOAD_TYPE_T_NTOH(a) ntohs(a)
+#define PAYLOAD_TYPE_T_HTON(a) htons(a)
+
+#define MUX_T_NTOH(a) ntohs(a)
+#define MUX_T_HTON(a) htons(a)
+
+//#define AUTH_TAG_T_NTOH(a) ntohl(a)
+//#define AUTH_TAG_T_HTON(a) htonl(a)
 
 #endif

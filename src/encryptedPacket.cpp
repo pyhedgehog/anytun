@@ -31,10 +31,10 @@
 
 #include <stdexcept>
 #include <iostream>
-#include <arpa/inet.h>
 #include <cstdio>       // for std::memcpy
 
 #include "encryptedPacket.h"
+#include "endian.h"
 #include "datatypes.h"
 #include "log.h"
 
