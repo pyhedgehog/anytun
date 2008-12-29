@@ -256,6 +256,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\routingTree.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\routingTreeNode.h"
+				>
+			</File>
+			<File
 				RelativePath=".\rtpSession.h"
 				>
 			</File>
@@ -417,6 +425,10 @@
 			</File>
 			<File
 				RelativePath=".\routingTable.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\routingTreeNode.cpp"
 				>
 			</File>
 			<File

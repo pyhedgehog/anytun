@@ -29,11 +29,13 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ENDIAN_HPP_
-#define _ENDIAN_HPP_
+#ifndef _ENDIAN_H_
+#define _ENDIAN_H_
 
 #ifndef _WIN32
 #include <arpa/inet.h>
+#else
+#include <Winsock2.h>
 #endif
 
 #define SEQ_NR_T_NTOH(a) ntohl(a)
