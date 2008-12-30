@@ -104,6 +104,8 @@ void readAndProcessOne()
 	message_lenght_stream >> message_lenght;
 	std::stringstream void_stream;
 	readExactly(1,void_stream); //skip space
+	if (!message_lenght)
+		return;
 	std::stringstream sync_command_stream;
 	readExactly(message_lenght, sync_command_stream);
 	//std::cout << message_lenght << std::endl;
@@ -119,7 +121,14 @@ int main(int argc, char* argv[])
 
   while( std::cin.good() )
   {
-		readAndProcessOne();
+		try
+		{
+			readAndProcessOne();
+		}
+		catch(std::exception& e)
+		{
+				std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
+		}	
 		output();
   }
   return ret;
