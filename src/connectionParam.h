@@ -69,8 +69,12 @@ private:
     ar & seq_nr_;
     ar & remote_host;
     ar & remote_port;
+		PacketSourceEndpoint emptyEndpoint;
 		UDPPacketSource::proto::endpoint endpoint(boost::asio::ip::address::from_string(remote_host), remote_port);
-		remote_end_ = endpoint;
+		//This is a workarround, against race condition in sync process
+		//TODO: find a better solution
+		if (endpoint != emptyEndpoint)
+			remote_end_ = endpoint;
 	}
 };
 
