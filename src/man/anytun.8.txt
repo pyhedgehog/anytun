@@ -30,7 +30,7 @@ SYNOPSIS
 [ *-x|--post-up-script* <script> ]
 [ *-w|--window-size* <window size> ]
 [ *-m|--mux* <mux-id> ]
-[ *-R|--route* <net>/<prefix length> ]
+[ *-T|--route* <net>/<prefix length> ]
 [ *-c|--cipher* <cipher type> ]
 [ *-K|--key* <master key> ]
 [ *-A|--salt* <master salt> ]
@@ -246,7 +246,7 @@ window size of 0 is used.
 
 the multiplex id to use. default: 0
 
--R|--route <net>/<prefix length>
+-T|--route <net>/<prefix length>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 add a route to connection. This can be invoked several times.

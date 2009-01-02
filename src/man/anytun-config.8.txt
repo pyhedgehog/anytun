@@ -16,7 +16,7 @@ SYNOPSIS
 [ *-m|--mux* <mux-id> ]
 [ *-K|--key* <master key> ]
 [ *-A|--salt* <master salt> ]
-[ *-R|--route* <net>/<prefix length> ]
+[ *-T|--route* <net>/<prefix length> ]
 
 DESCRIPTION
 -----------
@@ -86,7 +86,7 @@ Master salt in hexadecimal notation, eg
 01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
 of 28 characters (14 bytes).
 
--R|--route <net>/<prefix length>
+-T|--route <net>/<prefix length>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 add a route to connection. This can be invoked several times.

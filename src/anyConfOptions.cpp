@@ -149,7 +149,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_HEXSTRING_PARAM_SEC("-K","--key", key_)
     PARSE_HEXSTRING_PARAM_SEC("-A","--salt", salt_)
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
-    PARSE_CSLIST_PARAM("-R","--route", route_queue)
+    PARSE_CSLIST_PARAM("-T","--route", route_queue)
     else 
       return false;
   }
@@ -179,7 +179,7 @@ void Options::printUsage()
   std::cout << "              [-K|--key] <master key>             master key to use for encryption" << std::endl;
   std::cout << "              [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
 //  std::cout << "              [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
-  std::cout << "              [-R|--route] <net>/<prefix length>  add a route to connection, can be invoked several times" << std::endl;
+  std::cout << "              [-T|--route] <net>/<prefix length>  add a route to connection, can be invoked several times" << std::endl;
 }
 
 void Options::printOptions()
