@@ -514,16 +514,14 @@ int main(int argc, char* argv[])
   }
   catch(std::runtime_error& e)
   {
-    if(daemonized)
-      cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
-    else
+    cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
+    if(!daemonized)
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
   catch(std::exception& e)
   {
-    if(daemonized)
-      cLog.msg(Log::PRIO_ERR) << "uncaught exception, exiting: " << e.what();
-    else
+    cLog.msg(Log::PRIO_ERR) << "uncaught exception, exiting: " << e.what();
+    if(!daemonized)
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
   }
 }
