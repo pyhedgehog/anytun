@@ -3,7 +3,7 @@ b:
 c: cipher
 d: device name
 e:
-f:
+f: configuration file
 g:
 h: print help text
 i: local interface
@@ -29,7 +29,7 @@ A: master salt
 B:
 C: run in chroot
 D: do not daemonize
-E:
+E: passphrase
 F:
 G:
 H: chroot direcotry
