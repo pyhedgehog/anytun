@@ -68,14 +68,14 @@ OBJS = tunDevice.o \
        log.o \
        options.o \
        seqWindow.o \
-			 syncCommand.o \
-       syncRouteCommand.o \
-       syncConnectionCommand.o \
 			 routingTreeNode.o \
 
 SYNCOBJS= syncServer.o \
        syncClient.o \
        syncQueue.o \
+			 syncCommand.o \
+       syncRouteCommand.o \
+       syncConnectionCommand.o \
        syncTcpConnection.o
 
 ANYCTROBJS = signalController.o \
