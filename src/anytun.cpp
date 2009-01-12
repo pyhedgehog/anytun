@@ -112,20 +112,6 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 #endif
 }
 
-bool checkPacketSeqNr(EncryptedPacket& pack,ConnectionParam& conn)
-{
-	// compare sender_id and seq with window
-	if(conn.seq_window_.hasSeqNr(pack.getSenderId(), pack.getSeqNr()))
-	{
-		cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_end_ 
-                               << " seq:"<<pack.getSeqNr() << " sid: "<<pack.getSenderId();
-		return false;
-	}
-  
-	conn.seq_window_.addSeqNr(pack.getSenderId(), pack.getSeqNr());
-	return true;
-}
-
 void sender(void* p)
 {
   try 
@@ -338,8 +324,12 @@ void receiver(void* p)
       }	
       
           // Replay Protection
-      if (!checkPacketSeqNr(encrypted_packet, conn))
+      if(conn.seq_window_.checkAndAdd(encrypted_packet.getSenderId(), encrypted_packet.getSeqNr()))
+      {
+        cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_end_ 
+                                   << " seq:"<< encrypted_packet.getSeqNr() << " sid: "<< encrypted_packet.getSenderId();
         continue;
+      }
       
           // generate packet-key
       conn.kd_.generate(LABEL_SATP_ENCRYPTION, encrypted_packet.getSeqNr(), session_key);

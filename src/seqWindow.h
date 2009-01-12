@@ -39,21 +39,31 @@
 #include "threadUtils.hpp"
 #include "datatypes.h"
 
+class SeqWindow;
+
+class SeqWindowElement {
+public:
+  SeqWindowElement();
+  ~SeqWindowElement();
+
+  void init(window_size_t w, seq_nr_t m);
+
+  seq_nr_t max_;
+  window_size_t pos_;
+  u_int8_t* window_;
+};
+
 class SeqWindow
 {
 public:
-  typedef std::deque<seq_nr_t> SeqDeque;
-  typedef std::map<sender_id_t, SeqDeque> SenderMap;
+  typedef std::map<sender_id_t, SeqWindowElement> SenderMap;
 
   SeqWindow(window_size_t w);
   ~SeqWindow();
 
-  SeqDeque::size_type getLength(sender_id_t sender);
-  bool hasSeqNr(sender_id_t sender, seq_nr_t seq);
-  void addSeqNr(sender_id_t sender, seq_nr_t seq);
+  bool checkAndAdd(sender_id_t sender, seq_nr_t seq_nr);
   void clear(sender_id_t sender);
   void clear();
-
 
 private:
   window_size_t window_size_;

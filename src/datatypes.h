@@ -32,7 +32,8 @@
 #ifndef _DATATYPES_H_
 #define _DATATYPES_H_
 
-#include<boost/cstdint.hpp>
+#include <boost/cstdint.hpp>
+#include <boost/integer_traits.hpp>
 
 typedef boost::uint8_t u_int8_t;
 typedef boost::uint16_t u_int16_t;
@@ -46,6 +47,7 @@ typedef boost::int64_t int64_t;
 typedef u_int32_t window_size_t;
 
 typedef u_int32_t seq_nr_t;
+#define SEQ_NR_MAX boost::integer_traits<seq_nr_t>::max()
 typedef u_int16_t sender_id_t;
 typedef u_int16_t payload_type_t;
 typedef u_int16_t mux_t;
