@@ -68,7 +68,6 @@ OBJS = tunDevice.o \
        log.o \
        options.o \
        seqWindow.o \
-       syncQueue.o \
 			 syncCommand.o \
        syncRouteCommand.o \
        syncConnectionCommand.o \
@@ -76,6 +75,7 @@ OBJS = tunDevice.o \
 
 SYNCOBJS= syncServer.o \
        syncClient.o \
+       syncQueue.o \
        syncTcpConnection.o
 
 ANYCTROBJS = signalController.o \
@@ -131,6 +131,9 @@ anytun-static: $(OBJS) $(SYNCOBJS) anytun.o
 
 anytun-nosync: $(OBJS) anytun-nosync.o
 	$(LD) $(OBJS) anytun-nosync.o -o $@ $(LDFLAGS)
+
+anytun-nosync.o: anytun.cpp anytun.o
+	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
 
 anytun-showtables: $(OBJS) $(SYNCOBJS) anytun-showtables.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun-showtables.o -o $@ $(LDFLAGS)

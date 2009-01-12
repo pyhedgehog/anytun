@@ -64,10 +64,10 @@
 #include "networkAddress.h"
 #endif
 
-#include "syncQueue.h"
-#include "syncCommand.h"
 
 #ifndef ANYTUN_NOSYNC
+#include "syncQueue.h"
+#include "syncCommand.h"
 #include "syncServer.h"
 #include "syncClient.h"
 #include "syncOnConnect.hpp"
@@ -84,7 +84,7 @@
 #define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
 #define SESSION_KEYLEN_SALT 14   // TODO: hardcoded size
 
-void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & cl, window_size_t seqSize, SyncQueue & queue, mux_t mux)
+void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seqSize, mux_t mux)
 {
 	SeqWindow * seq= new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
@@ -93,17 +93,21 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
 
 	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_end);
- 	cl.addConnection(connparam,mux);
-  SyncCommand sc (cl,mux);
-	queue.push(sc);
+ 	gConnectionList.addConnection(connparam,mux);
+#ifndef ANYTUN_NOSYNC
+  SyncCommand sc (gConnectionList,mux);
+	gSyncQueue.push(sc);
+#endif
 #ifndef NOROUTING
 	if (gOpt.getIfconfigParamRemoteNetmask() != "")
 	{
 		NetworkAddress addr(gOpt.getIfconfigParamRemoteNetmask());
 		NetworkPrefix prefix(addr,128);
 		gRoutingTable.addRoute(prefix,mux);
-  	SyncCommand sc2 (prefix);
-		queue.push(sc2);
+#ifndef ANYTUN_NOSYNC
+		SyncCommand sc2 (prefix);
+		gSyncQueue.push(sc2);
+#endif
 	}
 #endif
 }
@@ -158,7 +162,7 @@ void sender(void* p)
       else 
         plain_packet.setPayloadType(0);
       
-      if(param->cl.empty())
+      if(gConnectionList.empty())
         continue;
           //std::cout << "got Packet for plain "<<plain_packet.getDstAddr().toString();
 			ConnectionMap::iterator cit;
@@ -167,17 +171,17 @@ void sender(void* p)
 			{
 				mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
 						//std::cout << " -> "<<mux << std::endl;
-				cit = param->cl.getConnection(mux);
+				cit = gConnectionList.getConnection(mux);
 			}
 			catch (std::exception& e)
 			{
 				continue; // no route
 			}
 #else
-      cit = param->cl.getBegin();
+      cit = gConnectionList.getBegin();
 #endif
 
-      if(cit==param->cl.getEnd())
+      if(cit==gConnectionList.getEnd())
         continue; //no connection
       ConnectionParam & conn = cit->second;
       
@@ -298,14 +302,14 @@ void receiver(void* p)
       
       mux_t mux = encrypted_packet.getMux();
           // autodetect peer
-      if( param->cl.empty() && gOpt.getRemoteAddr() == "")
+      if( gConnectionList.empty() && gOpt.getRemoteAddr() == "")
       {
         cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_end;
-        createConnection(remote_end, param->cl, gOpt.getSeqWindowSize(),param->queue,mux);
+        createConnection(remote_end, gOpt.getSeqWindowSize(),mux);
       }
       
-      ConnectionMap::iterator cit = param->cl.getConnection(mux);
-      if (cit == param->cl.getEnd())
+      ConnectionMap::iterator cit = gConnectionList.getConnection(mux);
+      if (cit == gConnectionList.getEnd())
         continue;
       ConnectionParam & conn = cit->second;
       
@@ -327,8 +331,10 @@ void receiver(void* p)
       {
         cLog.msg(Log::PRIO_NOTICE) << "connection "<< mux << " autodetected remote host ip changed " << remote_end;
         conn.remote_end_=remote_end;
-        SyncCommand sc (param->cl,mux);
-        param->queue.push(sc);
+#ifndef ANYTUN_NOSYNC
+        SyncCommand sc (gConnectionList,mux);
+        gSyncQueue.push(sc);
+#endif
       }	
       
           // Replay Protection
@@ -404,7 +410,6 @@ int main(int argc, char* argv[])
     else
       src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
-    ConnectionList & cl (gConnectionList);
     ConnectToList connect_to = gOpt.getConnectTo();
     SyncQueue queue;
     
@@ -414,7 +419,7 @@ int main(int argc, char* argv[])
       UDPPacketSource::proto::resolver resolver(io_service);
       UDPPacketSource::proto::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
       UDPPacketSource::proto::endpoint endpoint = *resolver.resolve(query);
-      createConnection(endpoint,cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
+      createConnection(endpoint,gOpt.getSeqWindowSize(), gOpt.getMux());
     }    
 
 		RouteList routes = gOpt.getRoutes();
@@ -456,7 +461,7 @@ int main(int argc, char* argv[])
     sig.init();
 #endif
     
-    ThreadParam p(dev, *src, cl, queue,*(new OptionConnectTo()));
+    ThreadParam p(dev, *src, *(new OptionConnectTo()));
 
 #ifndef NOCRYPT
 // this must be called before any other libgcrypt call
@@ -475,7 +480,7 @@ int main(int argc, char* argv[])
     
     std::list<boost::thread *> connectThreads;
     for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
-      ThreadParam * point = new ThreadParam(dev, *src, cl, queue,*it);
+      ThreadParam * point = new ThreadParam(dev, *src, *it);
       connectThreads.push_back(new boost::thread(boost::bind(syncConnector,point)));
     }
 #endif

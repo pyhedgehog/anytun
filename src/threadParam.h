@@ -41,13 +41,11 @@
 class ThreadParam
 {
 public:
-	ThreadParam(TunDevice& dev_,PacketSource& src_,ConnectionList& cl_,SyncQueue & queue_,OptionConnectTo & connto_)
-		: dev(dev_),src(src_),cl(cl_),queue(queue_),connto(connto_)
+	ThreadParam(TunDevice& dev_,PacketSource& src_,OptionConnectTo & connto_)
+		: dev(dev_),src(src_),connto(connto_)
 		{};
   TunDevice& dev;
   PacketSource& src;
-  ConnectionList& cl;
-  SyncQueue & queue;
   OptionConnectTo & connto;
 };
 

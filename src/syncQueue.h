@@ -46,7 +46,7 @@ class SyncQueue
 public:
 	SyncQueue():syncServer_(NULL) {};
 	~SyncQueue() {};
-
+  static SyncQueue& instance();
 	void setSyncServerPtr(SyncServer *);
 	void push(const std::string & );
 	void push(const SyncCommand & );
@@ -54,10 +54,20 @@ public:
 	bool empty();
 
 private:
+  static Mutex instMutex;
+	static SyncQueue* inst;
+  class instanceCleaner {
+    public: ~instanceCleaner() {
+     if(SyncQueue::inst != 0)
+       delete SyncQueue::inst;
+   }
+  };
   SyncQueue(const SyncQueue &s);
   void operator=(const SyncQueue &s);
   Mutex mutex_;
 	SyncServer * syncServer_;
 };
+
+extern SyncQueue& gSyncQueue;
 
 #endif

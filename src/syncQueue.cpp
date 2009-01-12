@@ -42,6 +42,21 @@
 
 #include "syncQueue.h"
 
+SyncQueue* SyncQueue::inst = NULL;
+Mutex SyncQueue::instMutex;
+SyncQueue& gSyncQueue = SyncQueue::instance();
+
+
+SyncQueue& SyncQueue::instance()
+{
+  Lock lock(instMutex);
+  static instanceCleaner c;
+  if(!inst)
+    inst = new SyncQueue();
+
+  return *inst;
+}
+
 void SyncQueue::push(const SyncCommand & scom )
 {
 	std::ostringstream sout;

@@ -31,12 +31,7 @@
 #ifndef _SYNCCLIENT_H
 #define _SYNCCLIENT_H
 
-#include "connectionList.h"
-#include "syncCommand.h"
-#include <sstream>
-#include <iostream>
 #include <string>
-//#include <boost/asio.hpp>
 #include "syncTcpConnection.h"
 class SyncClient
 {

@@ -31,13 +31,14 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include "connectionList.h"
+#include "syncCommand.h"
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
 
 #include "log.h"
-//#include "connectionParam.h"
 #include "syncClient.h"
 #include "syncTcpConnection.h"
 #include "buffer.h"
