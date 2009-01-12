@@ -29,7 +29,7 @@
 ##  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
 ##
 CC = gcc
-CCFLAGS = -g -Wall
+CFLAGS = -g -Wall
 CXX = g++
 CXXFLAGS = -g -Wall
 LD = g++
@@ -61,32 +61,28 @@ OBJS = anyrtpproxy.o \
        callIdQueue.o \
        options.o
 
-EXECUTABLE = anyrtpproxy
+SRCS = $(OBJS:%.o=%.cpp)
 
-all: $(EXECUTABLE)
+EXECUTABLE = anyrtpproxy
+DEPENDFILE = .depend
+
+.PHONY: dep clean
+
+all: dep $(EXECUTABLE)
+
+dep: $(SRCS)
+	$(CC) -MM $(SRCS) > $(DEPENDFILE)
+
+-include $(DEPENDFILE)
 
 anyrtpproxy: $(OBJS)
 	$(LD) $(OBJS) -o $@ $(LDFLAGS)
 
-options.o: options.cpp options.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-portWindow.o: portWindow.cpp portWindow.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-connectionList.o: connectionList.cpp connectionList.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-commandHandler.o: commandHandler.cpp commandHandler.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-callIdQueue.o: callIdQueue.cpp callIdQueue.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-anyrtpproxy.o: anyrtpproxy.cpp
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c
 
 clean:
 	rm -f *.o
+	rm -f $(DEPENDFILE)
 	rm -f $(EXECUTABLE)
 

@@ -30,14 +30,14 @@
 ##
 TARGET=$(shell uname -s)
 CC = gcc
-CCFLAGS = -g
+CFLAGS = -g
 CXX = g++
 CXXFLAGS = -g -Wall -O2
 LD = g++
 LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization -lboost_system
 
 ifeq ($(TARGET),Linux)
-  CCFLAGS += -D_XOPEN_SOURCE=600
+  CFLAGS += -D_XOPEN_SOURCE=600
   CXXFLAGS += -D_XOPEN_SOURCE=600
   LDFLAGS += -ldl
 endif
@@ -113,9 +113,22 @@ ANYCONFOBJS = log.o \
 						 syncRouteCommand.o \
 						 syncConnectionCommand.o
 
-EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
+SRCS = $(OBJS:%.o=%.cpp)
+SYNCSRCS = $(SYNCOBJS:%.o=%.cpp)
+ANYCTRSRCS = $(ANYCTROBJS:%.o=%.cpp)
+ANYCONFSRCS = $(ANYCONFOBJS:%.o=%.cpp)
 
-all: $(EXECUTABLE) #libAnysync.a #anyrtpproxy
+EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
+DEPENDFILE = .depend
+
+.PHONY: dep distclean cleanall clean ctags
+
+all: dep $(EXECUTABLE) #libAnysync.a #anyrtpproxy
+
+dep: $(SRCS) $(SYNCSRCS) $(ANYCTRSRCS) $(ANYCONFSRCS)
+	$(CC) -MM $(SRCS) $(SYNCSRCS) $(ANYCTRSRCS) $(ANYCONFSRCS) > $(DEPENDFILE)
+
+-include $(DEPENDFILE)
 
 anytun: $(OBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
@@ -136,136 +149,10 @@ anytun-config: $(ANYCONFOBJS) anytun-config.o
 anytun-controld: $(ANYCTROBJS) anytun-controld.o
 	$(LD) $(ANYCTROBJS) anytun-controld.o -o $@ $(LDFLAGS)
 
-tunDevice.o: tunDevice.cpp tunDevice.h
-	$(CXX) $(CXXFLAGS) $< -c
+anyrtpproxy/callIdQueue.o:
+	$(MAKE) --directory=$(CURDIR)/anyrtpproxy callIdQueue.o
 
-packetSource.o: packetSource.cpp packetSource.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-buffer.o: buffer.cpp buffer.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-syncBuffer.o: syncBuffer.cpp syncBuffer.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-syncServer.o: syncServer.cpp syncServer.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-syncClient.o: syncClient.cpp syncClient.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-syncTcpConnection.o: syncTcpConnection.cpp syncTcpConnection.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-controldTcpConnection.cpp: controldTcpConnection.cpp syncTcpConnection.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-rtpSessionTable.o: rtpSessionTable.cpp rtpSessionTable.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-rtpSession.o: rtpSession.cpp rtpSession.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-routingTreeNode.o: routingTreeNode.cpp routingTreeNode.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-plainPacket.o: plainPacket.cpp plainPacket.h buffer.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-encryptedPacket.o: encryptedPacket.cpp encryptedPacket.h buffer.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-cipher.o: cipher.cpp cipher.h buffer.h 
-	$(CXX) $(CXXFLAGS) $< -c
-
-anyCtrSocket.o: anyCtrSocket.cpp anyCtrSocket.h 
-	$(CXX) $(CXXFLAGS) $< -c
-
-anyCtrOptions.o: anyCtrOptions.cpp anyCtrOptions.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-anyConfOptions.o: anyConfOptions.cpp anyConfOptions.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-authAlgo.o: authAlgo.cpp authAlgo.h buffer.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-keyDerivation.o: keyDerivation.cpp keyDerivation.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-mpi.o: mpi.cpp mpi.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-cipherFactory.o: cipherFactory.cpp cipherFactory.h cipher.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-authAlgoFactory.o: authAlgoFactory.cpp authAlgoFactory.h authAlgo.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-keyDerivationFactory.o: keyDerivationFactory.cpp keyDerivationFactory.h keyDerivation.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-routingTable.o: routingTable.cpp routingTable.h routingTree.hpp
-	$(CXX) $(CXXFLAGS) $< -c
-
-syncCommand.o: syncCommand.cpp syncCommand.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-syncRouteCommand.o: syncRouteCommand.cpp syncRouteCommand.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-syncRtpCommand.o: syncRtpCommand.cpp syncRtpCommand.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-syncConnectionCommand.o: syncConnectionCommand.cpp syncConnectionCommand.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-syncQueue.o: syncQueue.cpp syncQueue.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-signalController.o: signalController.cpp signalController.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-PracticalSocket.o: PracticalSocket.cpp PracticalSocket.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-log.o: log.cpp log.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-options.o: options.cpp options.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-seqWindow.o: seqWindow.cpp seqWindow.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-connectionList.o: connectionList.cpp connectionList.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-connectionParam.o: connectionParam.cpp connectionParam.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-networkPrefix.o: networkPrefix.cpp networkPrefix.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-networkAddress.o: networkAddress.cpp networkAddress.h
-	$(CXX) $(CXXFLAGS) $< -c
-
-anytun.o: anytun.cpp
-	$(CXX) $(CXXFLAGS) $< -c
-
-anytun-nosync.o: anytun.cpp
-	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
-
-anytun-showtables.o: anytun-showtables.cpp
-	$(CXX) $(CXXFLAGS) $< -c
-
-anytun-config.o: anytun-config.cpp
-	$(CXX) $(CXXFLAGS) $< -c
-
-anytun-controld.o: anytun-controld.cpp
-	$(CXX) $(CXXFLAGS) $< -c
-
-cConnectionParam.o: cConnectionParam.cpp
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c
 
 libAnysync.a: $(OBJS)
@@ -273,7 +160,7 @@ libAnysync.a: $(OBJS)
 	ranlib $@
 
 anyrtpproxy: anytun
-	@cd anyrtpproxy ; $(MAKE)
+	$(MAKE) --directory=$(CURDIR)/anyrtpproxy
 
 distclean: cleanall
 	find . -name *.o -exec rm -f {} \;
@@ -285,6 +172,7 @@ cleanall: clean
 
 clean:
 	rm -f *.o
+	rm -f $(DEPENDFILE)
 	rm -f $(EXECUTABLE)
 	rm -f anytun-nosync
 	rm -f -r doc/html/*
@@ -300,4 +188,3 @@ doxygen:
 
 ctags:
 	ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .
-
