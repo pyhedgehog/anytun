@@ -33,8 +33,6 @@
 #define _CONNECTIONPARAM_H_
 
 #include "keyDerivation.h"
-#include "cipher.h"
-#include "authAlgo.h"
 #include "seqWindow.h"
 #include "threadUtils.hpp"
 #include "packetSource.h"
