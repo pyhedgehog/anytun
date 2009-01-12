@@ -28,48 +28,34 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _SYNCRTPCOMMAND_H
+#define _SYNCRTPCOMMAND_H
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
-#ifndef _RTPSESSIONTABLE_H
-#define _RTPSESSIONTABLE_H
+#include "../threadUtils.hpp"
+#include "rtpSessionTable.h"
 
-#include <map>
-
-#include "threadUtils.hpp"
-#include "datatypes.h"
-#include "rtpSession.h"
-typedef std::map<std::string,RtpSession*> RtpSessionMap;
-
-class RtpSessionTable
+class SyncRtpCommand
 {
 public:
-	static RtpSessionTable& instance();
-	RtpSessionTable();
-	~RtpSessionTable();
-	void delSession(const std::string & call_id);
-	bool empty();
-	void clear();
-  ::Mutex& getMutex();
-	RtpSessionMap::iterator getBeginUnlocked();
-	RtpSessionMap::iterator getEndUnlocked();
-	RtpSession& getOrNewSession(const std::string & call_id, bool& isnew);
-	RtpSession& getOrNewSessionUnlocked(const std::string & call_id, bool& isnew);
-	RtpSession& getSession(const std::string & call_id);
+	SyncRtpCommand(const std::string & );
+	SyncRtpCommand();
+	std::string getCallId() const;
 
 private:
-  static ::Mutex instMutex;
-	static RtpSessionTable* inst;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-     if(RtpSessionTable::inst != 0)
-       delete RtpSessionTable::inst;
-   }
+	SyncRtpCommand(const SyncRtpCommand &);
+	std::string callid_;
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+		Lock lock(gRtpSessionTable.getMutex());
+		ar & callid_;
+    bool is_new;
+		ar & gRtpSessionTable.getOrNewSessionUnlocked(callid_, is_new);
 	};
-	RtpSessionTable(const RtpSessionTable &s);
-  void operator=(const RtpSessionTable &s);
-	RtpSessionMap map_;
-  ::Mutex mutex_;
 };
 
-extern RtpSessionTable& gRtpSessionTable;
 
-#endif
+#endif // _SYNCCOMMAND_H

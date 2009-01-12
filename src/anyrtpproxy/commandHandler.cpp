@@ -42,8 +42,8 @@
 #include "../buffer.h"
 #include "../log.h"
 #include "../syncQueue.h"
-#include "../syncCommand.h"
-#include "../rtpSessionTable.h"
+#include "syncRtpCommand.h"
+#include "rtpSessionTable.h"
 #include "callIdQueue.h"
 #include "options.h"
 
@@ -231,7 +231,7 @@ string CommandHandler::handleResponse(string modifiers, string call_id, string a
     RtpSession::proto::resolver::query query(addr,port);
     session.setRemoteEnd2(*resolver.resolve(query));
     session.isComplete(true);
-    SyncCommand sc(call_id);
+    SyncRtpCommand sc(call_id);
     queue_.push(sc);
 
     ostringstream oss;
@@ -252,7 +252,7 @@ string CommandHandler::handleDelete(string call_id, string from_tag, string to_t
   {
     RtpSession& session = gRtpSessionTable.getSession(call_id);
     session.isDead(true);
-    SyncCommand sc(call_id);
+    SyncRtpCommand sc(call_id);
     queue_.push(sc);
 
     return RET_OK;

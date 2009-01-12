@@ -43,11 +43,11 @@
 #include "../signalController.h"
 #include "../buffer.h"
 #include "connectionList.h"
-#include "../rtpSessionTable.h"
-#include "../syncCommand.h"
+#include "rtpSessionTable.h"
+#include "syncRtpCommand.h"
 #include "../syncQueue.h"
 #include "../syncClient.h"
-//#include "../syncOnConnect.h"
+#include "syncOnConnect.hpp"
 
 #include "../threadUtils.hpp"
 
@@ -104,7 +104,7 @@ void listener(RtpSession::proto::socket* sock1, RtpSession::proto::socket* sock2
             session.setRemoteEnd2(remote_end);
           
           if(!gOpt.getNat()) { // with nat enabled sync is not needed
-            SyncCommand sc(call_id);
+            SyncRtpCommand sc(call_id);
             queue->push(sc);
           }
         }
@@ -296,7 +296,7 @@ void syncListener(SyncQueue * queue)
 
 
     SyncServer server(io_service,e);
-//		server.onConnect=boost::bind(syncOnConnect,_1);
+		server.onConnect=boost::bind(syncOnConnect,_1);
 		queue->setSyncServerPtr(&server);
     io_service.run();
   }

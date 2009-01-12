@@ -39,23 +39,14 @@ OBJS = anyrtpproxy.o \
        ../signalController.o \
        ../log.o \
        ../buffer.o \
-       ../rtpSessionTable.o \
-       ../rtpSession.o \
+       rtpSessionTable.o \
+       rtpSession.o \
        connectionList.o \
        ../syncServer.o \
        ../syncClient.o \
        ../syncTcpConnection.o \
        ../syncQueue.o \
-       ../seqWindow.o \
-       ../connectionParam.o \
-       ../routingTable.o \
-       ../syncBuffer.o \
-       ../syncCommand.o \
-       ../syncRouteCommand.o \
-       ../syncRtpCommand.o \
-       ../syncConnectionCommand.o \
-       ../networkAddress.o \
-       ../networkPrefix.o \
+       syncRtpCommand.o \
        commandHandler.o \
        portWindow.o \
        callIdQueue.o \

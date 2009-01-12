@@ -34,7 +34,7 @@
 
 #include <boost/asio.hpp>
 
-#include "threadUtils.hpp"
+#include "../threadUtils.hpp"
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>

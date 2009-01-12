@@ -31,7 +31,7 @@
 
 #include "rtpSession.h"
 
-#include "anyrtpproxy/callIdQueue.h"
+#include "callIdQueue.h"
 
 RtpSession::RtpSession(const std::string& call_id) : in_sync_(false), call_id_(call_id) , dead_(false), complete_(false), 
                                                      seen1_(false), seen2_(false)

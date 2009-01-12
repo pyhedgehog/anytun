@@ -31,6 +31,7 @@
 
 void syncOnConnect(SyncTcpConnection * connptr)
 {
+  //TODO Locking here	
   ConnectionList & cl_(gConnectionList);
   ConnectionMap::iterator cit = cl_.getBeginUnlocked();
   for (;cit!=cl_.getEndUnlocked();++cit)
@@ -63,18 +64,5 @@ void syncOnConnect(SyncTcpConnection * connptr)
 			connptr->Send(sout.str());
 		}
 	}
-  //TODO Locking here
-  RtpSessionMap::iterator rit = gRtpSessionTable.getBeginUnlocked();
-  for (;rit!=gRtpSessionTable.getEndUnlocked();++rit)
-  {
-    std::ostringstream sout;
-    boost::archive::text_oarchive oa(sout);
-    const SyncCommand scom(rit->first);
-    oa << scom;
-    std::stringstream lengthout;
-    lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
-    connptr->Send(lengthout.str());
-    connptr->Send(sout.str());
-  }
 }
 

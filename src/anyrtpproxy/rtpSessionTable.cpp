@@ -28,8 +28,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "threadUtils.hpp"
-#include "datatypes.h"
+#include "../threadUtils.hpp"
+#include "../datatypes.h"
 
 #include "rtpSessionTable.h"
 

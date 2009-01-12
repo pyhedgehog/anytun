@@ -71,12 +71,8 @@ OBJS = tunDevice.o \
        syncQueue.o \
 			 syncCommand.o \
        syncRouteCommand.o \
-       syncRtpCommand.o \
        syncConnectionCommand.o \
-			 rtpSessionTable.o \
-			 rtpSession.o \
 			 routingTreeNode.o \
-       anyrtpproxy/callIdQueue.o
 
 SYNCOBJS= syncServer.o \
        syncClient.o \
@@ -97,11 +93,7 @@ ANYCONFOBJS = log.o \
 						 networkPrefix.o \
 						 connectionList.o \
 						 connectionParam.o \
-						 rtpSessionTable.o \
-						 rtpSession.o \
 						 routingTreeNode.o \
-						 anyrtpproxy/callIdQueue.o \
-						 syncRtpCommand.o \
 						 anyConfOptions.o \
 						 routingTable.o \
 						 seqWindow.o \
@@ -123,7 +115,7 @@ DEPENDFILE = .depend
 
 .PHONY: dep distclean cleanall clean ctags
 
-all: dep $(EXECUTABLE) #libAnysync.a #anyrtpproxy
+all: dep $(EXECUTABLE) #libAnysync.a 
 
 dep: $(SRCS) $(SYNCSRCS) $(ANYCTRSRCS) $(ANYCONFSRCS)
 	$(CC) -MM $(SRCS) $(SYNCSRCS) $(ANYCTRSRCS) $(ANYCONFSRCS) > $(DEPENDFILE)
@@ -148,9 +140,6 @@ anytun-config: $(ANYCONFOBJS) anytun-config.o
 
 anytun-controld: $(ANYCTROBJS) anytun-controld.o
 	$(LD) $(ANYCTROBJS) anytun-controld.o -o $@ $(LDFLAGS)
-
-anyrtpproxy/callIdQueue.o:
-	$(MAKE) --directory=$(CURDIR)/anyrtpproxy callIdQueue.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c

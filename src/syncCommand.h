@@ -37,7 +37,6 @@
 #include "threadUtils.hpp"
 #include "syncConnectionCommand.h"
 #include "syncRouteCommand.h"
-#include "syncRtpCommand.h"
 #include "networkPrefix.h"
 #include <string>
 
@@ -46,7 +45,6 @@ class SyncCommand
 public:
 	SyncCommand(ConnectionList & cl );
 	SyncCommand(ConnectionList & cl ,u_int16_t mux);
-	SyncCommand(const std::string &);
 	SyncCommand(NetworkPrefix);
 	~SyncCommand();
 
@@ -54,7 +52,6 @@ private:
 	SyncCommand(const SyncCommand &);
 	SyncConnectionCommand * scc_;
 	SyncRouteCommand * src_;
-	SyncRtpCommand * srtpc_;
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
@@ -68,18 +65,12 @@ private:
 		{
 			syncstr = "route";
 		}
-		if ( srtpc_)
-		{
-			syncstr = "rtp";
-		}
     ar & syncstr;
 //		std::cout << "syncstr received " <<syncstr << std::endl;
 		if (syncstr == "connection")
 			ar & *scc_;
 		if (syncstr == "route")
 			ar & *src_;
-		if (syncstr == "rtp")
-			ar & *srtpc_;
 //		std::cout << "syncstr done " <<syncstr << std::endl;
 	}
 };
