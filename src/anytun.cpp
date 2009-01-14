@@ -80,8 +80,6 @@
 #include "daemon.hpp"
 #include "sysexec.hpp"
 
-#define SESSION_KEYLEN_AUTH 20   // TODO: hardcoded size
-
 void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seqSize, mux_t mux)
 {
 	SeqWindow * seq= new SeqWindow(seqSize);
@@ -122,9 +120,6 @@ void sender(void* p)
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
     
-    Buffer session_auth_key(u_int32_t(SESSION_KEYLEN_AUTH));        // TODO: hardcoded size
-    
-        //TODO replace mux
     u_int16_t mux = gOpt.getMux();
     PacketSourceEndpoint emptyEndpoint;
     while(1)
@@ -180,12 +175,8 @@ void sender(void* p)
       conn.seq_nr_++;
       
           // add authentication tag
-      if(a->getMaxLength()) {
-        encrypted_packet.addAuthTag();
-        conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
-        a->setKey(session_auth_key);
-        a->generate(encrypted_packet);
-      }  
+      a->generate(conn.kd_, encrypted_packet);
+
       try
       {
         param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
@@ -259,8 +250,6 @@ void receiver(void* p)
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     
-    Buffer session_auth_key(u_int32_t(SESSION_KEYLEN_AUTH));        // TODO: hardcoded size
-    
     while(1)
     {
       PacketSourceEndpoint remote_end;
@@ -287,17 +276,11 @@ void receiver(void* p)
       ConnectionParam & conn = cit->second;
       
           // check whether auth tag is ok or not
-      if(a->getMaxLength()) {
-        encrypted_packet.withAuthTag(true);
-        conn.kd_.generate(LABEL_SATP_MSG_AUTH, encrypted_packet.getSeqNr(), session_auth_key);
-        a->setKey(session_auth_key);
-        if(!a->checkTag(encrypted_packet)) {
-          cLog.msg(Log::PRIO_NOTICE) << "wrong Authentication Tag!" << std::endl;
-          continue;
-        }        
-        encrypted_packet.removeAuthTag();
-      }  
-      
+      if(!a->checkTag(conn.kd_, encrypted_packet)) {
+        cLog.msg(Log::PRIO_NOTICE) << "wrong Authentication Tag!" << std::endl;
+        continue;
+      }        
+
           //Allow dynamic IP changes 
           //TODO: add command line option to turn this off
       if (remote_end != conn.remote_end_)

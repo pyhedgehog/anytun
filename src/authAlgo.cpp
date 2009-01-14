@@ -37,99 +37,138 @@
 #include <iostream>
 #include <cstring>
 
-#ifndef NOCRYPT
-#include <gcrypt.h>
-#endif
-
 //****** NullAuthAlgo ******
-void NullAuthAlgo::generate(EncryptedPacket& packet)
+void NullAuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 {
 }
 
-bool NullAuthAlgo::checkTag(EncryptedPacket& packet)
+bool NullAuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 {
   return true;
-}
-
-u_int32_t NullAuthAlgo::getMaxLength()
-{
-  return MAX_LENGTH_;
 }
 
 #ifndef NOCRYPT
 //****** Sha1AuthAlgo ******
 
-Sha1AuthAlgo::Sha1AuthAlgo() : ctx_(NULL)
+Sha1AuthAlgo::Sha1AuthAlgo() : key_(DIGEST_LENGTH)
 {
-  gcry_error_t err = gcry_md_open( &ctx_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC );
-  if( err )
+#ifndef USE_SSL_CRYPTO
+  gcry_error_t err = gcry_md_open(&handle_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC);
+  if(err) {
     cLog.msg(Log::PRIO_CRIT) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to open message digest algo";
+    return;
+  } 
+#else
+  HMAC_CTX_init(&ctx_);
+  HMAC_Init_ex(&ctx_, NULL, 0, EVP_sha1(), NULL);
+#endif
 }
 
 Sha1AuthAlgo::~Sha1AuthAlgo()
 {
-  if(ctx_)
-    gcry_md_close( ctx_ );
+#ifndef USE_SSL_CRYPTO
+  if(handle_)
+    gcry_md_close(handle_);
+#else
+  HMAC_CTX_cleanup(&ctx_);
+#endif    
 }
 
-void Sha1AuthAlgo::setKey(Buffer& key)
+void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 {
-  if(!ctx_)
-    return;
-
-  gcry_error_t err = gcry_md_setkey( ctx_, key.getBuf(), key.getLength() );
-  if( err ) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set cipher key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
-  }
-}
-
-void Sha1AuthAlgo::generate(EncryptedPacket& packet)
-{
+  packet.addAuthTag();
   if(!packet.getAuthTagLength())
     return;
+  
+  bool result = kd.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
+  if(result) { // a new key got generated
+#ifndef USE_SSL_CRYPTO
+    gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
+    if(err) {
+      char buf[STERROR_TEXT_MAX];
+      buf[0] = 0;
+      cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+      return;
+    } 
+#else 
+    HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
+  }
+  else {
+    HMAC_Init_ex(&ctx_, NULL, 0, NULL, NULL);
+#endif
+  }
 
-  gcry_md_reset( ctx_ );
-
-  gcry_md_write( ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength() );
-  gcry_md_final( ctx_ );
+#ifndef USE_SSL_CRYPTO
+  gcry_md_reset(handle_);
+  gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
+  gcry_md_final(handle_);
+  u_int8_t* hmac = gcry_md_read(handle_, 0);
+#else
+  u_int8_t hmac[DIGEST_LENGTH];
+  HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
+  HMAC_Final(&ctx_, hmac, NULL);
+#endif
 
   u_int8_t* tag = packet.getAuthTag();
-  if(packet.getAuthTagLength() > MAX_LENGTH_)
-    std::memset(tag, 0, (packet.getAuthTagLength() - MAX_LENGTH_));
-  
-  u_int8_t* hmac = gcry_md_read(ctx_, 0);
-  u_int32_t length = (packet.getAuthTagLength() < MAX_LENGTH_) ? packet.getAuthTagLength() : MAX_LENGTH_;
-  std::memcpy(&tag[packet.getAuthTagLength() - length], &hmac[MAX_LENGTH_ - length], length);
+  u_int32_t length = (packet.getAuthTagLength() < DIGEST_LENGTH) ? packet.getAuthTagLength() : DIGEST_LENGTH;
+
+  if(length > DIGEST_LENGTH)
+    std::memset(tag, 0, packet.getAuthTagLength());
+
+  std::memcpy(&tag[packet.getAuthTagLength() - length], &hmac[DIGEST_LENGTH - length], length);
 }
 
-bool Sha1AuthAlgo::checkTag(EncryptedPacket& packet)
+bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 {
+  packet.withAuthTag(true);
   if(!packet.getAuthTagLength())
     return true;
 
-  gcry_md_reset( ctx_ );
+  bool result = kd.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
+  if(result) { // a new key got generated
+#ifndef USE_SSL_CRYPTO
+    gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
+    if(err) {
+      char buf[STERROR_TEXT_MAX];
+      buf[0] = 0;
+      cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+      return false;
+    } 
+#else 
+    HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
+  }
+  else {
+    HMAC_Init_ex(&ctx_, NULL, 0, NULL, NULL);
+#endif
+  }
 
-  gcry_md_write( ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength() );
-  gcry_md_final( ctx_ );
+#ifndef USE_SSL_CRYPTO
+  gcry_md_reset(handle_);
+  gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
+  gcry_md_final(handle_);
+  u_int8_t* hmac = gcry_md_read(handle_, 0);
+#else
+  u_int8_t hmac[DIGEST_LENGTH];
+  HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
+  HMAC_Final(&ctx_, hmac, NULL);
+#endif
 
   u_int8_t* tag = packet.getAuthTag();
-  if(packet.getAuthTagLength() > MAX_LENGTH_)
-    for(u_int32_t i=0; i < (packet.getAuthTagLength() - MAX_LENGTH_); ++i)
-      if(tag[i]) return false; 
+  u_int32_t length = (packet.getAuthTagLength() < DIGEST_LENGTH) ? packet.getAuthTagLength() : DIGEST_LENGTH;
+
+  if(length > DIGEST_LENGTH)
+    for(u_int32_t i=0; i < (packet.getAuthTagLength() - DIGEST_LENGTH); ++i)
+      if(tag[i]) return false;
+
+  int ret = std::memcmp(&tag[packet.getAuthTagLength() - length], &hmac[DIGEST_LENGTH - length], length);
+  packet.removeAuthTag();
   
-  u_int8_t* hmac = gcry_md_read(ctx_, 0);
-  u_int32_t length = (packet.getAuthTagLength() < MAX_LENGTH_) ? packet.getAuthTagLength() : MAX_LENGTH_;
-  if(std::memcmp(&tag[packet.getAuthTagLength() - length], &hmac[MAX_LENGTH_ - length], length))
+  if(ret)
     return false;
 
   return true;
+
 }
 
-u_int32_t Sha1AuthAlgo::getMaxLength()
-{
-  return MAX_LENGTH_;
-}
 #endif
 

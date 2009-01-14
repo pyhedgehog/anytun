@@ -37,8 +37,13 @@
 #include "encryptedPacket.h"
 
 #ifndef NOCRYPT
+#ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
+#else
+#include <openssl/hmac.h>
 #endif
+#endif
+#include "keyDerivation.h"
 
 class AuthAlgo
 {
@@ -47,27 +52,16 @@ public:
   virtual ~AuthAlgo() {};
 
   /**
-   * set the key for the auth algo
-   * @param key key for hmac calculation
-   */
-  virtual void setKey(Buffer& key) = 0;
-
-  /**
    * generate the mac
    * @param packet the packet to be authenticated
    */
-  virtual void generate(EncryptedPacket& packet) = 0;
+  virtual void generate(KeyDerivation& kd, EncryptedPacket& packet) = 0;
 
   /**
    * check the mac
    * @param packet the packet to be authenticated
    */
-  virtual bool checkTag(EncryptedPacket& packet) = 0;
-
-  /**
-   * get the maximum size of the auth algo
-   */
-  virtual u_int32_t getMaxLength() = 0;
+  virtual bool checkTag(KeyDerivation& kd, EncryptedPacket& packet) = 0;
 };
 
 //****** NullAuthAlgo ******
@@ -75,12 +69,8 @@ public:
 class NullAuthAlgo : public AuthAlgo
 {
 public:
-  void setKey(Buffer& key) {};
-  void generate(EncryptedPacket& packet);
-  bool checkTag(EncryptedPacket& packet);
-  u_int32_t getMaxLength();
-
-  static const u_int32_t MAX_LENGTH_ = 0;
+  void generate(KeyDerivation& kd, EncryptedPacket& packet);
+  bool checkTag(KeyDerivation& kd, EncryptedPacket& packet);
 };
 
 #ifndef NOCRYPT
@@ -93,15 +83,19 @@ public:
   Sha1AuthAlgo();
   ~Sha1AuthAlgo();
 
-  void setKey(Buffer& key);
-  void generate(EncryptedPacket& packet);
-  bool checkTag(EncryptedPacket& packet);
-  u_int32_t getMaxLength();
+  void generate(KeyDerivation& kd, EncryptedPacket& packet);
+  bool checkTag(KeyDerivation& kd, EncryptedPacket& packet);
 
-  static const u_int32_t MAX_LENGTH_ = 20;
+  static const u_int32_t DIGEST_LENGTH = 20;
 
 private:
-  gcry_md_hd_t ctx_;
+#ifndef USE_SSL_CRYPTO
+  gcry_md_hd_t handle_;
+#else
+  HMAC_CTX ctx_;
+#endif
+  
+  Buffer key_;
 };
 #endif
 
