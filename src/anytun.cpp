@@ -81,8 +81,6 @@
 #include "sysexec.hpp"
 
 #define SESSION_KEYLEN_AUTH 20   // TODO: hardcoded size
-#define SESSION_KEYLEN_ENCR 16   // TODO: hardcoded size
-#define SESSION_KEYLEN_SALT 14   // TODO: hardcoded size
 
 void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seqSize, mux_t mux)
 {
@@ -124,8 +122,6 @@ void sender(void* p)
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
     
-    Buffer session_key(u_int32_t(SESSION_KEYLEN_ENCR));             // TODO: hardcoded size
-    Buffer session_salt(u_int32_t(SESSION_KEYLEN_SALT));            // TODO: hardcoded size
     Buffer session_auth_key(u_int32_t(SESSION_KEYLEN_AUTH));        // TODO: hardcoded size
     
         //TODO replace mux
@@ -177,15 +173,8 @@ void sender(void* p)
         continue;
       }
 
-          // generate packet-key TODO: do this only when needed
-      conn.kd_.generate(LABEL_SATP_ENCRYPTION, conn.seq_nr_, session_key);
-      conn.kd_.generate(LABEL_SATP_SALT, conn.seq_nr_, session_salt);
-      
-      c->setKey(session_key);
-      c->setSalt(session_salt);
-      
           // encrypt packet
-      c->encrypt(plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId(), mux);
+      c->encrypt(conn.kd_, plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId(), mux);
       
       encrypted_packet.setHeader(conn.seq_nr_, gOpt.getSenderId(), mux);
       conn.seq_nr_++;
@@ -270,8 +259,6 @@ void receiver(void* p)
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     
-    Buffer session_key(u_int32_t(SESSION_KEYLEN_ENCR));             // TODO: hardcoded size
-    Buffer session_salt(u_int32_t(SESSION_KEYLEN_SALT));            // TODO: hardcoded size
     Buffer session_auth_key(u_int32_t(SESSION_KEYLEN_AUTH));        // TODO: hardcoded size
     
     while(1)
@@ -331,14 +318,8 @@ void receiver(void* p)
         continue;
       }
       
-          // generate packet-key
-      conn.kd_.generate(LABEL_SATP_ENCRYPTION, encrypted_packet.getSeqNr(), session_key);
-      conn.kd_.generate(LABEL_SATP_SALT, encrypted_packet.getSeqNr(), session_salt);
-      c->setKey(session_key);
-      c->setSalt(session_salt);
-      
           // decrypt packet
-      c->decrypt(encrypted_packet, plain_packet);
+      c->decrypt(conn.kd_, encrypted_packet, plain_packet);
       
           // check payload_type
       if((param->dev.getType() == TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN4 && 

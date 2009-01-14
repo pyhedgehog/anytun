@@ -34,42 +34,37 @@
 #include <string>
 #include <cstdio>
 #include <cstring>
-#ifndef NOCRYPT
-#include <gcrypt.h>
-#include "mpi.h"
-#endif
+
+#include "endian.h"
 
 #include "cipher.h"
 #include "log.h"
 
-
-      // TODO: in should be const but does not work with getBuf() :(
-void Cipher::encrypt(PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+void Cipher::encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-	u_int32_t len = cipher(in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
+	u_int32_t len = cipher(kd, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
 	out.setSenderId(sender_id);
 	out.setSeqNr(seq_nr);
   out.setMux(mux);
 	out.setPayloadLength(len);
 }
 
-      // TODO: in should be const but does not work with getBuf() :(
-void Cipher::decrypt(EncryptedPacket & in, PlainPacket & out)
+void Cipher::decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out)
 {
-	u_int32_t len = decipher(in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
+	u_int32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
 	out.setLength(len);
 }
 
 
 //******* NullCipher *******
 
-u_int32_t NullCipher::cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+u_int32_t NullCipher::cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
 	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
 }
 
-u_int32_t NullCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+u_int32_t NullCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
 	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
@@ -78,107 +73,147 @@ u_int32_t NullCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_in
 #ifndef NOCRYPT
 //****** AesIcmCipher ****** 
 
-AesIcmCipher::AesIcmCipher() : cipher_(NULL)
+AesIcmCipher::AesIcmCipher() : key_(u_int32_t(DEFAULT_KEY_LENGTH/8)), salt_(u_int32_t(SALT_LENGTH))
 {
-      // TODO: hardcoded keysize
-  gcry_error_t err = gcry_cipher_open( &cipher_, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CTR, 0 );
+  init();
+}
+
+AesIcmCipher::AesIcmCipher(u_int16_t key_length) : key_(u_int32_t(key_length/8)), salt_(u_int32_t(SALT_LENGTH))
+{
+  init(key_length);
+}
+
+void AesIcmCipher::init(u_int16_t key_length)
+{
+#ifndef USE_SSL_CRYPTO
+  handle_ = NULL;
+  int algo;
+  switch(key_length) {
+  case 128: algo = GCRY_CIPHER_AES128; break;
+  case 192: algo = GCRY_CIPHER_AES192; break;
+  case 256: algo = GCRY_CIPHER_AES256; break;
+  default: {
+    char buf[STERROR_TEXT_MAX];
+    buf[0] = 0;
+    cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: cipher key length of " << key_length << " Bits is not supported";
+    return;
+  }
+  }
+
+  gcry_error_t err = gcry_cipher_open(&handle_, algo, GCRY_CIPHER_MODE_CTR, 0);
   if( err ) {
     char buf[STERROR_TEXT_MAX];
     buf[0] = 0;
     cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher" << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
   } 
+#endif
 }
 
 
 AesIcmCipher::~AesIcmCipher()
 {
-  if(cipher_)
-    gcry_cipher_close( cipher_ );
+#ifndef USE_SSL_CRYPTO
+  if(handle_)
+    gcry_cipher_close(handle_);
+#endif
 }
 
-void AesIcmCipher::setKey(Buffer& key)
+u_int32_t AesIcmCipher::cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  if(!cipher_)
-    return;
-
-  gcry_error_t err = gcry_cipher_setkey( cipher_, key.getBuf(), key.getLength() );
-  if( err ) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher::setKey: Failed to set cipher key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
-  }
-}
-
-void AesIcmCipher::setSalt(Buffer& salt)
-{
-  salt_ = salt;
-  if(!salt_[u_int32_t(0)])
-    salt_[u_int32_t(0)] = 1; // TODO: this is a outstandingly ugly workaround
-}
-
-u_int32_t AesIcmCipher::cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
-{
-  calc(in, ilen, out, olen, seq_nr, sender_id, mux);
+  calc(kd, in, ilen, out, olen, seq_nr, sender_id, mux);
   return (ilen < olen) ? ilen : olen;
 }
 
-u_int32_t AesIcmCipher::decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+u_int32_t AesIcmCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  calc(in, ilen, out, olen, seq_nr, sender_id, mux);
+  calc(kd, in, ilen, out, olen, seq_nr, sender_id, mux);
   return (ilen < olen) ? ilen : olen;
 }
 
-void AesIcmCipher::calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+void AesIcmCipher::calc_ctr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  if(!cipher_)
-    return;
+  kd.generate(LABEL_SATP_SALT, seq_nr, salt_);
 
-  gcry_error_t err = gcry_cipher_reset( cipher_ );
-  if( err ) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to reset cipher: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+#ifdef ANYTUN_02_COMPAT
+  if(!salt_[int32_t(0)])
+    salt_[int32_t(0)] = 1;
+#endif
+
+  std::memcpy(ctr_.salt_.buf_, salt_.getBuf(), SALT_LENGTH);
+  ctr_.salt_.zero_ = 0;
+  ctr_.params_.mux_ ^= MUX_T_HTON(mux);
+  ctr_.params_.sender_id_ ^= SENDER_ID_T_HTON(sender_id);
+  ctr_.params_.seq_nr_ ^= SEQ_NR_T_HTON(seq_nr);
+
+  return;
+}
+
+void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+{
+#ifndef USE_SSL_CRYPTO
+  if(!handle_)
     return;
+#endif
+
+  bool result = kd.generate(LABEL_SATP_ENCRYPTION, seq_nr, key_);
+  if(result) { // a new key got generated
+#ifdef USE_SSL_CRYPTO
+    int ret = AES_set_encrypt_key(key_.getBuf(), key_.getLength()*8, &aes_key_);
+    if(ret) {
+      char buf[STERROR_TEXT_MAX];
+      buf[0] = 0;
+      cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher ssl key (code: " << ret << ")";
+      return;
+    }
+#else
+    gcry_error_t err = gcry_cipher_setkey(handle_, key_.getBuf(), key_.getLength());
+    if(err) {
+      char buf[STERROR_TEXT_MAX];
+      buf[0] = 0;
+      cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+      return;
+    }
+  } // no new key got generated
+  else {
+    gcry_error_t err = gcry_cipher_reset(handle_);
+    if(err) {
+      char buf[STERROR_TEXT_MAX];
+      buf[0] = 0;
+      cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to reset cipher: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+      return;
+    }
+#endif
   }
 
-  // set the IV ( = CTR)
-  //==========================================================================
-  //  //  where the 128-bit integer value IV SHALL be defined by the SSRC, the
-  //  //  SRTP packet index i, and the SRTP session salting key k_s, as below.
-  //  //
-  //  //  IV = (k_s * 2^16) XOR (SSRC * 2^64) XOR (i * 2^16)
-  //  //  sizeof(k_s) = 112 bit, random
-
-  Mpi ctr(128);                                                // TODO: hardcoded size
-  Mpi salt(salt_.getBuf(), salt_.getLength());
-  Mpi sid_mux(32);
-  sid_mux = sender_id;
-  Mpi mux_mpi(32);
-  mux_mpi = mux;
-  sid_mux = sid_mux ^ mux_mpi.mul2exp(16);
-  Mpi seq(32);
-  seq = seq_nr;
-
-  ctr = salt.mul2exp(16) ^ sid_mux.mul2exp(64) ^ seq.mul2exp(16);  // TODO: hardcoded size
-
-  size_t written;
-  u_int8_t *ctr_buf = ctr.getNewBuf(&written);             // TODO: hardcoded size
-  err = gcry_cipher_setctr( cipher_, ctr_buf, written );        // TODO: hardcoded size 
-  delete[] ctr_buf;
-  if( err ) {
+  calc_ctr(kd, seq_nr, sender_id, mux);
+ 
+#ifndef USE_SSL_CRYPTO
+  gcry_error_t err = gcry_cipher_setctr(handle_, ctr_.buf_, CTR_LENGTH);
+  if(err) {
     char buf[STERROR_TEXT_MAX];
     buf[0] = 0;
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
     return;
   }
 
-  err = gcry_cipher_encrypt( cipher_, out, olen, in, ilen );
-  if( err ) {
+  err = gcry_cipher_encrypt(handle_, out, olen, in, ilen);
+  if(err) {
     char buf[STERROR_TEXT_MAX];
     buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to generate cipher bitstream: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to de/encrypt packet: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
     return;
   }
+#else
+  if(CTR_LENGTH != AES_BLOCK_SIZE) {
+    char buf[STERROR_TEXT_MAX];
+    buf[0] = 0;
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
+    return;
+  }
+  u_int32_t num = 0;
+  std::memset(ecount_buf_, 0, AES_BLOCK_SIZE);
+  AES_ctr128_encrypt(in, out, (ilen < olen) ? ilen : olen, &aes_key_, ctr_.buf_, ecount_buf_, &num);
+#endif
 }
 #endif
 

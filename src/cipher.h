@@ -36,9 +36,14 @@
 #include "buffer.h"
 #include "encryptedPacket.h"
 #include "plainPacket.h"
+#include "keyDerivation.h"
 
 #ifndef NOCRYPT
+#ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
+#else
+#include <openssl/aes.h>
+#endif
 #endif
 
 class Cipher
@@ -46,29 +51,21 @@ class Cipher
 public:
   virtual ~Cipher() {};
 
-      // TODO: in should be const but does not work with getBuf() :(
-	void encrypt(PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-	void decrypt(EncryptedPacket & in, PlainPacket & out);
+	void encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+	void decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out);
   
-  virtual void setKey(Buffer& key) = 0;
-  virtual void setSalt(Buffer& salt) = 0;
-
 protected:
-  virtual u_int32_t cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
-  virtual u_int32_t decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0; 
+  virtual u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
+  virtual u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0; 
 };
 
 //****** NullCipher ******
 
 class NullCipher : public Cipher
 {
-public:
-  void setKey(Buffer& key) {};
-  void setSalt(Buffer& salt) {};
-
 protected:
-  u_int32_t cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  u_int32_t decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 };
 
 #ifndef NOCRYPT
@@ -78,19 +75,47 @@ class AesIcmCipher : public Cipher
 {
 public:
   AesIcmCipher();
+  AesIcmCipher(u_int16_t key_length);
   ~AesIcmCipher();
-  void setKey(Buffer& key);
-  void setSalt(Buffer& salt);
+  
+  static const u_int16_t DEFAULT_KEY_LENGTH = 128;
+  static const u_int16_t CTR_LENGTH = 16;
+  static const u_int16_t SALT_LENGTH = 14;
 
 protected:
-  u_int32_t cipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  u_int32_t decipher(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
 private:
-  void calc(u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  void init(u_int16_t key_length = DEFAULT_KEY_LENGTH);
 
-  gcry_cipher_hd_t cipher_;
+  void calc_ctr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  void calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+
+#ifndef USE_SSL_CRYPTO
+  gcry_cipher_hd_t handle_;
+#else
+  AES_KEY aes_key_;
+  u_int8_t ecount_buf_[AES_BLOCK_SIZE];
+#endif
+  Buffer key_;
   Buffer salt_;
+
+  union __attribute__((__packed__)) cipher_aesctr_ctr_union {
+    u_int8_t buf_[CTR_LENGTH];
+    struct __attribute__ ((__packed__)) {
+      u_int8_t buf_[SALT_LENGTH];
+      u_int16_t zero_;
+    } salt_;
+    struct __attribute__((__packed__)) {
+      u_int8_t fill_[SALT_LENGTH - sizeof(mux_t) - sizeof(sender_id_t) - 2 - sizeof(seq_nr_t)];
+      mux_t mux_;
+      sender_id_t sender_id_;
+      u_int8_t empty_[2];
+      seq_nr_t seq_nr_;
+      u_int16_t zero_;
+    } params_;
+  } ctr_;
 };
 #endif
 

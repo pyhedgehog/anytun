@@ -53,9 +53,10 @@ void KeyDerivation::setLogKDRate(const u_int8_t log_rate)
 
 //****** NullKeyDerivation ******
 
-void NullKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key)
+bool NullKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key)
 {
   for(u_int32_t i=0; i < key.getLength(); ++i) key[i] = 0;
+  return true;
 }
 
 #ifndef NOCRYPT
@@ -102,13 +103,13 @@ void AesIcmKeyDerivation::init(Buffer key, Buffer salt)
   updateMasterKey();
 }
 
-void AesIcmKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) 
+bool AesIcmKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) 
 {
   Lock lock(mutex_);
   if(!cipher_)
   {
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: cipher not opened";
-    return;
+    return false;
   }
 
   gcry_error_t err = gcry_cipher_reset( cipher_ );
@@ -158,6 +159,7 @@ void AesIcmKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer
     char buf[STERROR_TEXT_MAX];
     buf[0] = 0;
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set CTR: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    return false;
   }
 
   for(u_int32_t i=0; i < key.getLength(); ++i) key[i] = 0;
@@ -167,6 +169,7 @@ void AesIcmKeyDerivation::generate(satp_prf_label label, seq_nr_t seq_nr, Buffer
     buf[0] = 0;
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
   }
+  return true;
 }
 #endif
 

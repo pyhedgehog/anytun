@@ -60,7 +60,7 @@ public:
   void setLogKDRate(const u_int8_t ld_rate);
 
   virtual void init(Buffer key, Buffer salt) = 0;
-  virtual void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) = 0;
+  virtual bool generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) = 0;
 
   virtual std::string printType() { return "KeyDerivation"; };
 
@@ -97,7 +97,7 @@ public:
   ~NullKeyDerivation() {};
 
   void init(Buffer key, Buffer salt) {};
-  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
+  bool generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
 
   std::string printType() { return "NullKeyDerivation"; };
 
@@ -123,7 +123,7 @@ public:
   ~AesIcmKeyDerivation();
   
   void init(Buffer key, Buffer salt);
-  void generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
+  bool generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
 
   std::string printType() { return "AesIcmKeyDerivation"; };
 
