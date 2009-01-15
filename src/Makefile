@@ -104,22 +104,26 @@ ANYCONFOBJS = log.o \
 						 syncRouteCommand.o \
 						 syncConnectionCommand.o
 
+EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
+EXEOBJS = anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
+
 SRCS = $(OBJS:%.o=%.cpp)
 SYNCSRCS = $(SYNCOBJS:%.o=%.cpp)
 ANYCTRSRCS = $(ANYCTROBJS:%.o=%.cpp)
 ANYCONFSRCS = $(ANYCONFOBJS:%.o=%.cpp)
+EXESRCS = $(EXEOBJS:%.o=%.cpp)
 
-EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
-DEPENDFILE = .depend
+.PHONY: distclean cleanall clean ctags
 
-.PHONY: dep distclean cleanall clean ctags
+all: $(EXECUTABLE) #libAnysync.a 
 
-all: dep $(EXECUTABLE) #libAnysync.a 
+%.d: %.cpp
+	@set -e; rm -f $@; \
+	 $(CXX) -MM $(CXXFLAGS) $< > $@.$$$$; \
+   sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+   rm -f $@.$$$$; echo '(re)building $@'
 
-dep: $(SRCS) $(SYNCSRCS) $(ANYCTRSRCS) $(ANYCONFSRCS)
-	$(CC) -MM $(SRCS) $(SYNCSRCS) $(ANYCTRSRCS) $(ANYCONFSRCS) > $(DEPENDFILE)
-
--include $(DEPENDFILE)
+-include $(SRCS:%.cpp=%.d) $(SYNCSRCS:%.cpp=%.d) $(ANYCTRSRCS:%.cpp=%.d) $(ANYCONFSRCS:%.cpp=%.d) $(EXESRCS:%.cpp=%.d)
 
 anytun: $(OBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
@@ -163,7 +167,7 @@ cleanall: clean
 
 clean:
 	rm -f *.o
-	rm -f $(DEPENDFILE)
+	rm -f *.d
 	rm -f $(EXECUTABLE)
 	rm -f anytun-nosync
 	rm -f -r doc/html/*
