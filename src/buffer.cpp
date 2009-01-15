@@ -128,8 +128,6 @@ void Buffer::operator=(const Buffer &src)
   std::memcpy(buf_, src.buf_, length_);
 }
 
-
-
 bool Buffer::operator==(const Buffer &cmp) const
 {
   if(length_ != cmp.length_)

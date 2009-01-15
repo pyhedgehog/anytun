@@ -51,7 +51,7 @@ void KeyDerivation::setLogKDRate(const int8_t log_rate)
 
 //****** NullKeyDerivation ******
 
-bool NullKeyDerivation::generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_nr, Buffer& key)
+bool NullKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key)
 {
   std::memset(key.getBuf(), 0, key.getLength());
   return true;
@@ -168,7 +168,7 @@ std::string AesIcmKeyDerivation::printType()
   return sstr.str();
 }
 
-bool AesIcmKeyDerivation::calcCtr(kd_dir dir, seq_nr_t* r, satp_prf_label label, seq_nr_t seq_nr)
+bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, seq_nr_t* r, satp_prf_label_t label, seq_nr_t seq_nr)
 {
   *r = 0;
   if(ld_kdr_ >= 0)
@@ -194,7 +194,7 @@ bool AesIcmKeyDerivation::calcCtr(kd_dir dir, seq_nr_t* r, satp_prf_label label,
   return true;
 }
 
-bool AesIcmKeyDerivation::generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_nr, Buffer& key) 
+bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key) 
 {
   ReadersLock lock(mutex_);
 

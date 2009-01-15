@@ -38,11 +38,11 @@
 #include <cstring>
 
 //****** NullAuthAlgo ******
-void NullAuthAlgo::generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
+void NullAuthAlgo::generate(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet)
 {
 }
 
-bool NullAuthAlgo::checkTag(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
+bool NullAuthAlgo::checkTag(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet)
 {
   return true;
 }
@@ -74,7 +74,7 @@ Sha1AuthAlgo::~Sha1AuthAlgo()
 #endif    
 }
 
-void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
+void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet)
 {
 #ifndef USE_SSL_CRYPTO
   if(!handle_)
@@ -116,7 +116,7 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& pack
   std::memcpy(&tag[packet.getAuthTagLength() - length], &hmac[DIGEST_LENGTH - length], length);
 }
 
-bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
+bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet)
 {
 #ifndef USE_SSL_CRYPTO
   if(!handle_)

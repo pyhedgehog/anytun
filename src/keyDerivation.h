@@ -47,17 +47,22 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
-
+#define KD_LABEL_COUNT 3
 typedef enum {
   LABEL_SATP_ENCRYPTION  = 0x00,
   LABEL_SATP_MSG_AUTH    = 0x01,
   LABEL_SATP_SALT        = 0x02,
-} satp_prf_label;
+} satp_prf_label_t;
 
 typedef enum {
   KD_INBOUND = 0,
   KD_OUTBOUND = 1
-} kd_dir;
+} kd_dir_t;
+
+typedef struct {
+  Buffer key_;
+  seq_nr_t r_;
+} key_store_t;
 
 class KeyDerivation
 {
@@ -69,7 +74,7 @@ public:
   void setLogKDRate(const int8_t ld_rate);
 
   virtual void init(Buffer key, Buffer salt) = 0;
-  virtual bool generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_nr, Buffer& key) = 0;
+  virtual bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key) = 0;
 
   virtual std::string printType() { return "GenericKeyDerivation"; };
 
@@ -108,7 +113,7 @@ public:
   ~NullKeyDerivation() {};
 
   void init(Buffer key, Buffer salt) {};
-  bool generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
+  bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key);
 
   std::string printType() { return "NullKeyDerivation"; };
 
@@ -139,14 +144,14 @@ public:
   static const u_int16_t SALT_LENGTH = 14;
    
   void init(Buffer key, Buffer salt);
-  bool generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
+  bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key);
 
   std::string printType();
 
 private:
   void updateMasterKey();
 
-  bool calcCtr(kd_dir dir, seq_nr_t* r, satp_prf_label label, seq_nr_t seq_nr);
+  bool calcCtr(kd_dir_t dir, seq_nr_t* r, satp_prf_label_t label, seq_nr_t seq_nr);
 
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -161,6 +166,8 @@ private:
   AES_KEY aes_key_[2];
   u_int8_t ecount_buf_[2][AES_BLOCK_SIZE];
 #endif
+
+  key_store_t key_store_[KD_LABEL_COUNT];
 
   union __attribute__((__packed__)) key_derivation_aesctr_ctr_union {
     u_int8_t buf_[CTR_LENGTH];

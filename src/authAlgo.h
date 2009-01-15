@@ -55,13 +55,13 @@ public:
    * generate the mac
    * @param packet the packet to be authenticated
    */
-  virtual void generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet) = 0;
+  virtual void generate(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet) = 0;
 
   /**
    * check the mac
    * @param packet the packet to be authenticated
    */
-  virtual bool checkTag(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet) = 0;
+  virtual bool checkTag(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet) = 0;
 };
 
 //****** NullAuthAlgo ******
@@ -69,8 +69,8 @@ public:
 class NullAuthAlgo : public AuthAlgo
 {
 public:
-  void generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet);
-  bool checkTag(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet);
+  void generate(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet);
+  bool checkTag(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet);
 };
 
 #ifndef NOCRYPT
@@ -83,8 +83,8 @@ public:
   Sha1AuthAlgo();
   ~Sha1AuthAlgo();
 
-  void generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet);
-  bool checkTag(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet);
+  void generate(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet);
+  bool checkTag(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet);
 
   static const u_int32_t DIGEST_LENGTH = 20;
 
