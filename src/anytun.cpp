@@ -152,7 +152,7 @@ void sender(void* p)
   {
     ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
-    std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher()));
+    std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_OUTBOUND));
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
     
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
@@ -207,7 +207,7 @@ void sender(void* p)
       }
 
           // encrypt packet
-      c->encrypt(conn.kd_, KD_OUTBOUND, plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId(), mux);
+      c->encrypt(conn.kd_, plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId(), mux);
       
       encrypted_packet.setHeader(conn.seq_nr_, gOpt.getSenderId(), mux);
       conn.seq_nr_++;
@@ -241,7 +241,7 @@ void receiver(void* p)
   {
     ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
     
-    std::auto_ptr<Cipher> c( CipherFactory::create(gOpt.getCipher()) );
+    std::auto_ptr<Cipher> c( CipherFactory::create(gOpt.getCipher(), KD_INBOUND) );
     std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
     
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
@@ -299,7 +299,7 @@ void receiver(void* p)
       }
       
           // decrypt packet
-      c->decrypt(conn.kd_, KD_INBOUND, encrypted_packet, plain_packet);
+      c->decrypt(conn.kd_, encrypted_packet, plain_packet);
       
           // check payload_type
       if((param->dev.getType() == TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN4 && 

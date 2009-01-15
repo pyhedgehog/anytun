@@ -40,7 +40,7 @@
 class CipherFactory
 {
 public:
-  static Cipher* create(std::string const& type);
+  static Cipher* create(std::string const& type, kd_dir_t dir);
 
 private:
   CipherFactory();

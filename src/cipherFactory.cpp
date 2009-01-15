@@ -36,13 +36,13 @@
 #include "cipher.h"
 
 
-Cipher* CipherFactory::create(std::string const& type)
+Cipher* CipherFactory::create(std::string const& type, kd_dir_t dir)
 {
   if( type == "null" )
     return new NullCipher();
 #ifndef NOCRYPT
   else if( type == "aes-ctr" )
-    return new AesIcmCipher();
+    return new AesIcmCipher(dir);
 #endif
   else
     throw std::invalid_argument("cipher not available");

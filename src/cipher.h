@@ -49,14 +49,18 @@
 class Cipher
 {
 public:
+  Cipher() : dir_(KD_INBOUND) {};
+  Cipher(kd_dir_t d) : dir_(d) {};
   virtual ~Cipher() {};
 
-	void encrypt(KeyDerivation& kd, kd_dir_t dir, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-	void decrypt(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket & in, PlainPacket & out);
+	void encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+	void decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out);
   
 protected:
-  virtual u_int32_t cipher(KeyDerivation& kd, kd_dir_t dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
-  virtual u_int32_t decipher(KeyDerivation& kd, kd_dir_t dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0; 
+  virtual u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
+  virtual u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0; 
+
+  kd_dir_t dir_;
 };
 
 //****** NullCipher ******
@@ -64,8 +68,8 @@ protected:
 class NullCipher : public Cipher
 {
 protected:
-  u_int32_t cipher(KeyDerivation& kd, kd_dir_t dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  u_int32_t decipher(KeyDerivation& kd, kd_dir_t dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 };
 
 #ifndef NOCRYPT
@@ -74,8 +78,8 @@ protected:
 class AesIcmCipher : public Cipher
 {
 public:
-  AesIcmCipher();
-  AesIcmCipher(u_int16_t key_length);
+  AesIcmCipher(kd_dir_t d);
+  AesIcmCipher(kd_dir_t d, u_int16_t key_length);
   ~AesIcmCipher();
   
   static const u_int16_t DEFAULT_KEY_LENGTH = 128;
@@ -83,14 +87,14 @@ public:
   static const u_int16_t SALT_LENGTH = 14;
 
 protected:
-  u_int32_t cipher(KeyDerivation& kd, kd_dir_t dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  u_int32_t decipher(KeyDerivation& kd, kd_dir_t dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
 private:
   void init(u_int16_t key_length = DEFAULT_KEY_LENGTH);
 
-  void calcCtr(KeyDerivation& kd, kd_dir_t dir, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  void calc(KeyDerivation& kd, kd_dir_t dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  void calcCtr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  void calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
 #ifndef USE_SSL_CRYPTO
   gcry_cipher_hd_t handle_;
