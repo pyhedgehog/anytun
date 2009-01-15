@@ -174,11 +174,10 @@ bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, seq_nr_t* r, satp_prf_label_t la
   if(ld_kdr_ >= 0)
     *r = seq_nr >> ld_kdr_;
 
-// TODO: determine whether to generate a key or not
-//   if(key_store_[dir][label].key_.getBuf() && key_store_[dir][label].r_ == *r) {
-//     if(!(*r) || (seq_nr % (*r)))
-//       return false;
-//   }
+  if(key_store_[dir][label].key_.getLength() && key_store_[dir][label].r_ == *r) {
+    if(!(*r) || (seq_nr % (*r)))
+      return false;
+  }
 
   if(master_salt_.getLength() != SALT_LENGTH) {
     char buf[STERROR_TEXT_MAX];
@@ -205,18 +204,18 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
 
   seq_nr_t r;
   calcCtr(dir, &r, label, seq_nr);
-// TODO: return stored key
-//  bool result = calcCtr(dir, &r, label, seq_nr);
-//  if(!result) {
-//     if(len > kd->key_store_[dir][label].key_.length_) {
-//       log_printf(WARNING, "stored (old) key for label 0x%02X is too short, filling with zeros", label);
-//       memset(key, 0, len);
-//       len = kd->key_store_[dir][label].key_.length_;
-//     }
-//     memcpy(key, kd->key_store_[dir][label].key_.buf_, len);
-//     return false;
-//  }
-
+  bool result = calcCtr(dir, &r, label, seq_nr);
+  if(!result) {
+    u_int32_t len = key.getLength();
+    if(len > key_store_[dir][label].key_.getLength()) {
+      cLog.msg(Log::PRIO_WARNING) << "KeyDerivation::generate: stored (old) key for label " << label << " is too short, filling with zeros";
+      std::memset(key.getBuf(), 0, len);
+      len = key_store_[dir][label].key_.getLength();
+    }
+    std::memcpy(key.getBuf(), key_store_[dir][label].key_.getBuf(), len);
+    return false;
+  }
+  
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {
@@ -254,29 +253,15 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
   AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);
 #endif
   
-// TODO: store key if key derivation rate is != 0
-//   if(!ld_kdr_)
-//     return true;
+  if(!ld_kdr_)
+    return true;
 
-//   if(!kd->key_store_[dir][label].key_.buf_) {
-//     kd->key_store_[dir][label].key_.length_ = 0;
-//     kd->key_store_[dir][label].key_.buf_ = malloc(len);
-//     if(!kd->key_store_[dir][label].key_.buf_)
-//       return -2;
+  if(key_store_[dir][label].key_.getLength() < key.getLength()) {
+    key_store_[dir][label].key_.setLength(key.getLength());
+  }
 
-//     kd->key_store_[dir][label].key_.length_ = len;
-//   }
-//   else if(kd->key_store_[dir][label].key_.length_ < len) {
-//     u_int8_t* tmp = realloc(kd->key_store_[dir][label].key_.buf_, len);
-//     if(!tmp)
-//       return -2;
-
-//     kd->key_store_[dir][label].key_.buf_ = tmp;
-//     kd->key_store_[dir][label].key_.length_ = len;
-//   }
-
-//   memcpy(kd->key_store_[dir][label].key_.buf_, key, len);
-//   kd->key_store_[dir][label].r_ = r;
+  std::memcpy(key_store_[dir][label].key_.getBuf(), key.getBuf(), key.getLength());
+  key_store_[dir][label].r_ = r;
 
   return true;
 }

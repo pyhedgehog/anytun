@@ -167,7 +167,7 @@ private:
   u_int8_t ecount_buf_[2][AES_BLOCK_SIZE];
 #endif
 
-  key_store_t key_store_[KD_LABEL_COUNT];
+  key_store_t key_store_[2][KD_LABEL_COUNT];
 
   union __attribute__((__packed__)) key_derivation_aesctr_ctr_union {
     u_int8_t buf_[CTR_LENGTH];
