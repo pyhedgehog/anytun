@@ -93,8 +93,6 @@ void AesIcmCipher::init(u_int16_t key_length)
   case 192: algo = GCRY_CIPHER_AES192; break;
   case 256: algo = GCRY_CIPHER_AES256; break;
   default: {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
     cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: cipher key length of " << key_length << " Bits is not supported";
     return;
   }
@@ -159,8 +157,6 @@ void AesIcmCipher::calc(KeyDerivation& kd, kd_dir_t dir, u_int8_t* in, u_int32_t
 #ifdef USE_SSL_CRYPTO
   int ret = AES_set_encrypt_key(key_.getBuf(), key_.getLength()*8, &aes_key_);
   if(ret) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher ssl key (code: " << ret << ")";
     return;
   }
@@ -194,8 +190,6 @@ void AesIcmCipher::calc(KeyDerivation& kd, kd_dir_t dir, u_int8_t* in, u_int32_t
   }
 #else
   if(CTR_LENGTH != AES_BLOCK_SIZE) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
     return;
   }

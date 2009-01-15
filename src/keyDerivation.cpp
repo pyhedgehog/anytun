@@ -99,15 +99,11 @@ void AesIcmKeyDerivation::init(Buffer key, Buffer salt)
 void AesIcmKeyDerivation::updateMasterKey()
 {
   if(master_key_.getLength()*8 != key_length_) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
     cLog.msg(Log::PRIO_CRIT) << "KeyDerivation::updateMasterKey: key lengths don't match";
     return;
   }
 
   if(master_salt_.getLength() != SALT_LENGTH) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
     cLog.msg(Log::PRIO_CRIT) << "KeyDerivation::updateMasterKey: salt lengths don't match";
     return;
   }
@@ -119,8 +115,6 @@ void AesIcmKeyDerivation::updateMasterKey()
   case 192: algo = GCRY_CIPHER_AES192; break;
   case 256: algo = GCRY_CIPHER_AES256; break;
   default: {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
     cLog.msg(Log::PRIO_CRIT) << "KeyDerivation::updateMasterKey: cipher key length of " << key_length_ << " Bits is not supported";
     return;
   }
@@ -150,8 +144,6 @@ void AesIcmKeyDerivation::updateMasterKey()
   for(int i=0; i<2; i++) {
     int ret = AES_set_encrypt_key(master_key_.getBuf(), master_key_.getLength()*8, &aes_key_[i]);
     if(ret) {
-      char buf[STERROR_TEXT_MAX];
-      buf[0] = 0;
       cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set ssl key (code: " << ret << ")";
       return;
     }
@@ -180,8 +172,6 @@ bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, seq_nr_t* r, satp_prf_label_t la
   }
 
   if(master_salt_.getLength() != SALT_LENGTH) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
     cLog.msg(Log::PRIO_CRIT) << "KeyDerivation::calcCtr: salt lengths don't match";
     return false;
   }
@@ -242,8 +232,6 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
   return true;
 #else
   if(CTR_LENGTH != AES_BLOCK_SIZE) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
     return false;
   }
