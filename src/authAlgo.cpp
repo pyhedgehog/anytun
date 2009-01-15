@@ -77,7 +77,7 @@ Sha1AuthAlgo::~Sha1AuthAlgo()
 void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
 {
 #ifndef USE_SSL_CRYPTO
-  if(!handle)
+  if(!handle_)
     return;
 #endif
 
@@ -119,7 +119,7 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& pack
 bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
 {
 #ifndef USE_SSL_CRYPTO
-  if(!handle)
+  if(!handle_)
     return false;
 #endif
 
