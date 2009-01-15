@@ -184,10 +184,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\anyrtpproxy\callIdQueue.h"
-				>
-			</File>
-			<File
 				RelativePath=".\cipher.h"
 				>
 			</File>
@@ -217,6 +213,10 @@
 			</File>
 			<File
 				RelativePath=".\encryptedPacket.h"
+				>
+			</File>
+			<File
+				RelativePath=".\endian.h"
 				>
 			</File>
 			<File
@@ -264,14 +264,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\rtpSession.h"
-				>
-			</File>
-			<File
-				RelativePath=".\rtpSessionTable.h"
-				>
-			</File>
-			<File
 				RelativePath=".\seqWindow.h"
 				>
 			</File>
@@ -292,10 +284,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\syncListenSocket.h"
-				>
-			</File>
-			<File
 				RelativePath=".\syncOnConnect.hpp"
 				>
 			</File>
@@ -305,10 +293,6 @@
 			</File>
 			<File
 				RelativePath=".\syncRouteCommand.h"
-				>
-			</File>
-			<File
-				RelativePath=".\syncRtpCommand.h"
 				>
 			</File>
 			<File
@@ -365,10 +349,6 @@
 			</File>
 			<File
 				RelativePath=".\buffer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\anyrtpproxy\callIdQueue.cpp"
 				>
 			</File>
 			<File
@@ -432,14 +412,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\rtpSession.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rtpSessionTable.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\seqWindow.cpp"
 				>
 			</File>
@@ -465,10 +437,6 @@
 			</File>
 			<File
 				RelativePath=".\syncRouteCommand.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\syncRtpCommand.cpp"
 				>
 			</File>
 			<File
