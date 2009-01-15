@@ -37,6 +37,7 @@
 
 #include "datatypes.h"
 #include "options.h"
+#include "log.h"
 
 Options* Options::inst = NULL;
 Mutex Options::instMutex;
@@ -76,6 +77,7 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   seq_window_size_ = 100;
   cipher_ = "aes-ctr";
   kd_prf_ = "aes-ctr";
+  ld_kdr_ = 0;
   auth_algo_ = "sha1";
   mux_ = 0;
 }
@@ -92,11 +94,23 @@ Options::~Options()
     else if(str == SHORT || str == LONG)                 \
       VALUE = false;
 
+#define PARSE_SIGNED_INT_PARAM(SHORT, LONG, VALUE)       \
+    else if(str == SHORT || str == LONG)                 \
+    {                                                    \
+      if(argc < 1)                                       \
+        return i;                                        \
+      std::stringstream tmp;                             \
+      tmp << argv[i+1];                                  \
+      tmp >> VALUE;                                      \
+      argc--;                                            \
+      i++;                                               \
+    }
+
 #define PARSE_SCALAR_PARAM(SHORT, LONG, VALUE)           \
     else if(str == SHORT || str == LONG)                 \
     {                                                    \
       if(argc < 1 || argv[i+1][0] == '-')                \
-        return false;                                    \
+        return i;                                        \
       std::stringstream tmp;                             \
       tmp << argv[i+1];                                  \
       tmp >> VALUE;                                      \
@@ -109,7 +123,7 @@ Options::~Options()
     {                                                    \
       if(argc < 2 ||                                     \
          argv[i+1][0] == '-' || argv[i+2][0] == '-')     \
-        return false;                                    \
+        return i;                                        \
       std::stringstream tmp;                             \
       tmp << argv[i+1] << " " << argv[i+2];              \
       tmp >> VALUE1;                                     \
@@ -122,7 +136,7 @@ Options::~Options()
     else if(str == SHORT || str == LONG)                 \
     {                                                    \
       if(argc < 1 || argv[i+1][0] == '-')                \
-        return false;                                    \
+        return i;                                        \
       VALUE = Buffer(std::string(argv[i+1]));            \
       for(size_t j=0; j < strlen(argv[i+1]); ++j)        \
         argv[i+1][j] = '#';                              \
@@ -134,7 +148,7 @@ Options::~Options()
     else if(str == SHORT || str == LONG)                 \
     {                                                    \
       if(argc < 1 || argv[i+1][0] == '-')                \
-        return false;                                    \
+        return i;                                        \
       std::stringstream tmp(argv[i+1]);                  \
 			while (tmp.good())                                 \
 			{                                                  \
@@ -146,7 +160,7 @@ Options::~Options()
       i++;                                               \
     }
 
-bool Options::parse(int argc, char* argv[])
+int32_t Options::parse(int argc, char* argv[])
 {
   Lock lock(mutex);
 
@@ -154,19 +168,19 @@ bool Options::parse(int argc, char* argv[])
   argc--;
 	std::queue<std::string> route_queue;
   std::queue<std::string> host_port_queue;
+  int32_t ld_kdr_tmp = ld_kdr_;
   for(int i=1; argc > 0; ++i)
   {
     std::string str(argv[i]);
     argc--;
 
     if(str == "-h" || str == "--help")
-      return false;
+      return -1;
     PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_)
     PARSE_BOOL_PARAM("-C","--chroot", chroot_)
     PARSE_SCALAR_PARAM("-u","--username", username_)
     PARSE_SCALAR_PARAM("-H","--chroot-dir", chroot_dir_)
     PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_)
-    PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_)
     PARSE_SCALAR_PARAM("-i","--interface", local_addr_)
     PARSE_SCALAR_PARAM("-p","--port", local_port_)
     PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_port_)
@@ -179,24 +193,28 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-t","--type", dev_type_)
     PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
     PARSE_SCALAR_PARAM("-x","--post-up-script", post_up_script_)
-    PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
+    PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_)
     PARSE_SCALAR_PARAM("-m","--mux", mux_)
-    PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
-    PARSE_HEXSTRING_PARAM_SEC("-K","--key", key_)
-    PARSE_HEXSTRING_PARAM_SEC("-A","--salt", salt_)
-    PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
-    PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
+    PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
 		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
 		PARSE_CSLIST_PARAM("-X","--control-host", host_port_queue)
     PARSE_CSLIST_PARAM("-T","--route", route_queue)
+    PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
+    PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
+    PARSE_SIGNED_INT_PARAM("-l","--ld-kdr", ld_kdr_tmp)
+    PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
+    PARSE_HEXSTRING_PARAM_SEC("-K","--key", key_)
+    PARSE_HEXSTRING_PARAM_SEC("-A","--salt", salt_)
     else 
-      return false;
+      return i;
   }
+
+  ld_kdr_ = ld_kdr_tmp;
 
   if(cipher_ == "null" && auth_algo_ == "null")
     kd_prf_ = "null";
   if((cipher_ != "null" || auth_algo_ != "null") && kd_prf_ == "null")
-    kd_prf_ = "aes-ctr";
+    cLog.msg(Log::PRIO_WARNING) << "using NULL key derivation with encryption and or authentication enabled!";
 
   if(dev_name_ == "" && dev_type_ == "")
     dev_type_ = "tun";
@@ -204,7 +222,7 @@ bool Options::parse(int argc, char* argv[])
 	while(!host_port_queue.empty())
 	{
     bool ret = splitAndAddHostPort(host_port_queue.front(), connect_to_);
-    if(!ret) return false;
+    if(!ret) return -2;
     host_port_queue.pop();
 	}
 	while(!route_queue.empty())
@@ -218,7 +236,7 @@ bool Options::parse(int argc, char* argv[])
     route_queue.pop();
     routes_.push_back(rt);
   }
-  return true;
+  return 0;
 }
 
 bool Options::splitAndAddHostPort(std::string hostPort, ConnectToList& list)
@@ -286,7 +304,6 @@ void Options::printUsage()
   std::cout << "       [-u|--username] <username>          if chroot change to this user" << std::endl;
   std::cout << "       [-H|--chroot-dir] <path>            chroot to this directory" << std::endl;
   std::cout << "       [-P|--write-pid] <path>             write pid to this file" << std::endl;
-  std::cout << "       [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
   std::cout << "       [-i|--interface] <ip-address>       local anycast ip address to bind to" << std::endl;
   std::cout << "       [-p|--port] <port>                  local anycast(data) port to bind to" << std::endl;
   std::cout << "       [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to" << std::endl;
@@ -302,12 +319,14 @@ void Options::printUsage()
   std::cout << "       [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl
             << "                       <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
   std::cout << "       [-x|--post-up-script] <script>      script gets called after interface is created" << std::endl;
-  std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
+  std::cout << "       [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
   std::cout << "       [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
+  std::cout << "       [-w|--window-size] <window size>    seqence number window size" << std::endl;
   std::cout << "       [-c|--cipher] <cipher type>         payload encryption algorithm" << std::endl;
   std::cout << "       [-K|--key] <master key>             master key to use for encryption" << std::endl;
   std::cout << "       [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
-//  std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
+  std::cout << "       [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
+  std::cout << "       [-l|--ld-kdr] <ld-kdr>              log2 of key derivation rate" << std::endl;
   std::cout << "       [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
   std::cout << "       [-T|--route] <net>/<prefix length>  add a route to connection, can be invoked several times" << std::endl;
 }
@@ -334,11 +353,12 @@ void Options::printOptions()
   std::cout << "ifconfig_param_remote_netmask='" << ifconfig_param_remote_netmask_ << "'" << std::endl;
   std::cout << "post_up_script='" << post_up_script_ << "'" << std::endl;
   std::cout << "seq_window_size='" << seq_window_size_ << "'" << std::endl;
-  std::cout << "mux_id='" << mux_ << "'" << std::endl;
+  std::cout << "mux_id=" << mux_ << std::endl;
   std::cout << "cipher='" << cipher_ << "'" << std::endl;
   std::cout << "key=" << key_.getHexDumpOneLine() << std::endl;
   std::cout << "salt=" << salt_.getHexDumpOneLine() << std::endl;
   std::cout << "kd_prf='" << kd_prf_ << "'" << std::endl;
+  std::cout << "ld_kdr=" << static_cast<int32_t>(ld_kdr_) << std::endl;
   std::cout << "auth_algo='" << auth_algo_ << "'" << std::endl;
 
   std::cout << "connect_to=";
@@ -647,6 +667,19 @@ Options& Options::setKdPrf(std::string k)
 {
   Lock lock(mutex);
   kd_prf_ = k;
+  return *this;
+}
+
+int8_t Options::getLdKdr()
+{
+  Lock lock(mutex);
+  return ld_kdr_;
+}
+
+Options& Options::setLdKdr(int8_t l)
+{
+  Lock lock(mutex);
+  ld_kdr_ = l;
   return *this;
 }
 

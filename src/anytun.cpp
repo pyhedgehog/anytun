@@ -83,6 +83,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(gOpt.getKey(), gOpt.getSalt());
+  kd->setLogKDRate(gOpt.getLdKdr());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
 
 	ConnectionParam connparam ((*kd), (*seq), seq_nr_, remote_end);
@@ -327,15 +328,24 @@ int main(int argc, char* argv[])
   bool daemonized=false;
   try 
   {
-  
-//  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
-    if(!gOpt.parse(argc, argv)) {
+    cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
+///  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
+    int32_t result = gOpt.parse(argc, argv);
+    if(result) {
+      if(result > 0) {
+        std::cerr << "syntax error near: " << argv[result] << std::endl << std::endl;
+        cLog.msg(Log::PRIO_ERR) << "syntax error, exitting";
+      }
+      if(result == -2) {
+        std::cerr << "can't parse host-port definition" << std::endl << std::endl;
+        cLog.msg(Log::PRIO_ERR) << "can't parse host-port definition, exitting";
+      }
+      
       gOpt.printUsage();
-      exit(-1);
+      
+      exit(result);
     }
 
-    cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
-    
     std::ofstream pidFile;
     if(gOpt.getPidFile() != "") {
       pidFile.open(gOpt.getPidFile().c_str());

@@ -59,7 +59,7 @@ class Options
 public:
   static Options& instance();
 
-  bool parse(int argc, char* argv[]);
+  int32_t parse(int argc, char* argv[]);
   void printUsage();
   void printOptions();
 
@@ -110,6 +110,8 @@ public:
   Options& setCipher(std::string c);
   std::string getKdPrf();
   Options& setKdPrf(std::string k);
+  int8_t getLdKdr();
+  Options& setLdKdr(int8_t l);
   std::string getAuthAlgo();
   Options& setAuthAlgo(std::string a);
 	ConnectToList getConnectTo();
@@ -166,6 +168,7 @@ private:
   window_size_t seq_window_size_;
   std::string cipher_;
   std::string kd_prf_;
+  int8_t ld_kdr_;
   std::string auth_algo_;
   mux_t mux_;
   Buffer key_;
