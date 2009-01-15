@@ -34,6 +34,8 @@
 
 #ifndef NOCRYPT
 #ifndef USE_SSL_CRYPTO
+#include <gcrypt.h>
+
 // boost thread callbacks for libgcrypt
 #if defined(BOOST_HAS_PTHREADS)
 

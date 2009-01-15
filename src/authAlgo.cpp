@@ -80,30 +80,23 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& pack
   if(!packet.getAuthTagLength())
     return;
   
-  bool result = kd.generate(dir, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
-  if(result) { // a new key got generated
+  kd.generate(dir, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
 #ifndef USE_SSL_CRYPTO
-    gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
-    if(err) {
-      char buf[STERROR_TEXT_MAX];
-      buf[0] = 0;
-      cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
-      return;
-    } 
-#else 
-    HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
-  }
-  else {
-    HMAC_Init_ex(&ctx_, NULL, 0, NULL, NULL);
-#endif
-  }
+  gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
+  if(err) {
+    char buf[STERROR_TEXT_MAX];
+    buf[0] = 0;
+    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    return;
+  } 
 
-#ifndef USE_SSL_CRYPTO
   gcry_md_reset(handle_);
   gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   gcry_md_final(handle_);
   u_int8_t* hmac = gcry_md_read(handle_, 0);
 #else
+  HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
+
   u_int8_t hmac[DIGEST_LENGTH];
   HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   HMAC_Final(&ctx_, hmac, NULL);
@@ -124,30 +117,23 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, kd_dir dir, EncryptedPacket& pack
   if(!packet.getAuthTagLength())
     return true;
 
-  bool result = kd.generate(dir, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
-  if(result) { // a new key got generated
+  kd.generate(dir, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
 #ifndef USE_SSL_CRYPTO
-    gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
-    if(err) {
-      char buf[STERROR_TEXT_MAX];
-      buf[0] = 0;
-      cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
-      return false;
-    } 
-#else 
-    HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
-  }
-  else {
-    HMAC_Init_ex(&ctx_, NULL, 0, NULL, NULL);
-#endif
-  }
-
-#ifndef USE_SSL_CRYPTO
+  gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
+  if(err) {
+    char buf[STERROR_TEXT_MAX];
+    buf[0] = 0;
+    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    return false;
+  } 
+  
   gcry_md_reset(handle_);
   gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   gcry_md_final(handle_);
   u_int8_t* hmac = gcry_md_read(handle_, 0);
 #else
+  HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
+  
   u_int8_t hmac[DIGEST_LENGTH];
   HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   HMAC_Final(&ctx_, hmac, NULL);

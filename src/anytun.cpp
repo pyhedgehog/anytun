@@ -34,9 +34,6 @@
 
 
 #include <boost/bind.hpp>
-#ifndef NOCRYPT
-#include <gcrypt.h>
-#endif
 #include <cerrno>     // for ENOMEM
 
 #include "datatypes.h"
