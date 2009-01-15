@@ -156,10 +156,10 @@ private:
 	}
 
 #ifndef USE_SSL_CRYPTO
-  gcry_cipher_hd_t handle_;
+  gcry_cipher_hd_t handle_[2];
 #else
-  AES_KEY aes_key_;
-  u_int8_t ecount_buf_[AES_BLOCK_SIZE];
+  AES_KEY aes_key_[2];
+  u_int8_t ecount_buf_[2][AES_BLOCK_SIZE];
 #endif
 
   union __attribute__((__packed__)) key_derivation_aesctr_ctr_union {
@@ -184,7 +184,7 @@ private:
       u_int16_t zero_;
     } params_;
 #endif
-  } ctr_;
+  } ctr_[2];
 };
 
 #endif

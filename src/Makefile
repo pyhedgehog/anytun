@@ -32,9 +32,10 @@ TARGET=$(shell uname -s)
 CC = gcc
 CFLAGS = -g
 CXX = g++
-CXXFLAGS = -g -Wall -O2
+CXXFLAGS = -g -Wall -O2 #-DUSE_SSL_CRYPTO
 LD = g++
 LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization -lboost_system
+#LDFLAGS = -g -Wall -O2 -lboost_thread -lcrypto -lboost_serialization -lboost_system
 
 ifeq ($(TARGET),Linux)
   CFLAGS += -D_XOPEN_SOURCE=600

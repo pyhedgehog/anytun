@@ -63,14 +63,16 @@ bool NullKeyDerivation::generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_
 AesIcmKeyDerivation::AesIcmKeyDerivation() : KeyDerivation(DEFAULT_KEY_LENGTH) 
 {
 #ifndef USE_SSL_CRYPTO
-  handle_ = NULL;
+  for(int i=0; i<2; i++)
+    handle_[i] = NULL;
 #endif
 }
 
 AesIcmKeyDerivation::AesIcmKeyDerivation(u_int16_t key_length) : KeyDerivation(key_length) 
 {
 #ifndef USE_SSL_CRYPTO
-  handle_ = NULL;
+  for(int i=0; i<2; i++)
+    handle_[i] = NULL;
 #endif
 }
 
@@ -78,8 +80,9 @@ AesIcmKeyDerivation::~AesIcmKeyDerivation()
 {
   WritersLock lock(mutex_);
 #ifndef USE_SSL_CRYPTO
-  if(handle_)
-    gcry_cipher_close(handle_);
+  for(int i=0; i<2; i++)
+    if(handle_[i])
+      gcry_cipher_close(handle_[i]);
 #endif
 }
 
@@ -123,31 +126,35 @@ void AesIcmKeyDerivation::updateMasterKey()
   }
   }
 
-  if(handle_)
-    gcry_cipher_close(handle_);
-
-  gcry_error_t err = gcry_cipher_open(&handle_, algo, GCRY_CIPHER_MODE_CTR, 0);
-  if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to open cipher: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
-    return;
-  } 
-
-  err = gcry_cipher_setkey(handle_, master_key_.getBuf(), master_key_.getLength());
-  if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
-    return;
+  for(int i=0; i<2; i++) {
+    if(handle_[i])
+      gcry_cipher_close(handle_[i]);
+    
+    gcry_error_t err = gcry_cipher_open(&handle_[i], algo, GCRY_CIPHER_MODE_CTR, 0);
+    if(err) {
+      char buf[STERROR_TEXT_MAX];
+      buf[0] = 0;
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to open cipher: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+      return;
+    } 
+    
+    err = gcry_cipher_setkey(handle_[i], master_key_.getBuf(), master_key_.getLength());
+    if(err) {
+      char buf[STERROR_TEXT_MAX];
+      buf[0] = 0;
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+      return;
+    }
   }
 #else
-  int ret = AES_set_encrypt_key(master_key_.getBuf(), master_key_.getLength()*8, &aes_key_);
-  if(ret) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set ssl key (code: " << ret << ")";
-    return;
+  for(int i=0; i<2; i++) {
+    int ret = AES_set_encrypt_key(master_key_.getBuf(), master_key_.getLength()*8, &aes_key_[i]);
+    if(ret) {
+      char buf[STERROR_TEXT_MAX];
+      buf[0] = 0;
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set ssl key (code: " << ret << ")";
+      return;
+    }
   }
 #endif
 }
@@ -179,18 +186,17 @@ bool AesIcmKeyDerivation::calcCtr(kd_dir dir, seq_nr_t* r, satp_prf_label label,
     cLog.msg(Log::PRIO_CRIT) << "KeyDerivation::calcCtr: salt lengths don't match";
     return false;
   }
-  memcpy(ctr_.salt_.buf_, master_salt_.getBuf(), SALT_LENGTH);
-  ctr_.salt_.zero_ = 0;
-  ctr_.params_.label_ ^= label;
-  ctr_.params_.r_ ^= SEQ_NR_T_HTON(*r);
+  memcpy(ctr_[dir].salt_.buf_, master_salt_.getBuf(), SALT_LENGTH);
+  ctr_[dir].salt_.zero_ = 0;
+  ctr_[dir].params_.label_ ^= label;
+  ctr_[dir].params_.r_ ^= SEQ_NR_T_HTON(*r);
 
   return true;
 }
 
 bool AesIcmKeyDerivation::generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_nr, Buffer& key) 
 {
-//  ReadersLock lock(mutex_);
-  WritersLock lock(mutex_);
+  ReadersLock lock(mutex_);
 
   seq_nr_t r;
   calcCtr(dir, &r, label, seq_nr);
@@ -208,14 +214,14 @@ bool AesIcmKeyDerivation::generate(kd_dir dir, satp_prf_label label, seq_nr_t se
 
 
 #ifndef USE_SSL_CRYPTO
-  gcry_error_t err = gcry_cipher_reset(handle_);
+  gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {
     char buf[STERROR_TEXT_MAX];
     buf[0] = 0;
     cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
   }
 
-  err = gcry_cipher_setctr(handle_, ctr_.buf_, CTR_LENGTH);
+  err = gcry_cipher_setctr(handle_[dir], ctr_[dir].buf_, CTR_LENGTH);
   if(err) {
     char buf[STERROR_TEXT_MAX];
     buf[0] = 0;
@@ -224,7 +230,7 @@ bool AesIcmKeyDerivation::generate(kd_dir dir, satp_prf_label label, seq_nr_t se
   }
 
   std::memset(key.getBuf(), 0, key.getLength());
-  err = gcry_cipher_encrypt(handle_, key, key.getLength(), NULL, 0);
+  err = gcry_cipher_encrypt(handle_[dir], key, key.getLength(), NULL, 0);
   if(err) {
     char buf[STERROR_TEXT_MAX];
     buf[0] = 0;
@@ -239,9 +245,9 @@ bool AesIcmKeyDerivation::generate(kd_dir dir, satp_prf_label label, seq_nr_t se
     return false;
   }
   u_int32_t num = 0;
-  std::memset(ecount_buf_, 0, AES_BLOCK_SIZE);
+  std::memset(ecount_buf_[dir], 0, AES_BLOCK_SIZE);
   std::memset(key.getBuf(), 0, key.getLength());
-  AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_, ctr_.buf_, ecount_buf_, &num);
+  AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);
 #endif
   
 // TODO: store key if key derivation rate is != 0
