@@ -198,6 +198,11 @@ bool AesIcmKeyDerivation::generate(kd_dir dir, satp_prf_label label, seq_nr_t se
 {
   ReadersLock lock(mutex_);
 
+#ifndef USE_SSL_CRYPTO
+  if(!handle_[dir])
+    return false;
+#endif
+
   seq_nr_t r;
   calcCtr(dir, &r, label, seq_nr);
 // TODO: return stored key
@@ -211,7 +216,6 @@ bool AesIcmKeyDerivation::generate(kd_dir dir, satp_prf_label label, seq_nr_t se
 //     memcpy(key, kd->key_store_[dir][label].key_.buf_, len);
 //     return false;
 //  }
-
 
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);

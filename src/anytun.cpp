@@ -105,6 +105,47 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 #endif
 }
 
+#ifndef ANYTUN_NOSYNC
+void syncConnector(void* p )
+{
+	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
+
+	SyncClient sc ( param->connto.host, param->connto.port);
+	sc.run();
+}
+
+void syncListener(SyncQueue * queue)
+{
+  try
+  {
+    boost::asio::io_service io_service;
+		SyncTcpConnection::proto::resolver resolver(io_service);
+		SyncTcpConnection::proto::endpoint e;
+		if(gOpt.getLocalSyncAddr()!="")
+		{
+			SyncTcpConnection::proto::resolver::query query(gOpt.getLocalSyncAddr(), gOpt.getLocalSyncPort());
+			e = *resolver.resolve(query);
+		} else {
+			SyncTcpConnection::proto::resolver::query query(gOpt.getLocalSyncPort());
+			e = *resolver.resolve(query);
+		}
+
+
+    SyncServer server(io_service,e);
+		server.onConnect=boost::bind(syncOnConnect,_1);
+		queue->setSyncServerPtr(&server);
+    io_service.run();
+  }
+  catch (std::exception& e)
+  {
+    std::string addr = gOpt.getLocalSyncAddr() == "" ? "*" : gOpt.getLocalSyncAddr();
+    cLog.msg(Log::PRIO_ERR) << "sync: cannot bind to " << addr << ":" << gOpt.getLocalSyncPort()
+                            << " (" << e.what() << ")" << std::endl;
+  }
+
+}
+#endif
+
 void sender(void* p)
 {
   try 
@@ -193,47 +234,6 @@ void sender(void* p)
     cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught exception: " << e.what();
   }
 }
-  
-#ifndef ANYTUN_NOSYNC
-void syncConnector(void* p )
-{
-	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
-
-	SyncClient sc ( param->connto.host, param->connto.port);
-	sc.run();
-}
-
-void syncListener(SyncQueue * queue)
-{
-  try
-  {
-    boost::asio::io_service io_service;
-		SyncTcpConnection::proto::resolver resolver(io_service);
-		SyncTcpConnection::proto::endpoint e;
-		if(gOpt.getLocalSyncAddr()!="")
-		{
-			SyncTcpConnection::proto::resolver::query query(gOpt.getLocalSyncAddr(), gOpt.getLocalSyncPort());
-			e = *resolver.resolve(query);
-		} else {
-			SyncTcpConnection::proto::resolver::query query(gOpt.getLocalSyncPort());
-			e = *resolver.resolve(query);
-		}
-
-
-    SyncServer server(io_service,e);
-		server.onConnect=boost::bind(syncOnConnect,_1);
-		queue->setSyncServerPtr(&server);
-    io_service.run();
-  }
-  catch (std::exception& e)
-  {
-    std::string addr = gOpt.getLocalSyncAddr() == "" ? "*" : gOpt.getLocalSyncAddr();
-    cLog.msg(Log::PRIO_ERR) << "sync: cannot bind to " << addr << ":" << gOpt.getLocalSyncPort()
-                            << " (" << e.what() << ")" << std::endl;
-  }
-
-}
-#endif
 
 void receiver(void* p)
 {
