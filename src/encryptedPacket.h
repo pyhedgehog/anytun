@@ -130,16 +130,12 @@ private:
 
   void reinit();
 
-  struct HeaderStruct
+  struct ATTR_PACKED HeaderStruct
   {
     seq_nr_t seq_nr;
     sender_id_t sender_id;
     mux_t mux;
-  }
-#ifndef NOPACKED
-  __attribute__((__packed__))
-#endif	  
-;
+  };
 
   struct HeaderStruct* header_;
 	u_int8_t * payload_;

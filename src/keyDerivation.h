@@ -169,21 +169,21 @@ private:
 
   key_store_t key_store_[2][KD_LABEL_COUNT];
 
-  union __attribute__((__packed__)) key_derivation_aesctr_ctr_union {
+  union ATTR_PACKED key_derivation_aesctr_ctr_union {
     u_int8_t buf_[CTR_LENGTH];
-    struct __attribute__ ((__packed__)) {
+    struct ATTR_PACKED {
       u_int8_t buf_[SALT_LENGTH];
       u_int16_t zero_;
     } salt_;
 #ifndef ANYTUN_02_COMPAT
-    struct __attribute__((__packed__)) {
+    struct ATTR_PACKED {
       u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - sizeof(seq_nr_t)];
       u_int8_t label_;
       seq_nr_t r_;
       u_int16_t zero_;
     } params_;
 #else
-    struct __attribute__((__packed__)) {
+    struct ATTR_PACKED {
       u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - 2 - sizeof(seq_nr_t)];
       u_int8_t label_;
       u_int8_t r_fill_[2];

@@ -52,4 +52,10 @@ typedef u_int16_t sender_id_t;
 typedef u_int16_t payload_type_t;
 typedef u_int16_t mux_t;
 
+#ifndef NOPACKED
+#define ATTR_PACKED __attribute__((__packed__))
+#else
+#define ATTR_PACKED
+#endif	  
+
 #endif

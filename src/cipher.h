@@ -105,13 +105,13 @@ private:
   Buffer key_;
   Buffer salt_;
 
-  union __attribute__((__packed__)) cipher_aesctr_ctr_union {
+  union ATTR_PACKED cipher_aesctr_ctr_union {
     u_int8_t buf_[CTR_LENGTH];
-    struct __attribute__ ((__packed__)) {
+    struct ATTR_PACKED {
       u_int8_t buf_[SALT_LENGTH];
       u_int16_t zero_;
     } salt_;
-    struct __attribute__((__packed__)) {
+    struct ATTR_PACKED {
       u_int8_t fill_[SALT_LENGTH - sizeof(mux_t) - sizeof(sender_id_t) - 2 - sizeof(seq_nr_t)];
       mux_t mux_;
       sender_id_t sender_id_;
