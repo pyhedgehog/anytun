@@ -90,6 +90,7 @@ void AesIcmKeyDerivation::init(Buffer key, Buffer salt)
 {
   WritersLock lock(mutex_);
 
+  is_initialized_ = false;
   master_salt_ = SyncBuffer(salt);
   master_key_ = SyncBuffer(key);
 
@@ -145,6 +146,7 @@ void AesIcmKeyDerivation::updateMasterKey()
     }
   }
 #endif
+  is_initialized_ = true;
 }
 
 std::string AesIcmKeyDerivation::printType() 
@@ -183,10 +185,8 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
 {
   ReadersLock lock(mutex_);
 
-#ifndef USE_SSL_CRYPTO
-  if(!handle_[dir])
+  if(!is_initialized_)
     return false;
-#endif
 
   seq_nr_t r;
   calcCtr(dir, &r, label, seq_nr);

@@ -67,8 +67,8 @@ typedef struct {
 class KeyDerivation
 {
 public:
-  KeyDerivation() : ld_kdr_(0), key_length_(0), master_salt_(0), master_key_(0) {};
-  KeyDerivation(u_int16_t key_length) : ld_kdr_(0), key_length_(key_length), master_salt_(0), master_key_(0) {};
+  KeyDerivation() : is_initialized_(false), ld_kdr_(0), key_length_(0), master_salt_(0), master_key_(0) {};
+  KeyDerivation(u_int16_t key_length) : is_initialized_(false), ld_kdr_(0), key_length_(key_length), master_salt_(0), master_key_(0) {};
   virtual ~KeyDerivation() {};
 
   void setLogKDRate(const int8_t ld_rate);
@@ -94,6 +94,7 @@ protected:
     updateMasterKey();
 	}
 
+  bool is_initialized_;
   int8_t ld_kdr_;             // ld(key_derivation_rate)
   u_int16_t key_length_;
   SyncBuffer master_salt_;
