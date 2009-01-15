@@ -113,8 +113,8 @@ public:
   std::string getAuthAlgo();
   Options& setAuthAlgo(std::string a);
 	ConnectToList getConnectTo();
-  Options& setMux(u_int16_t m);
-  u_int16_t getMux();
+  Options& setMux(mux_t m);
+  mux_t getMux();
   Options& setKey(std::string k);
   Buffer getKey();
   Options& setSalt(std::string s);
@@ -167,7 +167,7 @@ private:
   std::string cipher_;
   std::string kd_prf_;
   std::string auth_algo_;
-  u_int16_t mux_;
+  mux_t mux_;
   Buffer key_;
   Buffer salt_;
   RouteList routes_;

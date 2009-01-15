@@ -63,7 +63,7 @@ void daemonize()
     close(fd);
   fd = open("/dev/null",O_RDWR);        // stdin
   if(fd == -1)
-    cLog.msg(Log::PRIO_WARNING) << "can't open stdin";
+    cLog.msg(Log::PRIO_WARNING) << "can't open stdin (chroot and no link to /dev/null?)";
   else {
     if(dup(fd) == -1)   // stdout
       cLog.msg(Log::PRIO_WARNING) << "can't open stdout";

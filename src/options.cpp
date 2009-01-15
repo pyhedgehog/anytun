@@ -663,13 +663,13 @@ Options& Options::setAuthAlgo(std::string a)
   return *this;
 }
 
-u_int16_t Options::getMux()
+mux_t Options::getMux()
 {
   Lock lock(mutex);
   return mux_;
 }
 
-Options& Options::setMux(u_int16_t m)
+Options& Options::setMux(mux_t m)
 {
   Lock lock(mutex);
   mux_ = m;
