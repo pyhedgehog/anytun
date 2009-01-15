@@ -51,7 +51,5 @@ typedef u_int32_t seq_nr_t;
 typedef u_int16_t sender_id_t;
 typedef u_int16_t payload_type_t;
 typedef u_int16_t mux_t;
-//typedef u_int32_t auth_tag_t;
-#define STERROR_TEXT_MAX 100
 
 #endif

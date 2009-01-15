@@ -50,14 +50,9 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 {
 	fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
 	if(fd_ < 0) {
-    std::string msg("can't open device file (");
-    msg.append(DEFAULT_DEVICE);
-    msg.append("): ");
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    strerror_r(errno, buf, STERROR_TEXT_MAX);
-    msg.append(buf);
-    throw std::runtime_error(msg);
+    std::stringstream msg;
+    msg << "can't open device file (" << DEFAULT_DEVICE  << "): " << LogErrno(errno);
+    throw std::runtime_error(msg.str());
   }
 
 	struct ifreq ifr;
@@ -82,12 +77,9 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 	} else if(!ioctl(fd_, (('T' << 8) | 202), &ifr)) {
 		actual_name_ = ifr.ifr_name;
 	} else {
-    std::string msg("tun/tap device ioctl failed: ");
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    strerror_r(errno, buf, STERROR_TEXT_MAX);
-    msg.append(buf);
-    throw std::runtime_error(msg);
+    std::stringstream msg;
+    msg << "tun/tap device ioctl failed: " << LogErrno(errno);
+    throw std::runtime_error(msg.str());
   }
 
   if(ifcfg_lp != "" && ifcfg_rnmp != "")

@@ -100,9 +100,7 @@ void AesIcmCipher::init(u_int16_t key_length)
 
   gcry_error_t err = gcry_cipher_open(&handle_, algo, GCRY_CIPHER_MODE_CTR, 0);
   if( err ) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher" << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher" << LogGpgError(err);
   } 
 #endif
 }
@@ -163,9 +161,7 @@ void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_
 #else
   gcry_error_t err = gcry_cipher_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher key: " << LogGpgError(err);
     return;
   }
 #endif
@@ -175,17 +171,13 @@ void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_
 #ifndef USE_SSL_CRYPTO
   err = gcry_cipher_setctr(handle_, ctr_.buf_, CTR_LENGTH);
   if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: " << LogGpgError(err);
     return;
   }
 
   err = gcry_cipher_encrypt(handle_, out, olen, in, ilen);
   if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to de/encrypt packet: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to de/encrypt packet: " << LogGpgError(err);
     return;
   }
 #else

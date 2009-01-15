@@ -29,6 +29,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _XOPEN_SOURCE 600
+
 #include <iostream>
 #include <string>
 
@@ -39,6 +41,26 @@
 Log* Log::inst = NULL;
 Mutex Log::instMutex;
 Log& cLog = Log::instance();
+
+#ifndef NOCRYPT
+#ifndef USE_SSL_CRYPTO
+std::ostream& operator<<(std::ostream& stream, LogGpgError const& value) 
+{
+  char buf[STERROR_TEXT_MAX];
+  buf[0] = 0;
+  gpg_strerror_r(value.err_, buf, STERROR_TEXT_MAX);
+  return stream << buf;
+}
+#endif
+#endif
+std::ostream& operator<<(std::ostream& stream, LogErrno const& value)
+{
+  char buf[STERROR_TEXT_MAX];
+  buf[0] = 0;
+// TODO: fix to use XSI Compliant strerror_r
+  char* tmp = strerror_r(value.err_, buf, STERROR_TEXT_MAX);
+  return stream << tmp;
+}
 
 LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), prio(src.prio) 
 {

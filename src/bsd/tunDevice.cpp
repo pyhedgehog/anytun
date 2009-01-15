@@ -46,9 +46,8 @@
 
 #include "tunDevice.h"
 #include "threadUtils.hpp"
+#include "log.h"
 #define DEVICE_FILE_MAX 255
-
-#include <iostream>
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
@@ -84,19 +83,12 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     fd_ = ::open(device_file.c_str(), O_RDWR);
 
   if(fd_ < 0) {
-    std::string msg;
+    std::stringstream msg;
     if(dynamic)
-      msg = "can't open device file dynamically: no unused node left";
-    else {
-      msg = "can't open device file (";
-      msg.append(device_file);
-      msg.append("): ");
-      char buf[STERROR_TEXT_MAX];
-      buf[0] = 0;
-      strerror_r(errno, buf, STERROR_TEXT_MAX);
-      msg.append(buf);
-    }
-    throw std::runtime_error(msg);
+      msg << "can't open device file dynamically: no unused node left";
+    else
+      msg << "can't open device file (" << device_file << "): " << LogErrno(errno);
+    throw std::runtime_error(msg.str());
   }
 
   if(dynamic) {

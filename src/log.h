@@ -40,6 +40,31 @@
 
 #include "threadUtils.hpp"
 
+
+#define STERROR_TEXT_MAX 100
+
+#ifndef NOCRYPT
+#ifndef USE_SSL_CRYPTO
+#include <gcrypt.h>
+
+class LogGpgError
+{
+public:
+  LogGpgError(gcry_error_t e) : err_(e) {};
+  gcry_error_t err_;
+};
+std::ostream& operator<<(std::ostream& stream, LogGpgError const& value);
+#endif
+#endif
+
+class LogErrno
+{
+public:
+  LogErrno(int e) : err_(e) {};
+  int err_;
+};
+std::ostream& operator<<(std::ostream& stream, LogErrno const& value);
+
 class Log;
 
 class LogStringBuilder 

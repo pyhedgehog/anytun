@@ -89,9 +89,7 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << LogGpgError(err);
     return;
   } 
 
@@ -131,9 +129,7 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << LogGpgError(err);
     return false;
   } 
   

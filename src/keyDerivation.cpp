@@ -126,17 +126,13 @@ void AesIcmKeyDerivation::updateMasterKey()
     
     gcry_error_t err = gcry_cipher_open(&handle_[i], algo, GCRY_CIPHER_MODE_CTR, 0);
     if(err) {
-      char buf[STERROR_TEXT_MAX];
-      buf[0] = 0;
-      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to open cipher: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to open cipher: " << LogGpgError(err);
       return;
     } 
     
     err = gcry_cipher_setkey(handle_[i], master_key_.getBuf(), master_key_.getLength());
     if(err) {
-      char buf[STERROR_TEXT_MAX];
-      buf[0] = 0;
-      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << LogGpgError(err);
       return;
     }
   }
@@ -209,25 +205,19 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << LogGpgError(err);
   }
 
   err = gcry_cipher_setctr(handle_[dir], ctr_[dir].buf_, CTR_LENGTH);
   if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set CTR: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set CTR: " << LogGpgError(err);
     return false;
   }
 
   std::memset(key.getBuf(), 0, key.getLength());
   err = gcry_cipher_encrypt(handle_[dir], key, key.getLength(), NULL, 0);
   if(err) {
-    char buf[STERROR_TEXT_MAX];
-    buf[0] = 0;
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << LogGpgError(err);
   }
   return true;
 #else

@@ -38,8 +38,6 @@ LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization
 #LDFLAGS = -g -Wall -O2 -lboost_thread -lcrypto -lboost_serialization -lboost_system
 
 ifeq ($(TARGET),Linux)
-  CFLAGS += -D_XOPEN_SOURCE=600
-  CXXFLAGS += -D_XOPEN_SOURCE=600
   LDFLAGS += -ldl
 endif
 ifeq ($(TARGET),OpenBSD)
