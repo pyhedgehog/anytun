@@ -57,9 +57,16 @@ std::ostream& operator<<(std::ostream& stream, LogErrno const& value)
 {
   char buf[STERROR_TEXT_MAX];
   buf[0] = 0;
-// TODO: fix to use XSI Compliant strerror_r
-  char* tmp = strerror_r(value.err_, buf, STERROR_TEXT_MAX);
-  return stream << tmp;
+  char* errStr;
+// this really sucks, g++ seems to unconditionally define _GNU_SOURCE
+// and undefining it breaks the build...
+#ifdef _GNU_SOURCE
+  errStr = strerror_r(value.err_, buf, STERROR_TEXT_MAX);
+#else
+  strerror_r(value.err_, buf, STERROR_TEXT_MAX);
+  errStr = buf;
+#endif
+  return stream << errStr;
 }
 
 LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), prio(src.prio) 

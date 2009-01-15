@@ -344,6 +344,14 @@ int main(int argc, char* argv[])
       }
     }
     
+#ifndef NOCRYPT
+#ifndef USE_SSL_CRYPTO
+// this must be called before any other libgcrypt call
+    if(!initLibGCrypt())
+      return -1;
+#endif
+#endif
+
     TunDevice dev(gOpt.getDevName(), gOpt.getDevType(), gOpt.getIfconfigParamLocal(), gOpt.getIfconfigParamRemoteNetmask());
     cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
     cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << dev.getActualName() << "'";
@@ -414,14 +422,6 @@ int main(int argc, char* argv[])
 
     OptionConnectTo* connTo = new OptionConnectTo();
     ThreadParam p(dev, *src, *connTo);
-
-#ifndef NOCRYPT
-#ifndef USE_SSL_CRYPTO
-// this must be called before any other libgcrypt call
-    if(!initLibGCrypt())
-      return -1;
-#endif
-#endif
 
     boost::thread senderThread(boost::bind(sender,&p));
 #ifndef NOSIGNALCONTROLLER
