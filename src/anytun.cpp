@@ -79,13 +79,13 @@
 
 void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seqSize, mux_t mux)
 {
-	SeqWindow * seq= new SeqWindow(seqSize);
+	SeqWindow* seq = new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(gOpt.getKey(), gOpt.getSalt());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
 
-	ConnectionParam connparam ( (*kd),  (*seq), seq_nr_, remote_end);
+	ConnectionParam connparam ((*kd), (*seq), seq_nr_, remote_end);
  	gConnectionList.addConnection(connparam,mux);
 #ifndef ANYTUN_NOSYNC
   SyncCommand sc (gConnectionList,mux);
@@ -411,8 +411,9 @@ int main(int argc, char* argv[])
     SignalController sig;
     sig.init();
 #endif
-    
-    ThreadParam p(dev, *src, *(new OptionConnectTo()));
+
+    OptionConnectTo* connTo = new OptionConnectTo();
+    ThreadParam p(dev, *src, *connTo);
 
 #ifndef NOCRYPT
 #ifndef USE_SSL_CRYPTO
@@ -440,11 +441,10 @@ int main(int argc, char* argv[])
 
 #ifndef NOSIGNALCONTROLLER
     int ret = sig.run();  
-    return ret;    
 #else
-	receiver(&p);
+    receiver(&p);
 #endif
-    // TODO cleanup here!
+    // TODO cleanup threads here!
     /*
     pthread_cancel(senderThread);
     pthread_cancel(receiverThread);  
@@ -464,11 +464,13 @@ int main(int argc, char* argv[])
     for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)
       pthread_join(*it, NULL);
 #endif
-    delete src;
-    delete &p.connto;
-
-    return ret;  
+    if(src)
+      delete src;
+    if(connTo)
+      delete connTo;
     */
+    
+    return ret;  
   }
   catch(std::runtime_error& e)
   {

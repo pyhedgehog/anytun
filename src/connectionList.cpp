@@ -58,13 +58,13 @@ ConnectionList::ConnectionList()
 
 ConnectionList::~ConnectionList()
 {
-/*  Lock lock(mutex_);
-	ConnectionMap::iterator it;
-	for(it = connections_.begin(); it != connections_.end(); ++it)
-	{
-		//delete &it->second.kd_;
-	}
-*/
+// TODO: comment this in as soon as threads @ main get cleaned up properly 
+//  Lock lock(mutex_);
+// 	ConnectionMap::iterator it;
+// 	for(it = connections_.begin(); it != connections_.end(); ++it) {
+//     delete &it->second.kd_;
+//     delete &it->second.seq_window_;
+//   }
 } 
 
 void ConnectionList::addConnection(ConnectionParam &conn, u_int16_t mux )
