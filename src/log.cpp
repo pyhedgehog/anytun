@@ -29,8 +29,6 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _XOPEN_SOURCE 600
-
 #include <iostream>
 #include <string>
 
