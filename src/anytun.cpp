@@ -153,7 +153,7 @@ void sender(void* p)
     ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
     std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_OUTBOUND));
-    std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
+    std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_OUTBOUND) );
     
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
@@ -213,7 +213,7 @@ void sender(void* p)
       conn.seq_nr_++;
       
           // add authentication tag
-      a->generate(conn.kd_, KD_OUTBOUND, encrypted_packet);
+      a->generate(conn.kd_, encrypted_packet);
 
       try
       {
@@ -242,7 +242,7 @@ void receiver(void* p)
     ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
     
     std::auto_ptr<Cipher> c( CipherFactory::create(gOpt.getCipher(), KD_INBOUND) );
-    std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(gOpt.getAuthAlgo()) );
+    std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_INBOUND) );
     
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
@@ -273,7 +273,7 @@ void receiver(void* p)
       ConnectionParam & conn = cit->second;
       
           // check whether auth tag is ok or not
-      if(!a->checkTag(conn.kd_, KD_INBOUND, encrypted_packet)) {
+      if(!a->checkTag(conn.kd_, encrypted_packet)) {
         cLog.msg(Log::PRIO_NOTICE) << "wrong Authentication Tag!" << std::endl;
         continue;
       }        

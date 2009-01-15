@@ -40,7 +40,7 @@
 class AuthAlgoFactory
 {
 public:
-  static AuthAlgo* create(std::string const& type);
+  static AuthAlgo* create(std::string const& type, kd_dir_t dir);
 
 private:
   AuthAlgoFactory();

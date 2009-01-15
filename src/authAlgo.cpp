@@ -38,11 +38,11 @@
 #include <cstring>
 
 //****** NullAuthAlgo ******
-void NullAuthAlgo::generate(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet)
+void NullAuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 {
 }
 
-bool NullAuthAlgo::checkTag(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet)
+bool NullAuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 {
   return true;
 }
@@ -50,7 +50,7 @@ bool NullAuthAlgo::checkTag(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& pa
 #ifndef NOCRYPT
 //****** Sha1AuthAlgo ******
 
-Sha1AuthAlgo::Sha1AuthAlgo() : key_(DIGEST_LENGTH)
+Sha1AuthAlgo::Sha1AuthAlgo(kd_dir_t d) : AuthAlgo(d), key_(DIGEST_LENGTH)
 {
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_open(&handle_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC);
@@ -74,7 +74,7 @@ Sha1AuthAlgo::~Sha1AuthAlgo()
 #endif    
 }
 
-void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet)
+void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 {
 #ifndef USE_SSL_CRYPTO
   if(!handle_)
@@ -85,7 +85,7 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& pa
   if(!packet.getAuthTagLength())
     return;
   
-  kd.generate(dir, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
+  kd.generate(dir_, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
@@ -116,7 +116,7 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& pa
   std::memcpy(&tag[packet.getAuthTagLength() - length], &hmac[DIGEST_LENGTH - length], length);
 }
 
-bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& packet)
+bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 {
 #ifndef USE_SSL_CRYPTO
   if(!handle_)
@@ -127,7 +127,7 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, kd_dir_t dir, EncryptedPacket& pa
   if(!packet.getAuthTagLength())
     return true;
 
-  kd.generate(dir, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
+  kd.generate(dir_, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {

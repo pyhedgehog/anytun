@@ -36,13 +36,13 @@
 #include "authAlgo.h"
 
 
-AuthAlgo* AuthAlgoFactory::create(std::string const& type)
+AuthAlgo* AuthAlgoFactory::create(std::string const& type, kd_dir_t dir)
 {
   if( type == "null" )
     return new NullAuthAlgo();
 #ifndef NOCRYPT
   else if( type == "sha1" )
-    return new Sha1AuthAlgo();
+    return new Sha1AuthAlgo(dir);
 #endif
   else
     throw std::invalid_argument("auth algo not available");
