@@ -38,7 +38,11 @@
 #include "syncBuffer.h"
 
 #ifndef NOCRYPT
+#ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
+#else
+#include <openssl/aes.h>
+#endif
 #endif
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -50,19 +54,24 @@ typedef enum {
   LABEL_SATP_SALT        = 0x02,
 } satp_prf_label;
 
+typedef enum {
+  KD_INBOUND = 0,
+  KD_OUTBOUND = 1
+} kd_dir;
 
 class KeyDerivation
 {
 public:
-  KeyDerivation() : ld_kdr_(0), master_salt_(0), master_key_(0) {};
+  KeyDerivation() : ld_kdr_(0), key_length_(0), master_salt_(0), master_key_(0) {};
+  KeyDerivation(u_int16_t key_length) : ld_kdr_(0), key_length_(key_length), master_salt_(0), master_key_(0) {};
   virtual ~KeyDerivation() {};
 
-  void setLogKDRate(const u_int8_t ld_rate);
+  void setLogKDRate(const int8_t ld_rate);
 
   virtual void init(Buffer key, Buffer salt) = 0;
-  virtual bool generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key) = 0;
+  virtual bool generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_nr, Buffer& key) = 0;
 
-  virtual std::string printType() { return "KeyDerivation"; };
+  virtual std::string printType() { return "GenericKeyDerivation"; };
 
 protected:
   virtual void updateMasterKey() = 0;
@@ -72,18 +81,20 @@ protected:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
- 		Lock lock(mutex_);
+ 		WritersLock lock(mutex_);
     ar & ld_kdr_;
+    ar & key_length_;
     ar & master_salt_;
     ar & master_key_;
     updateMasterKey();
 	}
 
   int8_t ld_kdr_;             // ld(key_derivation_rate)
+  u_int16_t key_length_;
   SyncBuffer master_salt_;
   SyncBuffer master_key_;
 
-  Mutex mutex_;
+  SharedMutex mutex_;
 };
 
 BOOST_IS_ABSTRACT(KeyDerivation)
@@ -97,7 +108,7 @@ public:
   ~NullKeyDerivation() {};
 
   void init(Buffer key, Buffer salt) {};
-  bool generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
+  bool generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
 
   std::string printType() { return "NullKeyDerivation"; };
 
@@ -119,16 +130,23 @@ private:
 class AesIcmKeyDerivation : public KeyDerivation
 {
 public:
-  AesIcmKeyDerivation() : cipher_(NULL) {};
+  AesIcmKeyDerivation();
+  AesIcmKeyDerivation(u_int16_t key_length);
   ~AesIcmKeyDerivation();
-  
-  void init(Buffer key, Buffer salt);
-  bool generate(satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
 
-  std::string printType() { return "AesIcmKeyDerivation"; };
+  static const u_int16_t DEFAULT_KEY_LENGTH = 128;
+  static const u_int16_t CTR_LENGTH = 16;
+  static const u_int16_t SALT_LENGTH = 14;
+   
+  void init(Buffer key, Buffer salt);
+  bool generate(kd_dir dir, satp_prf_label label, seq_nr_t seq_nr, Buffer& key);
+
+  std::string printType();
 
 private:
   void updateMasterKey();
+
+  bool calcCtr(kd_dir dir, seq_nr_t* r, satp_prf_label label, seq_nr_t seq_nr);
 
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -137,7 +155,36 @@ private:
     ar & boost::serialization::base_object<KeyDerivation>(*this);
 	}
 
-  gcry_cipher_hd_t cipher_;
+#ifndef USE_SSL_CRYPTO
+  gcry_cipher_hd_t handle_;
+#else
+  AES_KEY aes_key_;
+  u_int8_t ecount_buf_[AES_BLOCK_SIZE];
+#endif
+
+  union __attribute__((__packed__)) key_derivation_aesctr_ctr_union {
+    u_int8_t buf_[CTR_LENGTH];
+    struct __attribute__ ((__packed__)) {
+      u_int8_t buf_[SALT_LENGTH];
+      u_int16_t zero_;
+    } salt_;
+#ifndef ANYTUN_02_COMPAT
+    struct __attribute__((__packed__)) {
+      u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - sizeof(seq_nr_t)];
+      u_int8_t label_;
+      seq_nr_t r_;
+      u_int16_t zero_;
+    } params_;
+#else
+    struct __attribute__((__packed__)) {
+      u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - 2 - sizeof(seq_nr_t)];
+      u_int8_t label_;
+      u_int8_t r_fill_[2];
+      seq_nr_t r_;
+      u_int16_t zero_;
+    } params_;
+#endif
+  } ctr_;
 };
 
 #endif

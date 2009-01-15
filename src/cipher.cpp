@@ -40,31 +40,31 @@
 #include "cipher.h"
 #include "log.h"
 
-void Cipher::encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+void Cipher::encrypt(KeyDerivation& kd, kd_dir dir, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-	u_int32_t len = cipher(kd, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
+	u_int32_t len = cipher(kd, dir, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
 	out.setSenderId(sender_id);
 	out.setSeqNr(seq_nr);
   out.setMux(mux);
 	out.setPayloadLength(len);
 }
 
-void Cipher::decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out)
+void Cipher::decrypt(KeyDerivation& kd, kd_dir dir, EncryptedPacket & in, PlainPacket & out)
 {
-	u_int32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
+	u_int32_t len = decipher(kd, dir, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
 	out.setLength(len);
 }
 
 
 //******* NullCipher *******
 
-u_int32_t NullCipher::cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+u_int32_t NullCipher::cipher(KeyDerivation& kd, kd_dir dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
 	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
 }
 
-u_int32_t NullCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+u_int32_t NullCipher::decipher(KeyDerivation& kd, kd_dir dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
 	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
@@ -118,21 +118,21 @@ AesIcmCipher::~AesIcmCipher()
 #endif
 }
 
-u_int32_t AesIcmCipher::cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+u_int32_t AesIcmCipher::cipher(KeyDerivation& kd, kd_dir dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  calc(kd, in, ilen, out, olen, seq_nr, sender_id, mux);
+  calc(kd, dir, in, ilen, out, olen, seq_nr, sender_id, mux);
   return (ilen < olen) ? ilen : olen;
 }
 
-u_int32_t AesIcmCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+u_int32_t AesIcmCipher::decipher(KeyDerivation& kd, kd_dir dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  calc(kd, in, ilen, out, olen, seq_nr, sender_id, mux);
+  calc(kd, dir, in, ilen, out, olen, seq_nr, sender_id, mux);
   return (ilen < olen) ? ilen : olen;
 }
 
-void AesIcmCipher::calc_ctr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+void AesIcmCipher::calcCtr(KeyDerivation& kd, kd_dir dir, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  kd.generate(LABEL_SATP_SALT, seq_nr, salt_);
+  kd.generate(dir, LABEL_SATP_SALT, seq_nr, salt_);
 
 #ifdef ANYTUN_02_COMPAT
   if(!salt_[int32_t(0)])
@@ -148,47 +148,36 @@ void AesIcmCipher::calc_ctr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t send
   return;
 }
 
-void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+void AesIcmCipher::calc(KeyDerivation& kd, kd_dir dir, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
 #ifndef USE_SSL_CRYPTO
   if(!handle_)
     return;
 #endif
 
-  bool result = kd.generate(LABEL_SATP_ENCRYPTION, seq_nr, key_);
-  if(result) { // a new key got generated
+  kd.generate(dir, LABEL_SATP_ENCRYPTION, seq_nr, key_);
 #ifdef USE_SSL_CRYPTO
-    int ret = AES_set_encrypt_key(key_.getBuf(), key_.getLength()*8, &aes_key_);
-    if(ret) {
-      char buf[STERROR_TEXT_MAX];
-      buf[0] = 0;
-      cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher ssl key (code: " << ret << ")";
-      return;
-    }
-#else
-    gcry_error_t err = gcry_cipher_setkey(handle_, key_.getBuf(), key_.getLength());
-    if(err) {
-      char buf[STERROR_TEXT_MAX];
-      buf[0] = 0;
-      cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
-      return;
-    }
-  } // no new key got generated
-  else {
-    gcry_error_t err = gcry_cipher_reset(handle_);
-    if(err) {
-      char buf[STERROR_TEXT_MAX];
-      buf[0] = 0;
-      cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to reset cipher: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
-      return;
-    }
-#endif
+  int ret = AES_set_encrypt_key(key_.getBuf(), key_.getLength()*8, &aes_key_);
+  if(ret) {
+    char buf[STERROR_TEXT_MAX];
+    buf[0] = 0;
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher ssl key (code: " << ret << ")";
+    return;
   }
+#else
+  gcry_error_t err = gcry_cipher_setkey(handle_, key_.getBuf(), key_.getLength());
+  if(err) {
+    char buf[STERROR_TEXT_MAX];
+    buf[0] = 0;
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher key: " << gpg_strerror_r(err, buf, STERROR_TEXT_MAX);
+    return;
+  }
+#endif
 
-  calc_ctr(kd, seq_nr, sender_id, mux);
+  calcCtr(kd, dir, seq_nr, sender_id, mux);
  
 #ifndef USE_SSL_CRYPTO
-  gcry_error_t err = gcry_cipher_setctr(handle_, ctr_.buf_, CTR_LENGTH);
+  err = gcry_cipher_setctr(handle_, ctr_.buf_, CTR_LENGTH);
   if(err) {
     char buf[STERROR_TEXT_MAX];
     buf[0] = 0;

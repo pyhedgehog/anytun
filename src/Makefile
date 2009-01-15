@@ -55,7 +55,6 @@ OBJS = tunDevice.o \
        cipher.o \
        authAlgo.o \
 			 keyDerivation.o \
-			 mpi.o \
 			 cipherFactory.o \
 			 authAlgoFactory.o \
 			 keyDerivationFactory.o \
@@ -87,7 +86,6 @@ ANYCTROBJS = signalController.o \
 ANYCONFOBJS = log.o \
 						 buffer.o \
 						 keyDerivation.o \
-						 mpi.o \
 						 keyDerivationFactory.o \
 						 networkAddress.o \
 						 networkPrefix.o \

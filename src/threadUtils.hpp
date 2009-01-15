@@ -30,11 +30,16 @@
  */
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #include "datatypes.h"
 #ifndef __THREADUTILS__
 #define __THREADUTILS__
 typedef boost::mutex::scoped_lock Lock;
 typedef boost::mutex Mutex;
+
+typedef boost::shared_mutex SharedMutex;
+typedef boost::shared_lock<SharedMutex> ReadersLock;
+typedef boost::unique_lock<SharedMutex> WritersLock;
 
 class Semaphore
 {

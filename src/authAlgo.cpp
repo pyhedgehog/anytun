@@ -38,11 +38,11 @@
 #include <cstring>
 
 //****** NullAuthAlgo ******
-void NullAuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
+void NullAuthAlgo::generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
 {
 }
 
-bool NullAuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
+bool NullAuthAlgo::checkTag(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
 {
   return true;
 }
@@ -74,13 +74,13 @@ Sha1AuthAlgo::~Sha1AuthAlgo()
 #endif    
 }
 
-void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
+void Sha1AuthAlgo::generate(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
 {
   packet.addAuthTag();
   if(!packet.getAuthTagLength())
     return;
   
-  bool result = kd.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
+  bool result = kd.generate(dir, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
   if(result) { // a new key got generated
 #ifndef USE_SSL_CRYPTO
     gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
@@ -118,13 +118,13 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
   std::memcpy(&tag[packet.getAuthTagLength() - length], &hmac[DIGEST_LENGTH - length], length);
 }
 
-bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
+bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, kd_dir dir, EncryptedPacket& packet)
 {
   packet.withAuthTag(true);
   if(!packet.getAuthTagLength())
     return true;
 
-  bool result = kd.generate(LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
+  bool result = kd.generate(dir, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
   if(result) { // a new key got generated
 #ifndef USE_SSL_CRYPTO
     gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());

@@ -169,13 +169,13 @@ void sender(void* p)
       }
 
           // encrypt packet
-      c->encrypt(conn.kd_, plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId(), mux);
+      c->encrypt(conn.kd_, KD_OUTBOUND, plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId(), mux);
       
       encrypted_packet.setHeader(conn.seq_nr_, gOpt.getSenderId(), mux);
       conn.seq_nr_++;
       
           // add authentication tag
-      a->generate(conn.kd_, encrypted_packet);
+      a->generate(conn.kd_, KD_OUTBOUND, encrypted_packet);
 
       try
       {
@@ -276,7 +276,7 @@ void receiver(void* p)
       ConnectionParam & conn = cit->second;
       
           // check whether auth tag is ok or not
-      if(!a->checkTag(conn.kd_, encrypted_packet)) {
+      if(!a->checkTag(conn.kd_, KD_INBOUND, encrypted_packet)) {
         cLog.msg(Log::PRIO_NOTICE) << "wrong Authentication Tag!" << std::endl;
         continue;
       }        
@@ -302,7 +302,7 @@ void receiver(void* p)
       }
       
           // decrypt packet
-      c->decrypt(conn.kd_, encrypted_packet, plain_packet);
+      c->decrypt(conn.kd_, KD_INBOUND, encrypted_packet, plain_packet);
       
           // check payload_type
       if((param->dev.getType() == TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN4 && 
@@ -418,9 +418,11 @@ int main(int argc, char* argv[])
     ThreadParam p(dev, *src, *(new OptionConnectTo()));
 
 #ifndef NOCRYPT
+#ifndef USE_SSL_CRYPTO
 // this must be called before any other libgcrypt call
     if(!initLibGCrypt())
       return -1;
+#endif
 #endif
 
     boost::thread senderThread(boost::bind(sender,&p));
