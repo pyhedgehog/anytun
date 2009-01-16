@@ -56,11 +56,17 @@ int TunDevice::fix_return(int ret, size_t pi_length)
 
 int TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
-	return 0;
+	std::string input;
+	std::cin >> input;
+	Buffer b(input);
+	u_int32_t cpylen = b.getLength() < len ? b.getLength() : len;
+	std::memcpy(buf, b.getBuf(), b.getLength());
+	return cpylen;
 }
 
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
+	std::cout << Buffer(buf, len).getHexDumpOneLine() << std::endl;
 	return 0;
 }
 

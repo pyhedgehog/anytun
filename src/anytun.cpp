@@ -396,7 +396,7 @@ int main(int argc, char* argv[])
 		for(rit = routes.begin(); rit != routes.end(); ++rit)
 		{
 			NetworkAddress addr( rit->net_addr );
-			NetworkPrefix prefix( addr, rit->prefix_length );
+			NetworkPrefix prefix( addr, static_cast<u_int8_t>(rit->prefix_length));
 			gRoutingTable.addRoute( prefix, gOpt.getMux() );
 		}
 		if (connect_to.begin() == connect_to.end() && routes.begin() == routes.end() && gOpt.getDevType()=="tun")
@@ -485,14 +485,18 @@ int main(int argc, char* argv[])
   catch(std::runtime_error& e)
   {
     cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
-    if(!daemonized)
+#ifndef LOGSTDOUT
+	if(!daemonized)
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
+#endif
   }
   catch(std::exception& e)
   {
     cLog.msg(Log::PRIO_ERR) << "uncaught exception, exiting: " << e.what();
-    if(!daemonized)
+#ifndef LOGSTDOUT    
+	if(!daemonized)
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
+#endif  
   }
 }
   

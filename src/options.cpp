@@ -209,7 +209,7 @@ int32_t Options::parse(int argc, char* argv[])
       return i;
   }
 
-  ld_kdr_ = ld_kdr_tmp;
+  ld_kdr_ = static_cast<int8_t>(ld_kdr_tmp);
 
   if(cipher_ == "null" && auth_algo_ == "null")
     kd_prf_ = "null";

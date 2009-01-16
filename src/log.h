@@ -136,14 +136,16 @@ public:
   static const int FAC_LOCAL6 = 0;
   static const int FAC_LOCAL7 = 0;
 
-  static const int PRIO_EMERG = 0;
-  static const int PRIO_ALERT = 0;
-  static const int PRIO_CRIT = 0;
-  static const int PRIO_ERR = 0;
-  static const int PRIO_WARNING = 0;
-  static const int PRIO_NOTICE = 0;
-  static const int PRIO_INFO = 0;
-  static const int PRIO_DEBUG = 0;
+  static const int PRIO_EMERG = 1;
+  static const int PRIO_ALERT = 2;
+  static const int PRIO_CRIT = 3;
+  static const int PRIO_ERR = 4;
+  static const int PRIO_WARNING = 5;
+  static const int PRIO_NOTICE = 6;
+  static const int PRIO_INFO = 7;
+  static const int PRIO_DEBUG = 8;
+
+  static std::string prioToString(int prio);
 #endif
 
   static Log& instance();

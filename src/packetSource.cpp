@@ -54,7 +54,7 @@ UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port) : sock
 
 u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote)
 {
-  return sock_.receive_from(boost::asio::buffer(buf, len), remote);
+  return static_cast<u_int32_t>(sock_.receive_from(boost::asio::buffer(buf, len), remote));
 }
 
 void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote)

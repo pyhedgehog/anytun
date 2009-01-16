@@ -47,7 +47,7 @@ typedef boost::int64_t int64_t;
 typedef u_int32_t window_size_t;
 
 typedef u_int32_t seq_nr_t;
-#define SEQ_NR_MAX boost::integer_traits<seq_nr_t>::max()
+#define SEQ_NR_MAX 0xFFFFFFFF
 typedef u_int16_t sender_id_t;
 typedef u_int16_t payload_type_t;
 typedef u_int16_t mux_t;

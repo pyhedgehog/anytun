@@ -73,7 +73,7 @@ Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc) : length_(l
   std::memcpy(buf_, data, length_);
 }
 
-Buffer::Buffer(std::string hex_data, bool allow_realloc) : length_(hex_data.size()/2), 
+Buffer::Buffer(std::string hex_data, bool allow_realloc) : length_(static_cast<u_int32_t>(hex_data.size())/2), 
                                                            real_length_(length_ + Buffer::OVER_SIZE_),
                                                            allow_realloc_(allow_realloc)
 {

@@ -74,6 +74,9 @@ LogStringBuilder::~LogStringBuilder()
 #ifndef NOSYSLOG
   syslog(prio | log.getFacility(), "%s", stream.str().c_str());  
 #endif
+#ifdef LOGSTDOUT
+  std::cout << "LOG-" << Log::prioToString(prio) << ": " << stream.str() << std::endl;
+#endif
 }
 
 Log& Log::instance()
@@ -99,6 +102,23 @@ Log::~Log()
   closelog();
 #endif
 }
+
+#ifdef NOSYSLOG
+std::string Log::prioToString(int prio)
+{
+	switch(prio) {
+	case PRIO_EMERG: return "EMERG";
+	case PRIO_ALERT: return "ALERT";
+    case PRIO_CRIT: return "CRIT";
+    case PRIO_ERR: return "ERR";
+    case PRIO_WARNING: return "WARNING";
+    case PRIO_NOTICE: return "NOTICE";
+    case PRIO_INFO: return "INFO";
+    case PRIO_DEBUG: return "DEBUG";
+	default: return "UNKNOWN";
+	}
+}
+#endif
 
 void Log::open()
 {
