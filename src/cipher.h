@@ -105,13 +105,16 @@ private:
   Buffer key_;
   Buffer salt_;
 
+#ifdef _MSC_VER
+  #pragma pack(push, 1)
+#endif
   union ATTR_PACKED cipher_aesctr_ctr_union {
     u_int8_t buf_[CTR_LENGTH];
     struct ATTR_PACKED {
       u_int8_t buf_[SALT_LENGTH];
       u_int16_t zero_;
     } salt_;
-    struct ATTR_PACKED {
+	struct ATTR_PACKED {
       u_int8_t fill_[SALT_LENGTH - sizeof(mux_t) - sizeof(sender_id_t) - 2 - sizeof(seq_nr_t)];
       mux_t mux_;
       sender_id_t sender_id_;
@@ -120,6 +123,9 @@ private:
       u_int16_t zero_;
     } params_;
   } ctr_;
+#ifdef _MSC_VER
+  #pragma pack(pop)
+#endif
 };
 #endif
 

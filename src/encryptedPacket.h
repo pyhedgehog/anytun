@@ -130,12 +130,18 @@ private:
 
   void reinit();
 
+#ifdef _MSC_VER
+  #pragma pack(push, 1)
+#endif  
   struct ATTR_PACKED HeaderStruct
   {
     seq_nr_t seq_nr;
     sender_id_t sender_id;
     mux_t mux;
   };
+#ifdef _MSC_VER
+  #pragma pack(pop)
+#endif
 
   struct HeaderStruct* header_;
 	u_int8_t * payload_;

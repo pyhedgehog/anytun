@@ -42,13 +42,13 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOGSTDOUT;NOCRYPT;NODAEMON;NOEXEC;NOPACKED;NOSYSLOG;NOSIGNALCONTROLLER;WIN32_LEAN_AND_MEAN"
+				PreprocessorDefinitions="LOGSTDOUT;USE_SSL_CRYPTO;NODAEMON;NOEXEC;NOSYSLOG;NOSIGNALCONTROLLER;WIN32_LEAN_AND_MEAN"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 				ForcedIncludeFiles=""
 			/>
@@ -63,8 +63,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="libeay32MDd.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="C:\Program Files\boost\boost_1_35_0\lib"
+				AdditionalLibraryDirectories=""
+				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -114,11 +116,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="NOCRYPT;NODAEMON;NOEXEC;NOPACKED;NOSYSLOG;NOSIGNALCONTROLLER;WIN32_LEAN_AND_MEAN"
+				PreprocessorDefinitions="USE_SSL_CRYPTO;NODAEMON;NOEXEC;NOSYSLOG;NOSIGNALCONTROLLER;WIN32_LEAN_AND_MEAN"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -132,8 +134,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="libeay32MD.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="C:\Program Files\boost\boost_1_35_0\lib"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -334,14 +337,6 @@
 			<File
 				RelativePath=".\authAlgo.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="NODAEMON;NOEXEC;NOCRYPT"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\authAlgoFactory.cpp"

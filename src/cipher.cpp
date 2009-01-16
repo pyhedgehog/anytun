@@ -131,8 +131,8 @@ void AesIcmCipher::calcCtr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sende
   kd.generate(dir_, LABEL_SATP_SALT, seq_nr, salt_);
 
 #ifdef ANYTUN_02_COMPAT
-  if(!salt_[int32_t(0)])
-    salt_[int32_t(0)] = 1;
+  if(!salt_[u_int32_t(0)])
+    salt_[u_int32_t(0)] = 1;
 #endif
 
   std::memcpy(ctr_.salt_.buf_, salt_.getBuf(), SALT_LENGTH);
@@ -185,7 +185,7 @@ void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
     return;
   }
-  u_int32_t num = 0;
+  unsigned int num = 0;
   std::memset(ecount_buf_, 0, AES_BLOCK_SIZE);
   AES_ctr128_encrypt(in, out, (ilen < olen) ? ilen : olen, &aes_key_, ctr_.buf_, ecount_buf_, &num);
 #endif

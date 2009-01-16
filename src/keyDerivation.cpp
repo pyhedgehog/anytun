@@ -225,7 +225,7 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
     cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
     return false;
   }
-  u_int32_t num = 0;
+  unsigned int num = 0;
   std::memset(ecount_buf_[dir], 0, AES_BLOCK_SIZE);
   std::memset(key.getBuf(), 0, key.getLength());
   AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);

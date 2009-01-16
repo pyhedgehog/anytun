@@ -170,14 +170,17 @@ private:
 
   key_store_t key_store_[2][KD_LABEL_COUNT];
 
+#ifdef _MSC_VER
+  #pragma pack(push, 1)
+#endif  
   union ATTR_PACKED key_derivation_aesctr_ctr_union {
     u_int8_t buf_[CTR_LENGTH];
-    struct ATTR_PACKED {
+	struct ATTR_PACKED {
       u_int8_t buf_[SALT_LENGTH];
       u_int16_t zero_;
     } salt_;
 #ifndef ANYTUN_02_COMPAT
-    struct ATTR_PACKED {
+	struct ATTR_PACKED {
       u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - sizeof(seq_nr_t)];
       u_int8_t label_;
       seq_nr_t r_;
@@ -193,6 +196,9 @@ private:
     } params_;
 #endif
   } ctr_[2];
+#ifdef _MSC_VER  
+  #pragma pack(pop)
+#endif
 };
 
 #endif

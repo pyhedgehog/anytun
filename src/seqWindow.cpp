@@ -140,7 +140,11 @@ bool SeqWindow::checkAndAdd(sender_id_t sender, seq_nr_t seq_nr)
   
   int ret = s->second.window_[pos];
   s->second.window_[pos] = 1;
-  return ret;
+  
+  if(ret)
+    return true;
+  
+  return false;
 }
 
 void SeqWindow::clear(sender_id_t sender)
