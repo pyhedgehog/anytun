@@ -31,7 +31,7 @@
 
 #include <iostream>
 #include <string>
-
+#include <boost/system/system_error.hpp>
 #include "log.h"
 
 #include "threadUtils.hpp"
@@ -53,18 +53,9 @@ std::ostream& operator<<(std::ostream& stream, LogGpgError const& value)
 #endif
 std::ostream& operator<<(std::ostream& stream, LogErrno const& value)
 {
-  char buf[STERROR_TEXT_MAX];
-  buf[0] = 0;
-  char* errStr;
-// this really sucks, g++ seems to unconditionally define _GNU_SOURCE
-// and undefining it breaks the build...
-#ifdef _GNU_SOURCE
-  errStr = strerror_r(value.err_, buf, STERROR_TEXT_MAX);
-#else
-  strerror_r(value.err_, buf, STERROR_TEXT_MAX);
-  errStr = buf;
-#endif
-  return stream << errStr;
+//	boost::system::system_error err(boost::system::error_code(value.err_,boost::system::get_system_category()));
+	boost::system::system_error err(boost::system::error_code(value.err_,boost::system::get_posix_category()));
+  return stream << err.what();
 }
 
 LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), prio(src.prio) 

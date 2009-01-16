@@ -451,6 +451,7 @@ int main(int argc, char* argv[])
 
 #ifndef NOSIGNALCONTROLLER
     int ret = sig.run();  
+    return ret; 
 #else
     receiver(&p);
 #endif
@@ -479,8 +480,6 @@ int main(int argc, char* argv[])
     if(connTo)
       delete connTo;
     */
-    
-    return ret;  
   }
   catch(std::runtime_error& e)
   {
