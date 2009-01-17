@@ -15,26 +15,26 @@ SYNOPSIS
 [ *-u|--username* <username> ]
 [ *-H|--chroot-dir* <directory> ]
 [ *-P|--write-pid* <filename> ]
-[ *-s|--sender-id* <sender id> ]
 [ *-i|--interface* <ip-address> ]
 [ *-p|--port* <port> ]
+[ *-r|--remote-host* <hostname|ip> ]
+[ *-o|--remote-port* <port> ]
 [ *-I|--sync-interface* <ip-address> ]
 [ *-S|--sync-port* port> ]
 [ *-M|--sync-hosts* <hostname|ip>[:<port>][,<hostname|ip>[:<port>][...]] ]
 [ *-X|--control-host* <hostname|ip>[:<port>]
-[ *-r|--remote-host* <hostname|ip> ]
-[ *-o|--remote-port* <port> ]
 [ *-d|--dev* <name> ]
 [ *-t|--type* <tun|tap> ]
 [ *-n|--ifconfig* <local> <remote|netmask> ]
 [ *-x|--post-up-script* <script> ]
-[ *-w|--window-size* <window size> ]
+[ *-R|--route* <net>/<prefix length> ]
 [ *-m|--mux* <mux-id> ]
-[ *-T|--route* <net>/<prefix length> ]
+[ *-s|--sender-id* <sender id> ]
+[ *-w|--window-size* <window size> ]
 [ *-c|--cipher* <cipher type> ]
+[ *-a|--auth-algo* <algo type> ]
 [ *-K|--key* <master key> ]
 [ *-A|--salt* <master salt> ]
-[ *-a|--auth-algo* <algo type> ]
 
 DESCRIPTION
 -----------
@@ -80,14 +80,6 @@ chroot to this directory. default: /var/run/anytun
 Instruct *anytun* to write it's pid to this file. The default is 
 not to create a pid file.
 
--s|--sender-id  <sender id>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Each anycast tunnel endpoint needs a uniqe sender id
-(1, 2, 3, ...). It is needed to distinguish the senders
-in case of replay attacks. This option is ignored by
-unicast endpoints. default: 0
-
 -i|--interface <ip address>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -107,6 +99,26 @@ The local UDP port that is used to send and receive the
 payload data. The two tunnel endpoints can use different
 ports. If a tunnel endpoint consists of multiple anycast
 hosts, all hosts have to use the same port. default: 4444
+
+-r|--remote-host <hostname|ip>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+remote host
+
+This option can be used to specify the remote tunnel
+endpoint. In case of anycast tunnel endpoints, the
+anycast IP address has to be used. If you do not specify
+an address, it is automatically determined after receiving
+the first data packet.
+
+-o|--remote-port <port>
+~~~~~~~~~~~~~~~~~~~~~~~
+remote port
+
+The UDP port used for payload data by the remote host
+(specified with -p on the remote host). If you do not specify
+a port, it is automatically determined after receiving
+the first data packet.
 
 -I|--sync-interface <ip-address>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,26 +174,6 @@ ipv6 address and a port you have to use [ and ] to seperate the address
 from the port, eg.: [::1]:1234. If you want to use the default port 
 [ and ] can be omitted.
 
--r|--remote-host <hostname|ip>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-remote host
-
-This option can be used to specify the remote tunnel
-endpoint. In case of anycast tunnel endpoints, the
-anycast IP address has to be used. If you do not specify
-an address, it is automatically determined after receiving
-the first data packet.
-
--o|--remote-port <port>
-~~~~~~~~~~~~~~~~~~~~~~~
-remote port
-
-The UDP port used for payload data by the remote host
-(specified with -p on the remote host). If you do not specify
-a port, it is automatically determined after receiving
-the first data packet.
-
 -d|--dev <name>
 ~~~~~~~~~~~~~~~
 device name
@@ -224,6 +216,24 @@ endpoint.
 This option instructs *anytun* to run this script after the interface 
 is created. By default no script will be executed.
 
+-R|--route <net>/<prefix length>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+add a route to connection. This can be invoked several times.
+
+-s|--sender-id  <sender id>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each anycast tunnel endpoint needs a uniqe sender id
+(1, 2, 3, ...). It is needed to distinguish the senders
+in case of replay attacks. This option is ignored by
+unicast endpoints. default: 0
+
+-m|--mux <mux-id>
+~~~~~~~~~~~~~~~~~
+
+the multiplex id to use. default: 0
+
 -w|--window-size <window size>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -241,16 +251,6 @@ by filtering packets according to their secuence number.
 By default the sequence window is disabled and therefore a
 window size of 0 is used.
 
--m|--mux <mux-id>
-~~~~~~~~~~~~~~~~~
-
-the multiplex id to use. default: 0
-
--T|--route <net>/<prefix length>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-add a route to connection. This can be invoked several times.
-
 -c|--cipher <cipher type>
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -262,6 +262,22 @@ Possible values:
 
 * *null* - no encryption
 * *aes-ctr* - AES in counter mode, default value
+
+-a|--auth-algo <algo type>
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+message authentication algorithm
+
+This option sets the message authentication algorithm.
+
+Possible values:
+
+* *null* - no message authentication
+* *sha1* - HMAC-SHA1, default value
+
+
+If HMAC-SHA1 is used, the packet length is increased by
+10 bytes. These 10 bytes contain the authentication data.
 
 -K|--key <master key>
 ~~~~~~~~~~~~~~~~~~~~~
@@ -280,22 +296,6 @@ master salt to use for encryption
 Master salt in hexadecimal notation, eg
 01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
 of 28 characters (14 bytes).
-
--a|--auth-algo <algo type>
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-message authentication algorithm
-
-This option sets the message authentication algorithm.
-
-Possible values:
-
-* *null* - no message authentication
-* *sha1* - HMAC-SHA1, default value
-
-
-If HMAC-SHA1 is used, the packet length is increased by
-10 bytes. These 10 bytes contain the authentication data.
 
 EXAMPLES
 --------

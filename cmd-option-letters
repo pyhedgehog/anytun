@@ -3,7 +3,7 @@ b:
 c: cipher
 d: device name
 e:
-f: configuration file
+f: input file
 g:
 h: print help text
 i: local interface
@@ -37,14 +37,14 @@ I: local sync interface
 J:
 K: master key
 L:
-M: sync hosts
+M: remote sync hosts
 N:
-O: remote sync port
+O:
 P: write pid file
 Q:
-R: remote sync host
+R: route
 S: local sync port
-T: route
+T:
 U:
 V:
 W:
