@@ -342,13 +342,10 @@ int main(int argc, char* argv[])
     catch(syntax_error& e)
     {
       std::cerr << e << std::endl;
+      cLog.msg(Log::PRIO_NOTICE) << "exitting after syntax error";
       gOpt.printUsage();
       exit(-1);
     }
-
-    gOpt.printOptions();
-    exit(0);
-
 
     std::ofstream pidFile;
     if(gOpt.getPidFile() != "") {
