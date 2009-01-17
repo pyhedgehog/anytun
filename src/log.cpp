@@ -53,8 +53,8 @@ std::ostream& operator<<(std::ostream& stream, LogGpgError const& value)
 #endif
 std::ostream& operator<<(std::ostream& stream, LogErrno const& value)
 {
-//	boost::system::system_error err(boost::system::error_code(value.err_,boost::system::get_system_category()));
-	boost::system::system_error err(boost::system::error_code(value.err_,boost::system::get_posix_category()));
+	boost::system::system_error err(boost::system::error_code(value.err_,boost::system::get_system_category()));
+//	boost::system::system_error err(boost::system::error_code(value.err_,boost::system::get_posix_category()));
   return stream << err.what();
 }
 
