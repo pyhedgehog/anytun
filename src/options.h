@@ -168,7 +168,7 @@ private:
   };
   friend class instanceCleaner;
 
-  ::Mutex mutex;
+  ::SharedMutex mutex;
 
   std::string progname_;
   bool daemonize_;
@@ -180,13 +180,10 @@ private:
   std::string file_name_;
   OptionHost bind_to_;
 
-  std::string local_addr_;
-  std::string local_port_;
-  std::string remote_addr_;
-  std::string remote_port_;
+  OptionHost local_;
+  OptionHost remote_;
 
-  std::string local_sync_addr_;
-  std::string local_sync_port_;
+  OptionHost local_sync_;
 	HostList remote_sync_hosts_;
 
   std::string dev_name_;
