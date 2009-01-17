@@ -111,7 +111,7 @@ void syncConnector(void* p )
 {
 	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
-	SyncClient sc ( param->connto.host, param->connto.port);
+	SyncClient sc ( param->connto.addr, param->connto.port);
 	sc.run();
 }
 
@@ -330,21 +330,25 @@ int main(int argc, char* argv[])
   {
     cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
 ///  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
-    int32_t result = gOpt.parse(argc, argv);
-    if(result) {
-      if(result > 0) {
-        std::cerr << "syntax error near: " << argv[result] << std::endl << std::endl;
-        cLog.msg(Log::PRIO_ERR) << "syntax error, exitting";
+
+    try 
+    {
+      bool result = gOpt.parse(argc, argv);
+      if(!result) {
+        gOpt.printUsage();
+        exit(0);
       }
-      if(result == -2) {
-        std::cerr << "can't parse host-port definition" << std::endl << std::endl;
-        cLog.msg(Log::PRIO_ERR) << "can't parse host-port definition, exitting";
-      }
-      
-      gOpt.printUsage();
-      
-      exit(result);
     }
+    catch(syntax_error& e)
+    {
+      std::cerr << e << std::endl;
+      gOpt.printUsage();
+      exit(-1);
+    }
+
+    gOpt.printOptions();
+    exit(0);
+
 
     std::ofstream pidFile;
     if(gOpt.getPidFile() != "") {
@@ -379,7 +383,7 @@ int main(int argc, char* argv[])
     else
       src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
-    ConnectToList connect_to = gOpt.getConnectTo();
+    HostList connect_to = gOpt.getRemoteSyncHosts();
     SyncQueue queue;
     
     if(gOpt.getRemoteAddr() != "")
@@ -430,7 +434,7 @@ int main(int argc, char* argv[])
     sig.init();
 #endif
 
-    OptionConnectTo* connTo = new OptionConnectTo();
+    OptionHost* connTo = new OptionHost();
     ThreadParam p(dev, *src, *connTo);
 
     boost::thread senderThread(boost::bind(sender,&p));
@@ -443,7 +447,7 @@ int main(int argc, char* argv[])
       syncListenerThread = new boost::thread(boost::bind(syncListener,&queue));
     
     std::list<boost::thread *> connectThreads;
-    for(ConnectToList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
+    for(HostList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
       ThreadParam * point = new ThreadParam(dev, *src, *it);
       connectThreads.push_back(new boost::thread(boost::bind(syncConnector,point)));
     }

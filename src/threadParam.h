@@ -41,12 +41,12 @@
 class ThreadParam
 {
 public:
-	ThreadParam(TunDevice& dev_,PacketSource& src_,OptionConnectTo & connto_)
+	ThreadParam(TunDevice& dev_,PacketSource& src_,OptionHost & connto_)
 		: dev(dev_),src(src_),connto(connto_)
 		{};
   TunDevice& dev;
   PacketSource& src;
-  OptionConnectTo & connto;
+  OptionHost & connto;
 };
 
 #endif

@@ -37,29 +37,50 @@
 #include "threadUtils.hpp"
 #include <list>
 
-typedef struct
+class syntax_error : public std::runtime_error
 {
-  std::string host;
-	std::string port;
-} OptionConnectTo;
+public:
+  syntax_error(std::string t, u_int32_t p) : runtime_error(t), pos(p) {};
+  u_int32_t pos;
+};
+std::ostream& operator<<(std::ostream& stream, syntax_error const& error);
 
-typedef struct
+class OptionHost
 {
+public:
+  OptionHost() : addr(""), port("") {};
+  OptionHost(std::string addrPort) { init(addrPort); };
+  OptionHost(std::string a, std::string p) : addr(a), port(p) {};
+
+  void init(std::string addrPort);
+
+  std::string addr;
+	std::string port;
+};
+typedef std::list<OptionHost> HostList;
+std::istream& operator>>(std::istream& stream, OptionHost& host);
+
+class OptionRoute
+{
+public:
+  OptionRoute() : net_addr(""), prefix_length(0) {};
+  OptionRoute(std::string route) { init(route); };
+  OptionRoute(std::string n, u_int16_t p) : net_addr(n), prefix_length(p) {};
+
+  void init(std::string route);
+
   std::string net_addr;
   u_int16_t prefix_length;
-} OptionRoute;
-
-typedef std::list<OptionRoute>  RouteList;
-
-
-typedef std::list<OptionConnectTo>  ConnectToList;
+};
+typedef std::list<OptionRoute> RouteList;
+std::istream& operator>>(std::istream& stream, OptionRoute& route);
 
 class Options
 {
 public:
   static Options& instance();
 
-  int32_t parse(int argc, char* argv[]);
+  bool parse(int argc, char* argv[]);
   void printUsage();
   void printOptions();
 
@@ -75,25 +96,29 @@ public:
   Options& setChrootDir(std::string c);
   std::string getPidFile();
   Options& setPidFile(std::string p);
-  sender_id_t getSenderId();
-  Options& setSenderId(sender_id_t s);
+
+  std::string getFileName();
+  Options& setFileName(std::string f);
+  std::string getBindToAddr();
+  Options& setBindToAddr(std::string b);
+  std::string getBindToPort();
+  Options& setBindToPort(std::string b);
+
   std::string getLocalAddr();
   Options& setLocalAddr(std::string l);
-  std::string getLocalSyncAddr();
-  Options& setLocalSyncAddr(std::string l);
-  std::string getRemoteSyncAddr();
-  Options& setRemoteSyncAddr(std::string l);
-  std::string getRemoteSyncPort();
-  Options& setRemoteSyncPort(std::string l);
   std::string getLocalPort();
   Options& setLocalPort(std::string l);
   std::string getRemoteAddr();
   Options& setRemoteAddr(std::string r);
-  std::string getLocalSyncPort();
-  Options& setLocalSyncPort(std::string l);
   std::string getRemotePort();
   Options& setRemotePort(std::string r);
-  Options& setRemoteAddrPort(std::string addr, std::string port);
+
+  std::string getLocalSyncAddr();
+  Options& setLocalSyncAddr(std::string l);
+  std::string getLocalSyncPort();
+  Options& setLocalSyncPort(std::string l);
+	HostList getRemoteSyncHosts();
+
   std::string getDevName();
   Options& setDevName(std::string d);
   std::string getDevType();
@@ -104,24 +129,27 @@ public:
   Options& setIfconfigParamRemoteNetmask(std::string i);
   std::string getPostUpScript();
   Options& setPostUpScript(std::string p);
+  RouteList getRoutes();
+
+  sender_id_t getSenderId();
+  Options& setSenderId(sender_id_t s);
+  mux_t getMux();
+  Options& setMux(mux_t m);
   window_size_t getSeqWindowSize();
   Options& setSeqWindowSize(window_size_t s);
+
   std::string getCipher();
   Options& setCipher(std::string c);
+  std::string getAuthAlgo();
+  Options& setAuthAlgo(std::string a);
   std::string getKdPrf();
   Options& setKdPrf(std::string k);
   int8_t getLdKdr();
   Options& setLdKdr(int8_t l);
-  std::string getAuthAlgo();
-  Options& setAuthAlgo(std::string a);
-	ConnectToList getConnectTo();
-  Options& setMux(mux_t m);
-  mux_t getMux();
   Options& setKey(std::string k);
   Buffer getKey();
   Options& setSalt(std::string s);
   Buffer getSalt();
-  RouteList getRoutes();
 
 
 private:
@@ -140,40 +168,44 @@ private:
   };
   friend class instanceCleaner;
 
-  static bool splitAndAddHostPort(std::string hostPort, ConnectToList& list);
-
   ::Mutex mutex;
 
-	ConnectToList connect_to_;
   std::string progname_;
   bool daemonize_;
   bool chroot_;
   std::string username_;
   std::string chroot_dir_;
   std::string pid_file_;
-  sender_id_t sender_id_;
+
+  std::string file_name_;
+  OptionHost bind_to_;
+
   std::string local_addr_;
-  std::string local_sync_addr_;
   std::string local_port_;
-  std::string local_sync_port_;
-  std::string remote_sync_addr_;
-  std::string remote_sync_port_;
   std::string remote_addr_;
   std::string remote_port_;
+
+  std::string local_sync_addr_;
+  std::string local_sync_port_;
+	HostList remote_sync_hosts_;
+
   std::string dev_name_;
   std::string dev_type_;
   std::string ifconfig_param_local_;
   std::string ifconfig_param_remote_netmask_;
   std::string post_up_script_;
+  RouteList routes_;
+
+  sender_id_t sender_id_;
+  mux_t mux_;
   window_size_t seq_window_size_;
+
   std::string cipher_;
+  std::string auth_algo_;
   std::string kd_prf_;
   int8_t ld_kdr_;
-  std::string auth_algo_;
-  mux_t mux_;
   Buffer key_;
   Buffer salt_;
-  RouteList routes_;
 };
 
 extern Options& gOpt;
