@@ -41,8 +41,12 @@
 #include <sstream>
 #include <string>
 
+#ifndef NO_CRYPT
+#ifndef NO_PASSPHRASE
 #ifdef USE_SSL_CRYPTO
 #include <openssl/sha.h>
+#endif
+#endif
 #endif
 
 void KeyDerivation::setLogKDRate(const int8_t log_rate)
@@ -53,6 +57,7 @@ void KeyDerivation::setLogKDRate(const int8_t log_rate)
     ld_kdr_ = sizeof(seq_nr_t) * 8;
 }
 
+#ifndef NO_CRYPT
 #ifndef NO_PASSPHRASE
 void KeyDerivation::calcMasterKey(std::string passphrase, u_int16_t length)
 {
@@ -112,6 +117,7 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
   memcpy(master_salt_.getBuf(), &digest.getBuf()[digest.getLength() - master_salt_.getLength()], master_salt_.getLength());
 }
 #endif
+#endif
 
 //****** NullKeyDerivation ******
 
@@ -121,7 +127,7 @@ bool NullKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t 
   return true;
 }
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 //****** AesIcmKeyDerivation ******
 
 AesIcmKeyDerivation::AesIcmKeyDerivation() : KeyDerivation(DEFAULT_KEY_LENGTH) 

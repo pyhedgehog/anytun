@@ -40,7 +40,7 @@ KeyDerivation* KeyDerivationFactory::create(std::string const& type)
 {
   if( type == "null" )
     return new NullKeyDerivation();
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
   else if( type == "aes-ctr" )
     return new AesIcmKeyDerivation();
   else if( type == "aes-ctr-128" )

@@ -37,7 +37,7 @@
 #include "threadUtils.hpp"
 #include "syncBuffer.h"
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
 #else
@@ -135,7 +135,7 @@ private:
 
 };
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 //****** AesIcmKeyDerivation ******
 
 class AesIcmKeyDerivation : public KeyDerivation

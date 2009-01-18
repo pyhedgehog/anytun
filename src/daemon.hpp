@@ -31,7 +31,7 @@
 
 #ifndef _DAEMON_HPP
 #define _DAEMON_HPP
-#ifndef NODAEMON
+#ifndef NO_DAEMON
 
 #include <poll.h>
 #include <fcntl.h>

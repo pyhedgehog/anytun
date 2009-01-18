@@ -47,7 +47,7 @@ bool NullAuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
   return true;
 }
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 //****** Sha1AuthAlgo ******
 
 Sha1AuthAlgo::Sha1AuthAlgo(kd_dir_t d) : AuthAlgo(d), key_(DIGEST_LENGTH)

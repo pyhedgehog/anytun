@@ -31,7 +31,7 @@
 
 #ifndef _SYSEXEC_HPP
 #define _SYSEXEC_HPP
-#ifndef NOEXEC
+#ifndef NO_EXEC
 
 int execScript(std::string const& script, std::string const& ifname)
 {

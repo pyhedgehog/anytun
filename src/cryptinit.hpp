@@ -32,7 +32,7 @@
 #ifndef _CRYPTINIT_HPP
 #define _CRYPTINIT_HPP
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
 

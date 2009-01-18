@@ -38,7 +38,7 @@
 #include "plainPacket.h"
 #include "keyDerivation.h"
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
 #else
@@ -72,7 +72,7 @@ protected:
   u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 };
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 //****** AesIcmCipher ******
 
 class AesIcmCipher : public Cipher

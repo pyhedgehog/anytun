@@ -40,7 +40,7 @@ Cipher* CipherFactory::create(std::string const& type, kd_dir_t dir)
 {
   if( type == "null" )
     return new NullCipher();
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
   else if( type == "aes-ctr" )
     return new AesIcmCipher(dir);
   else if( type == "aes-ctr-128" )

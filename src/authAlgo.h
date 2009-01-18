@@ -36,7 +36,7 @@
 #include "buffer.h"
 #include "encryptedPacket.h"
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
 #else
@@ -77,7 +77,7 @@ public:
   bool checkTag(KeyDerivation& kd, EncryptedPacket& packet);
 };
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 //****** Sha1AuthAlgo ******
 //* HMAC SHA1 Auth Tag Generator Class
 

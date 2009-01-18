@@ -34,7 +34,7 @@
 
 #include <string>
 #include <sstream>
-#ifndef NOSYSLOG
+#ifndef NO_SYSLOG
 #include <syslog.h>
 #endif
 
@@ -43,7 +43,7 @@
 
 #define STERROR_TEXT_MAX 100
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
 
@@ -86,7 +86,7 @@ private:
 class Log : public std::ostringstream
 {
 public:
-#ifndef NOSYSLOG
+#ifndef NO_SYSLOG
   static const int FAC_USER = LOG_USER;
   static const int FAC_MAIL = LOG_MAIL;
   static const int FAC_DAEMON = LOG_DAEMON;

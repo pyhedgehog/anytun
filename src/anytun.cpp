@@ -48,7 +48,7 @@
 #include "cipherFactory.h"
 #include "authAlgoFactory.h"
 #include "keyDerivationFactory.h"
-#ifndef NOSIGNALCONTROLLER
+#ifndef NO_SIGNALCONTROLLER
 #include "signalController.h"
 #endif
 #include "packetSource.h"
@@ -56,7 +56,7 @@
 #include "options.h"
 #include "seqWindow.h"
 #include "connectionList.h"
-#ifndef NOROUTING
+#ifndef NO_ROUTING
 #include "routingTable.h"
 #include "networkAddress.h"
 #endif
@@ -92,7 +92,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
   SyncCommand sc (gConnectionList,mux);
 	gSyncQueue.push(sc);
 #endif
-#ifndef NOROUTING
+#ifndef NO_ROUTING
 	if (gOpt.getIfconfigParamRemoteNetmask() != "")
 	{
 		NetworkAddress addr(gOpt.getIfconfigParamRemoteNetmask());
@@ -182,7 +182,7 @@ void sender(void* p)
         continue;
           //std::cout << "got Packet for plain "<<plain_packet.getDstAddr().toString();
 			ConnectionMap::iterator cit;
-#ifndef NOROUTING
+#ifndef NO_ROUTING
 			try
 			{
 				mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
@@ -352,6 +352,7 @@ int main(int argc, char* argv[])
       exit(-1);
     }
 
+#ifndef NO_DAEMON
     std::ofstream pidFile;
     if(gOpt.getPidFile() != "") {
       pidFile.open(gOpt.getPidFile().c_str());
@@ -359,8 +360,9 @@ int main(int argc, char* argv[])
         std::cout << "can't open pid file" << std::endl;
       }
     }
+#endif
     
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
 // this must be called before any other libgcrypt call
     if(!initLibGCrypt())
@@ -372,7 +374,7 @@ int main(int argc, char* argv[])
     cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
     cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << dev.getActualName() << "'";
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
-#ifndef NOEXEC
+#ifndef NO_EXEC
     if(gOpt.getPostUpScript() != "") {
       int postup_ret = execScript(gOpt.getPostUpScript(), dev.getActualName());
       cLog.msg(Log::PRIO_NOTICE) << "post up script '" << gOpt.getPostUpScript() << "' returned " << postup_ret;  
@@ -415,7 +417,7 @@ int main(int argc, char* argv[])
 			std::cout << " to set them)"<< std::endl;
 			return -1;
 		}
-#ifndef NODAEMON
+#ifndef NO_DAEMON
     if(gOpt.getChroot())
       chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
     if(gOpt.getDaemonize())
@@ -431,7 +433,7 @@ int main(int argc, char* argv[])
     }
 #endif
 
-#ifndef NOSIGNALCONTROLLER
+#ifndef NO_SIGNALCONTROLLER
     SignalController sig;
     sig.init();
 #endif
@@ -440,7 +442,7 @@ int main(int argc, char* argv[])
     ThreadParam p(dev, *src, *connTo);
 
     boost::thread senderThread(boost::bind(sender,&p));
-#ifndef NOSIGNALCONTROLLER
+#ifndef NO_SIGNALCONTROLLER
     boost::thread receiverThread(boost::bind(receiver,&p)); 
 #endif
 #ifndef ANYTUN_NOSYNC
@@ -455,7 +457,7 @@ int main(int argc, char* argv[])
     }
 #endif
 
-#ifndef NOSIGNALCONTROLLER
+#ifndef NO_SIGNALCONTROLLER
     int ret = sig.run();  
 #else
     receiver(&p);
@@ -491,7 +493,7 @@ int main(int argc, char* argv[])
   catch(std::runtime_error& e)
   {
     cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
-#ifndef LOGSTDOUT
+#ifndef LOG_STDOUT
 	if(!daemonized)
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
 #endif
@@ -499,7 +501,7 @@ int main(int argc, char* argv[])
   catch(std::exception& e)
   {
     cLog.msg(Log::PRIO_ERR) << "uncaught exception, exiting: " << e.what();
-#ifndef LOGSTDOUT    
+#ifndef LOG_STDOUT    
 	if(!daemonized)
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
 #endif  

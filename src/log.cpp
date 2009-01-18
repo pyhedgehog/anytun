@@ -40,7 +40,7 @@ Log* Log::inst = NULL;
 Mutex Log::instMutex;
 Log& cLog = Log::instance();
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
 std::ostream& operator<<(std::ostream& stream, LogGpgError const& value) 
 {
@@ -71,10 +71,10 @@ LogStringBuilder::LogStringBuilder(Log& l, int p) : log(l), prio(p)
 LogStringBuilder::~LogStringBuilder() 
 {
 	Lock lock(log.mutex);
-#ifndef NOSYSLOG
+#ifndef NO_SYSLOG
 	syslog(prio | log.getFacility(), "%s", stream.str().c_str());	 
 #endif
-#ifdef LOGSTDOUT
+#ifdef LOG_STDOUT
 	std::cout << "LOG-" << Log::prioToString(prio) << ": " << stream.str() << std::endl;
 #endif
 }
@@ -98,12 +98,12 @@ Log::Log()
 
 Log::~Log()
 {
-#ifndef NOSYSLOG
+#ifndef NO_SYSLOG
 	closelog();
 #endif
 }
 
-#ifdef NOSYSLOG
+#ifdef NO_SYSLOG
 std::string Log::prioToString(int prio)
 {
 	switch(prio) {
@@ -122,7 +122,7 @@ std::string Log::prioToString(int prio)
 
 void Log::open()
 {
-#ifndef NOSYSLOG
+#ifndef NO_SYSLOG
 	openlog(logName.c_str(), LOG_PID, facility);
 #endif
 }

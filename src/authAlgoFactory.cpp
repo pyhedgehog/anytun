@@ -40,7 +40,7 @@ AuthAlgo* AuthAlgoFactory::create(std::string const& type, kd_dir_t dir)
 {
   if( type == "null" )
     return new NullAuthAlgo();
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
   else if( type == "sha1" )
     return new Sha1AuthAlgo(dir);
 #endif

@@ -70,7 +70,7 @@ u_int32_t NullCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, 
   return (ilen < olen) ? ilen : olen;
 }
 
-#ifndef NOCRYPT
+#ifndef NO_CRYPT
 //****** AesIcmCipher ****** 
 
 AesIcmCipher::AesIcmCipher(kd_dir_t d) : Cipher(d), key_(u_int32_t(DEFAULT_KEY_LENGTH/8)), salt_(u_int32_t(SALT_LENGTH))
