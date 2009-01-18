@@ -146,6 +146,8 @@ public:
   Options& setKdPrf(std::string k);
   int8_t getLdKdr();
   Options& setLdKdr(int8_t l);
+  std::string getPassphrase();
+  Options& setPassphrase(std::string p);
   Options& setKey(std::string k);
   Buffer getKey();
   Options& setSalt(std::string s);
@@ -201,6 +203,7 @@ private:
   std::string auth_algo_;
   std::string kd_prf_;
   int8_t ld_kdr_;
+  std::string passphrase_;
   Buffer key_;
   Buffer salt_;
 };

@@ -41,6 +41,10 @@
 #include <sstream>
 #include <string>
 
+#ifdef USE_SSL_CRYPTO
+#include <openssl/sha.h>
+#endif
+
 void KeyDerivation::setLogKDRate(const int8_t log_rate)
 {
   WritersLock lock(mutex_);
@@ -48,6 +52,66 @@ void KeyDerivation::setLogKDRate(const int8_t log_rate)
   if(ld_kdr_ > (int8_t)(sizeof(seq_nr_t) * 8))
     ld_kdr_ = sizeof(seq_nr_t) * 8;
 }
+
+#ifndef NO_PASSPHRASE
+void KeyDerivation::calcMasterKey(std::string passphrase, u_int16_t length)
+{
+  cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation: calculating master key from passphrase";
+  if(!length) {
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation: bad master key length";
+    return;
+  }
+
+#ifndef USE_SSL_CRYPTO
+  if(length > gcry_md_get_algo_dlen(GCRY_MD_SHA256)) {
+#else
+  if(length > SHA256_DIGEST_LENGTH) {
+#endif
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation: master key too long for passphrase algorithm";
+    return;
+  }
+
+#ifndef USE_SSL_CRYPTO
+  Buffer digest(gcry_md_get_algo_dlen(GCRY_MD_SHA256));
+  gcry_md_hash_buffer(GCRY_MD_SHA256, digest.getBuf(), passphrase.c_str(), passphrase.length());
+#else
+  Buffer digest(u_int32_t(SHA256_DIGEST_LENGTH));
+  SHA256(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
+#endif
+  master_key_.setLength(length);
+
+  memcpy(master_key_.getBuf(), &digest.getBuf()[digest.getLength() - master_key_.getLength()], master_key_.getLength());
+}
+
+void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
+{
+  cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation: calculating master salt from passphrase";
+  if(!length) {
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation: bad master salt length";
+    return;
+  }
+
+#ifndef USE_SSL_CRYPTO
+  if(length > gcry_md_get_algo_dlen(GCRY_MD_SHA1)) {
+#else
+  if(length > SHA_DIGEST_LENGTH) {
+#endif
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation: master key too long for passphrase algorithm";
+    return;
+  }
+
+#ifndef USE_SSL_CRYPTO
+  Buffer digest(gcry_md_get_algo_dlen(GCRY_MD_SHA1));
+  gcry_md_hash_buffer(GCRY_MD_SHA1, digest.getBuf(), passphrase.c_str(), passphrase.length());
+#else
+  Buffer digest(u_int32_t(SHA_DIGEST_LENGTH));
+  SHA1(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
+#endif
+  master_salt_.setLength(length);
+
+  memcpy(master_salt_.getBuf(), &digest.getBuf()[digest.getLength() - master_salt_.getLength()], master_salt_.getLength());
+}
+#endif
 
 //****** NullKeyDerivation ******
 
@@ -86,13 +150,25 @@ AesIcmKeyDerivation::~AesIcmKeyDerivation()
 #endif
 }
 
-void AesIcmKeyDerivation::init(Buffer key, Buffer salt)
+void AesIcmKeyDerivation::init(Buffer key, Buffer salt, std::string passphrase)
 {
   WritersLock lock(mutex_);
-
+  
   is_initialized_ = false;
-  master_salt_ = SyncBuffer(salt);
+#ifndef NO_PASSPHRASE
+  if(passphrase != "" && !key.getLength())
+    calcMasterKey(passphrase, key_length_/8);
+  else
+    master_key_ = SyncBuffer(key);
+  
+  if(passphrase != "" && !salt.getLength())
+    calcMasterSalt(passphrase, SALT_LENGTH);
+  else
+    master_salt_ = SyncBuffer(salt);
+#else
   master_key_ = SyncBuffer(key);
+  master_salt_ = SyncBuffer(salt);
+#endif
 
   updateMasterKey();
 }

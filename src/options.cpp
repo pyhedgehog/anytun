@@ -238,22 +238,6 @@ Options::~Options()
       i+=2;                                                                     \
     }
 
-#define PARSE_HEXSTRING_PARAM_SEC(SHORT, LONG, VALUE)                           \
-    else if(str == SHORT || str == LONG)                                        \
-    {                                                                           \
-      if(argc < 1)                                                              \
-        throw syntax_error(str, str.length());                                  \
-      if(argv[i+1][0] == '-') {                                                 \
-        u_int32_t pos = str.length() + 1;                                       \
-        throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
-      }                                                                         \
-      VALUE = Buffer(std::string(argv[i+1]));                                   \
-      for(size_t j=0; j < strlen(argv[i+1]); ++j)                               \
-        argv[i+1][j] = '#';                                                     \
-      argc--;                                                                   \
-      i++;                                                                      \
-    }
-
 #define PARSE_CSLIST_PARAM(SHORT, LONG, LIST, TYPE)                             \
     else if(str == SHORT || str == LONG)                                        \
     {                                                                           \
@@ -270,6 +254,39 @@ Options::~Options()
 				getline(tmp,tmp_line,',');                                              \
 				LIST.push_back(TYPE(tmp_line));                                         \
 			}                                                                         \
+      argc--;                                                                   \
+      i++;                                                                      \
+    }
+
+#define PARSE_HEXSTRING_PARAM_SEC(SHORT, LONG, VALUE)                           \
+    else if(str == SHORT || str == LONG)                                        \
+    {                                                                           \
+      if(argc < 1)                                                              \
+        throw syntax_error(str, str.length());                                  \
+      if(argv[i+1][0] == '-') {                                                 \
+        u_int32_t pos = str.length() + 1;                                       \
+        throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
+      }                                                                         \
+      VALUE = Buffer(std::string(argv[i+1]));                                   \
+      for(size_t j=0; j < strlen(argv[i+1]); ++j)                               \
+        argv[i+1][j] = '#';                                                     \
+      argc--;                                                                   \
+      i++;                                                                      \
+    }
+
+#define PARSE_PHRASE_PARAM_SEC(SHORT, LONG, VALUE)                              \
+    else if(str == SHORT || str == LONG)                                        \
+    {                                                                           \
+      if(argc < 1)                                                              \
+        throw syntax_error(str, str.length());                                  \
+      if(argv[i+1][0] == '-') {                                                 \
+        u_int32_t pos = str.length() + 1;                                       \
+        throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
+      }                                                                         \
+      std::stringstream tmp;                                                    \
+      VALUE = argv[i+1];                                                        \
+      for(size_t j=0; j < strlen(argv[i+1]); ++j)                               \
+        argv[i+1][j] = '#';                                                     \
       argc--;                                                                   \
       i++;                                                                      \
     }
@@ -320,6 +337,9 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
     PARSE_SIGNED_INT_PARAM("-l","--ld-kdr", ld_kdr_tmp)
+#ifndef NO_PASSPHRASE
+    PARSE_PHRASE_PARAM_SEC("-E","--passphrase", passphrase_)
+#endif
     PARSE_HEXSTRING_PARAM_SEC("-K","--key", key_)
     PARSE_HEXSTRING_PARAM_SEC("-A","--salt", salt_)
     else 
@@ -380,6 +400,9 @@ void Options::printUsage()
   std::cout << "   [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
   std::cout << "   [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
   std::cout << "   [-l|--ld-kdr] <ld-kdr>              log2 of key derivation rate" << std::endl;
+#ifndef NO_PASSPHRASE
+  std::cout << "   [-E|--passphrase] <pass phrase>     a passprhase to generate master key and salt from" << std::endl;
+#endif
   std::cout << "   [-K|--key] <master key>             master key to use for encryption" << std::endl;
   std::cout << "   [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
 }
@@ -429,6 +452,7 @@ void Options::printOptions()
   std::cout << "auth_algo = '" << auth_algo_ << "'" << std::endl;
   std::cout << "kd_prf = '" << kd_prf_ << "'" << std::endl;
   std::cout << "ld_kdr = " << static_cast<int32_t>(ld_kdr_) << std::endl;
+  std::cout << "passphrase = '" << passphrase_ << "'" << std::endl;
   std::cout << "key = " << key_.getHexDumpOneLine() << std::endl;
   std::cout << "salt = " << salt_.getHexDumpOneLine() << std::endl;
 }
@@ -805,6 +829,19 @@ Options& Options::setLdKdr(int8_t l)
 {
   WritersLock lock(mutex);
   ld_kdr_ = l;
+  return *this;
+}
+
+std::string Options::getPassphrase()
+{
+  ReadersLock lock(mutex);
+  return passphrase_;
+}
+
+Options& Options::setPassphrase(std::string p)
+{
+  WritersLock lock(mutex);
+  passphrase_ = p;
   return *this;
 }
 

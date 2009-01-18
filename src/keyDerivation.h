@@ -73,7 +73,7 @@ public:
 
   void setLogKDRate(const int8_t ld_rate);
 
-  virtual void init(Buffer key, Buffer salt) = 0;
+  virtual void init(Buffer key, Buffer salt, std::string passphrase = "") = 0;
   virtual bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key) = 0;
 
   virtual std::string printType() { return "GenericKeyDerivation"; };
@@ -81,6 +81,11 @@ public:
 protected:
   virtual void updateMasterKey() = 0;
   
+#ifndef NO_PASSPHRASE
+  void calcMasterKey(std::string passphrase, u_int16_t length);
+  void calcMasterSalt(std::string passphrase, u_int16_t length);
+#endif
+
 	KeyDerivation(const KeyDerivation & src);
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -113,7 +118,7 @@ public:
   NullKeyDerivation() {};
   ~NullKeyDerivation() {};
 
-  void init(Buffer key, Buffer salt) {};
+  void init(Buffer key, Buffer salt, std::string passphrase = "") {};
   bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key);
 
   std::string printType() { return "NullKeyDerivation"; };
@@ -144,7 +149,7 @@ public:
   static const u_int16_t CTR_LENGTH = 16;
   static const u_int16_t SALT_LENGTH = 14;
    
-  void init(Buffer key, Buffer salt);
+  void init(Buffer key, Buffer salt, std::string passphrase = "");
   bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key);
 
   std::string printType();

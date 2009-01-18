@@ -82,7 +82,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 	SeqWindow* seq = new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
-  kd->init(gOpt.getKey(), gOpt.getSalt());
+  kd->init(gOpt.getKey(), gOpt.getSalt(), gOpt.getPassphrase());
   kd->setLogKDRate(gOpt.getLdKdr());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
 
