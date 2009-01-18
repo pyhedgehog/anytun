@@ -31,6 +31,8 @@ SYNOPSIS
 [ *-m|--mux* <mux-id> ]
 [ *-s|--sender-id* <sender id> ]
 [ *-w|--window-size* <window size> ]
+[ *-k|--kd-prf* <kd-prf type> ]
+[ *-l|--ld-kdr* <ld-kdr> ]
 [ *-c|--cipher* <cipher type> ]
 [ *-a|--auth-algo* <algo type> ]
 [ *-K|--key* <master key> ]
@@ -261,7 +263,10 @@ Encryption algorithm used for encrypting the payload
 Possible values:
 
 * *null* - no encryption
-* *aes-ctr* - AES in counter mode, default value
+* *aes-ctr* - AES in counter mode with 128 Bits, default value
+* *aes-ctr-128* - AES in counter mode with 128 Bits
+* *aes-ctr-192* - AES in counter mode with 192 Bits
+* *aes-ctr-256* - AES in counter mode with 256 Bits
 
 -a|--auth-algo <algo type>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -278,6 +283,33 @@ Possible values:
 
 If HMAC-SHA1 is used, the packet length is increased by
 10 bytes. These 10 bytes contain the authentication data.
+
+-k|--kd--prf <kd-prf type>
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+key derivation pseudo random function.
+
+The pseudo random function which is used for calculating the 
+session keys and session salt.
+
+Possible values:
+
+* *null* - no random function, keys and salt are set to 0..00
+* *aes-ctr* - AES in counter mode with 128 Bits, default value
+* *aes-ctr-128* - AES in counter mode with 128 Bits
+* *aes-ctr-192* - AES in counter mode with 192 Bits
+* *aes-ctr-256* - AES in counter mode with 256 Bits
+
+-l|--ld-kdr <ld-kdr>
+~~~~~~~~~~~~~~~~~~~~
+
+The log2 of the key derivation rate. This is used by the key
+derivation to determine how ofen a new session key has to be
+generated. A value of -1 means to generate only one key and use
+it forever. The default is 0 which means to calculate a new key
+for every packet. A value of 1 would tell the key derivation
+to generate a new key after 2 packets, for 2 its 4 packets and 
+so on.
 
 -K|--key <master key>
 ~~~~~~~~~~~~~~~~~~~~~

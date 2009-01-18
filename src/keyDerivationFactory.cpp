@@ -43,6 +43,12 @@ KeyDerivation* KeyDerivationFactory::create(std::string const& type)
 #ifndef NOCRYPT
   else if( type == "aes-ctr" )
     return new AesIcmKeyDerivation();
+  else if( type == "aes-ctr-128" )
+    return new AesIcmKeyDerivation(128);
+  else if( type == "aes-ctr-192" )
+    return new AesIcmKeyDerivation(192);
+  else if( type == "aes-ctr-256" )
+    return new AesIcmKeyDerivation(256);
 #endif
   else
     throw std::invalid_argument("key derivation prf not available");

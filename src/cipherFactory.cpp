@@ -43,6 +43,12 @@ Cipher* CipherFactory::create(std::string const& type, kd_dir_t dir)
 #ifndef NOCRYPT
   else if( type == "aes-ctr" )
     return new AesIcmCipher(dir);
+  else if( type == "aes-ctr-128" )
+    return new AesIcmCipher(dir, 128);
+  else if( type == "aes-ctr-192" )
+    return new AesIcmCipher(dir, 192);
+  else if( type == "aes-ctr-256" )
+    return new AesIcmCipher(dir, 256);
 #endif
   else
     throw std::invalid_argument("cipher not available");
