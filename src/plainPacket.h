@@ -64,6 +64,12 @@ public:
   ~PlainPacket() {};
 
   /**
+   * Get the length of the header
+   * @return the length of the header
+   */
+  static u_int32_t getHeaderLength();
+
+  /**
    * Get the payload type
    * @return the id of the payload type 
    */
@@ -79,7 +85,7 @@ public:
    * Get the length of the payload
    * @return the length of the payload
    */
-	u_int32_t getPayloadLength() const;
+  u_int32_t getPayloadLength() const;
 
   /**
    * Set the length of the payload

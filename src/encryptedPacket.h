@@ -53,6 +53,12 @@ public:
   ~EncryptedPacket() {};
 
   /**
+   * Get the length of the header
+   * @return the length of the header
+   */
+  static u_int32_t getHeaderLength();
+
+  /**
    * Get the sequence number
    * @return seqence number
    */
@@ -100,7 +106,7 @@ public:
    * Get the length of the payload
    * @return the length of the payload
    */
-	u_int32_t getPayloadLength() const;
+  u_int32_t getPayloadLength() const;
 
   /**
    * Set the length of the payload

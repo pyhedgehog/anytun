@@ -52,6 +52,11 @@ EncryptedPacket::EncryptedPacket(u_int32_t payload_length, bool allow_realloc)
   }
 }
 
+u_int32_t EncryptedPacket::getHeaderLength()
+{
+  return sizeof(struct HeaderStruct);
+}
+
 seq_nr_t EncryptedPacket::getSeqNr() const
 {
   if(header_)

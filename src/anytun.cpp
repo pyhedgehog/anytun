@@ -258,6 +258,8 @@ void receiver(void* p)
       
           // read packet from socket
       u_int32_t len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
+      if(len < EncryptedPacket::getHeaderLength())
+        continue; // ignore short packets
       encrypted_packet.setLength(len);
       
       mux_t mux = encrypted_packet.getMux();
@@ -279,6 +281,14 @@ void receiver(void* p)
         continue;
       }        
 
+          // Replay Protection
+      if(conn.seq_window_.checkAndAdd(encrypted_packet.getSenderId(), encrypted_packet.getSeqNr()))
+      {
+        cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_end_ 
+                                   << " seq:"<< encrypted_packet.getSeqNr() << " sid: "<< encrypted_packet.getSenderId();
+        continue;
+      }
+      
           //Allow dynamic IP changes 
           //TODO: add command line option to turn this off
       if (remote_end != conn.remote_end_)
@@ -290,15 +300,10 @@ void receiver(void* p)
         gSyncQueue.push(sc);
 #endif
       }	
-      
-          // Replay Protection
-      if(conn.seq_window_.checkAndAdd(encrypted_packet.getSenderId(), encrypted_packet.getSeqNr()))
-      {
-        cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_end_ 
-                                   << " seq:"<< encrypted_packet.getSeqNr() << " sid: "<< encrypted_packet.getSenderId();
+         // ignore zero length packets
+      if(encrypted_packet.getPayloadLength() <= PlainPacket::getHeaderLength())
         continue;
-      }
-      
+
           // decrypt packet
       c->decrypt(conn.kd_, encrypted_packet, plain_packet);
       
