@@ -32,16 +32,101 @@
 
 TARGET=`uname -s`
 
+CXXFLAGS='-g -Wall -O2'
+LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system'
+
+CRYPTO_LIB='gcrypt'
+ANYTUN_02_COMPAT=0
+PASSPHRASE=1
+
+print_usage() {
+  echo "configure --help                    print this"
+  echo "          --use-ssl-crypto          use ssl crypto library instead of libgcrypt"
+  echo "          --disable-crypto          disable crypto at all (only NULL cipher)"
+  echo "          --enable-anytun02-compat  enable compatiblity mode for anytun 0.2.x and prior"
+  echo "          --disable-passphrase      disable master key and salt passphrase"
+}
+
+for arg
+do
+  case $arg in
+  --use-ssl-crypto)
+    CRYPTO_LIB='ssl'
+  ;;
+  --disable-crypto)
+    CRYPTO_LIB='none'
+  ;; 
+  --enable-anytun02-compat)
+    ANYTUN_02_COMPAT=1
+  ;;
+  --disable-passphrase)
+    PASSPHRASE=0
+  ;;
+  --help)
+    print_usage
+    exit 0
+  ;;
+  *)
+    echo "Unknown argument: $arg"
+    print_usage
+    exit 1
+  ;;
+  esac
+done
+
+rm -f include.mk
 case $TARGET in 
 	Linux)
 		rm -rf tunDevice.cpp
 		ln -sf linux/tunDevice.cpp 
+    echo "loading Linux specific TUN Device"
 	;;
 	OpenBSD|FreeBSD|NetBSD)
 		rm -rf tunDevice.cpp
 		ln -sf bsd/tunDevice.cpp 
+    echo "loading BSD specific TUN Device"
+    CXXFLAGS=$CXXFLAGS' -I/usr/local/include'
+    LDFLAGS=$LDFLAGS' -L/usr/local/lib'
 	;;
 	*)
 		echo "Plattform not supported"
+    exit 1
 	;;
 esac
+
+case $CRYPTO_LIB in
+  gcrypt)
+    LDFLAGS=$LDFLAGS' -lgcrypt -lgpg-error'
+    echo "using libgcrypt library"
+  ;;
+  ssl)
+    CXXFLAGS=$CXXFLAGS' -DUSE_SSL_CRYPTO'
+    LDFLAGS=$LDFLAGS' -lcrypto'
+    echo "using ssl crypto library"
+  ;;
+  none)
+    CXXFLAGS=$CXXFLAGS' -DNO_CRYPT'
+    echo "NO_CRYPT_OBJ = 1" >> include.mk
+    echo "disabling crypto"
+  ;;
+esac
+
+if [ $ANYTUN_02_COMPAT -eq 1 ]; then
+  CXXFLAGS=$CXXFLAGS' -DANYTUN_02_COMPAT'
+  echo "enabling anytun 0.2.x crypto compatiblity mode"
+fi
+
+if [ $PASSPHRASE -eq 0 ]; then
+  CXXFLAGS=$CXXFLAGS' -DNO_PASSPHRASE'
+  echo "disabling master key and salt passphrase"
+fi
+
+cat >> include.mk <<EOF
+TARGET = $TARGET
+CXX = gcc
+CXXFLAGS = $CXXFLAGS
+LD = gcc
+LDFLAGS = $LDFLAGS
+EOF
+
+exit 0

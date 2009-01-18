@@ -28,22 +28,8 @@
 ##  You should have received a copy of the GNU General Public License
 ##  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
 ##
-TARGET=$(shell uname -s)
-CC = gcc
-CFLAGS = -g
-CXX = g++
-CXXFLAGS = -g -Wall -O2 #-DUSE_SSL_CRYPTO
-LD = g++
-LDFLAGS = -g -Wall -O2 -lboost_thread -lgcrypt -lgpg-error -lboost_serialization -lboost_system
-#LDFLAGS = -g -Wall -O2 -lboost_thread -lcrypto -lboost_serialization -lboost_system
 
-ifeq ($(TARGET),Linux)
-  LDFLAGS += -ldl
-endif
-ifeq ($(TARGET),OpenBSD)
-  CXXFLAGS += -I/usr/local/include
-  LDFLAGS += -L/usr/local/lib
-endif
+include include.mk
 
 OBJS = tunDevice.o \
        packetSource.o \
@@ -159,6 +145,7 @@ distclean: cleanall
 	find . -name *.o -exec rm -f {} \;
 	rm -f config.sub config.guess
 	rm -f tunDevice.cpp
+	rm -f include.mk
 
 cleanall: clean
 	$(MAKE) --directory=$(CURDIR)/man clean
