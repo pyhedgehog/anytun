@@ -30,15 +30,30 @@
  */
 
 #include <string.h>
+#include <sstream>
 
 #include "../tunDevice.h"
 #include "../threadUtils.hpp"
+#include "../log.h"
 
+#include "common.h"
+#include <windows.h>
+#include <winioctl.h>
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
+  handle_ = INVALID_HANDLE_VALUE;
 
+  HKEY key;
+  LONG err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, 0, KEY_READ, &key);
+  if(err) {
+    std::stringstream msg;
+    msg << "Unable to read registry: " << LogErrno(err);
+    throw std::runtime_error(msg.str());
+  }
 
+  RegCloseKey(key);
+  
   if(ifcfg_lp != "" && ifcfg_rnmp != "")
     do_ifconfig();
 }

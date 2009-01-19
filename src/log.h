@@ -60,8 +60,8 @@ std::ostream& operator<<(std::ostream& stream, LogGpgError const& value);
 class LogErrno
 {
 public:
-  LogErrno(int e) : err_(e) {};
-  int err_;
+  LogErrno(system_error_t e) : err_(e) {};
+  system_error_t err_;
 };
 std::ostream& operator<<(std::ostream& stream, LogErrno const& value);
 

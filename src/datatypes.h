@@ -54,8 +54,11 @@ typedef u_int16_t mux_t;
 
 #ifndef _MSC_VER
 #define ATTR_PACKED __attribute__((__packed__))
+typedef int system_error_t;
 #else
+#include <windows.h>
 #define ATTR_PACKED
+typedef DWORD system_error_t;
 #endif	  
 
 #endif

@@ -36,6 +36,10 @@
 #include "deviceConfig.hpp"
 #include "threadUtils.hpp"
 
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
+
 class TunDevice
 {
 public:
@@ -71,6 +75,10 @@ private:
   int fix_return(int ret, size_t pi_length);
 
   int fd_;
+#ifdef _MSC_VER
+  HANDLE handle_;
+#endif
+
   DeviceConfig conf_;
   bool with_pi_;
   std::string actual_name_;
