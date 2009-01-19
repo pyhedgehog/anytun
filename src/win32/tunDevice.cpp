@@ -135,13 +135,13 @@ int TunDevice::read(u_int8_t* buf, u_int32_t len)
     DWORD err = GetLastError();
     if(err == ERROR_IO_PENDING) {
       WaitForSingleObject(overlapped.hEvent, INFINITE);
-			if(!GetOverlappedResult(handle_, &overlapped, &lenout, FALSE))
+      if(!GetOverlappedResult(handle_, &overlapped, &lenout, FALSE)) {
         cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << LogErrno(GetLastError());
-      
-      return lenout;
+        return -1;
+      }
     }
     else
-      cLog.msg(Log::PRIO_ERR) << "Error while reading from: " << LogErrno(GetLastError());
+      cLog.msg(Log::PRIO_ERR) << "Error while reading from device: " << LogErrno(GetLastError());
     
     return -1;
   }
@@ -151,12 +151,26 @@ int TunDevice::read(u_int8_t* buf, u_int32_t len)
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
 	DWORD lenout;
-	OVERLAPPED overlapped = {0};
+  OVERLAPPED overlapped;
+  overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+  overlapped.Offset = 0;
+	overlapped.OffsetHigh = 0;
+//  ResetEvent(overlapped.hEvent);
 
 	if(!WriteFile(handle_, buf, len, &lenout, &overlapped)) {
-    cLog.msg(Log::PRIO_ERR) << "Error while writing to device: " << LogErrno(GetLastError());
-		return -1;
-	}
+    DWORD err = GetLastError();
+    if(err == ERROR_IO_PENDING) {
+      WaitForSingleObject(overlapped.hEvent, INFINITE);
+      if(!GetOverlappedResult(handle_, &overlapped, &lenout, FALSE)) {
+        cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << LogErrno(GetLastError());
+        return -1;
+      }
+    }
+    else
+      cLog.msg(Log::PRIO_ERR) << "Error while writing to device: " << LogErrno(GetLastError());
+    
+    return -1;
+  }
 	return lenout;	
 }
 
