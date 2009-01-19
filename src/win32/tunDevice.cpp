@@ -43,6 +43,8 @@
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
   handle_ = INVALID_HANDLE_VALUE;
+  roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+  woverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
   HKEY key, key2;
   LONG err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, 0, KEY_READ, &key);
@@ -112,6 +114,8 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 TunDevice::~TunDevice()
 {
   CloseHandle(handle_);
+  CloseHandle(roverlapped_.hEvent);
+  CloseHandle(woverlapped_.hEvent);
 }
 
 int TunDevice::fix_return(int ret, size_t pi_length)
@@ -123,17 +127,15 @@ int TunDevice::fix_return(int ret, size_t pi_length)
 int TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
   DWORD lenout;
-  OVERLAPPED overlapped;
-  overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-  overlapped.Offset = 0;
-	overlapped.OffsetHigh = 0;
-//  ResetEvent(overlapped.hEvent);
+  roverlapped_.Offset = 0;
+	roverlapped_.OffsetHigh = 0;
+  ResetEvent(roverlapped_.hEvent);
   
-  if(!ReadFile(handle_, buf, len, &lenout, &overlapped)) {
+  if(!ReadFile(handle_, buf, len, &lenout, &roverlapped_)) {
     DWORD err = GetLastError();
     if(err == ERROR_IO_PENDING) {
-      WaitForSingleObject(overlapped.hEvent, INFINITE);
-      if(!GetOverlappedResult(handle_, &overlapped, &lenout, FALSE)) {
+      WaitForSingleObject(roverlapped_.hEvent, INFINITE);
+      if(!GetOverlappedResult(handle_, &roverlapped_, &lenout, FALSE)) {
         cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << LogErrno(GetLastError());
         return -1;
       }
@@ -149,17 +151,15 @@ int TunDevice::read(u_int8_t* buf, u_int32_t len)
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
   DWORD lenout;
-  OVERLAPPED overlapped;
-  overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-  overlapped.Offset = 0;
-	overlapped.OffsetHigh = 0;
-//  ResetEvent(overlapped.hEvent);
+  woverlapped_.Offset = 0;
+	woverlapped_.OffsetHigh = 0;
+  ResetEvent(woverlapped_.hEvent);
 
-	if(!WriteFile(handle_, buf, len, &lenout, &overlapped)) {
+	if(!WriteFile(handle_, buf, len, &lenout, &woverlapped_)) {
     DWORD err = GetLastError();
     if(err == ERROR_IO_PENDING) {
-      WaitForSingleObject(overlapped.hEvent, INFINITE);
-      if(!GetOverlappedResult(handle_, &overlapped, &lenout, FALSE)) {
+      WaitForSingleObject(woverlapped_.hEvent, INFINITE);
+      if(!GetOverlappedResult(handle_, &woverlapped_, &lenout, FALSE)) {
         cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << LogErrno(GetLastError());
         return -1;
       }

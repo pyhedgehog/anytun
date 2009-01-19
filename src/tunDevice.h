@@ -82,6 +82,7 @@ private:
   int fd_;
 #else
   HANDLE handle_;
+  OVERLAPPED roverlapped_, woverlapped_;
 #endif
 
   DeviceConfig conf_;
