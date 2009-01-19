@@ -380,7 +380,7 @@ int main(int argc, char* argv[])
       cLog.msg(Log::PRIO_NOTICE) << "post up script '" << gOpt.getPostUpScript() << "' returned " << postup_ret;  
     }
 #endif
-        
+    
     PacketSource* src;
     if(gOpt.getLocalAddr() == "")
       src = new UDPPacketSource(gOpt.getLocalPort());
