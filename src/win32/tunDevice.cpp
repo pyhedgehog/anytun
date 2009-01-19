@@ -44,7 +44,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 {
   handle_ = INVALID_HANDLE_VALUE;
 
-  HKEY key;
+  HKEY key, key2;
   LONG err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, 0, KEY_READ, &key);
   if(err) {
     std::stringstream msg;
@@ -52,15 +52,66 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     throw std::runtime_error(msg.str());
   }
 
+  bool found = false;
+  DWORD len;
+  char adapterid[1024];
+  char adaptername[1024];
+  for(int i=0; ; ++i) {
+    len = sizeof(adapterid);
+		if(RegEnumKeyEx(key, i, adapterid, &len, 0, 0, 0, NULL))
+			break;
+    
+    std::stringstream regpath;
+    regpath << NETWORK_CONNECTIONS_KEY << "\\" << adapterid << "\\Connection";
+    err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, regpath.str().c_str(), 0, KEY_READ, &key2);
+    if(err) {
+//      cLog.msg(Log::PRIO_ERR) << "Error RegOpenKeyEx: " << LogErrno(err);
+      continue;
+    }
+    len = sizeof(adaptername);
+    err = RegQueryValueEx(key2, "Name", 0, 0, (LPBYTE)adaptername, &len);
+		RegCloseKey(key2);
+    if(err) {
+//			cLog.msg(Log::PRIO_ERR) << "Error RegQueryValueEx: " << LogErrno(err);
+      continue;
+    }
+//    cLog.msg(Log::PRIO_DEBUG) << "adapter[" << i << "]: " << adapterid << " " << adaptername;
+    if(!strncmp(adaptername, "anytun", len)) {
+      found = true;
+      break;
+    }
+  }
   RegCloseKey(key);
   
+  if(!found)
+    throw std::runtime_error("can't find any suitable device");
+
+  std::stringstream tapname;
+	tapname << USERMODEDEVICEDIR << adapterid << TAPSUFFIX;
+  
+  cLog.msg(Log::PRIO_DEBUG) << "'" << tapname.str() << "'";
+  
+  handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
+  if(handle_ == INVALID_HANDLE_VALUE) {
+    std::stringstream msg;
+    msg << "Unable to open device: " << adapterid << " (" << adaptername << "): " << LogErrno(GetLastError());
+    throw std::runtime_error(msg.str());
+	}
+
+  int status = true;
+  if(!DeviceIoControl(handle_, TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status), &len, NULL)) {
+    std::stringstream msg;
+    msg << "Unable set device media status: " << LogErrno(GetLastError());
+    throw std::runtime_error(msg.str());
+	}
+
   if(ifcfg_lp != "" && ifcfg_rnmp != "")
     do_ifconfig();
 }
 
 TunDevice::~TunDevice()
 {
-
+  CloseHandle(handle_);
 }
 
 int TunDevice::fix_return(int ret, size_t pi_length)
