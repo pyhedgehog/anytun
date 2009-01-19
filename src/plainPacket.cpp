@@ -103,7 +103,7 @@ void PlainPacket::reinit()
 
   if(length_ < (sizeof(payload_type_t))) {
     payload_type_ = NULL;
-    throw std::runtime_error("packet can't be initialized, buffer is too small"); 
+    throw std::runtime_error("plain packet can't be initialized, buffer is too small"); 
   }
 
 }

@@ -49,11 +49,15 @@ public:
   int read(u_int8_t* buf, u_int32_t len);
   int write(u_int8_t* buf, u_int32_t len);
 
-  std::string getActualName() { return actual_name_.c_str(); }
+  std::string getActualName() { return actual_name_; }
   device_type_t getType() { return conf_.type_; }
   std::string getTypeString()
   {
+#ifndef _MSC_VER
     if(fd_ < 0)
+#else
+    if(handle_ == INVALID_HANDLE_VALUE)
+#endif
       return "";
     
     switch(conf_.type_)
@@ -74,8 +78,9 @@ private:
   void do_ifconfig();
   int fix_return(int ret, size_t pi_length);
 
+#ifndef _MSC_VER
   int fd_;
-#ifdef _MSC_VER
+#else
   HANDLE handle_;
 #endif
 

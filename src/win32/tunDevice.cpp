@@ -88,9 +88,6 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 
   std::stringstream tapname;
 	tapname << USERMODEDEVICEDIR << adapterid << TAPSUFFIX;
-  
-  cLog.msg(Log::PRIO_DEBUG) << "'" << tapname.str() << "'";
-  
   handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
   if(handle_ == INVALID_HANDLE_VALUE) {
     std::stringstream msg;
@@ -98,14 +95,15 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     throw std::runtime_error(msg.str());
 	}
 
+  conf_.type_ = TYPE_TAP;
+  actual_name_ = adapterid;
+
   int status = true;
   if(!DeviceIoControl(handle_, TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status), &len, NULL)) {
     std::stringstream msg;
     msg << "Unable to set device media status: " << LogErrno(GetLastError());
     throw std::runtime_error(msg.str());
 	}
-
-  conf_.type_ = TYPE_TAP;
 
   if(ifcfg_lp != "" && ifcfg_rnmp != "")
     do_ifconfig();
@@ -140,17 +138,17 @@ int TunDevice::read(u_int8_t* buf, u_int32_t len)
         return -1;
       }
     }
-    else
+    else {
       cLog.msg(Log::PRIO_ERR) << "Error while reading from device: " << LogErrno(GetLastError());
-    
-    return -1;
+      return -1;
+    }
   }
   return lenout;
 }
 
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
-	DWORD lenout;
+  DWORD lenout;
   OVERLAPPED overlapped;
   overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   overlapped.Offset = 0;
@@ -166,12 +164,12 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
         return -1;
       }
     }
-    else
+    else {
       cLog.msg(Log::PRIO_ERR) << "Error while writing to device: " << LogErrno(GetLastError());
-    
-    return -1;
+      return -1;
+    }
   }
-	return lenout;	
+  return lenout;	
 }
 
 void TunDevice::init_post()

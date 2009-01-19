@@ -168,7 +168,12 @@ void sender(void* p)
       encrypted_packet.setLength(MAX_PACKET_LENGTH);
       
           // read packet from device
-      u_int32_t len = param->dev.read(plain_packet.getPayload(), plain_packet.getPayloadLength());
+      int len = param->dev.read(plain_packet.getPayload(), plain_packet.getPayloadLength());
+      if(len < 0)
+        continue; // silently ignore device read errors, this is probably no good idea...
+
+      if(static_cast<u_int32_t>(len) < PlainPacket::getHeaderLength())
+        continue; // ignore short packets
       plain_packet.setPayloadLength(len);
           // set payload type
       if(param->dev.getType() == TYPE_TUN)
@@ -257,8 +262,11 @@ void receiver(void* p)
       encrypted_packet.setLength(MAX_PACKET_LENGTH);
       
           // read packet from socket
-      u_int32_t len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
-      if(len < EncryptedPacket::getHeaderLength())
+      int len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
+      if(len < 0)
+        continue; // silently ignore socket recv errors, this is probably no good idea...
+
+      if(static_cast<u_int32_t>(len) < EncryptedPacket::getHeaderLength())
         continue; // ignore short packets
       encrypted_packet.setLength(len);
       
@@ -319,7 +327,7 @@ void receiver(void* p)
   }
   catch(std::runtime_error& e)
   {
-    cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught runtime_error: " << e.what();
+    cLog.msg(Log::PRIO_ERR) << "receiver thread died due to an uncaught runtime_error: " << e.what();
   }
   catch(std::exception& e)
   {

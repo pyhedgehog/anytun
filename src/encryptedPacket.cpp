@@ -137,7 +137,7 @@ void EncryptedPacket::reinit()
   
   if(length_ < (sizeof(struct HeaderStruct))) {
     header_ = NULL;
-    throw std::runtime_error("packet can't be initialized, buffer is too small"); 
+    throw std::runtime_error("encrypted packet can't be initialized, buffer is too small"); 
   }  
   
   if(auth_tag_)
