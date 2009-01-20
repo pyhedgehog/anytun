@@ -246,5 +246,16 @@ void TunDevice::do_ifconfig()
 #endif
   }
 
-  system(command.str().c_str());
+  int result = system(command.str().c_str());
+  if(result == -1)
+    cLog.msg(Log::PRIO_ERR) << "Execution of ifconfig failed" << LogErrno(errno);
+  else {
+    if(WIFEXITED(result))
+      cLog.msg(Log::PRIO_NOTICE) << "ifconfig returned " << WEXITSTATUS(result);  
+    else if(WIFSIGNALED(result))
+      cLog.msg(Log::PRIO_NOTICE) << "ifconfig terminated after signal " << WTERMSIG(result);
+    else
+      cLog.msg(Log::PRIO_ERR) << "Execution of ifconfig: unkown error";
+  }
+
 }

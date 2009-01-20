@@ -60,8 +60,10 @@ int execScript(std::string const& script, std::string const& ifname, std::string
   waitpid(pid, &status, 0);
   if(WIFEXITED(status))
     cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' returned " << WEXITSTATUS(status);  
-  if(WIFSIGNALED(status))
+  else if(WIFSIGNALED(status))
     cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' terminated after signal " << WTERMSIG(status);
+  else
+    cLog.msg(Log::PRIO_ERR) << "executing script: unkown error";
 
   return status;
 }
