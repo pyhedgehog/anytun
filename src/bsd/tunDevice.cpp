@@ -124,13 +124,17 @@ void TunDevice::init_post()
   
   struct tuninfo ti;  
 
-  if (ioctl(fd_, TUNGIFINFO, &ti) < 0)
+  if (ioctl(fd_, TUNGIFINFO, &ti) < 0) {
+    ::close(fd_);
     throw std::runtime_error("can't enable multicast for interface");
+  }
   
   ti.flags |= IFF_MULTICAST;
   
-  if (ioctl(fd_, TUNSIFINFO, &ti) < 0)
+  if (ioctl(fd_, TUNSIFINFO, &ti) < 0) {
+    ::close(fd_);
     throw std::runtime_error("can't enable multicast for interface");
+  }
 }
 
 #elif defined(__GNUC__) && defined(__FreeBSD__)
