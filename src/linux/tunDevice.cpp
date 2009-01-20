@@ -81,6 +81,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     msg << "tun/tap device ioctl failed: " << LogErrno(errno);
     throw std::runtime_error(msg.str());
   }
+  actual_node_ = DEFAULT_DEVICE;
 
   if(ifcfg_lp != "" && ifcfg_rnmp != "")
     do_ifconfig();

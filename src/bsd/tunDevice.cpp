@@ -100,6 +100,8 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   else
     actual_name_ = dev_name;
   
+  actual_node_ = device_file;
+
   init_post();
 
   if(ifcfg_lp != "" && ifcfg_rnmp != "")
