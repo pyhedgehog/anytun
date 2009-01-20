@@ -367,8 +367,8 @@ int main(int argc, char* argv[])
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
 #ifndef NO_EXEC
     if(gOpt.getPostUpScript() != "") {
-      int postup_ret = execScript(gOpt.getPostUpScript(), dev.getActualName());
-      cLog.msg(Log::PRIO_NOTICE) << "post up script '" << gOpt.getPostUpScript() << "' returned " << postup_ret;  
+      cLog.msg(Log::PRIO_NOTICE) << "executing post-up script '" << gOpt.getPostUpScript() << "'";
+      execScript(gOpt.getPostUpScript(), dev.getActualName(), dev.getActualNode());
     }
 #endif
     

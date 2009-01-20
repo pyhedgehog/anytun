@@ -33,7 +33,7 @@
 #define _SYSEXEC_HPP
 #ifndef NO_EXEC
 
-int execScript(std::string const& script, std::string const& ifname)
+int execScript(std::string const& script, std::string const& ifname, std::string const& ifnode)
 {
   pid_t pid;
   pid = fork();
@@ -51,10 +51,18 @@ int execScript(std::string const& script, std::string const& ifname)
       if(dup(fd) == -1)   // stderr
         cLog.msg(Log::PRIO_WARNING) << "can't open stderr";
     }
-    return execl("/bin/sh", "/bin/sh", script.c_str(), ifname.c_str(), NULL);
+    execl("/bin/sh", "/bin/sh", script.c_str(), ifname.c_str(), ifnode.c_str(), (char*)NULL);
+        // if execl return, an error occurred
+    cLog.msg(Log::PRIO_ERR) << "error on executing script: " << LogErrno(errno);
+    return -1;
   }
   int status = 0;
   waitpid(pid, &status, 0);
+  if(WIFEXITED(status))
+    cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' returned " << WEXITSTATUS(status);  
+  if(WIFSIGNALED(status))
+    cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' terminated after signal " << WTERMSIG(status);
+
   return status;
 }
 
