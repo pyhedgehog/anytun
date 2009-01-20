@@ -161,8 +161,7 @@ void sender(void* p)
     
     u_int16_t mux = gOpt.getMux();
     PacketSourceEndpoint emptyEndpoint;
-    while(1)
-    {
+    while(1) {
       plain_packet.setLength(MAX_PACKET_LENGTH);
       encrypted_packet.withAuthTag(false);
       encrypted_packet.setLength(MAX_PACKET_LENGTH);
@@ -188,16 +187,11 @@ void sender(void* p)
           //std::cout << "got Packet for plain "<<plain_packet.getDstAddr().toString();
 			ConnectionMap::iterator cit;
 #ifndef NO_ROUTING
-			try
-			{
+			try {
 				mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
 						//std::cout << " -> "<<mux << std::endl;
 				cit = gConnectionList.getConnection(mux);
-			}
-			catch (std::exception& e)
-			{
-				continue; // no route
-			}
+			} catch (std::exception& e) { continue; } // no route
 #else
       cit = gConnectionList.getBegin();
 #endif
@@ -206,8 +200,7 @@ void sender(void* p)
         continue; //no connection
       ConnectionParam & conn = cit->second;
       
-      if(conn.remote_end_ == emptyEndpoint)
-			{
+      if(conn.remote_end_ == emptyEndpoint) {
         //cLog.msg(Log::PRIO_INFO) << "no remote address set";
         continue;
       }
@@ -221,29 +214,22 @@ void sender(void* p)
           // add authentication tag
       a->generate(conn.kd_, encrypted_packet);
 
-      try
-      {
+      try {
         param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
-      }
-      catch (std::exception& e)
-      {
-            // ignoring icmp port unreachable :) and other socket errors :(
-      }
+      } catch (std::exception& e) { } // ignoring icmp port unreachable :) and other socket errors :(
     }
   }
-  catch(std::runtime_error& e)
-  {
+  catch(std::runtime_error& e) {
     cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught runtime_error: " << e.what();
   }
-  catch(std::exception& e)
-  {
+  catch(std::exception& e) {
     cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught exception: " << e.what();
   }
 }
 
 void receiver(void* p)
 {
-  try
+  try 
   {
     ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
     
@@ -253,8 +239,7 @@ void receiver(void* p)
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     
-    while(1)
-    {
+    while(1) {
       PacketSourceEndpoint remote_end;
 
       plain_packet.setLength(MAX_PACKET_LENGTH);
@@ -262,7 +247,11 @@ void receiver(void* p)
       encrypted_packet.setLength(MAX_PACKET_LENGTH);
       
           // read packet from socket
-      int len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
+      int len;
+      try {
+        len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
+      } catch (std::exception& e) { continue; }
+          // ignoring icmp port unreachable :) and other socket errors :(
       if(len < 0)
         continue; // silently ignore socket recv errors, this is probably no good idea...
 
@@ -272,8 +261,7 @@ void receiver(void* p)
       
       mux_t mux = encrypted_packet.getMux();
           // autodetect peer
-      if( gConnectionList.empty() && gOpt.getRemoteAddr() == "")
-      {
+      if( gConnectionList.empty() && gOpt.getRemoteAddr() == "") {
         cLog.msg(Log::PRIO_NOTICE) << "autodetected remote host " << remote_end;
         createConnection(remote_end, gOpt.getSeqWindowSize(),mux);
       }
@@ -290,8 +278,7 @@ void receiver(void* p)
       }        
 
           // Replay Protection
-      if(conn.seq_window_.checkAndAdd(encrypted_packet.getSenderId(), encrypted_packet.getSeqNr()))
-      {
+      if(conn.seq_window_.checkAndAdd(encrypted_packet.getSenderId(), encrypted_packet.getSeqNr())) {
         cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_end_ 
                                    << " seq:"<< encrypted_packet.getSeqNr() << " sid: "<< encrypted_packet.getSenderId();
         continue;
@@ -299,8 +286,7 @@ void receiver(void* p)
       
           //Allow dynamic IP changes 
           //TODO: add command line option to turn this off
-      if (remote_end != conn.remote_end_)
-      {
+      if (remote_end != conn.remote_end_) {
         cLog.msg(Log::PRIO_NOTICE) << "connection "<< mux << " autodetected remote host ip changed " << remote_end;
         conn.remote_end_=remote_end;
 #ifndef ANYTUN_NOSYNC
@@ -325,12 +311,10 @@ void receiver(void* p)
       param->dev.write(plain_packet.getPayload(), plain_packet.getLength());
     }
   }
-  catch(std::runtime_error& e)
-  {
+  catch(std::runtime_error& e) {
     cLog.msg(Log::PRIO_ERR) << "receiver thread died due to an uncaught runtime_error: " << e.what();
   }
-  catch(std::exception& e)
-  {
+  catch(std::exception& e) {
     cLog.msg(Log::PRIO_ERR) << "receiver thread died due to an uncaught exception: " << e.what();
   }
 }
