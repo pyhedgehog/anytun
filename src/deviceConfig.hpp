@@ -44,6 +44,7 @@ public:
   {
     mtu_ = mtu;
     type_ = TYPE_UNDEF;
+#ifndef _MSC_VER
     if(dev_type != "") {
       if(!dev_type.compare(0,3,"tun"))
         type_ = TYPE_TUN;
@@ -56,6 +57,15 @@ public:
       else if(!dev_name.compare(0,3,"tap"))
         type_ = TYPE_TAP;
     }
+#else
+    if(dev_type == "")
+      throw std::runtime_error("Device type must be specified on Windows");
+    
+    if(dev_type == "tun")
+      type_ = TYPE_TUN;
+    else if(dev_type == "tap")
+      type_ = TYPE_TAP;
+#endif
 
     if(ifcfg_lp != "")
       local_.setNetworkAddress(ipv4, ifcfg_lp.c_str());

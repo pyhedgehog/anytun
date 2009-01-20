@@ -40,47 +40,70 @@
 #include <windows.h>
 #include <winioctl.h>
 
-#define REG_STRING_LENGTH 1024
+#define REG_KEY_LENGTH 256
+#define REG_NAME_LENGTH 256
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
-  handle_ = INVALID_HANDLE_VALUE;
-  roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-  woverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+//  if(conf_.type_ != TYPE_TUN && conf_.type_ != TYPE_TAP)
+//    throw std::runtime_error("unable to recognize type of device (tun or tap)");
+  if(conf_.type_ != TYPE_TAP)
+    throw std::runtime_error("currently only support for typ devices on windows");
 
   HKEY key, key2;
-  LONG err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, 0, KEY_READ, &key);
-  if(err) {
+  LONG err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, 0, KEY_ENUMERATE_SUB_KEYS, &key);
+  if(err != ERROR_SUCCESS) {
     std::stringstream msg;
-    msg << "Unable to read registry: " << LogErrno(err);
+    msg << "Unable to open registry key: " << LogErrno(err);
     throw std::runtime_error(msg.str());
   }
 
+  handle_ = INVALID_HANDLE_VALUE;
   bool found = false;
   DWORD len;
-  char adapterid[REG_STRING_LENGTH];
-  char adaptername[REG_STRING_LENGTH];
+  char adapterid[REG_KEY_LENGTH];
+  char adaptername[REG_NAME_LENGTH];
   for(int i=0; ; ++i) {
     len = sizeof(adapterid);
-		if(RegEnumKeyEx(key, i, adapterid, &len, 0, 0, 0, NULL))
+		err = RegEnumKeyEx(key, i, adapterid, &len, NULL, NULL, NULL, NULL);
+    if(err == ERROR_NO_MORE_ITEMS)
 			break;
-    
+    if(err != ERROR_SUCCESS) {
+      RegCloseKey(key);
+      std::stringstream msg;
+      msg << "Unable to read registry: " << LogErrno(err);
+      throw std::runtime_error(msg.str());
+    }
+
     std::stringstream regpath;
     regpath << NETWORK_CONNECTIONS_KEY << "\\" << adapterid << "\\Connection";
-    err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, regpath.str().c_str(), 0, KEY_READ, &key2);
-    if(err) {
-//      cLog.msg(Log::PRIO_ERR) << "Error RegOpenKeyEx: " << LogErrno(err);
+    err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, regpath.str().c_str(), 0, KEY_QUERY_VALUE, &key2);
+    if(err != ERROR_SUCCESS)
       continue;
-    }
+
     len = sizeof(adaptername);
-    err = RegQueryValueEx(key2, "Name", 0, 0, (LPBYTE)adaptername, &len);
+    err = RegQueryValueEx(key2, "Name", NULL, NULL, (LPBYTE)adaptername, &len);
 		RegCloseKey(key2);
-    if(err) {
-//			cLog.msg(Log::PRIO_ERR) << "Error RegQueryValueEx: " << LogErrno(err);
+    if(err != ERROR_SUCCESS) // || len >= sizeof(adaptername))
       continue;
+    if(adaptername[len-1] != 0) {
+      if(len < sizeof(adaptername))
+        adaptername[len++] = 0;
+      else
+        continue;
+    }  
+    if(dev_name != "") {
+      if(!dev_name.compare(0, len-1, adaptername)) {
+        found = true;
+        break;
+      }
     }
-//    cLog.msg(Log::PRIO_DEBUG) << "adapter[" << i << "]: " << adapterid << " " << adaptername;
-    if(!strncmp(adaptername, "anytun", len)) {
+    else {
+      std::stringstream tapname;
+  	  tapname << USERMODEDEVICEDIR << adapterid << TAPSUFFIX;
+      handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
+      if(handle_ == INVALID_HANDLE_VALUE)
+        continue;
       found = true;
       break;
     }
@@ -90,21 +113,22 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   if(!found)
     throw std::runtime_error("can't find any suitable device");
 
-  std::stringstream tapname;
-	tapname << USERMODEDEVICEDIR << adapterid << TAPSUFFIX;
-  handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
   if(handle_ == INVALID_HANDLE_VALUE) {
-    std::stringstream msg;
-    msg << "Unable to open device: " << adapterid << " (" << adaptername << "): " << LogErrno(GetLastError());
-    throw std::runtime_error(msg.str());
-	}
-
-  conf_.type_ = TYPE_TAP;
+    std::stringstream tapname;
+	  tapname << USERMODEDEVICEDIR << adapterid << TAPSUFFIX;
+    handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
+    if(handle_ == INVALID_HANDLE_VALUE) {
+      std::stringstream msg;
+      msg << "Unable to open device: " << adapterid << " (" << adaptername << "): " << LogErrno(GetLastError());
+      throw std::runtime_error(msg.str());
+	  }
+  }
   actual_node_ = adapterid;
   actual_name_ = adaptername;
 
   int status = true;
   if(!DeviceIoControl(handle_, TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status), &len, NULL)) {
+    CloseHandle(handle_);
     std::stringstream msg;
     msg << "Unable to set device media status: " << LogErrno(GetLastError());
     throw std::runtime_error(msg.str());
@@ -112,6 +136,9 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 
   if(ifcfg_lp != "" && ifcfg_rnmp != "")
     do_ifconfig();
+
+  roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+  woverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 }
 
 TunDevice::~TunDevice()
