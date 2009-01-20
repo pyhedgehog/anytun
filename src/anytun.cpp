@@ -363,8 +363,7 @@ int main(int argc, char* argv[])
 #endif
 
     TunDevice dev(gOpt.getDevName(), gOpt.getDevType(), gOpt.getIfconfigParamLocal(), gOpt.getIfconfigParamRemoteNetmask());
-    cLog.msg(Log::PRIO_NOTICE) << "dev created (opened)";
-    cLog.msg(Log::PRIO_NOTICE) << "dev opened - actual name is '" << dev.getActualName() << "'";
+    cLog.msg(Log::PRIO_NOTICE) << "dev opened - name '" << dev.getActualName() << "', node '" << dev.getActualNode() << "'";
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
 #ifndef NO_EXEC
     if(gOpt.getPostUpScript() != "") {

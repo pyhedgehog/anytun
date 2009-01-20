@@ -40,6 +40,8 @@
 #include <windows.h>
 #include <winioctl.h>
 
+#define REG_STRING_LENGTH 1024
+
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
   handle_ = INVALID_HANDLE_VALUE;
@@ -56,8 +58,8 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 
   bool found = false;
   DWORD len;
-  char adapterid[1024];
-  char adaptername[1024];
+  char adapterid[REG_STRING_LENGTH];
+  char adaptername[REG_STRING_LENGTH];
   for(int i=0; ; ++i) {
     len = sizeof(adapterid);
 		if(RegEnumKeyEx(key, i, adapterid, &len, 0, 0, 0, NULL))
@@ -98,7 +100,8 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 	}
 
   conf_.type_ = TYPE_TAP;
-  actual_name_ = adapterid;
+  actual_node_ = adapterid;
+  actual_name_ = adaptername;
 
   int status = true;
   if(!DeviceIoControl(handle_, TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status), &len, NULL)) {

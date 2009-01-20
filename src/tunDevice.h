@@ -50,6 +50,7 @@ public:
   int write(u_int8_t* buf, u_int32_t len);
 
   std::string getActualName() { return actual_name_; }
+  std::string getActualNode() { return actual_node_; }
   device_type_t getType() { return conf_.type_; }
   std::string getTypeString()
   {
@@ -88,6 +89,7 @@ private:
   DeviceConfig conf_;
   bool with_pi_;
   std::string actual_name_;
+  std::string actual_node_;
 };
 
 #endif
