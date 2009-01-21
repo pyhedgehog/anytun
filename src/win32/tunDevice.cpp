@@ -42,6 +42,9 @@
 #include "registryKey.h"
 #include "common.h"
 
+#define MIN_TAP_VER_MAJOR 8
+#define MIN_TAP_VER_MINOR 1
+
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
   if(conf_.type_ != TYPE_TUN && conf_.type_ != TYPE_TAP)
@@ -63,6 +66,23 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   }
 
   DWORD err;
+  u_long info[3];
+  info[0] = info[1] = info[2] = 0;
+  err = performIoControl(TAP_IOCTL_GET_VERSION, info, sizeof(info), info, sizeof(info));
+  if(err != ERROR_SUCCESS) {
+    CloseHandle(handle_);
+    std::stringstream msg;
+    msg << "Unable to get device version: " << LogErrno(err);
+	  throw std::runtime_error(msg.str());
+  }
+  cLog.msg(Log::PRIO_NOTICE) << "Windows TAP Driver Version " << info[0] << "." << info[1] << " " << (info[2] ? "(DEBUG)" : "");
+  if(!(info[0] > MIN_TAP_VER_MAJOR || (info[0] == MIN_TAP_VER_MAJOR && info[1] >= MIN_TAP_VER_MINOR))) {
+    CloseHandle(handle_);
+    std::stringstream msg;
+    msg << "need a higher Version of TAP Driver (at least " << MIN_TAP_VER_MAJOR << "." << MIN_TAP_VER_MINOR << ")";
+	  throw std::runtime_error(msg.str());
+  }
+
   if(conf_.type_ == TYPE_TUN) {
     u_long ep[2];
     ep[0] = htonl(conf_.local_.getNetworkAddressV4().to_ulong());
@@ -72,7 +92,8 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
       CloseHandle(handle_);
       std::stringstream msg;
       msg << "Unable to set device point-to-point mode: " << LogErrno(err);
-	  }
+	    throw std::runtime_error(msg.str());
+    }
   }
 
   int status = true;
