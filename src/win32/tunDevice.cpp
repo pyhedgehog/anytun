@@ -39,10 +39,8 @@
 #include "../threadUtils.hpp"
 #include "../log.h"
 
+#include "registryKey.h"
 #include "common.h"
-
-#define REG_KEY_LENGTH 256
-#define REG_NAME_LENGTH 256
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
@@ -74,7 +72,6 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
       CloseHandle(handle_);
       std::stringstream msg;
       msg << "Unable to set device point-to-point mode: " << LogErrno(err);
-      throw std::runtime_error(msg.str());
 	  }
   }
 
@@ -96,8 +93,8 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 
 bool TunDevice::getAdapter(std::string const& dev_name)
 {
-  HKEY key, key2;
-  LONG err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, 0, KEY_ENUMERATE_SUB_KEYS, &key);
+  RegistryKey key;
+  DWORD err = key.open(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, KEY_ENUMERATE_SUB_KEYS);
   if(err != ERROR_SUCCESS) {
     std::stringstream msg;
     msg << "Unable to open registry key: " << LogErrno(err);
@@ -105,47 +102,33 @@ bool TunDevice::getAdapter(std::string const& dev_name)
   }
 
   bool found = false;
-  DWORD len;
-  char adapterid[REG_KEY_LENGTH];
-  char adaptername[REG_NAME_LENGTH];
   for(int i=0; ; ++i) {
-    len = sizeof(adapterid);
-		err = RegEnumKeyEx(key, i, adapterid, &len, NULL, NULL, NULL, NULL);
+    RegistryKey key2;
+    DWORD err = key.getSubKey(i, key2, KEY_QUERY_VALUE);
     if(err == ERROR_NO_MORE_ITEMS)
 			break;
     if(err != ERROR_SUCCESS) {
-      RegCloseKey(key);
       std::stringstream msg;
       msg << "Unable to read registry: " << LogErrno(err);
       throw std::runtime_error(msg.str());
     }
+    actual_node_ = key2.getName();
+    RegistryKey key3;
+    key2.getSubKey("Connection", key3, KEY_QUERY_VALUE);
 
-    std::stringstream regpath;
-    regpath << NETWORK_CONNECTIONS_KEY << "\\" << adapterid << "\\Connection";
-    err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, regpath.str().c_str(), 0, KEY_QUERY_VALUE, &key2);
-    if(err != ERROR_SUCCESS)
-      continue;
+    try {
+       actual_name_ = key3["Name"];
+    } catch(LogErrno& e) { continue; }
 
-    len = sizeof(adaptername);
-    err = RegQueryValueEx(key2, "Name", NULL, NULL, (LPBYTE)adaptername, &len);
-		RegCloseKey(key2);
-    if(err != ERROR_SUCCESS)
-      continue;
-    if(adaptername[len-1] != 0) {
-      if(len < sizeof(adaptername))
-        adaptername[len++] = 0;
-      else
-        continue;
-    }  
     if(dev_name != "") {
-      if(!dev_name.compare(0, len-1, adaptername)) {
+      if(dev_name == actual_name_) {
         found = true;
         break;
       }
     }
     else {
       std::stringstream tapname;
-  	  tapname << USERMODEDEVICEDIR << adapterid << TAPSUFFIX;
+      tapname << USERMODEDEVICEDIR << actual_node_ << TAPSUFFIX;
       handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
       if(handle_ == INVALID_HANDLE_VALUE)
         continue;
@@ -153,10 +136,10 @@ bool TunDevice::getAdapter(std::string const& dev_name)
       break;
     }
   }
-  RegCloseKey(key);
-
-  actual_node_ = adapterid;
-  actual_name_ = adaptername;
+  if(!found) {
+    actual_node_ = "";
+    actual_name_ = "";
+  }
   return found;
 }
 
@@ -184,9 +167,12 @@ DWORD TunDevice::performIoControl(DWORD controlCode, LPVOID inBuffer, DWORD inBu
 
 TunDevice::~TunDevice()
 {
-  CloseHandle(handle_);
-  CloseHandle(roverlapped_.hEvent);
-  CloseHandle(woverlapped_.hEvent);
+  if(handle_ != INVALID_HANDLE_VALUE)
+    CloseHandle(handle_);
+  if(roverlapped_.hEvent != INVALID_HANDLE_VALUE)
+    CloseHandle(roverlapped_.hEvent);
+  if(woverlapped_.hEvent != INVALID_HANDLE_VALUE)
+    CloseHandle(woverlapped_.hEvent);
 }
 
 int TunDevice::fix_return(int ret, size_t pi_length)

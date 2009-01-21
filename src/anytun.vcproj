@@ -259,6 +259,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\win32\registryKey.h"
+				>
+			</File>
+			<File
 				RelativePath=".\routingTable.h"
 				>
 			</File>
@@ -400,6 +404,10 @@
 			</File>
 			<File
 				RelativePath=".\plainPacket.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\win32\registryKey.cpp"
 				>
 			</File>
 			<File
