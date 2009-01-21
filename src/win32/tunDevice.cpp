@@ -87,8 +87,8 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     throw std::runtime_error(msg.str());
 	}
 
-//  if(ifcfg_lp != "" && ifcfg_rnmp != "")
-//    do_ifconfig();
+  if(ifcfg_lp != "" && ifcfg_rnmp != "")
+    do_ifconfig();
 
   roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   woverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -129,7 +129,7 @@ bool TunDevice::getAdapter(std::string const& dev_name)
     len = sizeof(adaptername);
     err = RegQueryValueEx(key2, "Name", NULL, NULL, (LPBYTE)adaptername, &len);
 		RegCloseKey(key2);
-    if(err != ERROR_SUCCESS) // || len >= sizeof(adaptername))
+    if(err != ERROR_SUCCESS)
       continue;
     if(adaptername[len-1] != 0) {
       if(len < sizeof(adaptername))
@@ -250,5 +250,20 @@ void TunDevice::init_post()
 
 void TunDevice::do_ifconfig()
 {
-
+  u_long remote_netmask = conf_.remote_netmask_.getNetworkAddressV4().to_ulong();
+  u_long adapter_mask = (conf_.type_ == TYPE_TUN) ? ~3 : remote_netmask;
+  u_long local = conf_.local_.getNetworkAddressV4().to_ulong();
+  
+  u_long ep[4];
+  ep[0] = htonl(local);
+  ep[1] = htonl(adapter_mask);
+  ep[2] = (conf_.type_ == TYPE_TUN) ? htonl(remote_netmask) : htonl(local & adapter_mask);
+  ep[3] = 365 * 24 * 3600;  // lease time in seconds
+  DWORD err = performIoControl(TAP_IOCTL_CONFIG_DHCP_MASQ, ep, sizeof(ep), ep, sizeof(ep));
+  if(err != ERROR_SUCCESS) {
+    CloseHandle(handle_);
+    std::stringstream msg;
+    msg << "Unable to set device dhcp masq mode: " << LogErrno(err);
+    throw std::runtime_error(msg.str());
+	}
 }
