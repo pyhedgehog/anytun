@@ -93,18 +93,18 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 
 bool TunDevice::getAdapter(std::string const& dev_name)
 {
-  RegistryKey key;
-  DWORD err = key.open(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, KEY_ENUMERATE_SUB_KEYS);
+  RegistryKey akey;
+  DWORD err = akey.open(HKEY_LOCAL_MACHINE, ADAPTER_KEY, KEY_ENUMERATE_SUB_KEYS);
   if(err != ERROR_SUCCESS) {
     std::stringstream msg;
     msg << "Unable to open registry key: " << LogErrno(err);
     throw std::runtime_error(msg.str());
   }
-
+  
   bool found = false;
   for(int i=0; ; ++i) {
-    RegistryKey key2;
-    DWORD err = key.getSubKey(i, key2, KEY_QUERY_VALUE);
+    RegistryKey ckey;
+    DWORD err = akey.getSubKey(i, ckey, KEY_QUERY_VALUE);
     if(err == ERROR_NO_MORE_ITEMS)
 			break;
     if(err != ERROR_SUCCESS) {
@@ -112,12 +112,22 @@ bool TunDevice::getAdapter(std::string const& dev_name)
       msg << "Unable to read registry: " << LogErrno(err);
       throw std::runtime_error(msg.str());
     }
-    actual_node_ = key2.getName();
-    RegistryKey key3;
-    key2.getSubKey("Connection", key3, KEY_QUERY_VALUE);
 
     try {
-       actual_name_ = key3["Name"];
+      if(ckey["ComponentId"] != TAP_COMPONENT_ID)
+        continue;
+      actual_node_ = ckey["NetCfgInstanceId"];
+
+      RegistryKey nkey;
+      std::stringstream keyname;
+      keyname << NETWORK_CONNECTIONS_KEY << "\\" << actual_node_ << "\\Connection";
+      err = nkey.open(HKEY_LOCAL_MACHINE, keyname.str().c_str(), KEY_QUERY_VALUE);;
+      if(err != ERROR_SUCCESS) {
+        std::stringstream msg;
+        msg << "Unable to open registry key: " << LogErrno(err);
+        throw std::runtime_error(msg.str());
+      }
+      actual_name_ = nkey["Name"];
     } catch(LogErrno& e) { continue; }
 
     if(dev_name != "") {
