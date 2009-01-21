@@ -337,7 +337,9 @@ bool Options::parse(int argc, char* argv[])
 #ifndef NO_EXEC
     PARSE_SCALAR_PARAM("-x","--post-up-script", post_up_script_)
 #endif
+#ifndef NO_ROUTING
     PARSE_CSLIST_PARAM("-R","--route", routes_, OptionRoute)
+#endif
 
     PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_)
     PARSE_SCALAR_PARAM("-m","--mux", mux_)

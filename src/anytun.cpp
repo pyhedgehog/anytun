@@ -390,7 +390,8 @@ int main(int argc, char* argv[])
       createConnection(endpoint,gOpt.getSeqWindowSize(), gOpt.getMux());
     }    
 
-		RouteList routes = gOpt.getRoutes();
+#ifndef NO_ROUTING
+    RouteList routes = gOpt.getRoutes();
 		RouteList::const_iterator rit;
 		for(rit = routes.begin(); rit != routes.end(); ++rit)
 		{
@@ -408,6 +409,7 @@ int main(int argc, char* argv[])
 			std::cout << " to set them)"<< std::endl;
 			return -1;
 		}
+#endif
 #ifndef NO_DAEMON
     if(gOpt.getChroot())
       chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
