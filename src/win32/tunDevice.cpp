@@ -31,24 +31,23 @@
 
 #include <string.h>
 #include <sstream>
+#include <windows.h>
+#include <winioctl.h>
 
+#include "../endian.h"
 #include "../tunDevice.h"
 #include "../threadUtils.hpp"
 #include "../log.h"
 
 #include "common.h"
-#include <windows.h>
-#include <winioctl.h>
 
 #define REG_KEY_LENGTH 256
 #define REG_NAME_LENGTH 256
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
 {
-//  if(conf_.type_ != TYPE_TUN && conf_.type_ != TYPE_TAP)
-//    throw std::runtime_error("unable to recognize type of device (tun or tap)");
-  if(conf_.type_ != TYPE_TAP)
-    throw std::runtime_error("currently only support for typ devices on windows");
+  if(conf_.type_ != TYPE_TUN && conf_.type_ != TYPE_TAP)
+    throw std::runtime_error("unable to recognize type of device (tun or tap)");
 
   HKEY key, key2;
   LONG err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, 0, KEY_ENUMERATE_SUB_KEYS, &key);
@@ -126,6 +125,18 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   actual_node_ = adapterid;
   actual_name_ = adaptername;
 
+  if(conf_.type_ == TYPE_TUN) {
+    u_long ep[2];
+    ep[0] = htonl(conf_.local_.getNetworkAddressV4().to_ulong());
+    ep[1] = htonl(conf_.remote_netmask_.getNetworkAddressV4().to_ulong());
+    if(!DeviceIoControl(handle_, TAP_IOCTL_CONFIG_POINT_TO_POINT, ep, sizeof(ep), ep, sizeof(ep), &len, NULL)) {
+      CloseHandle(handle_);
+      std::stringstream msg;
+      msg << "Unable to set device point-to-point mode: " << LogErrno(GetLastError());
+      throw std::runtime_error(msg.str());
+	  }
+  }
+
   int status = true;
   if(!DeviceIoControl(handle_, TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status), &len, NULL)) {
     CloseHandle(handle_);
@@ -134,8 +145,8 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     throw std::runtime_error(msg.str());
 	}
 
-  if(ifcfg_lp != "" && ifcfg_rnmp != "")
-    do_ifconfig();
+//  if(ifcfg_lp != "" && ifcfg_rnmp != "")
+//    do_ifconfig();
 
   roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   woverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);

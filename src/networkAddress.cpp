@@ -105,6 +105,30 @@ network_address_type_t NetworkAddress::getNetworkAddressType() const
 	return network_address_type_;
 }
 
+const boost::asio::ip::address_v4& NetworkAddress::getNetworkAddressV4() const
+{
+  if(network_address_type_ != ipv4)
+    throw std::runtime_error("wrong address type");
+  
+  return ipv4_address_;
+}
+
+const boost::asio::ip::address_v6& NetworkAddress::getNetworkAddressV6() const
+{
+  if(network_address_type_ != ipv6)
+    throw std::runtime_error("wrong address type");
+  
+  return ipv6_address_;
+}
+
+const u_int64_t NetworkAddress::getNetworkAdrressEther() const
+{
+  if(network_address_type_ != ethernet)
+    throw std::runtime_error("wrong address type");
+  
+  return ethernet_address_;
+}
+
 std::string NetworkAddress::toString() const
 {
 	if (network_address_type_==ipv4){

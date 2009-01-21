@@ -70,6 +70,9 @@ public:
 	ipv4_bytes_type to_bytes_v4() const;	
 	ipv6_bytes_type to_bytes_v6() const;	
 	ethernet_bytes_type to_bytes_ethernet() const;	
+  const boost::asio::ip::address_v4& getNetworkAddressV4() const;
+  const boost::asio::ip::address_v6& getNetworkAddressV6() const;
+  const u_int64_t getNetworkAdrressEther() const;
 protected:
   Mutex mutex_;
 	boost::asio::ip::address_v4 ipv4_address_;
