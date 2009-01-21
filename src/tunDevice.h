@@ -82,6 +82,9 @@ private:
 #ifndef _MSC_VER
   int fd_;
 #else
+  bool getAdapter(std::string const& dev_name);
+  DWORD performIoControl(DWORD controlCode, LPVOID inBuffer, DWORD inBufferSize,
+                        LPVOID outBuffer, DWORD outBufferSize);
   HANDLE handle_;
   OVERLAPPED roverlapped_, woverlapped_;
 #endif

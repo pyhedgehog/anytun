@@ -49,6 +49,53 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   if(conf_.type_ != TYPE_TUN && conf_.type_ != TYPE_TAP)
     throw std::runtime_error("unable to recognize type of device (tun or tap)");
 
+  handle_ = INVALID_HANDLE_VALUE;
+  if(!getAdapter(dev_name))
+    throw std::runtime_error("can't find any suitable device");
+
+  if(handle_ == INVALID_HANDLE_VALUE) {
+    std::stringstream tapname;
+	  tapname << USERMODEDEVICEDIR << actual_node_ << TAPSUFFIX;
+    handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
+    if(handle_ == INVALID_HANDLE_VALUE) {
+      std::stringstream msg;
+      msg << "Unable to open device: " << actual_node_ << " (" << actual_name_ << "): " << LogErrno(GetLastError());
+      throw std::runtime_error(msg.str());
+	  }
+  }
+
+  DWORD err;
+  if(conf_.type_ == TYPE_TUN) {
+    u_long ep[2];
+    ep[0] = htonl(conf_.local_.getNetworkAddressV4().to_ulong());
+    ep[1] = htonl(conf_.remote_netmask_.getNetworkAddressV4().to_ulong());
+    err = performIoControl(TAP_IOCTL_CONFIG_POINT_TO_POINT, ep, sizeof(ep), ep, sizeof(ep));
+    if(err != ERROR_SUCCESS) {
+      CloseHandle(handle_);
+      std::stringstream msg;
+      msg << "Unable to set device point-to-point mode: " << LogErrno(err);
+      throw std::runtime_error(msg.str());
+	  }
+  }
+
+  int status = true;
+  err = performIoControl(TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status));
+  if(err != ERROR_SUCCESS) {
+    CloseHandle(handle_);
+    std::stringstream msg;
+    msg << "Unable to set device media status: " << LogErrno(err);
+    throw std::runtime_error(msg.str());
+	}
+
+//  if(ifcfg_lp != "" && ifcfg_rnmp != "")
+//    do_ifconfig();
+
+  roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+  woverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+}
+
+bool TunDevice::getAdapter(std::string const& dev_name)
+{
   HKEY key, key2;
   LONG err = RegOpenKeyEx(HKEY_LOCAL_MACHINE, NETWORK_CONNECTIONS_KEY, 0, KEY_ENUMERATE_SUB_KEYS, &key);
   if(err != ERROR_SUCCESS) {
@@ -57,7 +104,6 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     throw std::runtime_error(msg.str());
   }
 
-  handle_ = INVALID_HANDLE_VALUE;
   bool found = false;
   DWORD len;
   char adapterid[REG_KEY_LENGTH];
@@ -108,49 +154,33 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     }
   }
   RegCloseKey(key);
-  
-  if(!found)
-    throw std::runtime_error("can't find any suitable device");
 
-  if(handle_ == INVALID_HANDLE_VALUE) {
-    std::stringstream tapname;
-	  tapname << USERMODEDEVICEDIR << adapterid << TAPSUFFIX;
-    handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
-    if(handle_ == INVALID_HANDLE_VALUE) {
-      std::stringstream msg;
-      msg << "Unable to open device: " << adapterid << " (" << adaptername << "): " << LogErrno(GetLastError());
-      throw std::runtime_error(msg.str());
-	  }
-  }
   actual_node_ = adapterid;
   actual_name_ = adaptername;
-
-  if(conf_.type_ == TYPE_TUN) {
-    u_long ep[2];
-    ep[0] = htonl(conf_.local_.getNetworkAddressV4().to_ulong());
-    ep[1] = htonl(conf_.remote_netmask_.getNetworkAddressV4().to_ulong());
-    if(!DeviceIoControl(handle_, TAP_IOCTL_CONFIG_POINT_TO_POINT, ep, sizeof(ep), ep, sizeof(ep), &len, NULL)) {
-      CloseHandle(handle_);
-      std::stringstream msg;
-      msg << "Unable to set device point-to-point mode: " << LogErrno(GetLastError());
-      throw std::runtime_error(msg.str());
-	  }
-  }
-
-  int status = true;
-  if(!DeviceIoControl(handle_, TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status), &len, NULL)) {
-    CloseHandle(handle_);
-    std::stringstream msg;
-    msg << "Unable to set device media status: " << LogErrno(GetLastError());
-    throw std::runtime_error(msg.str());
-	}
-
-//  if(ifcfg_lp != "" && ifcfg_rnmp != "")
-//    do_ifconfig();
-
-  roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-  woverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+  return found;
 }
+
+DWORD TunDevice::performIoControl(DWORD controlCode, LPVOID inBuffer, DWORD inBufferSize, LPVOID outBuffer, DWORD outBufferSize)
+{
+  OVERLAPPED overlapped;
+  overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+  overlapped.Offset = 0;
+	overlapped.OffsetHigh = 0;
+  
+  DWORD len;
+  if(!DeviceIoControl(handle_, controlCode, inBuffer, inBufferSize, outBuffer, outBufferSize, &len, &overlapped)) {
+    DWORD err = GetLastError();
+    if(err == ERROR_IO_PENDING) {
+      WaitForSingleObject(overlapped.hEvent, INFINITE);
+      if(!GetOverlappedResult(handle_, &overlapped, &len, FALSE))
+        return GetLastError();
+    }
+    else
+      return GetLastError();
+  }
+  return ERROR_SUCCESS;
+}
+
 
 TunDevice::~TunDevice()
 {
