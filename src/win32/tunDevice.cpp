@@ -96,6 +96,9 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     }
   }
 
+  if(ifcfg_lp != "" && ifcfg_rnmp != "")
+    do_ifconfig();
+
   int status = true;
   err = performIoControl(TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status));
   if(err != ERROR_SUCCESS) {
@@ -104,9 +107,6 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     msg << "Unable to set device media status: " << LogErrno(err);
     throw std::runtime_error(msg.str());
 	}
-
-  if(ifcfg_lp != "" && ifcfg_rnmp != "")
-    do_ifconfig();
 
   roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   woverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
