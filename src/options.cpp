@@ -140,12 +140,20 @@ Options& Options::instance()
 
 Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
 {
+#if defined(ANYCTR_OPTIONS)
+  progname_ = "anytun-controld";
+  chroot_dir_ = "/var/run/anytun-controld";
+#elif defined(ANYCONF_OPTIONS)
+  progname_ = "anytun-config";
+  chroot_dir_ = "/var/run/anytun-config";
+#else
   progname_ = "anytun";
+  chroot_dir_ = "/var/run/anytun";
+#endif
 
   daemonize_ = true;
   chroot_ = false;
   username_ = "nobody";
-  chroot_dir_ = "/var/run/anytun";
   pid_file_ = "";
 
   file_name_ = "";
@@ -311,21 +319,39 @@ bool Options::parse(int argc, char* argv[])
 
     if(str == "-h" || str == "--help")
       return false;
-#ifndef NO_DAEMON
+
+#if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
+
+  #ifndef NO_DAEMON
     PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_)
     PARSE_BOOL_PARAM("-C","--chroot", chroot_)
     PARSE_SCALAR_PARAM("-u","--username", username_)
     PARSE_SCALAR_PARAM("-H","--chroot-dir", chroot_dir_)
     PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_)
-#endif
+  #endif
 
-//     PARSE_SCALAR_PARAM("-f","--file", file_name_)
-//     PARSE_SCALAR_PARAM("-X","--control-host", bind_to_)
+#endif
+#if defined(ANYCTR_OPTIONS)
+
+    PARSE_SCALAR_PARAM("-f","--file", file_name_)
+    PARSE_SCALAR_PARAM("-X","--control-host", bind_to_)
+
+#endif
+#if defined(ANYTUN_OPTIONS)
 
     PARSE_SCALAR_PARAM("-i","--interface", local_.addr)
     PARSE_SCALAR_PARAM("-p","--port", local_.port)
+    PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_)
+
+#endif
+#if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
+
     PARSE_SCALAR_PARAM("-r","--remote-host", remote_.addr)
     PARSE_SCALAR_PARAM("-o","--remote-port", remote_.port)
+
+#endif
+#if defined(ANYTUN_OPTIONS)
+
     PARSE_SCALAR_PARAM("-I","--sync-interface", local_sync_.addr)
     PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_.port)
     PARSE_CSLIST_PARAM("-M","--sync-hosts", remote_sync_hosts_, OptionHost)
@@ -334,27 +360,38 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-d","--dev", dev_name_)
     PARSE_SCALAR_PARAM("-t","--type", dev_type_)
     PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
-#ifndef NO_EXEC
+  #ifndef NO_EXEC
     PARSE_SCALAR_PARAM("-x","--post-up-script", post_up_script_)
-#endif
-#ifndef NO_ROUTING
-    PARSE_CSLIST_PARAM("-R","--route", routes_, OptionRoute)
-#endif
+  #endif
 
-    PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_)
+#endif
+#if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
+
+  #ifndef NO_ROUTING
+    PARSE_CSLIST_PARAM("-R","--route", routes_, OptionRoute)
+  #endif
+
     PARSE_SCALAR_PARAM("-m","--mux", mux_)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
 
-#ifndef NO_CRYPT
-    PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
-    PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
+  #ifndef NO_CRYPT
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
-    PARSE_SIGNED_INT_PARAM("-l","--ld-kdr", ld_kdr_tmp)
-#ifndef NO_PASSPHRASE
+//    PARSE_SIGNED_INT_PARAM("-l","--ld-kdr", ld_kdr_tmp)
+  #ifndef NO_PASSPHRASE
     PARSE_PHRASE_PARAM_SEC("-E","--passphrase", passphrase_)
-#endif
+  #endif
     PARSE_HEXSTRING_PARAM_SEC("-K","--key", key_)
     PARSE_HEXSTRING_PARAM_SEC("-A","--salt", salt_)
+  #endif
+
+#endif
+#if defined(ANYTUN_OPTIONS)
+
+  #ifndef NO_CRYPT
+    PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
+    PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
+  #endif
+
 #endif
     else 
       throw syntax_error(str, 0);
@@ -375,24 +412,50 @@ bool Options::parse(int argc, char* argv[])
 void Options::printUsage()
 {
   std::cout << "USAGE:" << std::endl;
+
+#if defined(ANYCTR_OPTIONS)
+  std::cout << "anytun-controld " << std::endl;
+#elif defined(ANYCONF_OPTIONS)
+  std::cout << "anytun-config " << std::endl;
+#else
   std::cout << "anytun " << std::endl;
+#endif
+
   std::cout << "   [-h|--help]                         prints this..." << std::endl;
-#ifndef NO_DAEMON
+
+#if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
+
+ #ifndef NO_DAEMON
   std::cout << "   [-D|--nodaemonize]                  don't run in background" << std::endl;
   std::cout << "   [-C|--chroot]                       chroot and drop privileges" << std::endl;
   std::cout << "   [-u|--username] <username>          if chroot change to this user" << std::endl;
   std::cout << "   [-H|--chroot-dir] <path>            chroot to this directory" << std::endl;
   std::cout << "   [-P|--write-pid] <path>             write pid to this file" << std::endl;
-#endif
+ #endif
 
-//   std::cout << "   [-f|--file] <path>                  path to input file" << std::endl;
-//   std::cout << "   [-X|--control-host] < <hostname|ip>[:<port>] | :<port> >" << std::endl;
-//   std::cout << "                                       local tcp port and or ip address to bind to" << std::endl;
+#endif
+#if defined(ANYCTR_OPTIONS)
+
+  std::cout << "   [-f|--file] <path>                  path to input file" << std::endl;
+  std::cout << "   [-X|--control-host] < <hostname|ip>[:<port>] | :<port> >" << std::endl;
+  std::cout << "                                       local tcp port and or ip address to bind to" << std::endl;
+
+#endif
+#if defined(ANYTUN_OPTIONS)
 
   std::cout << "   [-i|--interface] <hostname|ip>      local anycast ip address to bind to" << std::endl;
   std::cout << "   [-p|--port] <port>                  local anycast(data) port to bind to" << std::endl;
+  std::cout << "   [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
+
+#endif
+#if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
+
   std::cout << "   [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
   std::cout << "   [-o|--remote-port] <port>           remote port" << std::endl;
+
+#endif
+#if defined(ANYTUN_OPTIONS)
+
   std::cout << "   [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to" << std::endl;
   std::cout << "   [-S|--sync-port] <port>             local unicast(sync) port to bind to" << std::endl;
   std::cout << "   [-M|--sync-hosts] <hostname|ip>[:<port>][,<hostname|ip>[:<port>][...]]"<< std::endl;
@@ -404,25 +467,38 @@ void Options::printUsage()
   std::cout << "   [-t|--type] <tun|tap>               device type" << std::endl;
   std::cout << "   [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl;
   std::cout << "                   <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
-#ifndef NO_EXEC
+ #ifndef NO_EXEC
   std::cout << "   [-x|--post-up-script] <script>      script gets called after interface is created" << std::endl;
-#endif
-  std::cout << "   [-R|--route] <net>/<prefix length>  add a route to connection, can be invoked several times" << std::endl;
+ #endif
 
-  std::cout << "   [-s|--sender-id ] <sender id>       the sender id to use" << std::endl;
+#endif
+#if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
+
+ #ifndef NO_ROUTING
+  std::cout << "   [-R|--route] <net>/<prefix length>  add a route to connection, can be invoked several times" << std::endl;
+ #endif
+
   std::cout << "   [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
   std::cout << "   [-w|--window-size] <window size>    seqence number window size" << std::endl;
 
-#ifndef NO_CRYPT
-  std::cout << "   [-c|--cipher] <cipher type>         payload encryption algorithm" << std::endl;
-  std::cout << "   [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
+ #ifndef NO_CRYPT
   std::cout << "   [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
-  std::cout << "   [-l|--ld-kdr] <ld-kdr>              log2 of key derivation rate" << std::endl;
-#ifndef NO_PASSPHRASE
+//  std::cout << "   [-l|--ld-kdr] <ld-kdr>              log2 of key derivation rate" << std::endl;
+ #ifndef NO_PASSPHRASE
   std::cout << "   [-E|--passphrase] <pass phrase>     a passprhase to generate master key and salt from" << std::endl;
-#endif
+ #endif
   std::cout << "   [-K|--key] <master key>             master key to use for encryption" << std::endl;
   std::cout << "   [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
+ #endif
+
+#endif
+#if defined(ANYTUN_OPTIONS)
+
+ #ifndef NO_CRYPT
+  std::cout << "   [-c|--cipher] <cipher type>         payload encryption algorithm" << std::endl;
+  std::cout << "   [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
+ #endif
+
 #endif
 }
 
@@ -438,10 +514,10 @@ void Options::printOptions()
   std::cout << "chroot_dir = '" << chroot_dir_ << "'" << std::endl;
   std::cout << "pid_file = '" << pid_file_ << "'" << std::endl;
   std::cout << std::endl;
-//   std::cout << "file_name = '" << file_name_ << "'" << std::endl;
-//   std::cout << "bind_to.addr = '" << bind_to_.addr << "'" << std::endl;
-//   std::cout << "bind_to.port = '" << bind_to_.port << "'" << std::endl;
-//   std::cout << std::endl;
+  std::cout << "file_name = '" << file_name_ << "'" << std::endl;
+  std::cout << "bind_to.addr = '" << bind_to_.addr << "'" << std::endl;
+  std::cout << "bind_to.port = '" << bind_to_.port << "'" << std::endl;
+  std::cout << std::endl;
   std::cout << "local.addr = '" << local_.addr << "'" << std::endl;
   std::cout << "local.port = '" << local_.port << "'" << std::endl;
   std::cout << "remote.addr = '" << remote_.addr << "'" << std::endl;

@@ -38,7 +38,7 @@
 #include "buffer.h"
 #include "keyDerivation.h"
 #include "keyDerivationFactory.h"
-#include "anyConfOptions.h"
+#include "options.h"
 #include "connectionList.h"
 #include "routingTable.h"
 #include "networkAddress.h"
@@ -87,8 +87,18 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
 int main(int argc, char* argv[])
 {
   int ret=0;
-  if(!gOpt.parse(argc, argv))
+  try 
   {
+    bool result = gOpt.parse(argc, argv);
+    if(!result) {
+      gOpt.printUsage();
+      exit(0);
+    }
+  }
+  catch(syntax_error& e)
+  {
+    std::cerr << e << std::endl;
+//    cLog.msg(Log::PRIO_NOTICE) << "exitting after syntax error";
     gOpt.printUsage();
     exit(-1);
   }

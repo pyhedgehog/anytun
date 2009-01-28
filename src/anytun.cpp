@@ -332,6 +332,7 @@ int main(int argc, char* argv[])
     {
       bool result = gOpt.parse(argc, argv);
       if(!result) {
+        cLog.msg(Log::PRIO_NOTICE) << "printing help text and exitting";
         gOpt.printUsage();
         exit(0);
       }

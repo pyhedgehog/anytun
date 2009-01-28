@@ -64,6 +64,7 @@ SYNCOBJS= syncServer.o \
 
 ANYCTROBJS = signalController.o \
 							anyCtrOptions.o \
+						 buffer.o \
 						 log.o \
 						 syncTcpConnection.o \
 						 syncServer.o
@@ -130,6 +131,15 @@ anytun-config: $(ANYCONFOBJS) anytun-config.o
 
 anytun-controld: $(ANYCTROBJS) anytun-controld.o
 	$(LD) $(ANYCTROBJS) anytun-controld.o -o $@ $(LDFLAGS)
+
+options.o: options.cpp 
+	$(CXX) -DANYTUN_OPTIONS $(CXXFLAGS) $< -c -o $@
+
+anyCtrOptions.o: options.cpp 
+	$(CXX) -DANYCTR_OPTIONS $(CXXFLAGS) $< -c -o $@
+
+anyConfOptions.o: options.cpp 
+	$(CXX) -DANYCONF_OPTIONS $(CXXFLAGS) $< -c -o $@
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c

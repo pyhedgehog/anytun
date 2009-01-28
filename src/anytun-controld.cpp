@@ -41,7 +41,7 @@
 
 #include "log.h"
 #include "signalController.h"
-#include "anyCtrOptions.h"
+#include "options.h"
 
 #include "syncServer.h"
 #include "daemon.hpp"
@@ -97,16 +97,26 @@ int main(int argc, char* argv[])
   bool daemonized=false;
   try 
   {
-    
-    if(!gOpt.parse(argc, argv))
+    cLog.setLogName("anytun-controld");
+    cLog.msg(Log::PRIO_NOTICE) << "anytun-controld started...";
+  
+    try 
     {
+      bool result = gOpt.parse(argc, argv);
+      if(!result) {
+        cLog.msg(Log::PRIO_NOTICE) << "printing help text and exitting";
+        gOpt.printUsage();
+        exit(0);
+      }
+    }
+    catch(syntax_error& e)
+    {
+      std::cerr << e << std::endl;
+      cLog.msg(Log::PRIO_NOTICE) << "exitting after syntax error";
       gOpt.printUsage();
       exit(-1);
     }
-    
-    cLog.setLogName("anytun-controld");
-    cLog.msg(Log::PRIO_NOTICE) << "anytun-controld started...";
-    
+       
     std::ifstream file( gOpt.getFileName().c_str() );
     if( file.is_open() )
       file.close();
