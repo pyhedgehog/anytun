@@ -31,7 +31,7 @@
 
 include include.mk
 
-OBJS = tunDevice.o \
+OBJS := tunDevice.o \
        packetSource.o \
        buffer.o \
        syncBuffer.o \
@@ -54,7 +54,7 @@ OBJS = tunDevice.o \
        seqWindow.o \
 			 routingTreeNode.o \
 
-SYNCOBJS= syncServer.o \
+SYNCOBJS := syncServer.o \
        syncClient.o \
        syncQueue.o \
 			 syncCommand.o \
@@ -62,14 +62,14 @@ SYNCOBJS= syncServer.o \
        syncConnectionCommand.o \
        syncTcpConnection.o
 
-ANYCTROBJS = signalController.o \
+ANYCTROBJS := signalController.o \
 							anyCtrOptions.o \
 						 buffer.o \
 						 log.o \
 						 syncTcpConnection.o \
 						 syncServer.o
 
-ANYCONFOBJS = log.o \
+ANYCONFOBJS := log.o \
 						 buffer.o \
 						 keyDerivation.o \
 						 keyDerivationFactory.o \
@@ -89,14 +89,14 @@ ANYCONFOBJS = log.o \
 						 syncRouteCommand.o \
 						 syncConnectionCommand.o
 
-EXECUTABLE = anytun anytun-config anytun-controld anytun-showtables
-EXEOBJS = anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
+EXECUTABLE := anytun anytun-config anytun-controld anytun-showtables
+EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
 
-SRCS = $(OBJS:%.o=%.cpp)
-SYNCSRCS = $(SYNCOBJS:%.o=%.cpp)
-ANYCTRSRCS = $(ANYCTROBJS:%.o=%.cpp)
-ANYCONFSRCS = $(ANYCONFOBJS:%.o=%.cpp)
-EXESRCS = $(EXEOBJS:%.o=%.cpp)
+SRCS := $(OBJS:%.o=%.cpp)
+SYNCSRCS := $(SYNCOBJS:%.o=%.cpp)
+ANYCTRSRCS := $(ANYCTROBJS:%.o=%.cpp)
+ANYCONFSRCS := $(ANYCONFOBJS:%.o=%.cpp)
+EXESRCS := $(EXEOBJS:%.o=%.cpp)
 
 .PHONY: distclean cleanall clean ctags
 
@@ -109,6 +109,7 @@ all: $(EXECUTABLE) #libAnysync.a
    rm -f $@.$$$$; echo '(re)building $@'
 
 -include $(SRCS:%.cpp=%.d) $(SYNCSRCS:%.cpp=%.d) $(ANYCTRSRCS:%.cpp=%.d) $(ANYCONFSRCS:%.cpp=%.d) $(EXESRCS:%.cpp=%.d)
+
 
 anytun: $(OBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
@@ -132,6 +133,7 @@ anytun-config: $(ANYCONFOBJS) anytun-config.o
 anytun-controld: $(ANYCTROBJS) anytun-controld.o
 	$(LD) $(ANYCTROBJS) anytun-controld.o -o $@ $(LDFLAGS)
 
+
 options.o: options.cpp 
 	$(CXX) -DANYTUN_OPTIONS $(CXXFLAGS) $< -c -o $@
 
@@ -144,12 +146,14 @@ anyConfOptions.o: options.cpp
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c
 
+
 libAnysync.a: $(OBJS)
 	ar cru $@ $(OBJS)
 	ranlib $@
 
 anyrtpproxy: anytun
 	$(MAKE) --directory=$(CURDIR)/anyrtpproxy
+
 
 distclean: cleanall
 	find . -name *.o -exec rm -f {} \;
@@ -173,8 +177,3 @@ clean:
 manpage:
 	@cd man ; $(MAKE)
 
-doxygen:
-	doxygen Doxyfile
-
-ctags:
-	ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .
