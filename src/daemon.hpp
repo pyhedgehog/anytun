@@ -33,6 +33,8 @@
 #define _DAEMON_HPP
 #ifndef NO_DAEMON
 
+#include <sstream>
+
 #include <poll.h>
 #include <fcntl.h>
 #include <pwd.h>
@@ -41,39 +43,76 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-void chrootAndDrop(std::string const& chrootdir, std::string const& username)
+#include "log.h"
+
+class PrivInfo
 {
-  if (getuid() != 0)
+public:
+  PrivInfo(std::string const& username, std::string const& groupname)
   {
-    std::cerr << "this programm has to be run as root in order to run in a chroot" << std::endl;
-    exit(-1);
+    pw_ = NULL;
+    gr_ = NULL;
+    
+    if(username == "")
+      return;
+
+    pw_ = getpwnam(username.c_str());
+    if(!pw_)
+      throw std::runtime_error("unkown user " + username);
+    
+    if(groupname != "")
+      gr_ = getgrnam(groupname.c_str());
+    else
+      gr_ = getgrgid(pw_->pw_gid);
+    
+    if(!gr_)
+      throw std::runtime_error("unkown group " + groupname);
   }
 
-  struct passwd *pw = getpwnam(username.c_str());
-  if(pw) {
-    if(chroot(chrootdir.c_str()))
-    {
-      std::cerr << "can't chroot to " << chrootdir << std::endl;
-      exit(-1);
-    }
-    cLog.msg(Log::PRIO_NOTICE) << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
-    if(chdir("/"))
-    {
-      std::cerr << "can't change to /" << std::endl;
-      exit(-1);
-    }
-    if (initgroups(pw->pw_name, pw->pw_gid) || setgid(pw->pw_gid) || setuid(pw->pw_uid))
-    {
-      std::cerr << "can't drop to user " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
-      exit(-1);
-    }
-    cLog.msg(Log::PRIO_NOTICE) << "dropped user to " << username << " " << pw->pw_uid << ":" << pw->pw_gid << std::endl;
-  }
-  else
+  void drop()
   {
-    std::cerr << "unknown user " << username << std::endl;
-    exit(-1);
+    if(!pw_ || !gr_)
+      return;
+
+    if(setgid(gr_->gr_gid)) {
+      std::stringstream msg;
+      msg << "setgid('" << gr_->gr_name << "') failed: " << LogErrno(errno);
+      throw std::runtime_error(msg.str());
+    }
+    
+    gid_t gr_list[1];
+    gr_list[0] = gr_->gr_gid;
+    if(setgroups (1, gr_list)) {
+      std::stringstream msg;
+      msg << "setgroups(['" << gr_->gr_name << "']) failed: " << LogErrno(errno);
+      throw std::runtime_error(msg.str());
+    }
+    
+    if(setuid(pw_->pw_uid)) {
+      std::stringstream msg;
+      msg << "setuid('" << pw_->pw_name << "') failed: " << LogErrno(errno);
+      throw std::runtime_error(msg.str());
+    }
+    
+    cLog.msg(Log::PRIO_NOTICE) << "dropped privileges to " << pw_->pw_name << ":" << gr_->gr_name;
   }
+
+private:
+  struct passwd* pw_;
+  struct group* gr_;
+};
+
+void do_chroot(std::string const& chrootdir)
+{
+  if (getuid() != 0)
+    throw std::runtime_error("this programm has to be run as root in order to run in a chroot");
+
+  if(chroot(chrootdir.c_str()))
+    throw std::runtime_error("can't chroot to " + chrootdir);
+
+  cLog.msg(Log::PRIO_NOTICE) << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
+  if(chdir("/"))
+    throw std::runtime_error("can't change to /");
 }
 
 void daemonize()

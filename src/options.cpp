@@ -142,18 +142,16 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
 {
 #if defined(ANYCTR_OPTIONS)
   progname_ = "anytun-controld";
-  chroot_dir_ = "/var/run/anytun-controld";
 #elif defined(ANYCONF_OPTIONS)
   progname_ = "anytun-config";
-  chroot_dir_ = "/var/run/anytun-config";
 #else
   progname_ = "anytun";
-  chroot_dir_ = "/var/run/anytun";
 #endif
 
   daemonize_ = true;
-  chroot_ = false;
-  username_ = "nobody";
+  username_ = "";
+  groupname_ = "";
+  chroot_dir_ = "";
   pid_file_ = "";
 
   file_name_ = "";
@@ -324,9 +322,9 @@ bool Options::parse(int argc, char* argv[])
 
   #ifndef NO_DAEMON
     PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_)
-    PARSE_BOOL_PARAM("-C","--chroot", chroot_)
     PARSE_SCALAR_PARAM("-u","--username", username_)
-    PARSE_SCALAR_PARAM("-H","--chroot-dir", chroot_dir_)
+    PARSE_SCALAR_PARAM("-g","--groupname", groupname_)
+    PARSE_SCALAR_PARAM("-C","--chroot-dir", chroot_dir_)
     PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_)
   #endif
 
@@ -427,9 +425,9 @@ void Options::printUsage()
 
  #ifndef NO_DAEMON
   std::cout << "   [-D|--nodaemonize]                  don't run in background" << std::endl;
-  std::cout << "   [-C|--chroot]                       chroot and drop privileges" << std::endl;
-  std::cout << "   [-u|--username] <username>          if chroot change to this user" << std::endl;
-  std::cout << "   [-H|--chroot-dir] <path>            chroot to this directory" << std::endl;
+  std::cout << "   [-u|--username] <username>          change to this user" << std::endl;
+  std::cout << "   [-g|--groupname] <groupname>        change to this group" << std::endl;
+  std::cout << "   [-C|--chroot-dir] <path>            chroot to this directory" << std::endl;
   std::cout << "   [-P|--write-pid] <path>             write pid to this file" << std::endl;
  #endif
 
@@ -509,8 +507,8 @@ void Options::printOptions()
   std::cout << "Options:" << std::endl;
   std::cout << std::endl;
   std::cout << "daemonize = " << daemonize_ << std::endl;
-  std::cout << "chroot = " << chroot_ << std::endl;
   std::cout << "username = '" << username_ << "'" << std::endl;
+  std::cout << "groupname = '" << groupname_ << "'" << std::endl;
   std::cout << "chroot_dir = '" << chroot_dir_ << "'" << std::endl;
   std::cout << "pid_file = '" << pid_file_ << "'" << std::endl;
   std::cout << std::endl;
@@ -580,19 +578,6 @@ Options& Options::setDaemonize(bool d)
   return *this;
 }
 
-bool Options::getChroot()
-{
-  ReadersLock lock(mutex);
-  return chroot_;
-}
-
-Options& Options::setChroot(bool c)
-{
-  WritersLock lock(mutex);
-  chroot_ = c;
-  return *this;
-}
-
 std::string Options::getUsername()
 {
   ReadersLock lock(mutex);
@@ -603,6 +588,19 @@ Options& Options::setUsername(std::string u)
 {
   WritersLock lock(mutex);
   username_ = u;
+  return *this;
+}
+
+std::string Options::getGroupname()
+{
+  ReadersLock lock(mutex);
+  return groupname_;
+}
+
+Options& Options::setGroupname(std::string g)
+{
+  WritersLock lock(mutex);
+  groupname_ = g;
   return *this;
 }
 

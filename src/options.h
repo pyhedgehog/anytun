@@ -88,10 +88,10 @@ public:
   Options& setProgname(std::string p);
   bool getDaemonize();
   Options& setDaemonize(bool d);
-  bool getChroot();
-  Options& setChroot(bool b);
   std::string getUsername();
   Options& setUsername(std::string u);
+  std::string getGroupname();
+  Options& setGroupname(std::string g);
   std::string getChrootDir();
   Options& setChrootDir(std::string c);
   std::string getPidFile();
@@ -174,8 +174,8 @@ private:
 
   std::string progname_;
   bool daemonize_;
-  bool chroot_;
   std::string username_;
+  std::string groupname_;
   std::string chroot_dir_;
   std::string pid_file_;
 

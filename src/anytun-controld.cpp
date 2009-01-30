@@ -120,12 +120,13 @@ int main(int argc, char* argv[])
     std::ifstream file( gOpt.getFileName().c_str() );
     if( file.is_open() )
       file.close();
-    else
-    {
+    else {
       std::cout << "ERROR: unable to open file!" << std::endl;
       exit(-1);
     }
     
+    PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
+
     std::ofstream pidFile;
     if(gOpt.getPidFile() != "") {
       pidFile.open(gOpt.getPidFile().c_str());
@@ -134,10 +135,12 @@ int main(int argc, char* argv[])
       }
     }
     
-    if(gOpt.getChroot())
-      chrootAndDrop(gOpt.getChrootDir(), gOpt.getUsername());
-    if(gOpt.getDaemonize())
-    {
+    if(gOpt.getChrootDir() != "")
+      do_chroot(gOpt.getChrootDir());
+    
+    privs.drop();
+
+    if(gOpt.getDaemonize()) {
       daemonize();
       daemonized = true;
     }

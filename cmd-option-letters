@@ -4,7 +4,7 @@ c: cipher
 d: device name
 e:
 f: input file
-g:
+g: unix group
 h: print help text
 i: local interface
 j:
@@ -18,7 +18,7 @@ q:
 r: remote host
 s: sender id
 t: device type
-u: username when chroot
+u: unix username
 v:
 w: window size
 x: post up script
@@ -27,18 +27,18 @@ z:
 
 A: master salt
 B:
-C: run in chroot
+C: chroot directory
 D: do not daemonize
 E: passphrase
 F:
 G:
-H: chroot direcotry
+H: 
 I: local sync interface
 J:
 K: master key
 L:
 M: remote sync hosts
-N:
+N: 
 O:
 P: write pid file
 Q:
