@@ -394,8 +394,8 @@ int main(int argc, char* argv[])
     }    
 
 #ifndef NO_ROUTING
-    RouteList routes = gOpt.getRoutes();
-		RouteList::const_iterator rit;
+    NetworkList routes = gOpt.getRoutes();
+		NetworkList::const_iterator rit;
 		for(rit = routes.begin(); rit != routes.end(); ++rit)
 		{
 			NetworkAddress addr( rit->net_addr );

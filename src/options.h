@@ -60,20 +60,20 @@ public:
 typedef std::list<OptionHost> HostList;
 std::istream& operator>>(std::istream& stream, OptionHost& host);
 
-class OptionRoute
+class OptionNetwork
 {
 public:
-  OptionRoute() : net_addr(""), prefix_length(0) {};
-  OptionRoute(std::string route) { init(route); };
-  OptionRoute(std::string n, u_int16_t p) : net_addr(n), prefix_length(p) {};
+  OptionNetwork() : net_addr(""), prefix_length(0) {};
+  OptionNetwork(std::string network) { init(network); };
+  OptionNetwork(std::string n, u_int16_t p) : net_addr(n), prefix_length(p) {};
 
-  void init(std::string route);
+  void init(std::string network);
 
   std::string net_addr;
   u_int16_t prefix_length;
 };
-typedef std::list<OptionRoute> RouteList;
-std::istream& operator>>(std::istream& stream, OptionRoute& route);
+typedef std::list<OptionNetwork> NetworkList;
+std::istream& operator>>(std::istream& stream, OptionNetwork& network);
 
 class Options
 {
@@ -129,7 +129,7 @@ public:
   Options& setIfconfigParamRemoteNetmask(std::string i);
   std::string getPostUpScript();
   Options& setPostUpScript(std::string p);
-  RouteList getRoutes();
+  NetworkList getRoutes();
 
   sender_id_t getSenderId();
   Options& setSenderId(sender_id_t s);
@@ -193,7 +193,7 @@ private:
   std::string ifconfig_param_local_;
   std::string ifconfig_param_remote_netmask_;
   std::string post_up_script_;
-  RouteList routes_;
+  NetworkList routes_;
 
   sender_id_t sender_id_;
   mux_t mux_;

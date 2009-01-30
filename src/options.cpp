@@ -107,20 +107,20 @@ std::istream& operator>>(std::istream& stream, OptionHost& host)
   return stream;
 }
 
-void OptionRoute::init(std::string route) 
+void OptionNetwork::init(std::string network) 
 {
-  std::stringstream tmp_stream(route);
+  std::stringstream tmp_stream(network);
   getline(tmp_stream, net_addr, '/');
   if(!tmp_stream.good())
-    throw syntax_error(route, net_addr.length());
+    throw syntax_error(network, net_addr.length());
   tmp_stream >> prefix_length;
 }
 
-std::istream& operator>>(std::istream& stream, OptionRoute& route)
+std::istream& operator>>(std::istream& stream, OptionNetwork& network)
 {
   std::string tmp;
   stream >> tmp;
-  route.init(tmp);
+  network.init(tmp);
   return stream;
 }
 
@@ -366,7 +366,7 @@ bool Options::parse(int argc, char* argv[])
 #if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
 
   #ifndef NO_ROUTING
-    PARSE_CSLIST_PARAM("-R","--route", routes_, OptionRoute)
+    PARSE_CSLIST_PARAM("-R","--route", routes_, OptionNetwork)
   #endif
 
     PARSE_SCALAR_PARAM("-m","--mux", mux_)
@@ -533,7 +533,7 @@ void Options::printOptions()
   std::cout << "ifconfig_param_remote_netmask = '" << ifconfig_param_remote_netmask_ << "'" << std::endl;
   std::cout << "post_up_script = '" << post_up_script_ << "'" << std::endl;
   std::cout << "routes:" << std::endl;
-  RouteList::const_iterator rit;
+  NetworkList::const_iterator rit;
   for(rit = routes_.begin(); rit != routes_.end(); ++rit)
     std::cout << "  " << rit->net_addr << "/" << rit->prefix_length << std::endl;
   std::cout << std::endl;
@@ -824,7 +824,7 @@ Options& Options::setPostUpScript(std::string p)
   return *this;
 }
 
-RouteList Options::getRoutes()
+NetworkList Options::getRoutes()
 {
   ReadersLock lock(mutex);
   return routes_;

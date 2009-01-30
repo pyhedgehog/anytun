@@ -66,8 +66,8 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
   oa << scom;
   std::cout <<  std::setw(5) << std::setfill('0') << sout.str().size()<< ' ' << sout.str() << std::endl;
 
-  RouteList routes = gOpt.getRoutes();
-  RouteList::const_iterator rit;
+  NetworkList routes = gOpt.getRoutes();
+  NetworkList::const_iterator rit;
   for(rit = routes.begin(); rit != routes.end(); ++rit)
   {
     NetworkAddress addr( rit->net_addr.c_str() );
