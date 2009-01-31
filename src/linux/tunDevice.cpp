@@ -46,7 +46,7 @@
 #include "threadUtils.hpp"
 #include "log.h"
 
-TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
+TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
 {
 	struct ifreq ifr;
 	memset(&ifr, 0, sizeof(ifr));
@@ -84,7 +84,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   }
   actual_node_ = DEFAULT_DEVICE;
 
-  if(ifcfg_lp != "" && ifcfg_rnmp != "")
+  if(ifcfg_addr != "")
     do_ifconfig();
 }
 
@@ -157,14 +157,8 @@ void TunDevice::init_post()
 void TunDevice::do_ifconfig()
 {
   std::ostringstream command;
-  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.local_.toString();
-
-  if(conf_.type_ == TYPE_TUN)
-    command << " pointopoint ";
-  else
-    command << " netmask ";
-
-  command << conf_.remote_netmask_.toString() << " mtu " << conf_.mtu_;
+  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.addr_.toString()
+          << " netmask " << conf_.netmask_.toString() << " mtu " << conf_.mtu_;
 
   int result = system(command.str().c_str());
   if(result == -1)
@@ -177,5 +171,4 @@ void TunDevice::do_ifconfig()
     else
       cLog.msg(Log::PRIO_ERR) << "Execution of ifconfig: unkown error";
   }
-
 }

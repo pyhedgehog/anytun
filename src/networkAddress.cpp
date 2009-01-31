@@ -100,6 +100,24 @@ void NetworkAddress::setNetworkAddress(const network_address_type_t type, const 
 	network_address_type_ = type;
 }
 
+void NetworkAddress::setNetworkAddress(boost::asio::ip::address_v4 addr)
+{
+	network_address_type_=ipv4;
+	ipv4_address_ = addr;
+}
+
+void NetworkAddress::setNetworkAddress(boost::asio::ip::address_v6 addr)
+{
+	network_address_type_=ipv6;
+	ipv6_address_ = addr;
+}
+
+void NetworkAddress::setNetworkAddress(u_int64_t addr)
+{
+	network_address_type_=ethernet;
+	ethernet_address_=addr;
+}
+
 network_address_type_t NetworkAddress::getNetworkAddressType() const
 {
 	return network_address_type_;

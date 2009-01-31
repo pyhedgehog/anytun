@@ -93,10 +93,11 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 	gSyncQueue.push(sc);
 #endif
 #ifndef NO_ROUTING
-	if (gOpt.getIfconfigParamRemoteNetmask() != "")
+  OptionNetwork net = gOpt.getIfconfigParam();
+	if (net.net_addr != "")
 	{
-		NetworkAddress addr(gOpt.getIfconfigParamRemoteNetmask());
-		NetworkPrefix prefix(addr,128);
+		NetworkAddress addr(net.net_addr);
+		NetworkPrefix prefix(addr,net.prefix_length);
 		gRoutingTable.addRoute(prefix,mux);
 #ifndef ANYTUN_NOSYNC
 		SyncCommand sc2 (prefix);
@@ -365,7 +366,8 @@ int main(int argc, char* argv[])
 #endif
 #endif
 
-    TunDevice dev(gOpt.getDevName(), gOpt.getDevType(), gOpt.getIfconfigParamLocal(), gOpt.getIfconfigParamRemoteNetmask());
+    OptionNetwork net = gOpt.getIfconfigParam();
+    TunDevice dev(gOpt.getDevName(), gOpt.getDevType(), net.net_addr, net.prefix_length);
     cLog.msg(Log::PRIO_NOTICE) << "dev opened - name '" << dev.getActualName() << "', node '" << dev.getActualNode() << "'";
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
 #ifndef NO_EXEC

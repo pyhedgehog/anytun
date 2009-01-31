@@ -123,10 +123,8 @@ public:
   Options& setDevName(std::string d);
   std::string getDevType();
   Options& setDevType(std::string d);
-  std::string getIfconfigParamLocal();
-  Options& setIfconfigParamLocal(std::string i);
-  std::string getIfconfigParamRemoteNetmask();
-  Options& setIfconfigParamRemoteNetmask(std::string i);
+  OptionNetwork getIfconfigParam();
+  Options& setIfconfigParam(OptionNetwork i);
   std::string getPostUpScript();
   Options& setPostUpScript(std::string p);
   NetworkList getRoutes();
@@ -190,8 +188,7 @@ private:
 
   std::string dev_name_;
   std::string dev_type_;
-  std::string ifconfig_param_local_;
-  std::string ifconfig_param_remote_netmask_;
+  OptionNetwork ifconfig_param_;
   std::string post_up_script_;
   NetworkList routes_;
 

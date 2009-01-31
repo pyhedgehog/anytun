@@ -33,6 +33,8 @@
 #define _DEVICE_CONFIG_HPP_
 
 #include "networkAddress.h"
+#include <boost/asio.hpp>
+
 class TunDevice;
 
 enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
@@ -40,7 +42,7 @@ enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
 class DeviceConfig 
 {
 public:
-  DeviceConfig(std::string dev_name ,std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp, u_int16_t mtu)
+  DeviceConfig(std::string dev_name ,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix, u_int16_t mtu)
   {
     mtu_ = mtu;
     type_ = TYPE_UNDEF;
@@ -70,15 +72,22 @@ public:
       throw std::runtime_error("Device type tun requires ifconfig parameters (--ifconfig)");
 #endif
 
-    if(ifcfg_lp != "")
-      local_.setNetworkAddress(ipv4, ifcfg_lp.c_str());
-    if(ifcfg_rnmp != "")
-      remote_netmask_.setNetworkAddress(ipv4, ifcfg_rnmp.c_str());
+    if(ifcfg_addr != "")
+      addr_.setNetworkAddress(ipv4, ifcfg_addr.c_str());
+    prefix_ = ifcfg_prefix;
+    u_int32_t mask = 0;
+    for(u_int16_t i = 0; i < prefix_; ++i) {
+      mask = mask >> 1;
+      mask |= 0x80000000L;
+    }
+    netmask_.setNetworkAddress(boost::asio::ip::address_v4(mask));
   }
 
 private:
   device_type_t type_;
-  NetworkAddress local_, remote_netmask_;
+  NetworkAddress addr_;
+  NetworkAddress netmask_;
+  u_int16_t prefix_;
   u_int16_t mtu_;
 
   friend class TunDevice;

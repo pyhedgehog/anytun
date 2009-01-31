@@ -167,8 +167,6 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
 
   dev_name_ = "";
   dev_type_ = "";
-  ifconfig_param_local_ = "";
-  ifconfig_param_remote_netmask_ = "";
   post_up_script_ = "";
 
   sender_id_ = 0;
@@ -357,7 +355,7 @@ bool Options::parse(int argc, char* argv[])
 
     PARSE_SCALAR_PARAM("-d","--dev", dev_name_)
     PARSE_SCALAR_PARAM("-t","--type", dev_type_)
-    PARSE_SCALAR_PARAM2("-n","--ifconfig", ifconfig_param_local_, ifconfig_param_remote_netmask_)
+    PARSE_SCALAR_PARAM("-n","--ifconfig", ifconfig_param_)
   #ifndef NO_EXEC
     PARSE_SCALAR_PARAM("-x","--post-up-script", post_up_script_)
   #endif
@@ -463,8 +461,7 @@ void Options::printUsage()
 
   std::cout << "   [-d|--dev] <name>                   device name" << std::endl;
   std::cout << "   [-t|--type] <tun|tap>               device type" << std::endl;
-  std::cout << "   [-n|--ifconfig] <local>             the local address for the tun/tap device" << std::endl;
-  std::cout << "                   <remote|netmask>    the remote address(tun) or netmask(tap)" << std::endl;
+  std::cout << "   [-n|--ifconfig] <local>/<prefix>    the local address for the tun/tap device and the used prefix length" << std::endl;
  #ifndef NO_EXEC
   std::cout << "   [-x|--post-up-script] <script>      script gets called after interface is created" << std::endl;
  #endif
@@ -529,8 +526,7 @@ void Options::printOptions()
   std::cout << std::endl;
   std::cout << "dev_name = '" << dev_name_ << "'" << std::endl;
   std::cout << "dev_type = '" << dev_type_ << "'" << std::endl;
-  std::cout << "ifconfig_param_local = '" << ifconfig_param_local_ << "'" << std::endl;
-  std::cout << "ifconfig_param_remote_netmask = '" << ifconfig_param_remote_netmask_ << "'" << std::endl;
+  std::cout << "ifconfig_param_local = '" << ifconfig_param_.net_addr << "/" << ifconfig_param_.prefix_length << "'" << std::endl;
   std::cout << "post_up_script = '" << post_up_script_ << "'" << std::endl;
   std::cout << "routes:" << std::endl;
   NetworkList::const_iterator rit;
@@ -785,29 +781,16 @@ Options& Options::setDevType(std::string d)
   return *this;
 }
 
-std::string Options::getIfconfigParamLocal()
+OptionNetwork Options::getIfconfigParam()
 {
   ReadersLock lock(mutex);
-  return ifconfig_param_local_;
+  return ifconfig_param_;
 }
 
-Options& Options::setIfconfigParamLocal(std::string i)
+Options& Options::setIfconfigParam(OptionNetwork i)
 {
   WritersLock lock(mutex);
-  ifconfig_param_local_ = i;
-  return *this;
-}
-
-std::string Options::getIfconfigParamRemoteNetmask()
-{
-  ReadersLock lock(mutex);
-  return ifconfig_param_remote_netmask_;
-}
-
-Options& Options::setIfconfigParamRemoteNetmask(std::string i)
-{
-  WritersLock lock(mutex);
-  ifconfig_param_remote_netmask_ = i;
+  ifconfig_param_ = i;
   return *this;
 }
 

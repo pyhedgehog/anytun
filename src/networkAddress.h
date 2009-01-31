@@ -64,6 +64,9 @@ public:
 	NetworkAddress(const network_address_type_t type, const std::string & address );
 	~NetworkAddress();
 	void setNetworkAddress(const network_address_type_t type, const std::string & address );
+	void setNetworkAddress(boost::asio::ip::address_v4);
+	void setNetworkAddress(boost::asio::ip::address_v6);
+	void setNetworkAddress(u_int64_t);
 	network_address_type_t getNetworkAddressType() const;
   std::string toString() const;
 	bool operator<(const NetworkAddress &s) const;

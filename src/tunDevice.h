@@ -43,7 +43,7 @@
 class TunDevice
 {
 public:
-  TunDevice(std::string dev,std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp);
+  TunDevice(std::string dev,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix);
   ~TunDevice();
   
   int read(u_int8_t* buf, u_int32_t len);
