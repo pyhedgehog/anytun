@@ -38,6 +38,7 @@ LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system'
 CRYPTO_LIB='gcrypt'
 ANYTUN_02_COMPAT=0
 PASSPHRASE=1
+ROUTING=1
 
 print_usage() {
   echo "configure --help                    print this"
@@ -45,6 +46,7 @@ print_usage() {
   echo "          --disable-crypto          disable crypto at all (only NULL cipher)"
   echo "          --enable-anytun02-compat  enable compatiblity mode for anytun 0.2.x and prior"
   echo "          --disable-passphrase      disable master key and salt passphrase"
+  echo "          --disable-routing         disable built-in routing capability"
 }
 
 for arg
@@ -61,6 +63,9 @@ do
   ;;
   --disable-passphrase)
     PASSPHRASE=0
+  ;;
+  --disable-routing)
+    ROUTING=0
   ;;
   --help)
     print_usage
@@ -119,6 +124,11 @@ fi
 if [ $PASSPHRASE -eq 0 ]; then
   CXXFLAGS=$CXXFLAGS' -DNO_PASSPHRASE'
   echo "disabling master key and salt passphrase"
+fi
+
+if [ $ROUTING -eq 0 ]; then
+  CXXFLAGS=$CXXFLAGS' -DNO_ROUTING'
+  echo "disabling built-in routing capability"
 fi
 
 cat >> include.mk <<EOF
