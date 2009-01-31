@@ -119,7 +119,7 @@ bool TunDevice::getAdapter(std::string const& dev_name)
   DWORD err = akey.open(HKEY_LOCAL_MACHINE, ADAPTER_KEY, KEY_ENUMERATE_SUB_KEYS);
   if(err != ERROR_SUCCESS) {
     std::stringstream msg;
-    msg << "Unable to open registry key: " << LogErrno(err);
+    msg << "Unable to open registry key (HKLM\\" << ADAPTER_KEY << "): " << LogErrno(err);
     throw std::runtime_error(msg.str());
   }
   
@@ -128,15 +128,12 @@ bool TunDevice::getAdapter(std::string const& dev_name)
     RegistryKey ckey;
     DWORD err = akey.getSubKey(i, ckey, KEY_QUERY_VALUE);
     if(err == ERROR_NO_MORE_ITEMS)
-			break;
-    if(err != ERROR_SUCCESS) {
-      std::stringstream msg;
-      msg << "Unable to read registry: " << LogErrno(err);
-      throw std::runtime_error(msg.str());
-    }
+      break;
+    if(err != ERROR_SUCCESS)
+      continue;
 
     try {
-      if(ckey["ComponentId"] != TAP_COMPONENT_ID)
+	  if(ckey["ComponentId"] != TAP_COMPONENT_ID)
         continue;
       actual_node_ = ckey["NetCfgInstanceId"];
 
@@ -144,13 +141,11 @@ bool TunDevice::getAdapter(std::string const& dev_name)
       std::stringstream keyname;
       keyname << NETWORK_CONNECTIONS_KEY << "\\" << actual_node_ << "\\Connection";
       err = nkey.open(HKEY_LOCAL_MACHINE, keyname.str().c_str(), KEY_QUERY_VALUE);;
-      if(err != ERROR_SUCCESS) {
-        std::stringstream msg;
-        msg << "Unable to open registry key: " << LogErrno(err);
-        throw std::runtime_error(msg.str());
-      }
-      actual_name_ = nkey["Name"];
-    } catch(LogErrno& e) { continue; }
+      if(err != ERROR_SUCCESS)
+        continue;
+	  
+	  actual_name_ = nkey["Name"];
+	} catch(LogErrno& e) { continue; }
 
     if(dev_name != "") {
       if(dev_name == actual_name_) {
@@ -161,10 +156,10 @@ bool TunDevice::getAdapter(std::string const& dev_name)
     else {
       std::stringstream tapname;
       tapname << USERMODEDEVICEDIR << actual_node_ << TAPSUFFIX;
-      handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
+	  handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
       if(handle_ == INVALID_HANDLE_VALUE)
         continue;
-      found = true;
+	  found = true;
       break;
     }
   }
