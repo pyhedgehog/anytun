@@ -127,6 +127,9 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
   if(fd_ < 0)
     return -1;
 
+  if(!buf)
+    return 0;
+
   if(with_pi_)
   {
     struct iovec iov[2];

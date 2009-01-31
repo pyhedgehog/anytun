@@ -49,7 +49,7 @@
 #include "log.h"
 #define DEVICE_FILE_MAX 255
 
-TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
+TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, std::string ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
 {
   std::string device_file = "/dev/";
   bool dynamic = true;
@@ -104,7 +104,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 
   init_post();
 
-  if(ifcfg_lp != "" && ifcfg_rnmp != "")
+  if(ifcfg_addr != "")
     do_ifconfig();
 }
 
@@ -199,6 +199,9 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
   if(fd_ < 0)
     return -1;
   
+  if(!buf)
+    return 0;
+
   if(with_pi_) {
     struct iovec iov[2];
     u_int32_t type;
@@ -223,28 +226,30 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
 void TunDevice::do_ifconfig()
 {
   std::ostringstream command;
-  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.local_.toString();
+  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.addr_.toString();
 
-  if(conf_.type_ == TYPE_TAP)
-    command << " netmask ";
-  else
-    command << " ";
 
-  command << conf_.remote_netmask_.toString() << " mtu " << conf_.mtu_;
+      // TODO: figure out how to configure the interface BSD 
+//   if(conf_.type_ == TYPE_TAP)
+//     command << " netmask ";
+//   else
+//     command << " ";
 
-  if(conf_.type_ == TYPE_TUN)
-    command << " netmask 255.255.255.255 up";
-  else {
-#if defined(__GNUC__) && defined(__OpenBSD__)
-    command << " link0";
-#elif defined(__GNUC__) && defined(__FreeBSD__)
-    command << " up";
-#elif defined(__GNUC__) && defined(__NetBSD__)
-    command << "";
-#else
- #error This Device works just for OpenBSD, FreeBSD or NetBSD
-#endif
-  }
+//   command << conf_.netmask_.toString() << " mtu " << conf_.mtu_;
+
+//   if(conf_.type_ == TYPE_TUN)
+//     command << " netmask 255.255.255.255 up";
+//   else {
+// #if defined(__GNUC__) && defined(__OpenBSD__)
+//     command << " link0";
+// #elif defined(__GNUC__) && defined(__FreeBSD__)
+//     command << " up";
+// #elif defined(__GNUC__) && defined(__NetBSD__)
+//     command << "";
+// #else
+//  #error This Device works just for OpenBSD, FreeBSD or NetBSD
+// #endif
+//   }
 
   int result = system(command.str().c_str());
   if(result == -1)
