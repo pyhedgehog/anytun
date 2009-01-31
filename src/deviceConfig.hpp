@@ -68,8 +68,8 @@ public:
     else if(dev_type == "tap")
       type_ = TYPE_TAP;
 
-    if(type_ == TYPE_TUN && (ifcfg_lp == "" || ifcfg_rnmp == ""))
-      throw std::runtime_error("Device type tun requires ifconfig parameters (--ifconfig)");
+    if(type_ == TYPE_TUN && ifcfg_addr == "")
+      throw std::runtime_error("Device type tun requires ifconfig parameter (--ifconfig)");
 #endif
 
     if(ifcfg_addr != "")

@@ -43,9 +43,9 @@
 #include "common.h"
 
 #define MIN_TAP_VER_MAJOR 8
-#define MIN_TAP_VER_MINOR 1
+#define MIN_TAP_VER_MINOR 2
 
-TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_lp, std::string ifcfg_rnmp) : conf_(dev_name, dev_type, ifcfg_lp, ifcfg_rnmp, 1400)
+TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
 {
   if(conf_.type_ != TYPE_TUN && conf_.type_ != TYPE_TAP)
     throw std::runtime_error("unable to recognize type of device (tun or tap)");
@@ -84,19 +84,20 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   }
 
   if(conf_.type_ == TYPE_TUN) {
-    u_long ep[2];
-    ep[0] = htonl(conf_.local_.getNetworkAddressV4().to_ulong());
-    ep[1] = htonl(conf_.remote_netmask_.getNetworkAddressV4().to_ulong());
-    err = performIoControl(TAP_IOCTL_CONFIG_POINT_TO_POINT, ep, sizeof(ep), ep, sizeof(ep));
+    u_long ep[3];
+    ep[0] = htonl(conf_.addr_.getNetworkAddressV4().to_ulong());
+    ep[1] = htonl(conf_.addr_.getNetworkAddressV4().to_ulong() & conf_.netmask_.getNetworkAddressV4().to_ulong());
+    ep[2] = htonl(conf_.netmask_.getNetworkAddressV4().to_ulong());
+    err = performIoControl(TAP_IOCTL_CONFIG_TUN, ep, sizeof(ep), ep, sizeof(ep));
     if(err != ERROR_SUCCESS) {
       CloseHandle(handle_);
       std::stringstream msg;
-      msg << "Unable to set device point-to-point mode: " << LogErrno(err);
+      msg << "Unable to set device tun mode: " << LogErrno(err);
 	    throw std::runtime_error(msg.str());
     }
   }
 
-  if(ifcfg_lp != "" && ifcfg_rnmp != "")
+  if(ifcfg_addr != "")
     do_ifconfig();
 
   int status = true;
@@ -267,14 +268,10 @@ void TunDevice::init_post()
 
 void TunDevice::do_ifconfig()
 {
-  u_long remote_netmask = conf_.remote_netmask_.getNetworkAddressV4().to_ulong();
-  u_long adapter_mask = (conf_.type_ == TYPE_TUN) ? ~3 : remote_netmask;
-  u_long local = conf_.local_.getNetworkAddressV4().to_ulong();
-  
   u_long ep[4];
-  ep[0] = htonl(local);
-  ep[1] = htonl(adapter_mask);
-  ep[2] = (conf_.type_ == TYPE_TUN) ? htonl(remote_netmask) : htonl(local & adapter_mask);
+  ep[0] = htonl(conf_.addr_.getNetworkAddressV4().to_ulong());
+  ep[1] = htonl(conf_.netmask_.getNetworkAddressV4().to_ulong());
+  ep[2] = htonl(conf_.addr_.getNetworkAddressV4().to_ulong() & conf_.netmask_.getNetworkAddressV4().to_ulong());
   ep[3] = 365 * 24 * 3600;  // lease time in seconds
   DWORD err = performIoControl(TAP_IOCTL_CONFIG_DHCP_MASQ, ep, sizeof(ep), ep, sizeof(ep));
   if(err != ERROR_SUCCESS) {

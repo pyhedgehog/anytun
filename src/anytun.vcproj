@@ -397,6 +397,14 @@
 			<File
 				RelativePath=".\options.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="ANYTUN_OPTIONS"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\packetSource.cpp"
