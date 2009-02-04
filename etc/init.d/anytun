@@ -13,7 +13,7 @@ DAEMON=/usr/sbin/anytun
 ANYTUNCONFIG=/usr/bin/anytun-config
 CONTROLDAEMON=/usr/bin/anytun-controld
 CHROOTDIR='/var/run/anytun'
-# DAEMONOPTS="--chroot --username nobody --chroot-dir $CHROOTDIR"
+# DAEMONOPTS="--username nobody --groupname nogroup --chroot $CHROOTDIR"
 NAME=anytun
 DESC=anytun
 CONFIG_DIR=/etc/anytun
@@ -27,18 +27,18 @@ if [ -f /etc/default/anytun ] ; then
 fi
 
 start_vpn () {
-    STATUS=OK
-    if [ -f $CONFIG_DIR/$NAME/config ] ; then
-      POSTUP=''
-      test -f  $CONFIG_DIR/$NAME/post-up.sh && POSTUP="-x $CONFIG_DIR/$NAME/post-up.sh"
-      DAEMONARG=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e '\w' | sed  's/^/ --/' | xargs echo`
-      $DAEMON --write-pid /var/run/anytun.$NAME.pid $POSTUP \
-        $DAEMONOPTS $DAEMONARG || STATUS="FAILED"
-    else
-      STATUS="no config found"
-    fi
-    start_configd
-    echo -n "($STATUS)"
+  STATUS="OK"
+  if [ -f $CONFIG_DIR/$NAME/config ] ; then
+    POSTUP=''
+    test -f  $CONFIG_DIR/$NAME/post-up.sh && POSTUP="-x $CONFIG_DIR/$NAME/post-up.sh"
+    DAEMONARG=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e '\w' | sed  's/^/ --/' | xargs echo`
+    $DAEMON --write-pid /var/run/anytun.$NAME.pid $POSTUP \
+      $DAEMONOPTS $DAEMONARG || STATUS="FAILED"
+  else
+    STATUS="no config found"
+  fi
+  start_configd
+  echo -n "($STATUS)"
 }
 stop_vpn () {
   kill `cat $PIDFILE` || true
@@ -47,20 +47,20 @@ stop_vpn () {
 }
 
 start_configd () {
-    if [ -d $CONFIG_DIR/$NAME/conf.d ] ; then
-      test -d $VARCONFIG_DIR || mkdir -p $VARCONFIG_DIR
-      chmod 700 $VARCONFIG_DIR
-      rm -f $VARCONFIG_DIR/$NAME 2>/dev/null
-      for CLIENTNAME in `ls $CONFIG_DIR/$NAME/conf.d`; do
-        echo -n " ($CLIENTNAME)"
-        DAEMONARG=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/conf.d/$CLIENTNAME | grep -e '\w' | sed  's/^/ --/' | xargs echo`
-        $ANYTUNCONFIG $DAEMONARG >> $VARCONFIG_DIR/$NAME
-      done
-      CONTROLHOST=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e 'control-host' | sed  's/^/ --/'`
-      $CONTROLDAEMON -f $VARCONFIG_DIR/$NAME $DAEMONOPTS $CONTROLHOST \
-        --write-pid $VARCONFIG_DIR/$NAME.pid
-      # rm -f $VARCONFIG_DIR/$NAME
-    fi
+  if [ -d $CONFIG_DIR/$NAME/conf.d ] ; then
+    test -d $VARCONFIG_DIR || mkdir -p $VARCONFIG_DIR
+    chmod 700 $VARCONFIG_DIR
+    rm -f $VARCONFIG_DIR/$NAME 2>/dev/null
+    for CLIENTNAME in `ls $CONFIG_DIR/$NAME/conf.d`; do
+      echo -n " ($CLIENTNAME)"
+      DAEMONARG=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/conf.d/$CLIENTNAME | grep -e '\w' | sed  's/^/ --/' | xargs echo`
+      $ANYTUNCONFIG $DAEMONARG >> $VARCONFIG_DIR/$NAME
+    done
+    CONTROLHOST=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e 'control-host' | sed  's/^/ --/'`
+    $CONTROLDAEMON -f $VARCONFIG_DIR/$NAME $DAEMONOPTS $CONTROLHOST \
+      --write-pid $VARCONFIG_DIR/$NAME.pid
+    # rm -f $VARCONFIG_DIR/$NAME
+  fi
 }
 stop_configd () {
   if [ -d $CONFIG_DIR/$NAME/conf.d ] ; then
@@ -73,12 +73,12 @@ stop_configd () {
 set -e
 case "$1" in
   start)
-  echo -n "Starting $DESC: "
+  echo -n "Starting $DESC:"
   test -d $CHROOTDIR || mkdir -p $CHROOTDIR
   if test -z "$2" ; then
     if [ -f $CONFIG_DIR/autostart ] ; then
       for NAME in `sed 's/#.*//'  <  $CONFIG_DIR/autostart | grep -e '\w'`; do
-        echo -n "$NAME"
+        echo -n " $NAME"
         start_vpn
       done
     else
@@ -87,17 +87,16 @@ case "$1" in
     fi
   else
     while shift ; do
-      if [ ! -z $1 ] ; then
-        NAME=$1
-        echo -n "$NAME"
-        start_vpn
-      fi
+      [ -z "$1" ] && break
+      NAME=$1
+      echo -n " $NAME"
+      start_vpn
     done
   fi
   echo "."
   ;;
   stop)
-  echo -n "Stoping $DESC: "
+  echo -n "Stoping $DESC:"
   if test -z "$2" ; then
     for PIDFILE in `ls /var/run/anytun.*.pid 2> /dev/null`; do
       NAME=`echo $PIDFILE | cut -c17-`
@@ -119,13 +118,15 @@ case "$1" in
       fi
     done
   fi
-  echo .
+  echo "."
   ;;
   reload)
+  echo -n "Reloading $DESC:"
   if test -z "$2" ; then
     for PIDFILE in `ls /var/run/anytun.*.pid 2> /dev/null`; do
       NAME=`echo $PIDFILE | cut -c17-`
       NAME=${NAME%%.pid}
+      echo -n " $NAME"
       if [ -d $CONFIG_DIR/$NAME/conf.d ] ; then
         stop_vpn
         start_vpn
@@ -133,7 +134,6 @@ case "$1" in
         stop_configd
         start_configd
       fi
-      echo -n " $NAME"
     done
   else
     while shift ; do
@@ -155,9 +155,10 @@ case "$1" in
       fi
     done
   fi
+  echo "."
   ;;
   force-reload)
-  echo -n "Restarting $DESC: "
+  echo -n "Restarting $DESC:"
   if test -z "$2" ; then
     for PIDFILE in `ls /var/run/anytun.*.pid 2> /dev/null`; do
       NAME=`echo $PIDFILE | cut -c17-`
@@ -176,13 +177,14 @@ case "$1" in
         NAME=${NAME%%.pid}
         echo -n " $NAME"
         stop_vpn
+        sleep 1
         start_vpn
       else
         echo -n " (failure: No such tunnel is running: $1)"
       fi
     done
   fi
-  echo .
+  echo "."
   ;;
   restart)
     SCRIPT=$0
