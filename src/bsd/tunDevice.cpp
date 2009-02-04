@@ -57,6 +57,12 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     device_file.append(dev_name);
     dynamic = false;
   }
+#if defined(__GNUC__) && defined(__OpenBSD__)
+  else if(conf_.type_ == TYPE_TUN || conf_.type_ == TYPE_TAP) {
+    device_file.append("tun");
+    actual_name_ = "tun";
+  }
+#else
   else if(conf_.type_ == TYPE_TUN) {
     device_file.append("tun");
     actual_name_ = "tun";
@@ -65,6 +71,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     device_file.append("tap");
     actual_name_ = "tap";
   }
+#endif
   else
     throw std::runtime_error("unable to recognize type of device (tun or tap)");
 
