@@ -130,6 +130,8 @@ void TunDevice::init_post()
   }
   
   ti.flags |= IFF_MULTICAST;
+  if(conf_.type_ == TYPE_TUN)
+    ti.flags &= ~IFF_POINTOPOINT;
   
   if (ioctl(fd_, TUNSIFINFO, &ti) < 0) {
     ::close(fd_);
@@ -226,30 +228,22 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
 void TunDevice::do_ifconfig()
 {
   std::ostringstream command;
-  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.addr_.toString();
+  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.addr_.toString()
+          << " netmask " << conf_.netmask_.toString() << " mtu " << conf_.mtu_;
 
-
-      // TODO: figure out how to configure the interface BSD 
-//   if(conf_.type_ == TYPE_TAP)
-//     command << " netmask ";
-//   else
-//     command << " ";
-
-//   command << conf_.netmask_.toString() << " mtu " << conf_.mtu_;
-
-//   if(conf_.type_ == TYPE_TUN)
-//     command << " netmask 255.255.255.255 up";
-//   else {
-// #if defined(__GNUC__) && defined(__OpenBSD__)
-//     command << " link0";
-// #elif defined(__GNUC__) && defined(__FreeBSD__)
-//     command << " up";
-// #elif defined(__GNUC__) && defined(__NetBSD__)
-//     command << "";
-// #else
-//  #error This Device works just for OpenBSD, FreeBSD or NetBSD
-// #endif
-//   }
+  if(conf_.type_ == TYPE_TUN)
+    command << " up";
+  else {
+#if defined(__GNUC__) && defined(__OpenBSD__)
+    command << " link0";
+#elif defined(__GNUC__) && defined(__FreeBSD__)
+    command << " up";
+#elif defined(__GNUC__) && defined(__NetBSD__)
+    command << "";
+#else
+ #error This Device works just for OpenBSD, FreeBSD or NetBSD
+#endif
+  }
 
   int result = system(command.str().c_str());
   if(result == -1)
