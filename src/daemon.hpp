@@ -120,10 +120,34 @@ void daemonize()
   pid_t pid;
 
   pid = fork();
+  if(pid < 0) {
+    std::stringstream msg;
+    msg << "daemonizing failed at fork(): " << LogErrno(errno) << ", exitting";
+    throw std::runtime_error(msg.str());
+  }
   if(pid) exit(0);
-  setsid();
+
+  umask(0);
+
+  if(setsid() < 0) {
+    std::stringstream msg;
+    msg << "daemonizing failed at setsid(): " << LogErrno(errno) << ", exitting";
+    throw std::runtime_error(msg.str());
+  }
+
   pid = fork();
+  if(pid < 0) {
+    std::stringstream msg;
+    msg << "daemonizing failed at fork(): " << LogErrno(errno) << ", exitting";
+    throw std::runtime_error(msg.str());
+  }
   if(pid) exit(0);
+
+  if ((chdir("/")) < 0) {
+    std::stringstream msg;
+    msg << "daemonizing failed at chdir(): " << LogErrno(errno) << ", exitting";
+    throw std::runtime_error(msg.str());
+  }
 
 //  std::cout << "running in background now..." << std::endl;
 
