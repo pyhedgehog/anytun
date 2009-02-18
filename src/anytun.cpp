@@ -184,6 +184,7 @@ void sender(void* p)
 					cit = gConnectionList.getConnection(mux);
 				} catch (std::exception& e) { continue; } // no route
 			else
+				cit = gConnectionList.getBegin();
 #else
 				cit = gConnectionList.getBegin();
 #endif
