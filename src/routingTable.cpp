@@ -102,7 +102,10 @@ void RoutingTable::addRoute(const NetworkPrefix & pref, u_int16_t mux)
       routes_[pref.getNetworkAddressType()].erase(ret.first);
       routes_[pref.getNetworkAddressType()].insert(RoutingMap::value_type(pref,mux));
     }
-    updateRouteTreeUnlocked(pref);
+		root_[pref.getNetworkAddressType()]=RoutingTreeNode();
+		RoutingMap::iterator it = routes_[type].begin();
+	  for (;it!=routes_[pref.getNetworkAddressType()].end();++it)
+			updateRouteTreeUnlocked(it->first);
 	} else if (type==ethernet) {
     return; // TODO: add support for ethernet
 	} else {
