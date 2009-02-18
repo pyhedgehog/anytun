@@ -1,45 +1,63 @@
-## Global Parameters
+#############################
+## multi connection support #
+#############################
+
+## Controll Host for multi client support
+## This enables multi-connection support and split configuration files per client
+## Make sure to use a unique port for each server, when runnig multible servers
+control-host 127.0.0.1:4444
+
+#############################
+## Main options             #
+#############################
+
+## Device name
+dev anytun0
+
+# device type tun = ip/ipv6, tap = ethernet
+type tun
+
+## payload encryption algorithm
+cipher aes-ctr
+#cipher null
+
+## message authentication algorithm
+auth-algo sha1
+#auth-algo null
+
+## local ip address to bind to (for tunnel data)
+## (if you operate an anycast cluster this must be the anycast ip address)
+#interface <ip-address>
+
+## local port to bind to (for tunnel data)
+## make sure to use a different port for every server and client!
+port 4444
+
+#############################
+## Debug options            #
+#############################
 ## don't run in background
 #nodaemonize
+
+#############################
+## Expert options           #
+#############################
+## Automaticaly configure the interface an set a route
+##
+## We highly recommend the use of the post up script to do this
+##
+## 1st argument the local address for the tun/tap device
+## 2nd argument is either the remote address(tun) or netmask(tap)
+#ifconfig <local> <remote|netmask>
+
+#############################
+## Cluster options          #
+#############################
 ## the sender id to use (has to be unique for multible anycast servers)
-sender-id 1
-## local anycast ip address to bind to
-#interface <ip-address>
-## local anycast(data) port to bind to
-port 4444
+#sender-id 1
 ## local unicast(sync) ip address to bind to
 # sync-interface <ip-address>
 ## local unicast(sync) port to bind to
 #sync-port 1234
 ## remote hosts to sync with
 #sync-hosts <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]
-## Device name
-dev anytun0
-# device type tun = ip/ipv6, tap = ethernet
-type tun
-## payload encryption algorithm
-cipher aes-ctr
-#cipher null
-## message authentication algorithm
-auth-algo sha1
-#auth-algo null
-## Automaticaly configure the interface an set a route
-## 1st argument the local address for the tun/tap device
-## 2nd argument is either the remote address(tun) or netmask(tap)
-#ifconfig <local> <remote|netmask>
-## Controll Host for multi client support
-control-host 127.0.0.1:4445
-### Connection Parameters (for clients without config server)
-## remote host
-#remote-host <hostname|ip>
-## remote port
-#remote-port <port>
-##seqence number window size
-## 0 turns off replay protection (for manualk keying)
-#window-size 0
-## the multiplex id to use
-#mux <mux-id>
-## master key to use for encryption
-#key <master key>
-## master salt to use for encryption
-#salt <master salt>
