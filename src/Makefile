@@ -89,7 +89,7 @@ ANYCONFOBJS := log.o \
 						 syncRouteCommand.o \
 						 syncConnectionCommand.o
 
-EXECUTABLE := anytun anytun-config anytun-controld anytun-showtables
+EXECUTABLE := anytun anytun-config anytun-controld anytun-showtables anytun-nosync
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
 
 SRCS := $(OBJS:%.o=%.cpp)
@@ -111,11 +111,14 @@ all: $(EXECUTABLE) #libAnysync.a
 -include $(SRCS:%.cpp=%.d) $(SYNCSRCS:%.cpp=%.d) $(ANYCTRSRCS:%.cpp=%.d) $(ANYCONFSRCS:%.cpp=%.d) $(EXESRCS:%.cpp=%.d)
 
 
+strip: $(EXECUTABLE)
+	strip -s $(EXECUTABLE) 
+
 anytun: $(OBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
 
 anytun-static: $(OBJS) $(SYNCOBJS) anytun.o
-	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS) -lpthread -static
+	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ -static-libgcc -static $(LDFLAGS) -lpthread
 	strip -s anytun-static
 
 anytun-nosync: $(OBJS) anytun-nosync.o
