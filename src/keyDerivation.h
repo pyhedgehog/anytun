@@ -194,14 +194,14 @@ private:
       u_int8_t label_;
       seq_nr_t r_;
       u_int16_t zero_;
-    } params_compat_;
+    } params_;
     struct ATTR_PACKED {
       u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - 2 - sizeof(seq_nr_t)];
       u_int8_t label_;
       u_int8_t r_fill_[2];
       seq_nr_t r_;
       u_int16_t zero_;
-    } params_;
+    } params_compat_;
   } ctr_[2];
 #ifdef _MSC_VER  
   #pragma pack(pop)
