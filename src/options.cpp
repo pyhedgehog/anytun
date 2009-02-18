@@ -183,6 +183,7 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   kd_prf_ = "null";
 #endif
   ld_kdr_ = 0;
+  anytun02_compat_ = false;
 }
 
 Options::~Options()
@@ -373,6 +374,7 @@ bool Options::parse(int argc, char* argv[])
   #ifndef NO_CRYPT
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
 //    PARSE_SIGNED_INT_PARAM("-l","--ld-kdr", ld_kdr_tmp)
+    PARSE_BOOL_PARAM("-O","--anytun02-compat", anytun02_compat_)
   #ifndef NO_PASSPHRASE
     PARSE_PHRASE_PARAM_SEC("-E","--passphrase", passphrase_)
   #endif
@@ -479,6 +481,7 @@ void Options::printUsage()
  #ifndef NO_CRYPT
   std::cout << "   [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
 //  std::cout << "   [-l|--ld-kdr] <ld-kdr>              log2 of key derivation rate" << std::endl;
+  std::cout << "   [-O|--anytun02-compat]              enable compatiblity mode for anytun 0.2.x and prior" << std::endl;
  #ifndef NO_PASSPHRASE
   std::cout << "   [-E|--passphrase] <pass phrase>     a passprhase to generate master key and salt from" << std::endl;
  #endif
@@ -541,6 +544,7 @@ void Options::printOptions()
   std::cout << "auth_algo = '" << auth_algo_ << "'" << std::endl;
   std::cout << "kd_prf = '" << kd_prf_ << "'" << std::endl;
   std::cout << "ld_kdr = " << static_cast<int32_t>(ld_kdr_) << std::endl;
+  std::cout << "anytun02_compat = " << anytun02_compat_ << std::endl;
   std::cout << "passphrase = '" << passphrase_ << "'" << std::endl;
   std::cout << "key = " << key_.getHexDumpOneLine() << std::endl;
   std::cout << "salt = " << salt_.getHexDumpOneLine() << std::endl;
@@ -905,6 +909,19 @@ Options& Options::setLdKdr(int8_t l)
 {
   WritersLock lock(mutex);
   ld_kdr_ = l;
+  return *this;
+}
+
+bool Options::getAnytun02Compat()
+{
+  ReadersLock lock(mutex);
+  return anytun02_compat_;
+}
+
+Options& Options::setAnytun02Compat(bool a)
+{
+  WritersLock lock(mutex);
+  anytun02_compat_ = a;
   return *this;
 }
 

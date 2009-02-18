@@ -138,7 +138,23 @@ AesIcmKeyDerivation::AesIcmKeyDerivation() : KeyDerivation(DEFAULT_KEY_LENGTH)
 #endif
 }
 
+AesIcmKeyDerivation::AesIcmKeyDerivation(bool a) : KeyDerivation(a, DEFAULT_KEY_LENGTH) 
+{
+#ifndef USE_SSL_CRYPTO
+  for(int i=0; i<2; i++)
+    handle_[i] = NULL;
+#endif
+}
+
 AesIcmKeyDerivation::AesIcmKeyDerivation(u_int16_t key_length) : KeyDerivation(key_length) 
+{
+#ifndef USE_SSL_CRYPTO
+  for(int i=0; i<2; i++)
+    handle_[i] = NULL;
+#endif
+}
+
+AesIcmKeyDerivation::AesIcmKeyDerivation(bool a, u_int16_t key_length) : KeyDerivation(a, key_length) 
 {
 #ifndef USE_SSL_CRYPTO
   for(int i=0; i<2; i++)
@@ -257,8 +273,14 @@ bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, seq_nr_t* r, satp_prf_label_t la
   }
   memcpy(ctr_[dir].salt_.buf_, master_salt_.getBuf(), SALT_LENGTH);
   ctr_[dir].salt_.zero_ = 0;
-  ctr_[dir].params_.label_ ^= label;
-  ctr_[dir].params_.r_ ^= SEQ_NR_T_HTON(*r);
+  if(anytun02_compat_) {
+    ctr_[dir].params_compat_.label_ ^= label;
+    ctr_[dir].params_compat_.r_ ^= SEQ_NR_T_HTON(*r);
+  }
+  else {
+    ctr_[dir].params_.label_ ^= label;
+    ctr_[dir].params_.r_ ^= SEQ_NR_T_HTON(*r);
+  }
 
   return true;
 }

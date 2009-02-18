@@ -144,6 +144,8 @@ public:
   Options& setKdPrf(std::string k);
   int8_t getLdKdr();
   Options& setLdKdr(int8_t l);
+  bool getAnytun02Compat();
+  Options& setAnytun02Compat(bool a);
   std::string getPassphrase();
   Options& setPassphrase(std::string p);
   Options& setKey(std::string k);
@@ -200,6 +202,7 @@ private:
   std::string auth_algo_;
   std::string kd_prf_;
   int8_t ld_kdr_;
+  bool anytun02_compat_;
   std::string passphrase_;
   Buffer key_;
   Buffer salt_;

@@ -39,7 +39,7 @@ K: master key
 L:
 M: remote sync hosts
 N: 
-O:
+O: anytun 0.2 compat mode
 P: write pid file
 Q:
 R: route

@@ -36,19 +36,19 @@
 #include "keyDerivation.h"
 
 
-KeyDerivation* KeyDerivationFactory::create(std::string const& type)
+KeyDerivation* KeyDerivationFactory::create(std::string const& type, bool anytun02_compat)
 {
   if( type == "null" )
     return new NullKeyDerivation();
 #ifndef NO_CRYPT
   else if( type == "aes-ctr" )
-    return new AesIcmKeyDerivation();
+    return new AesIcmKeyDerivation(anytun02_compat);
   else if( type == "aes-ctr-128" )
-    return new AesIcmKeyDerivation(128);
+    return new AesIcmKeyDerivation(anytun02_compat, 128);
   else if( type == "aes-ctr-192" )
-    return new AesIcmKeyDerivation(192);
+    return new AesIcmKeyDerivation(anytun02_compat, 192);
   else if( type == "aes-ctr-256" )
-    return new AesIcmKeyDerivation(256);
+    return new AesIcmKeyDerivation(anytun02_compat, 256);
 #endif
   else
     throw std::invalid_argument("key derivation prf not available");

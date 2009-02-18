@@ -49,8 +49,10 @@
 class Cipher
 {
 public:
-  Cipher() : dir_(KD_INBOUND) {};
-  Cipher(kd_dir_t d) : dir_(d) {};
+  Cipher() : dir_(KD_INBOUND), anytun02_compat_(false) {};
+  Cipher(kd_dir_t d) : dir_(d), anytun02_compat_(false) {};
+  Cipher(bool a) : dir_(KD_INBOUND), anytun02_compat_(a) {};
+  Cipher(kd_dir_t d, bool a) : dir_(d), anytun02_compat_(a) {};
   virtual ~Cipher() {};
 
 	void encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
@@ -61,6 +63,7 @@ protected:
   virtual u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0; 
 
   kd_dir_t dir_;
+  bool anytun02_compat_;
 };
 
 //****** NullCipher ******
@@ -79,7 +82,9 @@ class AesIcmCipher : public Cipher
 {
 public:
   AesIcmCipher(kd_dir_t d);
+  AesIcmCipher(kd_dir_t d, bool a);
   AesIcmCipher(kd_dir_t d, u_int16_t key_length);
+  AesIcmCipher(kd_dir_t d, bool a, u_int16_t key_length);
   ~AesIcmCipher();
   
   static const u_int16_t DEFAULT_KEY_LENGTH = 128;

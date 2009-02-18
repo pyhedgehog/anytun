@@ -83,7 +83,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 {
 	SeqWindow* seq = new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
-  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
+  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf(), gOpt.getAnytun02Compat());
   kd->init(gOpt.getKey(), gOpt.getSalt(), gOpt.getPassphrase());
   kd->setLogKDRate(gOpt.getLdKdr());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
@@ -143,7 +143,7 @@ void sender(void* p)
   {
     ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
 
-    std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_OUTBOUND));
+    std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_OUTBOUND, gOpt.getAnytun02Compat()));
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_OUTBOUND) );
     
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
@@ -225,8 +225,8 @@ void receiver(void* p)
   {
     ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
     
-    std::auto_ptr<Cipher> c( CipherFactory::create(gOpt.getCipher(), KD_INBOUND) );
-    std::auto_ptr<AuthAlgo> a( AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_INBOUND) );
+    std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_INBOUND, gOpt.getAnytun02Compat()));
+    std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_INBOUND));
     
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
@@ -352,6 +352,9 @@ int main(int argc, char* argv[])
 #endif
     
 #ifndef NO_CRYPT
+    if(gOpt.getAnytun02Compat())
+      cLog.msg(Log::PRIO_NOTICE) << "enabling anytun 0.2.x crypto compatiblity mode";      
+
 #ifndef USE_SSL_CRYPTO
 // this must be called before any other libgcrypt call
     if(!initLibGCrypt())

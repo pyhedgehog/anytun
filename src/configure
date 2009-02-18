@@ -36,7 +36,6 @@ CXXFLAGS='-g -Wall -O2'
 LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system'
 
 CRYPTO_LIB='gcrypt'
-ANYTUN_02_COMPAT=0
 PASSPHRASE=1
 ROUTING=1
 
@@ -44,7 +43,6 @@ print_usage() {
   echo "configure --help                    print this"
   echo "          --use-ssl-crypto          use ssl crypto library instead of libgcrypt"
   echo "          --disable-crypto          disable crypto at all (only NULL cipher)"
-  echo "          --enable-anytun02-compat  enable compatiblity mode for anytun 0.2.x and prior"
   echo "          --disable-passphrase      disable master key and salt passphrase"
   echo "          --disable-routing         disable built-in routing capability"
 }
@@ -58,9 +56,6 @@ do
   --disable-crypto)
     CRYPTO_LIB='none'
   ;; 
-  --enable-anytun02-compat)
-    ANYTUN_02_COMPAT=1
-  ;;
   --disable-passphrase)
     PASSPHRASE=0
   ;;
@@ -115,11 +110,6 @@ case $CRYPTO_LIB in
     echo "disabling crypto"
   ;;
 esac
-
-if [ $ANYTUN_02_COMPAT -eq 1 ]; then
-  CXXFLAGS=$CXXFLAGS' -DANYTUN_02_COMPAT'
-  echo "enabling anytun 0.2.x crypto compatiblity mode"
-fi
 
 if [ $PASSPHRASE -eq 0 ]; then
   CXXFLAGS=$CXXFLAGS' -DNO_PASSPHRASE'
