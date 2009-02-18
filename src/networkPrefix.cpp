@@ -62,9 +62,8 @@ bool NetworkPrefix::operator<(const NetworkPrefix &right) const
 {
 	if (network_address_type_!=right.network_address_type_)
 		return false;
-	if (NetworkAddress::operator<(static_cast<NetworkAddress>(right)))
-		return true;
-	static_cast<NetworkAddress>(right)<static_cast<NetworkAddress>(*this);
-	return (right.length_<length_);
+	if (right.length_!=length_)
+		return (length_<right.length_);
+	return static_cast<NetworkAddress>(*this)<static_cast<NetworkAddress>(right);
 }
 
