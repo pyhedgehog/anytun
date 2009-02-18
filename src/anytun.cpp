@@ -77,6 +77,8 @@
 #include "daemon.hpp"
 #include "sysexec.hpp"
 
+bool disableRouting = false;
+
 void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seqSize, mux_t mux)
 {
 	SeqWindow* seq = new SeqWindow(seqSize);
@@ -91,19 +93,6 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 #ifndef ANYTUN_NOSYNC
   SyncCommand sc (gConnectionList,mux);
 	gSyncQueue.push(sc);
-#endif
-#ifndef NO_ROUTING
-  OptionNetwork net = gOpt.getIfconfigParam();
-	if (net.net_addr != "")
-	{
-		NetworkAddress addr(net.net_addr);
-		NetworkPrefix prefix(addr,net.prefix_length);
-		gRoutingTable.addRoute(prefix,mux);
-#ifndef ANYTUN_NOSYNC
-		SyncCommand sc2 (prefix);
-		gSyncQueue.push(sc2);
-#endif
-	}
 #endif
 }
 
@@ -188,13 +177,15 @@ void sender(void* p)
           //std::cout << "got Packet for plain "<<plain_packet.getDstAddr().toString();
 			ConnectionMap::iterator cit;
 #ifndef NO_ROUTING
-			try {
-				mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
-						//std::cout << " -> "<<mux << std::endl;
-				cit = gConnectionList.getConnection(mux);
-			} catch (std::exception& e) { continue; } // no route
+			if (!disableRouting)
+				try {
+					mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
+							//std::cout << " -> "<<mux << std::endl;
+					cit = gConnectionList.getConnection(mux);
+				} catch (std::exception& e) { continue; } // no route
+			else
 #else
-      cit = gConnectionList.getBegin();
+				cit = gConnectionList.getBegin();
 #endif
 
       if(cit==gConnectionList.getEnd())
@@ -404,15 +395,10 @@ int main(int argc, char* argv[])
 			NetworkPrefix prefix( addr, static_cast<u_int8_t>(rit->prefix_length));
 			gRoutingTable.addRoute( prefix, gOpt.getMux() );
 		}
-		if (connect_to.begin() == connect_to.end() && routes.begin() == routes.end() && gOpt.getDevType()=="tun")
+		if (connect_to.begin() == connect_to.end() || gOpt.getDevType()!="tun")
 		{
-			std::cout << "No Routes and no syncronisation hosts have be specified"<< std::endl;
-			std::cout << "anytun won't be able to send any data"<< std::endl;
-			std::cout << "most likely you want to add --route 0.0.0.0/0 --route ::/0"<< std::endl;
-			std::cout << "to your command line to allow both ipv4 and ipv6 traffic"<< std::endl;
-			std::cout << "(this does not set operating system routes, use the post-up script"<< std::endl;
-			std::cout << " to set them)"<< std::endl;
-			return -1;
+    	cLog.msg(Log::PRIO_NOTICE) << "No sync/controll host defined or not a tun device. Disabling multy connection support (routing)";
+			disableRouting=true;
 		}
 #endif
 #ifndef NO_DAEMON

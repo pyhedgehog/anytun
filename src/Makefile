@@ -167,6 +167,7 @@ cleanall: clean
 clean:
 	rm -f *.o
 	rm -f *.d
+	rm -f *.d.*
 	rm -f $(EXECUTABLE)
 	rm -f anytun-nosync
 	rm -f -r doc/html/*
