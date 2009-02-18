@@ -45,6 +45,7 @@
 
 #include "log.h"
 
+#ifndef NO_PRIVDROP
 class PrivInfo
 {
 public:
@@ -101,6 +102,7 @@ private:
   struct passwd* pw_;
   struct group* gr_;
 };
+#endif
 
 void do_chroot(std::string const& chrootdir)
 {

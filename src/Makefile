@@ -117,15 +117,18 @@ strip: $(EXECUTABLE)
 anytun: $(OBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
 
-anytun-static: $(OBJS) $(SYNCOBJS) anytun.o
-	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ -static-libgcc -static $(LDFLAGS) -lpthread
+anytun-static: $(OBJS) $(SYNCOBJS) anytun-noprivdrop.o
+	$(LD) $(OBJS) $(SYNCOBJS) anytun-noprivdrop.o -o $@ -Bstatic -lstdc++ -static $(LDFLAGS) -lpthread
 	strip -s anytun-static
 
 anytun-nosync: $(OBJS) anytun-nosync.o
 	$(LD) $(OBJS) anytun-nosync.o -o $@ $(LDFLAGS)
 
-anytun-nosync.o: anytun.cpp anytun.o
+anytun-nosync.o: anytun.cpp
 	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
+
+anytun-noprivdrop.o: anytun.cpp
+	$(CXX) $(CXXFLAGS) -DNO_PRIVDROP $< -c -o anytun-noprivdrop.o
 
 anytun-showtables: $(OBJS) $(SYNCOBJS) anytun-showtables.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun-showtables.o -o $@ $(LDFLAGS)

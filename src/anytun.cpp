@@ -338,7 +338,9 @@ int main(int argc, char* argv[])
     }
 
 #ifndef NO_DAEMON
-    PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
+#ifndef NO_PRIVDROP
+		PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
+#endif
 
     std::ofstream pidFile;
     if(gOpt.getPidFile() != "") {
@@ -404,9 +406,9 @@ int main(int argc, char* argv[])
 #ifndef NO_DAEMON
     if(gOpt.getChrootDir() != "")
       do_chroot(gOpt.getChrootDir());
-
+#ifndef NO_PRIVDROP
     privs.drop();
-
+#endif
     if(gOpt.getDaemonize()) {
       daemonize();
       daemonized = true;
