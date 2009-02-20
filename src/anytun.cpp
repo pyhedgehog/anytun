@@ -108,7 +108,7 @@ void syncConnector(void* p )
 	sc.run();
 }
 
-void syncListener(SyncQueue * queue)
+void syncListener()
 {
   try
   {
@@ -127,7 +127,7 @@ void syncListener(SyncQueue * queue)
 
     SyncServer server(io_service,e);
 		server.onConnect=boost::bind(syncOnConnect,_1);
-		queue->setSyncServerPtr(&server);
+		gSyncQueue.setSyncServerPtr(&server);
     io_service.run();
   }
   catch (std::exception& e)
@@ -213,8 +213,9 @@ void sender(void* p)
       try {
         param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
       } catch (std::exception& e) {
-		  cLog.msg(Log::PRIO_ERR) << "could not send data: " << e.what();
-	  } 
+				//TODO: do something here
+		  	//cLog.msg(Log::PRIO_ERR) << "could not send data: " << e.what();
+	  	} 
     }
   }
   catch(std::runtime_error& e) {
@@ -249,9 +250,10 @@ void receiver(void* p)
       try {
         len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
       } catch (std::exception& e) { 
-		  cLog.msg(Log::PRIO_ERR) << "could not recive packet "<< e.what();
-		  continue; 
-	  }
+				//TODO: do something here
+		  	//cLog.msg(Log::PRIO_ERR) << "could not recive packet "<< e.what();
+		  	continue; 
+	  	}
       if(len < 0)
         continue; // silently ignore socket recv errors, this is probably no good idea...
 
@@ -421,7 +423,6 @@ int main(int argc, char* argv[])
       src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
     HostList connect_to = gOpt.getRemoteSyncHosts();
-    SyncQueue queue;
     
     if(gOpt.getRemoteAddr() != "")
     {
@@ -443,7 +444,7 @@ int main(int argc, char* argv[])
 		}
 		if (connect_to.begin() == connect_to.end() || gOpt.getDevType()!="tun")
 		{
-    	cLog.msg(Log::PRIO_NOTICE) << "No sync/controll host defined or not a tun device. Disabling multy connection support (routing)";
+    	cLog.msg(Log::PRIO_NOTICE) << "No sync/controll host defined or not a tun device. Disabling multi connection support (routing)";
 			disableRouting=true;
 		}
 #endif
@@ -480,7 +481,7 @@ int main(int argc, char* argv[])
 #ifndef ANYTUN_NOSYNC
     boost::thread * syncListenerThread;
     if(gOpt.getLocalSyncPort() != "")
-      syncListenerThread = new boost::thread(boost::bind(syncListener,&queue));
+      syncListenerThread = new boost::thread(boost::bind(syncListener));
     
     std::list<boost::thread *> connectThreads;
     for(HostList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
