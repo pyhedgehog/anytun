@@ -57,7 +57,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   if(handle_ == INVALID_HANDLE_VALUE) {
     std::stringstream tapname;
 	  tapname << USERMODEDEVICEDIR << actual_node_ << TAPSUFFIX;
-    handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
+    handle_ = CreateFileA(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
     if(handle_ == INVALID_HANDLE_VALUE) {
       std::stringstream msg;
       msg << "Unable to open device: " << actual_node_ << " (" << actual_name_ << "): " << LogErrno(GetLastError());
@@ -156,10 +156,10 @@ bool TunDevice::getAdapter(std::string const& dev_name)
     else {
       std::stringstream tapname;
       tapname << USERMODEDEVICEDIR << actual_node_ << TAPSUFFIX;
-	  handle_ = CreateFile(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
+      handle_ = CreateFileA(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
       if(handle_ == INVALID_HANDLE_VALUE)
         continue;
-	  found = true;
+      found = true;
       break;
     }
   }

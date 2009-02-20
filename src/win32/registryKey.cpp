@@ -108,7 +108,7 @@ DWORD RegistryKey::getSubKey(DWORD index, RegistryKey& subKey, REGSAM sam) const
 {
   char subkeyname[NAME_LENGTH];
   DWORD len = sizeof(subkeyname);
-  DWORD err = RegEnumKeyEx(key_, index, subkeyname, &len, NULL, NULL, NULL, NULL);
+  DWORD err = RegEnumKeyExA(key_, index, subkeyname, &len, NULL, NULL, NULL, NULL);
   if(err != ERROR_SUCCESS)
     return err;
 
