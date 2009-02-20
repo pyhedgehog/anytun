@@ -275,4 +275,14 @@ void TunDevice::do_ifconfig()
     msg << "Unable to set device dhcp masq mode: " << LogErrno(err);
     throw std::runtime_error(msg.str());
 	}
+
+  u_long mtu;
+  err = performIoControl(TAP_IOCTL_CONFIG_DHCP_MASQ, &mtu, sizeof(mtu), &mtu, sizeof(mtu));
+  if(err != ERROR_SUCCESS) {
+    CloseHandle(handle_);
+    std::stringstream msg;
+    msg << "Unable to get device mtu: " << LogErrno(err);
+    throw std::runtime_error(msg.str());
+	}
+  conf_.mtu_ = static_cast<u_int16_t>(mtu);
 }
