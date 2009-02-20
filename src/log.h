@@ -151,7 +151,6 @@ public:
   static WORD prioToEventLogType(int prio);
 #endif
 
-
   static Log& instance();
 
   Log& setLogName(std::string newLogName); 
@@ -178,6 +177,7 @@ private:
   friend class instanceCleaner;
 
   void open();
+  void log(std::string msg, int prio);
 
   Mutex mutex;
   friend class LogStringBuilder;
