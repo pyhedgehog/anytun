@@ -30,13 +30,13 @@ B:
 C: chroot directory
 D: do not daemonize
 E: passphrase
-F:
+F: config file
 G:
 H: 
 I: local sync interface
 J:
 K: master key
-L:
+L: logging
 M: remote sync hosts
 N: 
 O: anytun 0.2 compat mode
