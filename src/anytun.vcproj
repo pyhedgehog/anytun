@@ -326,6 +326,10 @@
 				RelativePath=".\tunDevice.h"
 				>
 			</File>
+			<File
+				RelativePath=".\win32\winService.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -472,6 +476,10 @@
 			</File>
 			<File
 				RelativePath=".\win32\tunDevice.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\win32\winService.cpp"
 				>
 			</File>
 		</Filter>
