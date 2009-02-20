@@ -444,7 +444,7 @@ int main(int argc, char* argv[])
 		}
 		if (connect_to.begin() == connect_to.end() || gOpt.getDevType()!="tun")
 		{
-    	cLog.msg(Log::PRIO_NOTICE) << "No sync/controll host defined or not a tun device. Disabling multi connection support (routing)";
+    	cLog.msg(Log::PRIO_NOTICE) << "No sync/control host defined or not a tun device. Disabling multi connection support (routing)";
 			disableRouting=true;
 		}
 #endif

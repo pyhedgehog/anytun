@@ -100,6 +100,10 @@ Log::~Log()
 #ifdef LOG_SYSLOG
   closelog();
 #endif
+#ifdef LOG_FILE
+  if(log_file.is_open())
+    log_file.close();
+#endif
 #ifdef LOG_WINEVENTLOG
   if(h_event_source_)
     DeregisterEventSource(h_event_source_);
@@ -110,6 +114,9 @@ void Log::open()
 {
 #ifdef LOG_SYSLOG
   openlog(logName.c_str(), LOG_PID, facility);
+#endif
+#ifdef LOG_FILE
+  log_file.open("anytun.log", std::fstream::out | std::fstream::app);
 #endif
 #ifdef LOG_WINEVENTLOG
   h_event_source_ = RegisterEventSourceA(NULL, logName.c_str());
@@ -125,6 +132,10 @@ void Log::log(std::string msg, int prio)
 #ifdef LOG_STDOUT
   std::cout << "LOG-" << Log::prioToString(prio) << ": " << msg << std::endl;
 #endif
+#ifdef LOG_FILE
+  if(log_file.is_open())
+    log_file << Log::prioToString(prio) << ": " << msg << std::endl;
+#endif
 #ifdef LOG_WINEVENTLOG
   LPCTSTR lpszStrings[1];  
   CHAR buffer[STERROR_TEXT_MAX];
@@ -135,7 +146,7 @@ void Log::log(std::string msg, int prio)
 #endif
 }
 
-#ifdef LOG_STDOUT
+#if defined(LOG_STDOUT) || defined(LOG_FILE)
 std::string Log::prioToString(int prio)
 {
   switch(prio) {

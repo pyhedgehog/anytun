@@ -34,6 +34,8 @@
 
 #include <string>
 #include <sstream>
+#include <fstream>
+
 #ifdef LOG_SYSLOG
 #include <syslog.h>
 #endif
@@ -144,7 +146,7 @@ public:
   static const int PRIO_INFO = 7;
   static const int PRIO_DEBUG = 8;
 #endif
-#ifdef LOG_STDOUT
+#if defined(LOG_STDOUT) || defined(LOG_FILE)
   static std::string prioToString(int prio);
 #endif
 #ifdef LOG_WINEVENTLOG
@@ -184,6 +186,9 @@ private:
 
   std::string logName;
   int facility;
+#ifdef LOG_FILE
+  std::ofstream log_file;
+#endif
 #ifdef LOG_WINEVENTLOG
   HANDLE h_event_source_;
 #endif
