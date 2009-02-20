@@ -29,6 +29,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef WIN_SERVICE
+
 #include <iostream>
 
 #include <windows.h>
@@ -54,7 +56,7 @@ WinService& WinService::instance()
 WinService::~WinService()
 {
   if(started_)
-    CloseHandle(exit_event_);
+    CloseHandle(stop_event_);
 }
 
 void WinService::install()
@@ -76,8 +78,8 @@ void WinService::install()
     throw std::runtime_error(msg.str());
   }
 
-  schService = CreateServiceA(schSCManager, name_.c_str(), name_.c_str(), SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS, 
-                             SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL, szPath, NULL, NULL, NULL, NULL, NULL);                     // no password 
+  schService = CreateServiceA(schSCManager, SVC_NAME, SVC_NAME, SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS, 
+                              SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL, szPath, NULL, NULL, NULL, NULL, NULL);
   if(schService == NULL) {
     CloseServiceHandle(schSCManager);
     std::stringstream msg;  
@@ -91,13 +93,44 @@ void WinService::install()
   CloseServiceHandle(schSCManager);
 }
 
+void WinService::uninstall()
+{
+  SC_HANDLE schSCManager;
+  SC_HANDLE schService;
+
+  schSCManager = OpenSCManagerA(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+  if(NULL == schSCManager) {
+    std::stringstream msg;  
+    msg << "Error on OpenSCManager: " << LogErrno(GetLastError());
+    throw std::runtime_error(msg.str());
+  }
+
+  schService = OpenServiceA(schSCManager, SVC_NAME, SERVICE_ALL_ACCESS);
+  if(schService == NULL) {
+    CloseServiceHandle(schSCManager);
+    std::stringstream msg;  
+    msg << "Error on CreateService: " << LogErrno(GetLastError());
+    throw std::runtime_error(msg.str());
+  }
+
+  if(!DeleteService(schService)) {
+    CloseServiceHandle(schService); 
+    CloseServiceHandle(schSCManager);
+    std::stringstream msg;  
+    msg << "Error on DeleteService: " << LogErrno(GetLastError());
+    throw std::runtime_error(msg.str());
+  }
+
+  std::cout << "Service uninstalled successfully" << std::endl; 
+
+  CloseServiceHandle(schService); 
+  CloseServiceHandle(schSCManager);
+}
+
 void WinService::start()
 {
-  if(started_)
-    throw std::runtime_error("Service already started");
-
   SERVICE_TABLE_ENTRY DispatchTable[] = {
-    {(LPSTR)name_.c_str(), (LPSERVICE_MAIN_FUNCTION)WinService::main },
+    {SVC_NAME, (LPSERVICE_MAIN_FUNCTION)WinService::main },
     {NULL, NULL}
   };
 
@@ -108,26 +141,33 @@ void WinService::start()
   }    
 }
 
-void WinService::waitForExit()
+void WinService::waitForStop()
 {
-  if(started_)
+  if(!started_)
     throw std::runtime_error("Service not started correctly");
 
-  WaitForSingleObject(exit_event_, INFINITE);
+  WaitForSingleObject(stop_event_, INFINITE);
   reportStatus(SERVICE_STOP_PENDING, NO_ERROR);
 }
 
 void WinService::stop()
 {
-  if(started_)
+  if(!started_)
     throw std::runtime_error("Service not started correctly");
 
   reportStatus(SERVICE_STOPPED, NO_ERROR);
 }
 
+int real_main(int argc, char* argv[]);
+
 VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
 {
-  gWinService.status_handle_ = RegisterServiceCtrlHandlerA(gWinService.name_.c_str(), WinService::ctrlHandler);
+  if(gWinService.started_) {
+    cLog.msg(Log::PRIO_ERR) << "Service is already running";
+    return;
+  }
+
+  gWinService.status_handle_ = RegisterServiceCtrlHandlerA(SVC_NAME, WinService::ctrlHandler);
   if(!gWinService.status_handle_) { 
     cLog.msg(Log::PRIO_ERR) << "Error on RegisterServiceCtrlHandler: " << LogErrno(GetLastError());
     return;
@@ -136,18 +176,30 @@ VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
   gWinService.status_.dwServiceSpecificExitCode = 0;    
   gWinService.reportStatus(SERVICE_START_PENDING, NO_ERROR);
 
-  gWinService.exit_event_ = CreateEvent(NULL, true, false, NULL);
-  if(!gWinService.exit_event_) {
+  gWinService.stop_event_ = CreateEvent(NULL, true, false, NULL);
+  if(!gWinService.stop_event_) {
     cLog.msg(Log::PRIO_ERR) << "Error on CreateEvent: " << LogErrno(GetLastError());
     gWinService.reportStatus(SERVICE_STOPPED, -1);
     return;
   }
   gWinService.started_ = true;
   gWinService.reportStatus(SERVICE_RUNNING, NO_ERROR);
+  
+  real_main(dwArgc, lpszArgv);
 }
 
 VOID WINAPI WinService::ctrlHandler(DWORD dwCtrl)
 {
+  switch(dwCtrl) {
+    case SERVICE_CONTROL_STOP: {
+      gWinService.reportStatus(SERVICE_STOP_PENDING, NO_ERROR);
+      SetEvent(gWinService.stop_event_);
+      return;
+    }
+    case SERVICE_CONTROL_INTERROGATE: break;
+    default: break;
+  }
+  gWinService.reportStatus(gWinService.status_.dwCurrentState, NO_ERROR);
 }
 
 void WinService::reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint)
@@ -172,3 +224,5 @@ void WinService::reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD
 
   SetServiceStatus(status_handle_, &status_);
 }
+
+#endif

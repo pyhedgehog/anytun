@@ -32,22 +32,26 @@
 #ifndef _WIN_SERVICE_H_
 #define _WIN_SERVICE_H_
 
+#ifdef WIN_SERVICE
+
 #include "../threadUtils.hpp"
 
 class WinService
 {
 public:
   static WinService& instance();
+  #define SVC_NAME "anytun"
+  static void install();
+  static void uninstall();
+  static void start();
 
-  void install();
-  void start();
-  void waitForExit();
+  void waitForStop();
   void stop();
 
   static VOID WINAPI main(DWORD dwArgc, LPTSTR *lpszArgv);
   static VOID WINAPI ctrlHandler(DWORD dwCtrl);
 private:
-  WinService() : name_("anytun"), started_(false) {};
+  WinService() : started_(false) {};
   ~WinService();
   WinService(const WinService &w);
   void operator=(const WinService &w);
@@ -63,14 +67,15 @@ private:
     }
   };
   friend class instanceCleaner;
-
-  std::string name_;
+  
   bool started_;
   SERVICE_STATUS status_;
   SERVICE_STATUS_HANDLE status_handle_;
-  HANDLE exit_event_;
+  HANDLE stop_event_;
 };
 
 extern WinService& gWinService;
+
+#endif
 
 #endif

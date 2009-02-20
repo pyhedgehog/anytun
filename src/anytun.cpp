@@ -51,6 +51,9 @@
 #ifndef NO_SIGNALCONTROLLER
 #include "signalController.h"
 #endif
+#ifdef WIN_SERVICE
+#include "win32/winService.h"
+#endif
 #include "packetSource.h"
 #include "tunDevice.h"
 #include "options.h"
@@ -312,10 +315,43 @@ void receiver(void* p)
   }
 }
 
- 
+#ifdef WIN_SERVICE
 int main(int argc, char* argv[])
 {
+  try {
+    if(argc > 1) {
+      if(std::string(argv[1]) == "install") {
+        WinService::install();  
+        return 0;
+      }
+      else if(std::string(argv[1]) == "uninstall") {
+        WinService::uninstall();  
+        return 0;
+      }
+    }
+    WinService::start();
+    return 0;
+  }
+  catch(std::runtime_error& e)
+  {
+    std::cout << "caught runtime error, exiting: " << e.what() << std::endl;
+  }
+  catch(std::exception& e)
+  {
+    std::cout << "caught exception, exiting: " << e.what() << std::endl;
+  }
+}
+
+int real_main(int argc, char* argv[])
+#else
+int main(int argc, char* argv[])
+#endif
+{
+#ifdef WIN_SERVICE
+  bool daemonized=true;
+#else
   bool daemonized=false;
+#endif  
   try 
   {
     cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
@@ -434,7 +470,7 @@ int main(int argc, char* argv[])
     ThreadParam p(dev, *src, *connTo);
 
     boost::thread senderThread(boost::bind(sender,&p));
-#ifndef NO_SIGNALCONTROLLER
+#if defined(WIN_SERVICE) || !defined(NO_SIGNALCONTROLLER)
     boost::thread receiverThread(boost::bind(receiver,&p)); 
 #endif
 #ifndef ANYTUN_NOSYNC
@@ -449,7 +485,10 @@ int main(int argc, char* argv[])
     }
 #endif
 
-#ifndef NO_SIGNALCONTROLLER
+#if defined(WIN_SERVICE)
+    int ret = 0;
+    gWinService.waitForStop();
+#elif !defined(NO_SIGNALCONTROLLER)
     int ret = sig.run();  
 #else
     receiver(&p);
@@ -480,6 +519,9 @@ int main(int argc, char* argv[])
     if(connTo)
       delete connTo;
     */
+#if defined(WIN_SERVICE)
+    gWinService.stop();
+#endif
     return ret; 
   }
   catch(std::runtime_error& e)
@@ -498,6 +540,10 @@ int main(int argc, char* argv[])
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
 #endif  
   }
+#if defined(WIN_SERVICE)
+  gWinService.stop();
+#endif
+  return -1;
 }
   
   
