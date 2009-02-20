@@ -36,6 +36,11 @@
 
 #include "threadUtils.hpp"
 
+#ifdef LOG_WINEVENTLOG
+#include <windows.h>
+#include <strsafe.h>
+#endif
+
 Log* Log::inst = NULL;
 Mutex Log::instMutex;
 Log& cLog = Log::instance();
@@ -71,11 +76,19 @@ LogStringBuilder::LogStringBuilder(Log& l, int p) : log(l), prio(p)
 LogStringBuilder::~LogStringBuilder() 
 {
 	Lock lock(log.mutex);
-#ifndef NO_SYSLOG
+#ifdef LOG_SYSLOG
 	syslog(prio | log.getFacility(), "%s", stream.str().c_str());	 
 #endif
 #ifdef LOG_STDOUT
 	std::cout << "LOG-" << Log::prioToString(prio) << ": " << stream.str() << std::endl;
+#endif
+#ifdef LOG_WINEVENTLOG
+  LPCTSTR lpszStrings[1];  
+  CHAR buffer[STERROR_TEXT_MAX];
+  StringCchPrintfA(buffer, STERROR_TEXT_MAX, "%s", stream.str().c_str());
+  lpszStrings[0] = buffer;
+  if(log.h_event_source_)
+    ReportEventA(log.h_event_source_, Log::prioToEventLogType(prio), 0, prio, NULL, 1, 0, lpszStrings, NULL);
 #endif
 }
 
@@ -98,12 +111,16 @@ Log::Log()
 
 Log::~Log()
 {
-#ifndef NO_SYSLOG
+#ifdef LOG_SYSLOG
 	closelog();
+#endif
+#ifdef LOG_WINEVENTLOG
+  if(h_event_source_)
+    DeregisterEventSource(h_event_source_);
 #endif
 }
 
-#ifdef NO_SYSLOG
+#ifdef LOG_STDOUT
 std::string Log::prioToString(int prio)
 {
 	switch(prio) {
@@ -119,11 +136,30 @@ std::string Log::prioToString(int prio)
 	}
 }
 #endif
+#ifdef LOG_WINEVENTLOG
+WORD Log::prioToEventLogType(int prio)
+{
+	switch(prio) {
+	case PRIO_EMERG: return EVENTLOG_ERROR_TYPE;
+	case PRIO_ALERT: return EVENTLOG_ERROR_TYPE;
+	case PRIO_CRIT: return EVENTLOG_ERROR_TYPE;
+	case PRIO_ERR: return EVENTLOG_ERROR_TYPE;
+	case PRIO_WARNING: return EVENTLOG_WARNING_TYPE;
+	case PRIO_NOTICE: return EVENTLOG_INFORMATION_TYPE;
+	case PRIO_INFO: return EVENTLOG_SUCCESS;
+	case PRIO_DEBUG: return EVENTLOG_INFORMATION_TYPE;
+	default: return EVENTLOG_ERROR_TYPE;
+	}
+}
+#endif
 
 void Log::open()
 {
-#ifndef NO_SYSLOG
+#ifdef LOG_SYSLOG
 	openlog(logName.c_str(), LOG_PID, facility);
+#endif
+#ifdef LOG_WINEVENTLOG
+  h_event_source_ = RegisterEventSourceA(NULL, logName.c_str());
 #endif
 }
 

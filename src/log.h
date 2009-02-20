@@ -34,14 +34,13 @@
 
 #include <string>
 #include <sstream>
-#ifndef NO_SYSLOG
+#ifdef LOG_SYSLOG
 #include <syslog.h>
 #endif
 
 #include "threadUtils.hpp"
 
-
-#define STERROR_TEXT_MAX 100
+#define STERROR_TEXT_MAX 200
 
 #ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
@@ -86,7 +85,7 @@ private:
 class Log : public std::ostringstream
 {
 public:
-#ifndef NO_SYSLOG
+#ifdef LOG_SYSLOG
   static const int FAC_USER = LOG_USER;
   static const int FAC_MAIL = LOG_MAIL;
   static const int FAC_DAEMON = LOG_DAEMON;
@@ -144,9 +143,14 @@ public:
   static const int PRIO_NOTICE = 6;
   static const int PRIO_INFO = 7;
   static const int PRIO_DEBUG = 8;
-
+#endif
+#ifdef LOG_STDOUT
   static std::string prioToString(int prio);
 #endif
+#ifdef LOG_WINEVENTLOG
+  static WORD prioToEventLogType(int prio);
+#endif
+
 
   static Log& instance();
 
@@ -180,6 +184,9 @@ private:
 
   std::string logName;
   int facility;
+#ifdef LOG_WINEVENTLOG
+  HANDLE h_event_source_;
+#endif
 };
 
 extern Log& cLog;
