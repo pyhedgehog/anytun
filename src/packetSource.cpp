@@ -33,12 +33,14 @@
 
 #include "datatypes.h"
 #include "packetSource.h"
+#include "log.h"
 
 UDPPacketSource::UDPPacketSource(std::string port) : sock_(io_service_)
 {
   proto::resolver resolver(io_service_);
   proto::resolver::query query(port);  
   proto::endpoint e = *resolver.resolve(query);
+  cLog.msg(Log::PRIO_NOTICE) << "openeing socket: " << e;
   sock_.open(e.protocol());
   sock_.bind(e);
 }
@@ -48,6 +50,7 @@ UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port) : sock
   proto::resolver resolver(io_service_);
   proto::resolver::query query(localaddr, port);  
   proto::endpoint e = *resolver.resolve(query);
+  cLog.msg(Log::PRIO_NOTICE) << "openeing socket: " << e;
   sock_.open(e.protocol());
   sock_.bind(e);  
 }

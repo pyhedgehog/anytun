@@ -212,7 +212,9 @@ void sender(void* p)
 
       try {
         param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
-      } catch (std::exception& e) { } // ignoring icmp port unreachable :) and other socket errors :(
+      } catch (std::exception& e) {
+		  cLog.msg(Log::PRIO_ERR) << "could not send data: " << e.what();
+	  } 
     }
   }
   catch(std::runtime_error& e) {
@@ -246,8 +248,10 @@ void receiver(void* p)
       int len;
       try {
         len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
-      } catch (std::exception& e) { continue; }
-          // ignoring icmp port unreachable :) and other socket errors :(
+      } catch (std::exception& e) { 
+		  cLog.msg(Log::PRIO_ERR) << "could not recive packet "<< e.what();
+		  continue; 
+	  }
       if(len < 0)
         continue; // silently ignore socket recv errors, this is probably no good idea...
 
