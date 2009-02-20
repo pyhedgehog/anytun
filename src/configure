@@ -32,7 +32,7 @@
 
 TARGET=`uname -s`
 
-CXXFLAGS='-g -Wall -O2'
+CXXFLAGS='-g -Wall -O2 -DLOG_SYSLOG'
 LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system'
 
 CRYPTO_LIB='gcrypt'
