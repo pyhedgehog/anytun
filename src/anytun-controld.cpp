@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
       }
       StringList targets = gOpt.getLogTargets();
       if(targets.empty()) {
-        cLog.addTarget("syslog:7,anytun-controld,daemon");
+        cLog.addTarget("syslog:5,anytun-controld,daemon");
       }
       else {
         StringList::const_iterator it;
