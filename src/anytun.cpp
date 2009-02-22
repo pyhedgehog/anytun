@@ -362,32 +362,38 @@ int main(int argc, char* argv[])
   {
     try 
     {
-#ifndef _MSC_VER
-      cLog.addTarget("syslog:7,anytun,daemon");
-#else
- #ifdef WIN_SERVICE
-      cLog.addTarget("eventlog:7,anytun");
- #else
-      cLog.addTarget("stdout:7");
- #endif
-#endif
-      cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
-///  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
-
       bool result = gOpt.parse(argc, argv);
       if(!result) {
-        cLog.msg(Log::PRIO_NOTICE) << "printing help text and exitting";
         gOpt.printUsage();
         exit(0);
+      }
+      StringList targets = gOpt.getLogTargets();
+      if(targets.empty()) {
+#ifndef _MSC_VER
+      cLog.addTarget("syslog:5,anytun,daemon");
+#else
+ #ifdef WIN_SERVICE
+      cLog.addTarget("eventlog:5,anytun");
+ #else
+      cLog.addTarget("stdout:5");
+ #endif
+#endif
+      }
+      else {
+        StringList::const_iterator it;
+        for(it = targets.begin();it != targets.end(); ++it)
+          cLog.addTarget(*it);
       }
     }
     catch(syntax_error& e)
     {
       std::cerr << e << std::endl;
-      cLog.msg(Log::PRIO_ERR) << "exitting after syntax error";
       gOpt.printUsage();
       exit(-1);
     }
+
+    cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
+    gOpt.parse_post(); // print warnings
 
 #ifndef NO_DAEMON
 #ifndef NO_PRIVDROP

@@ -75,12 +75,15 @@ public:
 typedef std::list<OptionNetwork> NetworkList;
 std::istream& operator>>(std::istream& stream, OptionNetwork& network);
 
+typedef std::list<std::string> StringList;
+
 class Options
 {
 public:
   static Options& instance();
 
   bool parse(int argc, char* argv[]);
+  void parse_post();
   void printUsage();
   void printOptions();
 
@@ -96,6 +99,8 @@ public:
   Options& setChrootDir(std::string c);
   std::string getPidFile();
   Options& setPidFile(std::string p);
+
+  StringList getLogTargets();
 
   std::string getFileName();
   Options& setFileName(std::string f);
@@ -178,6 +183,8 @@ private:
   std::string groupname_;
   std::string chroot_dir_;
   std::string pid_file_;
+
+  StringList log_targets_;
 
   std::string file_name_;
   OptionHost bind_to_;

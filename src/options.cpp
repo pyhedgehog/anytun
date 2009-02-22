@@ -294,10 +294,23 @@ Options::~Options()
         u_int32_t pos = str.length() + 1;                                       \
         throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
       }                                                                         \
-      std::stringstream tmp;                                                    \
       VALUE = argv[i+1];                                                        \
       for(size_t j=0; j < strlen(argv[i+1]); ++j)                               \
         argv[i+1][j] = '#';                                                     \
+      argc--;                                                                   \
+      i++;                                                                      \
+    }
+
+#define PARSE_STRING_LIST(SHORT, LONG, LIST)                                    \
+    else if(str == SHORT || str == LONG)                                        \
+    {                                                                           \
+      if(argc < 1)                                                              \
+        throw syntax_error(str, str.length());                                  \
+      if(argv[i+1][0] == '-') {                                                 \
+        u_int32_t pos = str.length() + 1;                                       \
+        throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
+      }                                                                         \
+      LIST.push_back(argv[i+1]);                                                \
       argc--;                                                                   \
       i++;                                                                      \
     }
@@ -328,6 +341,9 @@ bool Options::parse(int argc, char* argv[])
   #endif
 
 #endif
+
+    PARSE_STRING_LIST("-L","--log", log_targets_)
+
 #if defined(ANYCTR_OPTIONS)
 
     PARSE_SCALAR_PARAM("-f","--file", file_name_)
@@ -396,15 +412,18 @@ bool Options::parse(int argc, char* argv[])
   }
   ld_kdr_ = static_cast<int8_t>(ld_kdr_tmp);
 
+  return true;
+}
+
+void Options::parse_post()
+{
   if(cipher_ == "null" && auth_algo_ == "null")
     kd_prf_ = "null";
   if((cipher_ != "null" || auth_algo_ != "null") && kd_prf_ == "null")
     cLog.msg(Log::PRIO_WARNING) << "using NULL key derivation with encryption and or authentication enabled!";
-
+  
   if(dev_name_ == "" && dev_type_ == "")
     dev_type_ = "tun";
-
-  return true;
 }
 
 void Options::printUsage()
@@ -432,6 +451,10 @@ void Options::printUsage()
  #endif
 
 #endif
+
+  std::cout << "   [-L|--log] <target>:<level>[,<param1>[,<param2>..]]" << std::endl;
+  std::cout << "                                       add a log target" << std::endl;
+
 #if defined(ANYCTR_OPTIONS)
 
   std::cout << "   [-f|--file] <path>                  path to input file" << std::endl;
@@ -512,6 +535,11 @@ void Options::printOptions()
   std::cout << "chroot_dir = '" << chroot_dir_ << "'" << std::endl;
   std::cout << "pid_file = '" << pid_file_ << "'" << std::endl;
   std::cout << std::endl;
+  std::cout << "log_targets:";
+  StringList::const_iterator lit = log_targets_.begin();
+  for(; lit != log_targets_.end(); ++lit)
+    std::cout << " '" << *lit << "',";
+  std::cout << std::endl << std::endl;
   std::cout << "file_name = '" << file_name_ << "'" << std::endl;
   std::cout << "bind_to.addr = '" << bind_to_.addr << "'" << std::endl;
   std::cout << "bind_to.port = '" << bind_to_.port << "'" << std::endl;
@@ -523,9 +551,9 @@ void Options::printOptions()
   std::cout << "local_sync.addr = '" << local_sync_.addr << "'" << std::endl;
   std::cout << "local_sync.port = '" << local_sync_.port << "'" << std::endl;
   std::cout << "remote_sync_hosts:" << std::endl;
-  HostList::const_iterator it = remote_sync_hosts_.begin();
-  for(; it != remote_sync_hosts_.end(); ++it)
-    std::cout << "  '" << it->addr << "','" << it->port << "'" << std::endl;
+  HostList::const_iterator hit = remote_sync_hosts_.begin();
+  for(; hit != remote_sync_hosts_.end(); ++hit)
+    std::cout << "  '" << hit->addr << "','" << hit->port << "'" << std::endl;
   std::cout << std::endl;
   std::cout << "dev_name = '" << dev_name_ << "'" << std::endl;
   std::cout << "dev_type = '" << dev_type_ << "'" << std::endl;
@@ -628,6 +656,14 @@ Options& Options::setPidFile(std::string p)
   WritersLock lock(mutex);
   pid_file_ = p;
   return *this;
+}
+
+
+
+StringList Options::getLogTargets()
+{
+  ReadersLock lock(mutex);
+  return log_targets_;
 }
 
 
