@@ -55,7 +55,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
   seq_nr_t seq_nr_ = 0;
   KeyDerivation * kd = KeyDerivationFactory::create( gOpt.getKdPrf() , gOpt.getAnytun02Compat() );
   kd->init( gOpt.getKey(), gOpt.getSalt() );
-//  cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
+  cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
   ConnectionParam connparam ( (*kd), (*seq), seq_nr_, remote_end );
   cl.addConnection( connparam, mux );
 
@@ -89,6 +89,7 @@ int main(int argc, char* argv[])
   int ret=0;
   try 
   {
+    cLog.addTarget("stderr:4");
     bool result = gOpt.parse(argc, argv);
     if(!result) {
       gOpt.printUsage();
@@ -98,7 +99,7 @@ int main(int argc, char* argv[])
   catch(syntax_error& e)
   {
     std::cerr << e << std::endl;
-//    cLog.msg(Log::PRIO_NOTICE) << "exitting after syntax error";
+    cLog.msg(Log::PRIO_ERR) << "exitting after syntax error";
     gOpt.printUsage();
     exit(-1);
   }

@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
   bool daemonized=false;
   try 
   {
-    cLog.setLogName("anytun-controld");
+    cLog.addTarget("syslog:7,anytun-controld,daemon");
     cLog.msg(Log::PRIO_NOTICE) << "anytun-controld started...";
   
     try 

@@ -34,7 +34,8 @@
 
 #include <string>
 #include <sstream>
-#include <fstream>
+
+#include "logTargets.h"
 
 #ifdef LOG_SYSLOG
 #include <syslog.h>
@@ -88,26 +89,6 @@ class Log : public std::ostringstream
 {
 public:
 #ifdef LOG_SYSLOG
-  static const int FAC_USER = LOG_USER;
-  static const int FAC_MAIL = LOG_MAIL;
-  static const int FAC_DAEMON = LOG_DAEMON;
-  static const int FAC_AUTH = LOG_AUTH;
-  static const int FAC_SYSLOG = LOG_SYSLOG;
-  static const int FAC_LPR = LOG_LPR;
-  static const int FAC_NEWS = LOG_NEWS;
-  static const int FAC_UUCP = LOG_UUCP;
-  static const int FAC_CRON = LOG_CRON;
-  static const int FAC_AUTHPRIV = LOG_AUTHPRIV;
-  static const int FAC_FTP = LOG_FTP;
-  static const int FAC_LOCAL0 = LOG_LOCAL0;
-  static const int FAC_LOCAL1 = LOG_LOCAL1;
-  static const int FAC_LOCAL2 = LOG_LOCAL2;
-  static const int FAC_LOCAL3 = LOG_LOCAL3;
-  static const int FAC_LOCAL4 = LOG_LOCAL4;
-  static const int FAC_LOCAL5 = LOG_LOCAL5;
-  static const int FAC_LOCAL6 = LOG_LOCAL6;
-  static const int FAC_LOCAL7 = LOG_LOCAL7;
-
   static const int PRIO_EMERG = LOG_EMERG;
   static const int PRIO_ALERT = LOG_ALERT;
   static const int PRIO_CRIT = LOG_CRIT;
@@ -117,54 +98,26 @@ public:
   static const int PRIO_INFO = LOG_INFO;
   static const int PRIO_DEBUG = LOG_DEBUG;
 #else
-  static const int FAC_USER = 0;
-  static const int FAC_MAIL = 0;
-  static const int FAC_DAEMON = 0;
-  static const int FAC_AUTH = 0;
-  static const int FAC_SYSLOG = 0;
-  static const int FAC_LPR = 0;
-  static const int FAC_NEWS = 0;
-  static const int FAC_UUCP = 0;
-  static const int FAC_CRON = 0;
-  static const int FAC_AUTHPRIV = 0;
-  static const int FAC_FTP = 0;
-  static const int FAC_LOCAL0 = 0;
-  static const int FAC_LOCAL1 = 0;
-  static const int FAC_LOCAL2 = 0;
-  static const int FAC_LOCAL3 = 0;
-  static const int FAC_LOCAL4 = 0;
-  static const int FAC_LOCAL5 = 0;
-  static const int FAC_LOCAL6 = 0;
-  static const int FAC_LOCAL7 = 0;
-
-  static const int PRIO_EMERG = 1;
-  static const int PRIO_ALERT = 2;
-  static const int PRIO_CRIT = 3;
-  static const int PRIO_ERR = 4;
-  static const int PRIO_WARNING = 5;
-  static const int PRIO_NOTICE = 6;
-  static const int PRIO_INFO = 7;
-  static const int PRIO_DEBUG = 8;
+  static const int PRIO_EMERG = 0;
+  static const int PRIO_ALERT = 1;
+  static const int PRIO_CRIT = 2;
+  static const int PRIO_ERR = 3;
+  static const int PRIO_WARNING = 4;
+  static const int PRIO_NOTICE = 5;
+  static const int PRIO_INFO = 6;
+  static const int PRIO_DEBUG = 7;
 #endif
-#if defined(LOG_STDOUT) || defined(LOG_FILE)
   static std::string prioToString(int prio);
-#endif
-#ifdef LOG_WINEVENTLOG
-  static WORD prioToEventLogType(int prio);
-#endif
 
   static Log& instance();
 
-  Log& setLogName(std::string newLogName); 
-  std::string getLogName() const { return logName; }
-  Log& setFacility(int newFacility);
-  int getFacility() const { return facility; }
-
+  void addTarget(std::string conf);
+  void addTarget(LogTargetList::target_type_t type, int prio, std::string conf);
   LogStringBuilder msg(int prio=PRIO_INFO) { return LogStringBuilder(*this, prio); }
 
 private:
-  Log();
-  ~Log();
+  Log() {};
+  ~Log() {};
   Log(const Log &l);
   void operator=(const Log &l);
 
@@ -178,20 +131,12 @@ private:
   };
   friend class instanceCleaner;
 
-  void open();
   void log(std::string msg, int prio);
 
   Mutex mutex;
   friend class LogStringBuilder;
 
-  std::string logName;
-  int facility;
-#ifdef LOG_FILE
-  std::ofstream log_file;
-#endif
-#ifdef LOG_WINEVENTLOG
-  HANDLE h_event_source_;
-#endif
+  LogTargetList targets;
 };
 
 extern Log& cLog;

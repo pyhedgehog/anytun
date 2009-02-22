@@ -360,11 +360,12 @@ int main(int argc, char* argv[])
 #endif  
   try 
   {
-    cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
-///  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
-
     try 
     {
+      cLog.addTarget("syslog:7,anytun,daemon");
+      cLog.msg(Log::PRIO_DEBUG) << "anytun started...";
+///  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
+
       bool result = gOpt.parse(argc, argv);
       if(!result) {
         cLog.msg(Log::PRIO_NOTICE) << "printing help text and exitting";
@@ -375,7 +376,7 @@ int main(int argc, char* argv[])
     catch(syntax_error& e)
     {
       std::cerr << e << std::endl;
-      cLog.msg(Log::PRIO_NOTICE) << "exitting after syntax error";
+      cLog.msg(Log::PRIO_ERR) << "exitting after syntax error";
       gOpt.printUsage();
       exit(-1);
     }
@@ -532,18 +533,14 @@ int main(int argc, char* argv[])
   catch(std::runtime_error& e)
   {
     cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
-#ifndef LOG_STDOUT
-	if(!daemonized)
+    if(!daemonized)
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
-#endif
   }
   catch(std::exception& e)
   {
     cLog.msg(Log::PRIO_ERR) << "uncaught exception, exiting: " << e.what();
-#ifndef LOG_STDOUT    
-	if(!daemonized)
+    if(!daemonized)
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
-#endif  
   }
 #if defined(WIN_SERVICE)
   gWinService.stop();

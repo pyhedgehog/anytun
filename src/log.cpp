@@ -36,11 +36,6 @@
 
 #include "threadUtils.hpp"
 
-#ifdef LOG_WINEVENTLOG
-#include <windows.h>
-#include <strsafe.h>
-#endif
-
 Log* Log::inst = NULL;
 Mutex Log::instMutex;
 Log& cLog = Log::instance();
@@ -59,7 +54,6 @@ std::ostream& operator<<(std::ostream& stream, LogGpgError const& value)
 std::ostream& operator<<(std::ostream& stream, LogErrno const& value)
 {
   boost::system::system_error err(boost::system::error_code(value.err_,boost::system::get_system_category()));
-//  boost::system::system_error err(boost::system::error_code(value.err_,boost::system::get_posix_category()));
   return stream << err.what();
 }
 
@@ -88,65 +82,28 @@ Log& Log::instance()
   return *inst;
 }
 
-Log::Log()
+void Log::addTarget(std::string conf)
 {
-  facility = FAC_DAEMON;
-  logName = "anytun";
-  open();
+  Lock lock(mutex);
+  LogTarget* target = targets.add(conf);
+  target->open();
+  target->enable();
 }
 
-Log::~Log()
+void Log::addTarget(LogTargetList::target_type_t type, int prio, std::string conf)
 {
-#ifdef LOG_SYSLOG
-  closelog();
-#endif
-#ifdef LOG_FILE
-  if(log_file.is_open())
-    log_file.close();
-#endif
-#ifdef LOG_WINEVENTLOG
-  if(h_event_source_)
-    DeregisterEventSource(h_event_source_);
-#endif
-}
-
-void Log::open()
-{
-#ifdef LOG_SYSLOG
-  openlog(logName.c_str(), LOG_PID, facility);
-#endif
-#ifdef LOG_FILE
-  log_file.open("anytun.log", std::fstream::out | std::fstream::app);
-#endif
-#ifdef LOG_WINEVENTLOG
-  h_event_source_ = RegisterEventSourceA(NULL, logName.c_str());
-#endif
+  Lock lock(mutex);
+  LogTarget* target = targets.add(type, prio, conf);
+  target->open();
+  target->enable();
 }
 
 void Log::log(std::string msg, int prio)
 {
   Lock lock(mutex);
-#ifdef LOG_SYSLOG
-  syslog(prio | facility, "%s", msg.c_str());  
-#endif
-#ifdef LOG_STDOUT
-  std::cout << "LOG-" << Log::prioToString(prio) << ": " << msg << std::endl;
-#endif
-#ifdef LOG_FILE
-  if(log_file.is_open())
-    log_file << Log::prioToString(prio) << ": " << msg << std::endl;
-#endif
-#ifdef LOG_WINEVENTLOG
-  LPCTSTR lpszStrings[1];  
-  CHAR buffer[STERROR_TEXT_MAX];
-  StringCchPrintfA(buffer, STERROR_TEXT_MAX, "%s", msg.c_str());
-  lpszStrings[0] = buffer;
-  if(log.h_event_source_)
-    ReportEventA(log.h_event_source_, Log::prioToEventLogType(prio), 0, prio, NULL, 1, 0, lpszStrings, NULL);
-#endif
+  targets.log(msg, prio);
 }
 
-#if defined(LOG_STDOUT) || defined(LOG_FILE)
 std::string Log::prioToString(int prio)
 {
   switch(prio) {
@@ -160,35 +117,4 @@ std::string Log::prioToString(int prio)
   case PRIO_DEBUG: return "DEBUG";
   default: return "UNKNOWN";
   }
-}
-#endif
-#ifdef LOG_WINEVENTLOG
-WORD Log::prioToEventLogType(int prio)
-{
-  switch(prio) {
-  case PRIO_EMERG: return EVENTLOG_ERROR_TYPE;
-  case PRIO_ALERT: return EVENTLOG_ERROR_TYPE;
-  case PRIO_CRIT: return EVENTLOG_ERROR_TYPE;
-  case PRIO_ERR: return EVENTLOG_ERROR_TYPE;
-  case PRIO_WARNING: return EVENTLOG_WARNING_TYPE;
-  case PRIO_NOTICE: return EVENTLOG_INFORMATION_TYPE;
-  case PRIO_INFO: return EVENTLOG_SUCCESS;
-  case PRIO_DEBUG: return EVENTLOG_INFORMATION_TYPE;
-  default: return EVENTLOG_ERROR_TYPE;
-  }
-}
-#endif
-
-Log& Log::setLogName(std::string newLogName)
-{
-  logName = newLogName;
-  open();
-  return *this;
-}
-
-Log& Log::setFacility(int newFacility)
-{
-  facility = newFacility;
-  open();
-  return *this;
 }

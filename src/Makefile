@@ -50,6 +50,7 @@ OBJS := tunDevice.o \
 			 routingTable.o \
        signalController.o \
        log.o \
+       logTargets.o \
        options.o \
        seqWindow.o \
 			 routingTreeNode.o \
@@ -66,10 +67,12 @@ ANYCTROBJS := signalController.o \
 							anyCtrOptions.o \
 						 buffer.o \
 						 log.o \
+						 logTargets.o \
 						 syncTcpConnection.o \
 						 syncServer.o
 
 ANYCONFOBJS := log.o \
+						 logTargets.o \
 						 buffer.o \
 						 keyDerivation.o \
 						 keyDerivationFactory.o \
@@ -141,13 +144,13 @@ anytun-controld: $(ANYCTROBJS) anytun-controld.o
 
 
 options.o: options.cpp 
-	$(CXX) -DANYTUN_OPTIONS $(CXXFLAGS) $< -c -o $@
+	$(CXX) $(CXXFLAGS) -DANYTUN_OPTIONS $< -c -o $@
 
 anyCtrOptions.o: options.cpp 
-	$(CXX) -DANYCTR_OPTIONS $(CXXFLAGS) $< -c -o $@
+	$(CXX) $(CXXFLAGS) -DANYCTR_OPTIONS $< -c -o $@
 
 anyConfOptions.o: options.cpp 
-	$(CXX) -DANYCONF_OPTIONS $(CXXFLAGS) $< -c -o $@
+	$(CXX) $(CXXFLAGS) -DANYCONF_OPTIONS $< -c -o $@
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c
