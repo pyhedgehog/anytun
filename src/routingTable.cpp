@@ -31,7 +31,7 @@
 #include "networkPrefix.h"
 #include "threadUtils.hpp"
 #include "datatypes.h"
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 #include "routingTable.h"
 #include "routingTree.hpp"

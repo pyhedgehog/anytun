@@ -47,7 +47,7 @@
 #include "tunDevice.h"
 #include "threadUtils.hpp"
 #include "log.h"
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 #define DEVICE_FILE_MAX 255
 
@@ -95,7 +95,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     if(dynamic)
       AnytunError::throwErr() << "can't open device file dynamically: no unused node left";
     else
-      AnytunError::throwErr() << "can't open device file (" << device_file << "): " << LogErrno(errno);
+      AnytunError::throwErr() << "can't open device file (" << device_file << "): " << AnytunErrno(errno);
   }
 
   if(dynamic) {
@@ -254,7 +254,7 @@ void TunDevice::do_ifconfig()
 
   int result = system(command.str().c_str());
   if(result == -1)
-    cLog.msg(Log::PRIO_ERR) << "Execution of ifconfig failed" << LogErrno(errno);
+    cLog.msg(Log::PRIO_ERR) << "Execution of ifconfig failed" << AnytunErrno(errno);
   else {
     if(WIFEXITED(result))
       cLog.msg(Log::PRIO_NOTICE) << "ifconfig returned " << WEXITSTATUS(result);  

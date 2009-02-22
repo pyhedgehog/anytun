@@ -31,7 +31,6 @@
 
 #include <iostream>
 #include <string>
-#include <boost/system/system_error.hpp>
 #include "log.h"
 
 #include "threadUtils.hpp"
@@ -39,23 +38,6 @@
 Log* Log::inst = NULL;
 Mutex Log::instMutex;
 Log& cLog = Log::instance();
-
-#ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
-std::ostream& operator<<(std::ostream& stream, LogGpgError const& value) 
-{
-  char buf[STERROR_TEXT_MAX];
-  buf[0] = 0;
-  gpg_strerror_r(value.err_, buf, STERROR_TEXT_MAX);
-  return stream << buf;
-}
-#endif
-#endif
-std::ostream& operator<<(std::ostream& stream, LogErrno const& value)
-{
-  boost::system::system_error err(boost::system::error_code(value.err_,boost::system::get_system_category()));
-  return stream << err.what();
-}
 
 LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), prio(src.prio) 
 {

@@ -31,6 +31,7 @@
 
 
 #include "log.h"
+#include "anytunError.h"
 #include "keyDerivation.h"
 #include "threadUtils.hpp"
 #include "datatypes.h"
@@ -225,13 +226,13 @@ void AesIcmKeyDerivation::updateMasterKey()
     
     gcry_error_t err = gcry_cipher_open(&handle_[i], algo, GCRY_CIPHER_MODE_CTR, 0);
     if(err) {
-      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to open cipher: " << LogGpgError(err);
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to open cipher: " << AnytunGpgError(err);
       return;
     } 
     
     err = gcry_cipher_setkey(handle_[i], master_key_.getBuf(), master_key_.getLength());
     if(err) {
-      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << LogGpgError(err);
+      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << AnytunGpgError(err);
       return;
     }
   }
@@ -309,19 +310,19 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << LogGpgError(err);
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << AnytunGpgError(err);
   }
 
   err = gcry_cipher_setctr(handle_[dir], ctr_[dir].buf_, CTR_LENGTH);
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set CTR: " << LogGpgError(err);
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set CTR: " << AnytunGpgError(err);
     return false;
   }
 
   std::memset(key.getBuf(), 0, key.getLength());
   err = gcry_cipher_encrypt(handle_[dir], key, key.getLength(), NULL, 0);
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << LogGpgError(err);
+    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << AnytunGpgError(err);
   }
   return true;
 #else

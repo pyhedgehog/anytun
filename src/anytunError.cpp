@@ -29,29 +29,25 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ANYTUN_ERROR_HPP
-#define _ANYTUN_ERROR_HPP
+#include "anytunError.h"
 
 #include <sstream>
+#include <boost/system/system_error.hpp>
 
-class ErrorStringBuilder 
+#ifndef NO_CRYPT
+#ifndef USE_SSL_CRYPTO
+std::ostream& operator<<(std::ostream& stream, AnytunGpgError const& value)
 {
-public:
-  ErrorStringBuilder(ErrorStringBuilder const& src) { stream << src.stream.str(); };
-  ErrorStringBuilder() {};
-  ~ErrorStringBuilder() { throw std::runtime_error(stream.str()); };
-
-  template<class T>
-  std::ostream& operator<<(T const& value) { return stream << value; }
-
-private:
-  std::stringstream stream;
-};
-
-class AnytunError
-{
-public:
-  static ErrorStringBuilder throwErr() { return ErrorStringBuilder(); }
-};
-
+  char buf[STERROR_TEXT_MAX];
+  buf[0] = 0;
+  gpg_strerror_r(value.err_, buf, STERROR_TEXT_MAX);
+  return stream << buf;
+}
 #endif
+#endif
+
+std::ostream& operator<<(std::ostream& stream, AnytunErrno const& value)
+{
+  boost::system::system_error err(boost::system::error_code(value.err_, boost::system::get_system_category()));
+  return stream << err.what();
+}

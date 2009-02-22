@@ -34,7 +34,7 @@
 
 #include "networkAddress.h"
 #include <boost/asio.hpp>
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 class TunDevice;
 

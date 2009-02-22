@@ -34,7 +34,7 @@
 #include <exception>
 
 #include "networkAddress.h"
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 NetworkAddress::NetworkAddress():ipv4_address_(),ipv6_address_()
 {

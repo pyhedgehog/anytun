@@ -87,19 +87,19 @@ void RegistryKey::close()
 std::string RegistryKey::operator[](std::string const& name) const
 {
   if(!opened_)
-    throw LogErrno(ERROR_INVALID_HANDLE);
+    throw AnytunErrno(ERROR_INVALID_HANDLE);
 
   char value[STRING_VALUE_LENGTH];
   DWORD len = sizeof(value);
   LONG err = RegQueryValueExA(key_, name.c_str(), NULL, NULL, (LPBYTE)value, &len);
   if(err != ERROR_SUCCESS)
-    throw LogErrno(err);
+    throw AnytunErrno(err);
 
   if(value[len-1] != 0) {
     if(len < sizeof(value))
       value[len++] = 0;
     else
-      throw LogErrno(ERROR_INSUFFICIENT_BUFFER);
+      throw AnytunErrno(ERROR_INSUFFICIENT_BUFFER);
   }  
   return std::string(value);
 }

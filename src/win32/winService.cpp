@@ -37,7 +37,7 @@
 
 #include "winService.h"
 #include "../log.h"
-#include "../anytunError.hpp"
+#include "../anytunError.h"
 #include "../threadUtils.hpp"
 
 WinService* WinService::inst = NULL;
@@ -67,17 +67,17 @@ void WinService::install()
   char szPath[MAX_PATH];
 
   if(!GetModuleFileNameA(NULL, szPath, MAX_PATH))
-    AnytunError::throwErr() << "Error on GetModuleFileName: " << LogErrno(GetLastError());
+    AnytunError::throwErr() << "Error on GetModuleFileName: " << AnytunErrno(GetLastError());
 
   schSCManager = OpenSCManagerA(NULL, NULL, SC_MANAGER_ALL_ACCESS);
   if(NULL == schSCManager)
-    AnytunError::throwErr() << "Error on OpenSCManager: " << LogErrno(GetLastError());
+    AnytunError::throwErr() << "Error on OpenSCManager: " << AnytunErrno(GetLastError());
 
   schService = CreateServiceA(schSCManager, SVC_NAME, SVC_NAME, SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS, 
                               SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL, szPath, NULL, NULL, NULL, NULL, NULL);
   if(schService == NULL) {
     CloseServiceHandle(schSCManager);
-    AnytunError::throwErr() << "Error on CreateService: " << LogErrno(GetLastError());
+    AnytunError::throwErr() << "Error on CreateService: " << AnytunErrno(GetLastError());
   }
 
   std::cout << "Service installed successfully" << std::endl; 
@@ -93,18 +93,18 @@ void WinService::uninstall()
 
   schSCManager = OpenSCManagerA(NULL, NULL, SC_MANAGER_ALL_ACCESS);
   if(NULL == schSCManager)
-    AnytunError::throwErr() << "Error on OpenSCManager: " << LogErrno(GetLastError());
+    AnytunError::throwErr() << "Error on OpenSCManager: " << AnytunErrno(GetLastError());
 
   schService = OpenServiceA(schSCManager, SVC_NAME, SERVICE_ALL_ACCESS);
   if(schService == NULL) {
     CloseServiceHandle(schSCManager);
-    AnytunError::throwErr() << "Error on CreateService: " << LogErrno(GetLastError());
+    AnytunError::throwErr() << "Error on CreateService: " << AnytunErrno(GetLastError());
   }
 
   if(!DeleteService(schService)) {
     CloseServiceHandle(schService); 
     CloseServiceHandle(schSCManager);
-    AnytunError::throwErr() << "Error on DeleteService: " << LogErrno(GetLastError());
+    AnytunError::throwErr() << "Error on DeleteService: " << AnytunErrno(GetLastError());
   }
 
   std::cout << "Service uninstalled successfully" << std::endl; 
@@ -121,7 +121,7 @@ void WinService::start()
   };
 
   if(!StartServiceCtrlDispatcherA(DispatchTable))
-    AnytunError::throwErr() << "Error on StartServiceCtrlDispatcher: " << LogErrno(GetLastError());
+    AnytunError::throwErr() << "Error on StartServiceCtrlDispatcher: " << AnytunErrno(GetLastError());
 }
 
 void WinService::waitForStop()
@@ -153,7 +153,7 @@ VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
 
   gWinService.status_handle_ = RegisterServiceCtrlHandlerA(SVC_NAME, WinService::ctrlHandler);
   if(!gWinService.status_handle_) { 
-    cLog.msg(Log::PRIO_ERR) << "Error on RegisterServiceCtrlHandler: " << LogErrno(GetLastError());
+    cLog.msg(Log::PRIO_ERR) << "Error on RegisterServiceCtrlHandler: " << AnytunErrno(GetLastError());
     return;
   }
   gWinService.status_.dwServiceType = SERVICE_WIN32_OWN_PROCESS; 
@@ -163,7 +163,7 @@ VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
   
   gWinService.stop_event_ = CreateEvent(NULL, true, false, NULL);
   if(!gWinService.stop_event_) {
-    cLog.msg(Log::PRIO_ERR) << "WinService Error on CreateEvent: " << LogErrno(GetLastError());
+    cLog.msg(Log::PRIO_ERR) << "WinService Error on CreateEvent: " << AnytunErrno(GetLastError());
     gWinService.reportStatus(SERVICE_STOPPED, -1);
     return;
   }

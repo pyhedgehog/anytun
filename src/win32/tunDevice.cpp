@@ -38,7 +38,7 @@
 #include "../tunDevice.h"
 #include "../threadUtils.hpp"
 #include "../log.h"
-#include "../anytunError.hpp"
+#include "../anytunError.h"
 
 #include "registryKey.h"
 #include "common.h"
@@ -60,7 +60,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 	  tapname << USERMODEDEVICEDIR << actual_node_ << TAPSUFFIX;
     handle_ = CreateFileA(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
     if(handle_ == INVALID_HANDLE_VALUE)
-      AnytunError::throwErr() << "Unable to open device: " << actual_node_ << " (" << actual_name_ << "): " << LogErrno(GetLastError());
+      AnytunError::throwErr() << "Unable to open device: " << actual_node_ << " (" << actual_name_ << "): " << AnytunErrno(GetLastError());
   }
 
   DWORD err;
@@ -69,7 +69,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   err = performIoControl(TAP_IOCTL_GET_VERSION, info, sizeof(info), info, sizeof(info));
   if(err != ERROR_SUCCESS) {
     CloseHandle(handle_);
-    AnytunError::throwErr() << "Unable to get device version: " << LogErrno(err);
+    AnytunError::throwErr() << "Unable to get device version: " << AnytunErrno(err);
   }
   cLog.msg(Log::PRIO_NOTICE) << "Windows TAP Driver Version " << info[0] << "." << info[1] << " " << (info[2] ? "(DEBUG)" : "");
   if(!(info[0] > MIN_TAP_VER_MAJOR || (info[0] == MIN_TAP_VER_MAJOR && info[1] >= MIN_TAP_VER_MINOR))) {
@@ -85,7 +85,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     err = performIoControl(TAP_IOCTL_CONFIG_TUN, ep, sizeof(ep), ep, sizeof(ep));
     if(err != ERROR_SUCCESS) {
       CloseHandle(handle_);
-      AnytunError::throwErr() << "Unable to set device tun mode: " << LogErrno(err);
+      AnytunError::throwErr() << "Unable to set device tun mode: " << AnytunErrno(err);
     }
   }
 
@@ -96,7 +96,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   err = performIoControl(TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status));
   if(err != ERROR_SUCCESS) {
     CloseHandle(handle_);
-    AnytunError::throwErr() << "Unable to set device media status: " << LogErrno(err);
+    AnytunError::throwErr() << "Unable to set device media status: " << AnytunErrno(err);
 	}
 
   roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -108,7 +108,7 @@ bool TunDevice::getAdapter(std::string const& dev_name)
   RegistryKey akey;
   DWORD err = akey.open(HKEY_LOCAL_MACHINE, ADAPTER_KEY, KEY_ENUMERATE_SUB_KEYS);
   if(err != ERROR_SUCCESS)
-    AnytunError::throwErr() << "Unable to open registry key (HKLM\\" << ADAPTER_KEY << "): " << LogErrno(err);
+    AnytunError::throwErr() << "Unable to open registry key (HKLM\\" << ADAPTER_KEY << "): " << AnytunErrno(err);
   
   bool found = false;
   for(int i=0; ; ++i) {
@@ -132,7 +132,7 @@ bool TunDevice::getAdapter(std::string const& dev_name)
         continue;
 	  
 	  actual_name_ = nkey["Name"];
-	} catch(LogErrno& e) { continue; }
+	} catch(AnytunErrno& e) { continue; }
 
     if(dev_name != "") {
       if(dev_name == actual_name_) {
@@ -207,12 +207,12 @@ int TunDevice::read(u_int8_t* buf, u_int32_t len)
     if(err == ERROR_IO_PENDING) {
       WaitForSingleObject(roverlapped_.hEvent, INFINITE);
       if(!GetOverlappedResult(handle_, &roverlapped_, &lenout, FALSE)) {
-        cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << LogErrno(GetLastError());
+        cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << AnytunErrno(GetLastError());
         return -1;
       }
     }
     else {
-      cLog.msg(Log::PRIO_ERR) << "Error while reading from device: " << LogErrno(GetLastError());
+      cLog.msg(Log::PRIO_ERR) << "Error while reading from device: " << AnytunErrno(GetLastError());
       return -1;
     }
   }
@@ -231,12 +231,12 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
     if(err == ERROR_IO_PENDING) {
       WaitForSingleObject(woverlapped_.hEvent, INFINITE);
       if(!GetOverlappedResult(handle_, &woverlapped_, &lenout, FALSE)) {
-        cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << LogErrno(GetLastError());
+        cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << AnytunErrno(GetLastError());
         return -1;
       }
     }
     else {
-      cLog.msg(Log::PRIO_ERR) << "Error while writing to device: " << LogErrno(GetLastError());
+      cLog.msg(Log::PRIO_ERR) << "Error while writing to device: " << AnytunErrno(GetLastError());
       return -1;
     }
   }
@@ -258,14 +258,14 @@ void TunDevice::do_ifconfig()
   DWORD err = performIoControl(TAP_IOCTL_CONFIG_DHCP_MASQ, ep, sizeof(ep), ep, sizeof(ep));
   if(err != ERROR_SUCCESS) {
     CloseHandle(handle_);
-    AnytunError::throwErr() << "Unable to set device dhcp masq mode: " << LogErrno(err);
+    AnytunError::throwErr() << "Unable to set device dhcp masq mode: " << AnytunErrno(err);
 	}
 
   u_long mtu;
   err = performIoControl(TAP_IOCTL_GET_MTU, &mtu, sizeof(mtu), &mtu, sizeof(mtu));
   if(err != ERROR_SUCCESS) {
     CloseHandle(handle_);
-    AnytunError::throwErr() << "Unable to get device mtu: " << LogErrno(err);
+    AnytunError::throwErr() << "Unable to get device mtu: " << AnytunErrno(err);
 	}
   conf_.mtu_ = static_cast<u_int16_t>(mtu);
 }

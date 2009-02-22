@@ -42,7 +42,7 @@
 #include <unistd.h>
 
 #include "log.h"
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 #ifndef NO_PRIVDROP
 class PrivInfo
@@ -75,15 +75,15 @@ public:
       return;
 
     if(setgid(gr_->gr_gid))
-      AnytunError::throwErr() << "setgid('" << gr_->gr_name << "') failed: " << LogErrno(errno);
+      AnytunError::throwErr() << "setgid('" << gr_->gr_name << "') failed: " << AnytunErrno(errno);
     
     gid_t gr_list[1];
     gr_list[0] = gr_->gr_gid;
     if(setgroups (1, gr_list))
-      AnytunError::throwErr() << "setgroups(['" << gr_->gr_name << "']) failed: " << LogErrno(errno);
+      AnytunError::throwErr() << "setgroups(['" << gr_->gr_name << "']) failed: " << AnytunErrno(errno);
     
     if(setuid(pw_->pw_uid))
-      AnytunError::throwErr() << "setuid('" << pw_->pw_name << "') failed: " << LogErrno(errno);
+      AnytunError::throwErr() << "setuid('" << pw_->pw_name << "') failed: " << AnytunErrno(errno);
     
     cLog.msg(Log::PRIO_NOTICE) << "dropped privileges to " << pw_->pw_name << ":" << gr_->gr_name;
   }
@@ -113,23 +113,23 @@ void daemonize()
 
   pid = fork();
   if(pid < 0)
-    AnytunError::throwErr() << "daemonizing failed at fork(): " << LogErrno(errno) << ", exitting";
+    AnytunError::throwErr() << "daemonizing failed at fork(): " << AnytunErrno(errno) << ", exitting";
 
   if(pid) exit(0);
 
   umask(0);
 
   if(setsid() < 0)
-    AnytunError::throwErr() << "daemonizing failed at setsid(): " << LogErrno(errno) << ", exitting";
+    AnytunError::throwErr() << "daemonizing failed at setsid(): " << AnytunErrno(errno) << ", exitting";
 
   pid = fork();
   if(pid < 0)
-    AnytunError::throwErr() << "daemonizing failed at fork(): " << LogErrno(errno) << ", exitting";
+    AnytunError::throwErr() << "daemonizing failed at fork(): " << AnytunErrno(errno) << ", exitting";
 
   if(pid) exit(0);
 
   if ((chdir("/")) < 0)
-    AnytunError::throwErr() << "daemonizing failed at chdir(): " << LogErrno(errno) << ", exitting";
+    AnytunError::throwErr() << "daemonizing failed at chdir(): " << AnytunErrno(errno) << ", exitting";
 
 //  std::cout << "running in background now..." << std::endl;
 

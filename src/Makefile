@@ -51,6 +51,7 @@ OBJS := tunDevice.o \
        signalController.o \
        log.o \
        logTargets.o \
+       anytunError.o \
        options.o \
        seqWindow.o \
 			 routingTreeNode.o \
@@ -68,11 +69,13 @@ ANYCTROBJS := signalController.o \
 						 buffer.o \
 						 log.o \
 						 logTargets.o \
+						 anytunError.o \
 						 syncTcpConnection.o \
 						 syncServer.o
 
 ANYCONFOBJS := log.o \
 						 logTargets.o \
+						 anytunError.o \
 						 buffer.o \
 						 keyDerivation.o \
 						 keyDerivationFactory.o \

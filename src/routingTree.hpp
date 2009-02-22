@@ -32,7 +32,7 @@
 #ifndef __ROUTING_TREE_
 #define __ROUTING_TREE_
 
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 class RoutingTree {
 

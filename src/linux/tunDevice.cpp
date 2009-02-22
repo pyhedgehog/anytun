@@ -45,7 +45,7 @@
 #include "tunDevice.h"
 #include "threadUtils.hpp"
 #include "log.h"
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
 {
@@ -68,7 +68,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 
 	fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
 	if(fd_ < 0)
-    AnytunError::throwErr() << "can't open device file (" << DEFAULT_DEVICE  << "): " << LogErrno(errno);
+    AnytunError::throwErr() << "can't open device file (" << DEFAULT_DEVICE  << "): " << AnytunErrno(errno);
 
 	if(!ioctl(fd_, TUNSETIFF, &ifr)) {
 		actual_name_ = ifr.ifr_name;
@@ -76,7 +76,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 		actual_name_ = ifr.ifr_name;
 	} else {
     ::close(fd_);
-    AnytunError::throwErr() << "tun/tap device ioctl failed: " << LogErrno(errno);
+    AnytunError::throwErr() << "tun/tap device ioctl failed: " << AnytunErrno(errno);
   }
   actual_node_ = DEFAULT_DEVICE;
 
@@ -161,7 +161,7 @@ void TunDevice::do_ifconfig()
 
   int result = system(command.str().c_str());
   if(result == -1)
-    cLog.msg(Log::PRIO_ERR) << "Execution of ifconfig failed: " << LogErrno(errno);
+    cLog.msg(Log::PRIO_ERR) << "Execution of ifconfig failed: " << AnytunErrno(errno);
   else {
     if(WIFEXITED(result))
       cLog.msg(Log::PRIO_NOTICE) << "ifconfig returned " << WEXITSTATUS(result);  

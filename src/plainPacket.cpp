@@ -34,7 +34,7 @@
 #include "datatypes.h"
 #include "endian.h"
 #include "plainPacket.h"
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 PlainPacket::PlainPacket(u_int32_t payload_length, bool allow_realloc) : Buffer(payload_length + sizeof(payload_type_t), allow_realloc)
 {

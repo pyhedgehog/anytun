@@ -35,7 +35,7 @@
 
 #include "logTargets.h"
 #include "log.h"
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 #include "options.h"
 

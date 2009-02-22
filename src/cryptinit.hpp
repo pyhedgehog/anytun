@@ -92,14 +92,14 @@ bool initLibGCrypt()
 
   gcry_error_t err = gcry_control (GCRYCTL_DISABLE_SECMEM, 0);
   if( err ) {
-    std::cout << "initLibGCrypt: Failed to disable secure memory: " << LogGpgError(err) << std::endl;
+    std::cout << "initLibGCrypt: Failed to disable secure memory: " << AnytunGpgError(err) << std::endl;
     return false;
   }
 
   // Tell Libgcrypt that initialization has completed.
   err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
   if( err ) {
-    std::cout << "initLibGCrypt: Failed to finish initialization: " << LogGpgError(err) << std::endl;
+    std::cout << "initLibGCrypt: Failed to finish initialization: " << AnytunGpgError(err) << std::endl;
     return false;
   }
 

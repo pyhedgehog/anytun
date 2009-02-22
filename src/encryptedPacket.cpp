@@ -37,7 +37,7 @@
 #include "endian.h"
 #include "datatypes.h"
 #include "log.h"
-#include "anytunError.hpp"
+#include "anytunError.h"
 
 EncryptedPacket::EncryptedPacket(u_int32_t payload_length, bool allow_realloc)
   : Buffer(payload_length + sizeof(struct HeaderStruct), allow_realloc)

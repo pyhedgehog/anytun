@@ -39,6 +39,7 @@
 
 #include "cipher.h"
 #include "log.h"
+#include "anytunError.h"
 
 void Cipher::encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
@@ -111,7 +112,7 @@ void AesIcmCipher::init(u_int16_t key_length)
 
   gcry_error_t err = gcry_cipher_open(&handle_, algo, GCRY_CIPHER_MODE_CTR, 0);
   if( err ) {
-    cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher" << LogGpgError(err);
+    cLog.msg(Log::PRIO_CRIT) << "AesIcmCipher::AesIcmCipher: Failed to open cipher" << AnytunGpgError(err);
   } 
 #endif
 }
@@ -173,7 +174,7 @@ void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_
 #else
   gcry_error_t err = gcry_cipher_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher key: " << LogGpgError(err);
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher key: " << AnytunGpgError(err);
     return;
   }
 #endif
@@ -183,13 +184,13 @@ void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_
 #ifndef USE_SSL_CRYPTO
   err = gcry_cipher_setctr(handle_, ctr_.buf_, CTR_LENGTH);
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: " << LogGpgError(err);
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: " << AnytunGpgError(err);
     return;
   }
 
   err = gcry_cipher_encrypt(handle_, out, olen, in, ilen);
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to de/encrypt packet: " << LogGpgError(err);
+    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to de/encrypt packet: " << AnytunGpgError(err);
     return;
   }
 #else

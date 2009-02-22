@@ -31,6 +31,7 @@
 
 #include "authAlgo.h"
 #include "log.h"
+#include "anytunError.h"
 #include "buffer.h"
 #include "encryptedPacket.h"
 
@@ -89,7 +90,7 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << LogGpgError(err);
+    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
     return;
   } 
 
@@ -129,7 +130,7 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << LogGpgError(err);
+    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
     return false;
   } 
   
