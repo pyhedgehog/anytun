@@ -370,12 +370,12 @@ int main(int argc, char* argv[])
       StringList targets = gOpt.getLogTargets();
       if(targets.empty()) {
 #ifndef _MSC_VER
-      cLog.addTarget("syslog:3,anytun,daemon");
+        cLog.addTarget("syslog:3,anytun,daemon");
 #else
  #ifdef WIN_SERVICE
-      cLog.addTarget("eventlog:3,anytun");
+        cLog.addTarget("eventlog:3,anytun");
  #else
-      cLog.addTarget("stdout:3");
+        cLog.addTarget("stdout:3");
  #endif
 #endif
       }

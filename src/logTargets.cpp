@@ -94,7 +94,9 @@ LogTarget* LogTargetList::add(std::string conf)
 
   char buff[100];
   if(s.good()) {
-    s.ignore(1);
+    s.get(buff[0]);
+    if(buff[0] != ',')
+      throw syntax_error(conf, (s.tellg() > 0) ? static_cast<size_t>(s.tellg()) - 1 : 0);
     s.get(buff, 100);
   }
   else
