@@ -55,7 +55,7 @@ SignalController& SignalController::instance()
 	static instanceCleaner c;
 	if(!inst)
 		inst = new SignalController();
-	
+
 	return *inst;
 }
 

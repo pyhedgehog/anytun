@@ -156,7 +156,7 @@ private:
   typedef std::map<int, SignalHandler*> HandlerMap;
 
 #ifndef _MSC_VER
-  SignalController() : thread(null) {};
+  SignalController() : thread(NULL) {};
 #else
   SignalController() {};
 #endif
@@ -178,7 +178,7 @@ private:
   Mutex sigQueueMutex;
   Semaphore sigQueueSem;
 
-#ifdef _MSC_VER  
+#ifndef _MSC_VER  
   boost::thread* thread;
 #endif
   HandlerMap handler;

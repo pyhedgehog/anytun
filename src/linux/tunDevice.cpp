@@ -45,6 +45,7 @@
 #include "tunDevice.h"
 #include "threadUtils.hpp"
 #include "log.h"
+#include "anytunError.hpp"
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
 {
@@ -60,17 +61,14 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     with_pi_ = false;
   } 
   else
-    throw std::runtime_error("unable to recognize type of device (tun or tap)");
+    AnytunError::throwErr() << "unable to recognize type of device (tun or tap)";
 
 	if(dev_name != "")
 		strncpy(ifr.ifr_name, dev_name.c_str(), IFNAMSIZ);
 
 	fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
-	if(fd_ < 0) {
-    std::stringstream msg;
-    msg << "can't open device file (" << DEFAULT_DEVICE  << "): " << LogErrno(errno);
-    throw std::runtime_error(msg.str());
-  }
+	if(fd_ < 0)
+    AnytunError::throwErr() << "can't open device file (" << DEFAULT_DEVICE  << "): " << LogErrno(errno);
 
 	if(!ioctl(fd_, TUNSETIFF, &ifr)) {
 		actual_name_ = ifr.ifr_name;
@@ -78,9 +76,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
 		actual_name_ = ifr.ifr_name;
 	} else {
     ::close(fd_);
-    std::stringstream msg;
-    msg << "tun/tap device ioctl failed: " << LogErrno(errno);
-    throw std::runtime_error(msg.str());
+    AnytunError::throwErr() << "tun/tap device ioctl failed: " << LogErrno(errno);
   }
   actual_node_ = DEFAULT_DEVICE;
 

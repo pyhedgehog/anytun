@@ -85,7 +85,7 @@ private:
   std::stringstream stream;
 };
 
-class Log : public std::ostringstream
+class Log
 {
 public:
 #ifdef LOG_SYSLOG
