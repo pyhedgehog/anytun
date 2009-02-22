@@ -97,26 +97,34 @@ int main(int argc, char* argv[])
   bool daemonized=false;
   try 
   {
-    cLog.addTarget("syslog:7,anytun-controld,daemon");
-    cLog.msg(Log::PRIO_NOTICE) << "anytun-controld started...";
-  
     try 
     {
       bool result = gOpt.parse(argc, argv);
       if(!result) {
-        cLog.msg(Log::PRIO_NOTICE) << "printing help text and exitting";
         gOpt.printUsage();
         exit(0);
+      }
+      StringList targets = gOpt.getLogTargets();
+      if(targets.empty()) {
+        cLog.addTarget("syslog:7,anytun-controld,daemon");
+      }
+      else {
+        StringList::const_iterator it;
+        for(it = targets.begin();it != targets.end(); ++it)
+          cLog.addTarget(*it);
       }
     }
     catch(syntax_error& e)
     {
       std::cerr << e << std::endl;
-      cLog.msg(Log::PRIO_NOTICE) << "exitting after syntax error";
       gOpt.printUsage();
       exit(-1);
     }
        
+    cLog.msg(Log::PRIO_NOTICE) << "anytun-controld started..."; 
+    gOpt.parse_post(); // print warnings
+
+
     std::ifstream file( gOpt.getFileName().c_str() );
     if( file.is_open() )
       file.close();

@@ -89,20 +89,30 @@ int main(int argc, char* argv[])
   int ret=0;
   try 
   {
-    cLog.addTarget("stderr:4");
     bool result = gOpt.parse(argc, argv);
     if(!result) {
       gOpt.printUsage();
       exit(0);
     }
+    StringList targets = gOpt.getLogTargets();
+    if(targets.empty()) {
+      cLog.addTarget("stderr:4");
+    }
+    else {
+      StringList::const_iterator it;
+      for(it = targets.begin();it != targets.end(); ++it)
+        cLog.addTarget(*it);
+    }
   }
   catch(syntax_error& e)
   {
     std::cerr << e << std::endl;
-    cLog.msg(Log::PRIO_ERR) << "exitting after syntax error";
     gOpt.printUsage();
     exit(-1);
   }
+
+  gOpt.parse_post(); // print warnings  
+
 
 	ConnectionList cl;
 	SyncQueue queue;

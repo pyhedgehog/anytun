@@ -453,7 +453,7 @@ void Options::printUsage()
 #endif
 
   std::cout << "   [-L|--log] <target>:<level>[,<param1>[,<param2>..]]" << std::endl;
-  std::cout << "                                       add a log target" << std::endl;
+  std::cout << "                                       add a log target, can be invoked several times" << std::endl;
 
 #if defined(ANYCTR_OPTIONS)
 
