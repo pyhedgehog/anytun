@@ -47,6 +47,8 @@
 #include "tunDevice.h"
 #include "threadUtils.hpp"
 #include "log.h"
+#include "anytunError.hpp"
+
 #define DEVICE_FILE_MAX 255
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, std::string ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
@@ -73,7 +75,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   }
 #endif
   else
-    throw std::runtime_error("unable to recognize type of device (tun or tap)");
+    AnytunError::throwErr() << "unable to recognize type of device (tun or tap)";
 
   u_int32_t dev_id=0;
   if(dynamic) {
@@ -90,12 +92,10 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     fd_ = ::open(device_file.c_str(), O_RDWR);
 
   if(fd_ < 0) {
-    std::stringstream msg;
     if(dynamic)
-      msg << "can't open device file dynamically: no unused node left";
+      AnytunError::throwErr() << "can't open device file dynamically: no unused node left";
     else
-      msg << "can't open device file (" << device_file << "): " << LogErrno(errno);
-    throw std::runtime_error(msg.str());
+      AnytunError::throwErr() << "can't open device file (" << device_file << "): " << LogErrno(errno);
   }
 
   if(dynamic) {
@@ -133,7 +133,7 @@ void TunDevice::init_post()
 
   if (ioctl(fd_, TUNGIFINFO, &ti) < 0) {
     ::close(fd_);
-    throw std::runtime_error("can't enable multicast for interface");
+    AnytunError::throwErr() << "can't enable multicast for interface";
   }
   
   ti.flags |= IFF_MULTICAST;
@@ -142,7 +142,7 @@ void TunDevice::init_post()
   
   if (ioctl(fd_, TUNSIFINFO, &ti) < 0) {
     ::close(fd_);
-    throw std::runtime_error("can't enable multicast for interface");
+    AnytunError::throwErr() << "can't enable multicast for interface";
   }
 }
 

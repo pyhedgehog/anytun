@@ -37,6 +37,7 @@
 #include "endian.h"
 #include "datatypes.h"
 #include "log.h"
+#include "anytunError.hpp"
 
 EncryptedPacket::EncryptedPacket(u_int32_t payload_length, bool allow_realloc)
   : Buffer(payload_length + sizeof(struct HeaderStruct), allow_realloc)
@@ -137,14 +138,14 @@ void EncryptedPacket::reinit()
   
   if(length_ < (sizeof(struct HeaderStruct))) {
     header_ = NULL;
-    throw std::runtime_error("encrypted packet can't be initialized, buffer is too small"); 
+    AnytunError::throwErr() << "encrypted packet can't be initialized, buffer is too small"; 
   }  
   
   if(auth_tag_)
   {
     if(length_ < (sizeof(struct HeaderStruct) + AUTHTAG_SIZE)) {
       auth_tag_ = NULL;
-      throw std::runtime_error("auth-tag can't be enabled, buffer is too small"); 
+      AnytunError::throwErr() << "auth-tag can't be enabled, buffer is too small"; 
     }
     auth_tag_ = buf_ + length_ - AUTHTAG_SIZE;
   }  
@@ -179,7 +180,7 @@ void EncryptedPacket::withAuthTag(bool b)
   if(b)
   {
     if(length_ < (sizeof(struct HeaderStruct) + AUTHTAG_SIZE))
-      throw std::runtime_error("auth-tag can't be enabled, buffer is too small");
+      AnytunError::throwErr() << "auth-tag can't be enabled, buffer is too small";
     
     auth_tag_ = buf_ + length_ - AUTHTAG_SIZE;
   }

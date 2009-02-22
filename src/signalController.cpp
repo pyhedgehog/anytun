@@ -36,6 +36,7 @@
 
 #include "signalController.h"
 #include "log.h"
+#include "anytunError.hpp"
 #include "threadUtils.hpp"
 
 #ifndef _MSC_VER
@@ -202,11 +203,8 @@ void SignalController::init()
   handler[SIGUSR1] = new SigUsr1Handler;
   handler[SIGUSR2] = new SigUsr2Handler;
 #else
-  if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)SignalController::handle, true)) {
-    std::stringstream msg;
-    msg << "Error on SetConsoleCtrlhandler: " << LogErrno(GetLastError());
-    throw std::runtime_error(msg.str());
-  }
+  if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)SignalController::handle, true))
+    AnytunError::throwErr() << "Error on SetConsoleCtrlhandler: " << LogErrno(GetLastError());
 
   handler[CTRL_C_EVENT] = new CtrlCHandler;
   handler[CTRL_BREAK_EVENT] = new CtrlBreakHandler;

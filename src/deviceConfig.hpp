@@ -34,6 +34,7 @@
 
 #include "networkAddress.h"
 #include <boost/asio.hpp>
+#include "anytunError.hpp"
 
 class TunDevice;
 
@@ -61,7 +62,7 @@ public:
     }
 #else
     if(dev_type == "")
-      throw std::runtime_error("Device type must be specified on Windows");
+      AnytunError::throwErr() << "Device type must be specified on Windows";
     
     if(dev_type == "tun")
       type_ = TYPE_TUN;
@@ -69,7 +70,7 @@ public:
       type_ = TYPE_TAP;
 
     if(type_ == TYPE_TUN && ifcfg_addr == "")
-      throw std::runtime_error("Device type tun requires ifconfig parameter (--ifconfig)");
+      AnytunError::throwErr() << "Device type tun requires ifconfig parameter (--ifconfig)";
 #endif
 
     if(ifcfg_addr != "")

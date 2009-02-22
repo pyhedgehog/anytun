@@ -38,6 +38,7 @@
 #include "../tunDevice.h"
 #include "../threadUtils.hpp"
 #include "../log.h"
+#include "../anytunError.hpp"
 
 #include "registryKey.h"
 #include "common.h"
@@ -48,21 +49,18 @@
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
 {
   if(conf_.type_ != TYPE_TUN && conf_.type_ != TYPE_TAP)
-    throw std::runtime_error("unable to recognize type of device (tun or tap)");
+    AnytunError::throwErr() << "unable to recognize type of device (tun or tap)";
 
   handle_ = INVALID_HANDLE_VALUE;
   if(!getAdapter(dev_name))
-    throw std::runtime_error("can't find any suitable device");
+    AnytunError::throwErr() << "can't find any suitable device";
 
   if(handle_ == INVALID_HANDLE_VALUE) {
     std::stringstream tapname;
 	  tapname << USERMODEDEVICEDIR << actual_node_ << TAPSUFFIX;
     handle_ = CreateFileA(tapname.str().c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
-    if(handle_ == INVALID_HANDLE_VALUE) {
-      std::stringstream msg;
-      msg << "Unable to open device: " << actual_node_ << " (" << actual_name_ << "): " << LogErrno(GetLastError());
-      throw std::runtime_error(msg.str());
-	  }
+    if(handle_ == INVALID_HANDLE_VALUE)
+      AnytunError::throwErr() << "Unable to open device: " << actual_node_ << " (" << actual_name_ << "): " << LogErrno(GetLastError());
   }
 
   DWORD err;
@@ -71,16 +69,12 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   err = performIoControl(TAP_IOCTL_GET_VERSION, info, sizeof(info), info, sizeof(info));
   if(err != ERROR_SUCCESS) {
     CloseHandle(handle_);
-    std::stringstream msg;
-    msg << "Unable to get device version: " << LogErrno(err);
-	  throw std::runtime_error(msg.str());
+    AnytunError::throwErr() << "Unable to get device version: " << LogErrno(err);
   }
   cLog.msg(Log::PRIO_NOTICE) << "Windows TAP Driver Version " << info[0] << "." << info[1] << " " << (info[2] ? "(DEBUG)" : "");
   if(!(info[0] > MIN_TAP_VER_MAJOR || (info[0] == MIN_TAP_VER_MAJOR && info[1] >= MIN_TAP_VER_MINOR))) {
     CloseHandle(handle_);
-    std::stringstream msg;
-    msg << "need a higher Version of TAP Driver (at least " << MIN_TAP_VER_MAJOR << "." << MIN_TAP_VER_MINOR << ")";
-	  throw std::runtime_error(msg.str());
+    AnytunError::throwErr() << "need a higher Version of TAP Driver (at least " << MIN_TAP_VER_MAJOR << "." << MIN_TAP_VER_MINOR << ")";
   }
 
   if(conf_.type_ == TYPE_TUN) {
@@ -91,9 +85,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     err = performIoControl(TAP_IOCTL_CONFIG_TUN, ep, sizeof(ep), ep, sizeof(ep));
     if(err != ERROR_SUCCESS) {
       CloseHandle(handle_);
-      std::stringstream msg;
-      msg << "Unable to set device tun mode: " << LogErrno(err);
-	    throw std::runtime_error(msg.str());
+      AnytunError::throwErr() << "Unable to set device tun mode: " << LogErrno(err);
     }
   }
 
@@ -104,9 +96,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   err = performIoControl(TAP_IOCTL_SET_MEDIA_STATUS, &status, sizeof(status), &status, sizeof(status));
   if(err != ERROR_SUCCESS) {
     CloseHandle(handle_);
-    std::stringstream msg;
-    msg << "Unable to set device media status: " << LogErrno(err);
-    throw std::runtime_error(msg.str());
+    AnytunError::throwErr() << "Unable to set device media status: " << LogErrno(err);
 	}
 
   roverlapped_.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -117,11 +107,8 @@ bool TunDevice::getAdapter(std::string const& dev_name)
 {
   RegistryKey akey;
   DWORD err = akey.open(HKEY_LOCAL_MACHINE, ADAPTER_KEY, KEY_ENUMERATE_SUB_KEYS);
-  if(err != ERROR_SUCCESS) {
-    std::stringstream msg;
-    msg << "Unable to open registry key (HKLM\\" << ADAPTER_KEY << "): " << LogErrno(err);
-    throw std::runtime_error(msg.str());
-  }
+  if(err != ERROR_SUCCESS)
+    AnytunError::throwErr() << "Unable to open registry key (HKLM\\" << ADAPTER_KEY << "): " << LogErrno(err);
   
   bool found = false;
   for(int i=0; ; ++i) {
@@ -271,18 +258,14 @@ void TunDevice::do_ifconfig()
   DWORD err = performIoControl(TAP_IOCTL_CONFIG_DHCP_MASQ, ep, sizeof(ep), ep, sizeof(ep));
   if(err != ERROR_SUCCESS) {
     CloseHandle(handle_);
-    std::stringstream msg;
-    msg << "Unable to set device dhcp masq mode: " << LogErrno(err);
-    throw std::runtime_error(msg.str());
+    AnytunError::throwErr() << "Unable to set device dhcp masq mode: " << LogErrno(err);
 	}
 
   u_long mtu;
   err = performIoControl(TAP_IOCTL_GET_MTU, &mtu, sizeof(mtu), &mtu, sizeof(mtu));
   if(err != ERROR_SUCCESS) {
     CloseHandle(handle_);
-    std::stringstream msg;
-    msg << "Unable to get device mtu: " << LogErrno(err);
-    throw std::runtime_error(msg.str());
+    AnytunError::throwErr() << "Unable to get device mtu: " << LogErrno(err);
 	}
   conf_.mtu_ = static_cast<u_int16_t>(mtu);
 }

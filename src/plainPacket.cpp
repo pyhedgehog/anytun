@@ -34,6 +34,7 @@
 #include "datatypes.h"
 #include "endian.h"
 #include "plainPacket.h"
+#include "anytunError.hpp"
 
 PlainPacket::PlainPacket(u_int32_t payload_length, bool allow_realloc) : Buffer(payload_length + sizeof(payload_type_t), allow_realloc)
 {
@@ -103,7 +104,7 @@ void PlainPacket::reinit()
 
   if(length_ < (sizeof(payload_type_t))) {
     payload_type_ = NULL;
-    throw std::runtime_error("plain packet can't be initialized, buffer is too small"); 
+    AnytunError::throwErr() << "plain packet can't be initialized, buffer is too small"; 
   }
 
 }

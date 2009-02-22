@@ -33,8 +33,6 @@
 #define _DAEMON_HPP
 #ifndef NO_DAEMON
 
-#include <sstream>
-
 #include <poll.h>
 #include <fcntl.h>
 #include <pwd.h>
@@ -44,6 +42,7 @@
 #include <unistd.h>
 
 #include "log.h"
+#include "anytunError.hpp"
 
 #ifndef NO_PRIVDROP
 class PrivInfo
@@ -59,7 +58,7 @@ public:
 
     pw_ = getpwnam(username.c_str());
     if(!pw_)
-      throw std::runtime_error("unkown user " + username);
+      AnytunError::throwErr() << "unkown user " << username;
     
     if(groupname != "")
       gr_ = getgrnam(groupname.c_str());
@@ -67,7 +66,7 @@ public:
       gr_ = getgrgid(pw_->pw_gid);
     
     if(!gr_)
-      throw std::runtime_error("unkown group " + groupname);
+      AnytunError::throwErr() << "unkown group " << groupname;
   }
 
   void drop()
@@ -75,25 +74,16 @@ public:
     if(!pw_ || !gr_)
       return;
 
-    if(setgid(gr_->gr_gid)) {
-      std::stringstream msg;
-      msg << "setgid('" << gr_->gr_name << "') failed: " << LogErrno(errno);
-      throw std::runtime_error(msg.str());
-    }
+    if(setgid(gr_->gr_gid))
+      AnytunError::throwErr() << "setgid('" << gr_->gr_name << "') failed: " << LogErrno(errno);
     
     gid_t gr_list[1];
     gr_list[0] = gr_->gr_gid;
-    if(setgroups (1, gr_list)) {
-      std::stringstream msg;
-      msg << "setgroups(['" << gr_->gr_name << "']) failed: " << LogErrno(errno);
-      throw std::runtime_error(msg.str());
-    }
+    if(setgroups (1, gr_list))
+      AnytunError::throwErr() << "setgroups(['" << gr_->gr_name << "']) failed: " << LogErrno(errno);
     
-    if(setuid(pw_->pw_uid)) {
-      std::stringstream msg;
-      msg << "setuid('" << pw_->pw_name << "') failed: " << LogErrno(errno);
-      throw std::runtime_error(msg.str());
-    }
+    if(setuid(pw_->pw_uid))
+      AnytunError::throwErr() << "setuid('" << pw_->pw_name << "') failed: " << LogErrno(errno);
     
     cLog.msg(Log::PRIO_NOTICE) << "dropped privileges to " << pw_->pw_name << ":" << gr_->gr_name;
   }
@@ -107,14 +97,14 @@ private:
 void do_chroot(std::string const& chrootdir)
 {
   if (getuid() != 0)
-    throw std::runtime_error("this programm has to be run as root in order to run in a chroot");
+    AnytunError::throwErr() << "this programm has to be run as root in order to run in a chroot";
 
   if(chroot(chrootdir.c_str()))
-    throw std::runtime_error("can't chroot to " + chrootdir);
+    AnytunError::throwErr() << "can't chroot to " << chrootdir;
 
   cLog.msg(Log::PRIO_NOTICE) << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
   if(chdir("/"))
-    throw std::runtime_error("can't change to /");
+    AnytunError::throwErr() << "can't change to /";
 }
 
 void daemonize()
@@ -122,34 +112,24 @@ void daemonize()
   pid_t pid;
 
   pid = fork();
-  if(pid < 0) {
-    std::stringstream msg;
-    msg << "daemonizing failed at fork(): " << LogErrno(errno) << ", exitting";
-    throw std::runtime_error(msg.str());
-  }
+  if(pid < 0)
+    AnytunError::throwErr() << "daemonizing failed at fork(): " << LogErrno(errno) << ", exitting";
+
   if(pid) exit(0);
 
   umask(0);
 
-  if(setsid() < 0) {
-    std::stringstream msg;
-    msg << "daemonizing failed at setsid(): " << LogErrno(errno) << ", exitting";
-    throw std::runtime_error(msg.str());
-  }
+  if(setsid() < 0)
+    AnytunError::throwErr() << "daemonizing failed at setsid(): " << LogErrno(errno) << ", exitting";
 
   pid = fork();
-  if(pid < 0) {
-    std::stringstream msg;
-    msg << "daemonizing failed at fork(): " << LogErrno(errno) << ", exitting";
-    throw std::runtime_error(msg.str());
-  }
+  if(pid < 0)
+    AnytunError::throwErr() << "daemonizing failed at fork(): " << LogErrno(errno) << ", exitting";
+
   if(pid) exit(0);
 
-  if ((chdir("/")) < 0) {
-    std::stringstream msg;
-    msg << "daemonizing failed at chdir(): " << LogErrno(errno) << ", exitting";
-    throw std::runtime_error(msg.str());
-  }
+  if ((chdir("/")) < 0)
+    AnytunError::throwErr() << "daemonizing failed at chdir(): " << LogErrno(errno) << ", exitting";
 
 //  std::cout << "running in background now..." << std::endl;
 

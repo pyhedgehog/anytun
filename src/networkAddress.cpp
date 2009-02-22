@@ -34,6 +34,7 @@
 #include <exception>
 
 #include "networkAddress.h"
+#include "anytunError.hpp"
 
 NetworkAddress::NetworkAddress():ipv4_address_(),ipv6_address_()
 {
@@ -126,7 +127,7 @@ network_address_type_t NetworkAddress::getNetworkAddressType() const
 const boost::asio::ip::address_v4& NetworkAddress::getNetworkAddressV4() const
 {
   if(network_address_type_ != ipv4)
-    throw std::runtime_error("wrong address type");
+    AnytunError::throwErr() << "wrong address type";
   
   return ipv4_address_;
 }
@@ -134,7 +135,7 @@ const boost::asio::ip::address_v4& NetworkAddress::getNetworkAddressV4() const
 const boost::asio::ip::address_v6& NetworkAddress::getNetworkAddressV6() const
 {
   if(network_address_type_ != ipv6)
-    throw std::runtime_error("wrong address type");
+    AnytunError::throwErr() << "wrong address type";
   
   return ipv6_address_;
 }
@@ -142,7 +143,7 @@ const boost::asio::ip::address_v6& NetworkAddress::getNetworkAddressV6() const
 const u_int64_t NetworkAddress::getNetworkAdrressEther() const
 {
   if(network_address_type_ != ethernet)
-    throw std::runtime_error("wrong address type");
+    AnytunError::throwErr() << "wrong address type";
   
   return ethernet_address_;
 }
@@ -186,7 +187,7 @@ ethernet_bytes_type	NetworkAddress::to_bytes_ethernet() const
 bool NetworkAddress::operator<(const NetworkAddress &right) const
 {
 	if (network_address_type_!=right.network_address_type_)
-		throw std::runtime_error("NetworkAddress::operator<() address types don't match");
+		AnytunError::throwErr() << "NetworkAddress::operator<() address types don't match";
 	if (network_address_type_==ipv4)
 	{
 		return (ipv4_address_ < right.ipv4_address_);

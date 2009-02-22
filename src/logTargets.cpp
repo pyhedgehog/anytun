@@ -35,6 +35,7 @@
 
 #include "logTargets.h"
 #include "log.h"
+#include "anytunError.hpp"
 
 #include "options.h"
 
@@ -108,50 +109,51 @@ LogTarget* LogTargetList::add(target_type_t type, int prio, std::string conf)
   case TARGET_SYSLOG: {
     #ifdef LOG_SYSLOG
     if(!LogTargetSyslog::duplicateAllowed() && targets.count(TARGET_SYSLOG))
-      throw std::runtime_error(targetTypeToString(TARGET_SYSLOG) + " logtarget is supported only once");
+      AnytunError::throwErr() << targetTypeToString(TARGET_SYSLOG) << " logtarget is supported only once";
 
     return targets.insert(TargetsMap::value_type(TARGET_SYSLOG, new LogTargetSyslog(prio, conf)))->second;
     #else
-    throw std::runtime_error(targetTypeToString(TARGET_SYSLOG) + " logtarget is not supported");
+    AnytunError::throwErr() << targetTypeToString(TARGET_SYSLOG) << " logtarget is not supported";
     #endif
   }
   case TARGET_FILE: {
     #ifdef LOG_FILE
     if(!LogTargetFile::duplicateAllowed() && targets.count(TARGET_FILE))
-      throw std::runtime_error(targetTypeToString(TARGET_FILE) + " logtarget is supported only once");
+      AnytunError::throwErr() << targetTypeToString(TARGET_FILE) << " logtarget is supported only once";
 
     return targets.insert(TargetsMap::value_type(TARGET_FILE, new LogTargetFile(prio, conf)))->second;
     #else
-    throw std::runtime_error(targetTypeToString(TARGET_FILE) + " logtarget is not supported");
+    AnytunError::throwErr() << targetTypeToString(TARGET_FILE) << " logtarget is not supported";
     #endif
   }
   case TARGET_STDOUT: 
   case TARGET_STDERR: {
     #ifdef LOG_STDOUT
     if(!LogTargetStdout::duplicateAllowed() && targets.count(type))
-      throw std::runtime_error(targetTypeToString(type) + " logtarget is supported only once");
-
+      AnytunError::throwErr() << targetTypeToString(type) << " logtarget is supported only once";
+    
     if(type == TARGET_STDERR)
       return targets.insert(TargetsMap::value_type(type, new LogTargetStdout(prio, std::cerr)))->second;
     else
       return targets.insert(TargetsMap::value_type(type, new LogTargetStdout(prio, std::cout)))->second;
     #else
-    throw std::runtime_error(targetTypeToString(type) + " logtarget is not supported");
+    AnytunError::throwErr() << targetTypeToString(type) + " logtarget is not supported";
     #endif
   }
   case TARGET_WINEVENTLOG: {
     #ifdef LOG_WINEVENTLOG
     if(!LogTargetWinEventlog::duplicateAllowed() && targets.count(TARGET_WINEVENTLOG))
-      throw std::runtime_error(targetTypeToString(TARGET_WINEVENTLOG) + " logtarget is supported only once");
+      AnytunError::throwErr() << targetTypeToString(TARGET_WINEVENTLOG) << " logtarget is supported only once";
 
     return targets.insert(TargetsMap::value_type(TARGET_WINEVENTLOG, new LogTargetWinEventlog(prio, conf)))->second;
     #else
-    throw std::runtime_error(targetTypeToString(TARGET_WINEVENTLOG) + " logtarget is not supported");
+    AnytunError::throwErr() << targetTypeToString(TARGET_WINEVENTLOG) << " logtarget is not supported";
     #endif
   }
   default: 
-    throw std::runtime_error("unknown log target");
+    AnytunError::throwErr() << "unknown log target";
   }
+  return NULL;
 }
 
 void LogTargetList::clear()
@@ -195,7 +197,8 @@ int LogTargetSyslog::facilityFromString(std::string fac)
   if(fac == "local6") return FAC_LOCAL6;
   if(fac == "local7") return FAC_LOCAL7;
   
-  throw std::runtime_error("unknown syslog facility");
+  AnytunError::throwErr() << "unknown syslog facility";
+  return 0;
 }
 
 std::string LogTargetSyslog::facilityToString(int fac)
@@ -220,8 +223,9 @@ std::string LogTargetSyslog::facilityToString(int fac)
   case FAC_LOCAL5: return "local5";
   case FAC_LOCAL6: return "local6";
   case FAC_LOCAL7: return "local7";
-  default: throw std::runtime_error("unknown syslog facility");
+  default: AnytunError::throwErr() << "unknown syslog facility";
   }
+  return "";
 }
 
 LogTargetSyslog::LogTargetSyslog(int prio, std::string conf) : LogTarget(prio)

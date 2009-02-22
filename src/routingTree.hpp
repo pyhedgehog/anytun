@@ -32,6 +32,8 @@
 #ifndef __ROUTING_TREE_
 #define __ROUTING_TREE_
 
+#include "anytunError.hpp"
+
 class RoutingTree {
 
 public:
@@ -91,7 +93,7 @@ public:
       }
     }
     if(!valid)
-      throw std::runtime_error("no route");
+      AnytunError::throwErr() << "no route";
     return mux;
   }
 

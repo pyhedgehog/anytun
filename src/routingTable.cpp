@@ -31,6 +31,7 @@
 #include "networkPrefix.h"
 #include "threadUtils.hpp"
 #include "datatypes.h"
+#include "anytunError.hpp"
 
 #include "routingTable.h"
 #include "routingTree.hpp"
@@ -83,7 +84,7 @@ void RoutingTable::updateRouteTreeUnlocked(const NetworkPrefix & pref)
 			length=48;
 		RoutingTree::walk(bytes, node, length, mux);
 	} else {
-		throw std::runtime_error("illegal protocoll type");	
+		AnytunError::throwErr() << "illegal protocol type";	
 	}
 	//root_[type].print(0);
 }
@@ -109,7 +110,7 @@ void RoutingTable::addRoute(const NetworkPrefix & pref, u_int16_t mux)
 	} else if (type==ethernet) {
     return; // TODO: add support for ethernet
 	} else {
-		throw std::runtime_error("illegal protocoll type");	
+		AnytunError::throwErr() << "illegal protocol type";	
 	}
 }
 
@@ -121,13 +122,13 @@ void RoutingTable::delRoute(const NetworkPrefix & pref )
   routes_[pref.getNetworkAddressType()].erase(routes_[pref.getNetworkAddressType()].find(pref));	
 }
 
-u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
+u_int16_t RoutingTable::getRoute(const NetworkAddress & addr)
 {
 	Lock lock(mutex_);
 	network_address_type_t type=addr.getNetworkAddressType();
 	
 	if (routes_[type].empty())
-  	throw std::runtime_error("no route");
+  	AnytunError::throwErr() << "no route";
 
 	if (type==ipv4)
 	{
@@ -142,8 +143,9 @@ u_int16_t  RoutingTable::getRoute(const NetworkAddress & addr)
 		ethernet_bytes_type bytes(addr.to_bytes_ethernet());
 		return RoutingTree::find(bytes, root_[type]);
 	} else {
-		throw std::runtime_error("illegal protocoll type");	
+		AnytunError::throwErr() << "illegal protocol type";	
 	}
+  return 0;
 }
 
 u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix & addr)
