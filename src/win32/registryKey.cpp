@@ -35,7 +35,7 @@
 
 #include "registryKey.h"
 
-#include "../log.h"
+#include "../anytunError.h"
 
 RegistryKey::RegistryKey() : opened_(false)
 {
