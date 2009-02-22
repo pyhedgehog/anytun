@@ -64,7 +64,7 @@ void KeyDerivation::calcMasterKey(std::string passphrase, u_int16_t length)
 {
   cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation: calculating master key from passphrase";
   if(!length) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation: bad master key length";
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation: bad master key length";
     return;
   }
 
@@ -73,7 +73,7 @@ void KeyDerivation::calcMasterKey(std::string passphrase, u_int16_t length)
 #else
   if(length > SHA256_DIGEST_LENGTH) {
 #endif
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation: master key too long for passphrase algorithm";
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation: master key too long for passphrase algorithm";
     return;
   }
 
@@ -93,7 +93,7 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
 {
   cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation: calculating master salt from passphrase";
   if(!length) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation: bad master salt length";
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation: bad master salt length";
     return;
   }
 
@@ -102,7 +102,7 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
 #else
   if(length > SHA_DIGEST_LENGTH) {
 #endif
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation: master key too long for passphrase algorithm";
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation: master key too long for passphrase algorithm";
     return;
   }
 
@@ -199,12 +199,12 @@ void AesIcmKeyDerivation::init(Buffer key, Buffer salt, std::string passphrase)
 void AesIcmKeyDerivation::updateMasterKey()
 {
   if(master_key_.getLength()*8 != key_length_) {
-    cLog.msg(Log::PRIO_CRIT) << "KeyDerivation::updateMasterKey: key lengths don't match";
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: key lengths don't match";
     return;
   }
 
   if(master_salt_.getLength() != SALT_LENGTH) {
-    cLog.msg(Log::PRIO_CRIT) << "KeyDerivation::updateMasterKey: salt lengths don't match";
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: salt lengths don't match";
     return;
   }
 
@@ -215,7 +215,7 @@ void AesIcmKeyDerivation::updateMasterKey()
   case 192: algo = GCRY_CIPHER_AES192; break;
   case 256: algo = GCRY_CIPHER_AES256; break;
   default: {
-    cLog.msg(Log::PRIO_CRIT) << "KeyDerivation::updateMasterKey: cipher key length of " << key_length_ << " Bits is not supported";
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: cipher key length of " << key_length_ << " Bits is not supported";
     return;
   }
   }
@@ -226,13 +226,13 @@ void AesIcmKeyDerivation::updateMasterKey()
     
     gcry_error_t err = gcry_cipher_open(&handle_[i], algo, GCRY_CIPHER_MODE_CTR, 0);
     if(err) {
-      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to open cipher: " << AnytunGpgError(err);
+      cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: Failed to open cipher: " << AnytunGpgError(err);
       return;
     } 
     
     err = gcry_cipher_setkey(handle_[i], master_key_.getBuf(), master_key_.getLength());
     if(err) {
-      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << AnytunGpgError(err);
+      cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << AnytunGpgError(err);
       return;
     }
   }
@@ -240,7 +240,7 @@ void AesIcmKeyDerivation::updateMasterKey()
   for(int i=0; i<2; i++) {
     int ret = AES_set_encrypt_key(master_key_.getBuf(), master_key_.getLength()*8, &aes_key_[i]);
     if(ret) {
-      cLog.msg(Log::PRIO_ERR) << "KeyDerivation::updateMasterKey: Failed to set ssl key (code: " << ret << ")";
+      cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: Failed to set ssl key (code: " << ret << ")";
       return;
     }
   }
@@ -269,7 +269,7 @@ bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, seq_nr_t* r, satp_prf_label_t la
   }
 
   if(master_salt_.getLength() != SALT_LENGTH) {
-    cLog.msg(Log::PRIO_CRIT) << "KeyDerivation::calcCtr: salt lengths don't match";
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::calcCtr: salt lengths don't match";
     return false;
   }
   memcpy(ctr_[dir].salt_.buf_, master_salt_.getBuf(), SALT_LENGTH);
@@ -310,24 +310,24 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to reset cipher: " << AnytunGpgError(err);
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::generate: Failed to reset cipher: " << AnytunGpgError(err);
   }
 
   err = gcry_cipher_setctr(handle_[dir], ctr_[dir].buf_, CTR_LENGTH);
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to set CTR: " << AnytunGpgError(err);
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::generate: Failed to set CTR: " << AnytunGpgError(err);
     return false;
   }
 
   std::memset(key.getBuf(), 0, key.getLength());
   err = gcry_cipher_encrypt(handle_[dir], key, key.getLength(), NULL, 0);
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << AnytunGpgError(err);
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << AnytunGpgError(err);
   }
   return true;
 #else
   if(CTR_LENGTH != AES_BLOCK_SIZE) {
-    cLog.msg(Log::PRIO_ERR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
     return false;
   }
   unsigned int num = 0;

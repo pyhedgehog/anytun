@@ -89,10 +89,7 @@ void Log::log(std::string msg, int prio)
 std::string Log::prioToString(int prio)
 {
   switch(prio) {
-  case PRIO_EMERG: return "EMERG";
-  case PRIO_ALERT: return "ALERT";
-  case PRIO_CRIT: return "CRIT";
-  case PRIO_ERR: return "ERR";
+  case PRIO_ERROR: return "ERROR";
   case PRIO_WARNING: return "WARNING";
   case PRIO_NOTICE: return "NOTICE";
   case PRIO_INFO: return "INFO";

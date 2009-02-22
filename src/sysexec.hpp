@@ -53,7 +53,7 @@ int execScript(std::string const& script, std::string const& ifname, std::string
     }
     execl("/bin/sh", "/bin/sh", script.c_str(), ifname.c_str(), ifnode.c_str(), (char*)NULL);
         // if execl return, an error occurred
-    cLog.msg(Log::PRIO_ERR) << "error on executing script: " << AnytunErrno(errno);
+    cLog.msg(Log::PRIO_ERROR) << "error on executing script: " << AnytunErrno(errno);
     return -1;
   }
   int status = 0;
@@ -63,7 +63,7 @@ int execScript(std::string const& script, std::string const& ifname, std::string
   else if(WIFSIGNALED(status))
     cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' terminated after signal " << WTERMSIG(status);
   else
-    cLog.msg(Log::PRIO_ERR) << "executing script: unkown error";
+    cLog.msg(Log::PRIO_ERROR) << "executing script: unkown error";
 
   return status;
 }

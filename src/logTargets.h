@@ -48,7 +48,7 @@
 class LogTarget
 {
 public:
-  LogTarget();;
+  LogTarget();
   LogTarget(int prio);
 
   virtual void open() = 0;

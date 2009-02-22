@@ -133,7 +133,7 @@ void syncListener()
   catch (std::exception& e)
   {
     std::string addr = gOpt.getLocalSyncAddr() == "" ? "*" : gOpt.getLocalSyncAddr();
-    cLog.msg(Log::PRIO_ERR) << "sync: cannot bind to " << addr << ":" << gOpt.getLocalSyncPort()
+    cLog.msg(Log::PRIO_ERROR) << "sync: cannot bind to " << addr << ":" << gOpt.getLocalSyncPort()
                             << " (" << e.what() << ")" << std::endl;
   }
 
@@ -214,15 +214,15 @@ void sender(void* p)
         param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
       } catch (std::exception& e) {
 				//TODO: do something here
-		  	//cLog.msg(Log::PRIO_ERR) << "could not send data: " << e.what();
+		  	//cLog.msg(Log::PRIO_ERROR) << "could not send data: " << e.what();
 	  	} 
     }
   }
   catch(std::runtime_error& e) {
-    cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught runtime_error: " << e.what();
+    cLog.msg(Log::PRIO_ERROR) << "sender thread died due to an uncaught runtime_error: " << e.what();
   }
   catch(std::exception& e) {
-    cLog.msg(Log::PRIO_ERR) << "sender thread died due to an uncaught exception: " << e.what();
+    cLog.msg(Log::PRIO_ERROR) << "sender thread died due to an uncaught exception: " << e.what();
   }
 }
 
@@ -251,7 +251,7 @@ void receiver(void* p)
         len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
       } catch (std::exception& e) { 
 				//TODO: do something here
-		  	//cLog.msg(Log::PRIO_ERR) << "could not recive packet "<< e.what();
+		  	//cLog.msg(Log::PRIO_ERROR) << "could not recive packet "<< e.what();
 		  	continue; 
 	  	}
       if(len < 0)
@@ -314,10 +314,10 @@ void receiver(void* p)
     }
   }
   catch(std::runtime_error& e) {
-    cLog.msg(Log::PRIO_ERR) << "receiver thread died due to an uncaught runtime_error: " << e.what();
+    cLog.msg(Log::PRIO_ERROR) << "receiver thread died due to an uncaught runtime_error: " << e.what();
   }
   catch(std::exception& e) {
-    cLog.msg(Log::PRIO_ERR) << "receiver thread died due to an uncaught exception: " << e.what();
+    cLog.msg(Log::PRIO_ERROR) << "receiver thread died due to an uncaught exception: " << e.what();
   }
 }
 
@@ -370,12 +370,12 @@ int main(int argc, char* argv[])
       StringList targets = gOpt.getLogTargets();
       if(targets.empty()) {
 #ifndef _MSC_VER
-      cLog.addTarget("syslog:5,anytun,daemon");
+      cLog.addTarget("syslog:3,anytun,daemon");
 #else
  #ifdef WIN_SERVICE
-      cLog.addTarget("eventlog:5,anytun");
+      cLog.addTarget("eventlog:3,anytun");
  #else
-      cLog.addTarget("stdout:5");
+      cLog.addTarget("stdout:3");
  #endif
 #endif
       }
@@ -545,13 +545,13 @@ int main(int argc, char* argv[])
   }
   catch(std::runtime_error& e)
   {
-    cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
+    cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error, exiting: " << e.what();
     if(!daemonized)
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
   catch(std::exception& e)
   {
-    cLog.msg(Log::PRIO_ERR) << "uncaught exception, exiting: " << e.what();
+    cLog.msg(Log::PRIO_ERROR) << "uncaught exception, exiting: " << e.what();
     if(!daemonized)
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
   }

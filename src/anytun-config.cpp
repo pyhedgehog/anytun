@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
     }
     StringList targets = gOpt.getLogTargets();
     if(targets.empty()) {
-      cLog.addTarget("stderr:4");
+      cLog.addTarget("stderr:2");
     }
     else {
       StringList::const_iterator it;

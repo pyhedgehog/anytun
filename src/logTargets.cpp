@@ -87,7 +87,7 @@ LogTarget* LogTargetList::add(std::string conf)
   if(!s.good())
     throw syntax_error(conf, 0);
 
-  int prio = 0;
+  int prio = Log::PRIO_NOTICE;
   s >> prio;
   if(s.fail())
     throw syntax_error(conf, conf.find_first_of(':')+1);
@@ -268,7 +268,7 @@ void LogTargetSyslog::log(std::string msg, int prio)
   if(!opened)
     return;
 
-  syslog(prio | facility, "%s", msg.c_str());  
+  syslog(prio + 2 | facility, "%s", msg.c_str());  
 }
 
 LogTargetSyslog& LogTargetSyslog::setLogName(std::string l)
@@ -423,10 +423,7 @@ LogTargetWinEventlog& LogTargetWinEventlog::setLogName(std::string l)
 WORD LogTargetWinEventlog::prioToEventLogType(int prio)
 {
   switch(prio) {
-  case Log::PRIO_EMERG: return EVENTLOG_ERROR_TYPE;
-  case Log::PRIO_ALERT: return EVENTLOG_ERROR_TYPE;
-  case Log::PRIO_CRIT: return EVENTLOG_ERROR_TYPE;
-  case Log::PRIO_ERR: return EVENTLOG_ERROR_TYPE;
+  case Log::PRIO_ERROR: return EVENTLOG_ERROR_TYPE;
   case Log::PRIO_WARNING: return EVENTLOG_WARNING_TYPE;
   case Log::PRIO_NOTICE: return EVENTLOG_INFORMATION_TYPE;
   case Log::PRIO_INFO: return EVENTLOG_SUCCESS;

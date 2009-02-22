@@ -36,11 +36,6 @@
 #include <sstream>
 
 #include "logTargets.h"
-
-#ifdef LOG_SYSLOG
-#include <syslog.h>
-#endif
-
 #include "threadUtils.hpp"
 
 class Log;
@@ -64,25 +59,12 @@ private:
 class Log
 {
 public:
-#ifdef LOG_SYSLOG
-  static const int PRIO_EMERG = LOG_EMERG;
-  static const int PRIO_ALERT = LOG_ALERT;
-  static const int PRIO_CRIT = LOG_CRIT;
-  static const int PRIO_ERR = LOG_ERR;
-  static const int PRIO_WARNING = LOG_WARNING;
-  static const int PRIO_NOTICE = LOG_NOTICE;
-  static const int PRIO_INFO = LOG_INFO;
-  static const int PRIO_DEBUG = LOG_DEBUG;
-#else
-  static const int PRIO_EMERG = 0;
-  static const int PRIO_ALERT = 1;
-  static const int PRIO_CRIT = 2;
-  static const int PRIO_ERR = 3;
-  static const int PRIO_WARNING = 4;
-  static const int PRIO_NOTICE = 5;
-  static const int PRIO_INFO = 6;
-  static const int PRIO_DEBUG = 7;
-#endif
+  static const int PRIO_ERROR = 1;
+  static const int PRIO_WARNING = 2;
+  static const int PRIO_NOTICE = 3;
+  static const int PRIO_INFO = 4;
+  static const int PRIO_DEBUG = 5;
+
   static std::string prioToString(int prio);
 
   static Log& instance();

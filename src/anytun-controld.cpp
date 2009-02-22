@@ -85,7 +85,7 @@ void syncListener()
   catch (std::exception& e)
   {
     std::string addr = gOpt.getBindToAddr() == "" ? "*" : gOpt.getBindToAddr();
-    cLog.msg(Log::PRIO_ERR) << "cannot bind to " << addr << ":" << gOpt.getBindToPort()
+    cLog.msg(Log::PRIO_ERROR) << "cannot bind to " << addr << ":" << gOpt.getBindToPort()
                             << " (" << e.what() << ") exiting.." << std::endl;
     //return false;
   }
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
       }
       StringList targets = gOpt.getLogTargets();
       if(targets.empty()) {
-        cLog.addTarget("syslog:5,anytun-controld,daemon");
+        cLog.addTarget("syslog:3,anytun-controld,daemon");
       }
       else {
         StringList::const_iterator it;
@@ -171,14 +171,14 @@ int main(int argc, char* argv[])
   catch(std::runtime_error& e)
   {
     if(daemonized)
-      cLog.msg(Log::PRIO_ERR) << "uncaught runtime error, exiting: " << e.what();
+      cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error, exiting: " << e.what();
     else
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
   catch(std::exception& e)
   {
     if(daemonized)
-      cLog.msg(Log::PRIO_ERR) << "uncaught exception, exiting: " << e.what();
+      cLog.msg(Log::PRIO_ERROR) << "uncaught exception, exiting: " << e.what();
     else
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
   }

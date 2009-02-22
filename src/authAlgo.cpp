@@ -56,7 +56,7 @@ Sha1AuthAlgo::Sha1AuthAlgo(kd_dir_t d) : AuthAlgo(d), key_(DIGEST_LENGTH)
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_open(&handle_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC);
   if(err) {
-    cLog.msg(Log::PRIO_CRIT) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to open message digest algo";
+    cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to open message digest algo";
     return;
   } 
 #else
@@ -90,7 +90,7 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
+    cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
     return;
   } 
 
@@ -130,7 +130,7 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
-    cLog.msg(Log::PRIO_ERR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
+    cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
     return false;
   } 
   

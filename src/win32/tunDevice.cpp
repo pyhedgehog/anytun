@@ -207,12 +207,12 @@ int TunDevice::read(u_int8_t* buf, u_int32_t len)
     if(err == ERROR_IO_PENDING) {
       WaitForSingleObject(roverlapped_.hEvent, INFINITE);
       if(!GetOverlappedResult(handle_, &roverlapped_, &lenout, FALSE)) {
-        cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << AnytunErrno(GetLastError());
+        cLog.msg(Log::PRIO_ERROR) << "Error while trying to get overlapped result: " << AnytunErrno(GetLastError());
         return -1;
       }
     }
     else {
-      cLog.msg(Log::PRIO_ERR) << "Error while reading from device: " << AnytunErrno(GetLastError());
+      cLog.msg(Log::PRIO_ERROR) << "Error while reading from device: " << AnytunErrno(GetLastError());
       return -1;
     }
   }
@@ -231,12 +231,12 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
     if(err == ERROR_IO_PENDING) {
       WaitForSingleObject(woverlapped_.hEvent, INFINITE);
       if(!GetOverlappedResult(handle_, &woverlapped_, &lenout, FALSE)) {
-        cLog.msg(Log::PRIO_ERR) << "Error while trying to get overlapped result: " << AnytunErrno(GetLastError());
+        cLog.msg(Log::PRIO_ERROR) << "Error while trying to get overlapped result: " << AnytunErrno(GetLastError());
         return -1;
       }
     }
     else {
-      cLog.msg(Log::PRIO_ERR) << "Error while writing to device: " << AnytunErrno(GetLastError());
+      cLog.msg(Log::PRIO_ERROR) << "Error while writing to device: " << AnytunErrno(GetLastError());
       return -1;
     }
   }

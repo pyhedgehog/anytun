@@ -147,13 +147,13 @@ int real_main(int argc, char* argv[]);
 VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
 {
   if(gWinService.started_) {
-    cLog.msg(Log::PRIO_ERR) << "Service is already running";
+    cLog.msg(Log::PRIO_ERROR) << "Service is already running";
     return;
   }
 
   gWinService.status_handle_ = RegisterServiceCtrlHandlerA(SVC_NAME, WinService::ctrlHandler);
   if(!gWinService.status_handle_) { 
-    cLog.msg(Log::PRIO_ERR) << "Error on RegisterServiceCtrlHandler: " << AnytunErrno(GetLastError());
+    cLog.msg(Log::PRIO_ERROR) << "Error on RegisterServiceCtrlHandler: " << AnytunErrno(GetLastError());
     return;
   }
   gWinService.status_.dwServiceType = SERVICE_WIN32_OWN_PROCESS; 
@@ -163,7 +163,7 @@ VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
   
   gWinService.stop_event_ = CreateEvent(NULL, true, false, NULL);
   if(!gWinService.stop_event_) {
-    cLog.msg(Log::PRIO_ERR) << "WinService Error on CreateEvent: " << AnytunErrno(GetLastError());
+    cLog.msg(Log::PRIO_ERROR) << "WinService Error on CreateEvent: " << AnytunErrno(GetLastError());
     gWinService.reportStatus(SERVICE_STOPPED, -1);
     return;
   }
