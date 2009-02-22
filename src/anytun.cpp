@@ -362,8 +362,16 @@ int main(int argc, char* argv[])
   {
     try 
     {
+#ifndef _MSC_VER
       cLog.addTarget("syslog:7,anytun,daemon");
-      cLog.msg(Log::PRIO_DEBUG) << "anytun started...";
+#else
+ #ifdef WIN_SERVICE
+      cLog.addTarget("eventlog:7,anytun");
+ #else
+      cLog.addTarget("stdout:7");
+ #endif
+#endif
+      cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
 ///  std::cout << "anytun - secure anycast tunneling protocol" << std::endl;
 
       bool result = gOpt.parse(argc, argv);

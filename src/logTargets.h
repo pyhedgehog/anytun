@@ -43,6 +43,8 @@
 #include <fstream>
 #endif
 
+#include "datatypes.h"
+
 class LogTarget
 {
 public:
@@ -178,6 +180,8 @@ private:
 class LogTargetWinEventlog : public LogTarget
 {
 public:
+  static WORD prioToEventLogType(int prio);
+
   LogTargetWinEventlog(int prio, std::string conf);
   ~LogTargetWinEventlog();
 
@@ -187,11 +191,9 @@ public:
   static bool duplicateAllowed() { return false; };
 
   LogTargetWinEventlog& setLogName(std::string l); 
-  std::string getLogName() const { return logname; }
+  std::string getLogName() const { return logname; };
 
 private:
-  static WORD prioToEventLogType(int prio);
-
   std::string logname;
   HANDLE h_event_source;
 };

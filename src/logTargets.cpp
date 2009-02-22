@@ -141,7 +141,7 @@ LogTarget* LogTargetList::add(target_type_t type, int prio, std::string conf)
   }
   case TARGET_WINEVENTLOG: {
     #ifdef LOG_WINEVENTLOG
-    if(!LogTargetSyslog::duplicateAllowed() && targets.count(TARGET_WINEVENTLOG))
+    if(!LogTargetWinEventlog::duplicateAllowed() && targets.count(TARGET_WINEVENTLOG))
       throw std::runtime_error(targetTypeToString(TARGET_WINEVENTLOG) + " logtarget is supported only once");
 
     return targets.insert(TargetsMap::value_type(TARGET_WINEVENTLOG, new LogTargetWinEventlog(prio, conf)))->second;
@@ -403,11 +403,11 @@ void LogTargetWinEventlog::log(std::string msg, int prio)
   CHAR buffer[STERROR_TEXT_MAX];
   StringCchPrintfA(buffer, STERROR_TEXT_MAX, "%s", msg.c_str());
   lpszStrings[0] = buffer;
-  if(log.h_event_source)
-    ReportEventA(log.h_event_source_, Log::prioToEventLogType(prio), 0, prio, NULL, 1, 0, lpszStrings, NULL);
+  if(h_event_source)
+    ReportEventA(h_event_source, prioToEventLogType(prio), 0, prio, NULL, 1, 0, lpszStrings, NULL);
 }
 
-LogTargetEventlog& LogTargetWinEventlog::setLogName(std::string l)
+LogTargetWinEventlog& LogTargetWinEventlog::setLogName(std::string l)
 {
   logname = l;
   if(opened)
@@ -419,14 +419,14 @@ LogTargetEventlog& LogTargetWinEventlog::setLogName(std::string l)
 WORD LogTargetWinEventlog::prioToEventLogType(int prio)
 {
   switch(prio) {
-  case PRIO_EMERG: return EVENTLOG_ERROR_TYPE;
-  case PRIO_ALERT: return EVENTLOG_ERROR_TYPE;
-  case PRIO_CRIT: return EVENTLOG_ERROR_TYPE;
-  case PRIO_ERR: return EVENTLOG_ERROR_TYPE;
-  case PRIO_WARNING: return EVENTLOG_WARNING_TYPE;
-  case PRIO_NOTICE: return EVENTLOG_INFORMATION_TYPE;
-  case PRIO_INFO: return EVENTLOG_SUCCESS;
-  case PRIO_DEBUG: return EVENTLOG_INFORMATION_TYPE;
+  case Log::PRIO_EMERG: return EVENTLOG_ERROR_TYPE;
+  case Log::PRIO_ALERT: return EVENTLOG_ERROR_TYPE;
+  case Log::PRIO_CRIT: return EVENTLOG_ERROR_TYPE;
+  case Log::PRIO_ERR: return EVENTLOG_ERROR_TYPE;
+  case Log::PRIO_WARNING: return EVENTLOG_WARNING_TYPE;
+  case Log::PRIO_NOTICE: return EVENTLOG_INFORMATION_TYPE;
+  case Log::PRIO_INFO: return EVENTLOG_SUCCESS;
+  case Log::PRIO_DEBUG: return EVENTLOG_INFORMATION_TYPE;
   default: return EVENTLOG_ERROR_TYPE;
   }
 }

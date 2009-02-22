@@ -277,7 +277,7 @@ void TunDevice::do_ifconfig()
 	}
 
   u_long mtu;
-  err = performIoControl(TAP_IOCTL_CONFIG_DHCP_MASQ, &mtu, sizeof(mtu), &mtu, sizeof(mtu));
+  err = performIoControl(TAP_IOCTL_GET_MTU, &mtu, sizeof(mtu), &mtu, sizeof(mtu));
   if(err != ERROR_SUCCESS) {
     CloseHandle(handle_);
     std::stringstream msg;
