@@ -132,6 +132,7 @@ void WinService::waitForStop()
   reportStatus(SERVICE_RUNNING, NO_ERROR);
   WaitForSingleObject(stop_event_, INFINITE);
   reportStatus(SERVICE_STOP_PENDING, NO_ERROR);
+  cLog.msg(Log::PRIO_NOTICE) << "WinService received stop signal, exitting";
 }
 
 void WinService::stop()
