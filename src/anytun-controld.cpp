@@ -150,14 +150,13 @@ int main(int argc, char* argv[])
       pidFile << pid;
       pidFile.close();
     }
-    
-    SignalController sig;
-    sig.init();
+
+    gSignalController.init();
     
     boost::thread * syncListenerThread;
     syncListenerThread = new boost::thread(boost::bind(syncListener));
     
-    int ret = sig.run();
+    int ret = gSignalController.run();
     
     return ret;
   }

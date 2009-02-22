@@ -32,11 +32,16 @@
 #ifndef _SIGNAL_CONTROLLER_H_
 #define _SIGNAL_CONTROLLER_H_
 
-#include <csignal>
+#ifndef NO_SIGNALCONTROLLER
+
 #include <map>
 #include <queue>
 
 #include "threadUtils.hpp"
+
+#ifndef _MSC_VER
+#include <csignal>
+#endif
 
 class SignalHandler
 {
@@ -53,6 +58,7 @@ private:
   friend class SignalController;
 };
 
+#ifndef _MSC_VER
 class SigIntHandler : public SignalHandler
 {
 public:
@@ -95,12 +101,53 @@ public:
   int handle();
 };
 
+#else
+
+class CtrlCHandler : public SignalHandler
+{
+public:
+  CtrlCHandler() : SignalHandler(CTRL_C_EVENT) {}
+  int handle();
+};
+
+class CtrlBreakHandler : public SignalHandler
+{
+public:
+  CtrlBreakHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
+  int handle();
+};
+
+class CtrlCloseHandler : public SignalHandler
+{
+public:
+  CtrlCloseHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
+  int handle();
+};
+
+class CtrlLogoffHandler : public SignalHandler
+{
+public:
+  CtrlLogoffHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
+  int handle();
+};
+
+class CtrlShutdownHandler : public SignalHandler
+{
+public:
+  CtrlShutdownHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
+  int handle();
+};
+#endif
+
 class SignalController
 {
 public:
-  SignalController() { thread = NULL; }
-  ~SignalController();
+  static SignalController& instance();
+#ifndef _MSC_VER
   static void handle(void* s);
+#else
+  static bool handle(DWORD ctrlType);
+#endif
 
   void init();
   int run();
@@ -108,15 +155,37 @@ public:
 private:
   typedef std::map<int, SignalHandler*> HandlerMap;
 
+#ifndef _MSC_VER
+  SignalController() : thread(null) {};
+#else
+  SignalController() {};
+#endif
+  ~SignalController();
   SignalController(const SignalController &s);
   void operator=(const SignalController &s);
-  
+
+  static SignalController* inst;
+  static Mutex instMutex;
+  class instanceCleaner {
+    public: ~instanceCleaner() {
+      if(SignalController::inst != NULL)
+        delete SignalController::inst;
+    }
+  };
+  friend class instanceCleaner;
+
   std::queue<int> sigQueue;
   Mutex sigQueueMutex;
   Semaphore sigQueueSem;
 
+#ifdef _MSC_VER  
   boost::thread* thread;
+#endif
   HandlerMap handler;
 };
+
+extern SignalController& gSignalController;
+
+#endif
 
 #endif

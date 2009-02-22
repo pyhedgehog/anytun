@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;NO_SIGNALCONTROLLER;WIN32_LEAN_AND_MEAN"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -116,7 +116,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;NO_SIGNALCONTROLLER;WIN32_LEAN_AND_MEAN"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -433,6 +433,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\signalController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\syncBuffer.h"
 				>
 			</File>
@@ -614,6 +618,10 @@
 			</File>
 			<File
 				RelativePath=".\seqWindow.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\signalController.cpp"
 				>
 			</File>
 			<File

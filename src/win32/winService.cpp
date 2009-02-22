@@ -145,7 +145,8 @@ void WinService::waitForStop()
 {
   if(!started_)
     throw std::runtime_error("Service not started correctly");
-
+  
+  reportStatus(SERVICE_RUNNING, NO_ERROR);
   WaitForSingleObject(stop_event_, INFINITE);
   reportStatus(SERVICE_STOP_PENDING, NO_ERROR);
 }
@@ -175,16 +176,15 @@ VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
   gWinService.status_.dwServiceType = SERVICE_WIN32_OWN_PROCESS; 
   gWinService.status_.dwServiceSpecificExitCode = 0;    
   gWinService.reportStatus(SERVICE_START_PENDING, NO_ERROR);
-
+  gWinService.started_ = true;
+  
   gWinService.stop_event_ = CreateEvent(NULL, true, false, NULL);
   if(!gWinService.stop_event_) {
-    cLog.msg(Log::PRIO_ERR) << "Error on CreateEvent: " << LogErrno(GetLastError());
+    cLog.msg(Log::PRIO_ERR) << "WinService Error on CreateEvent: " << LogErrno(GetLastError());
     gWinService.reportStatus(SERVICE_STOPPED, -1);
     return;
   }
-  gWinService.started_ = true;
-  gWinService.reportStatus(SERVICE_RUNNING, NO_ERROR);
-  
+
   real_main(dwArgc, lpszArgv);
 }
 

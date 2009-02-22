@@ -29,16 +29,37 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <csignal>
-#include <map>
+#ifndef NO_SIGNALCONTROLLER
 
+#include <map>
 #include <iostream>
 
-#include <boost/bind.hpp>
-#include "threadUtils.hpp"
 #include "signalController.h"
 #include "log.h"
+#include "threadUtils.hpp"
 
+#ifndef _MSC_VER
+#include <csignal>
+#include <boost/bind.hpp>
+#else
+#include <windows.h>
+#endif
+
+SignalController* SignalController::inst = NULL;
+Mutex SignalController::instMutex;
+SignalController& gSignalController = SignalController::instance();
+
+SignalController& SignalController::instance()
+{
+	Lock lock(instMutex);
+	static instanceCleaner c;
+	if(!inst)
+		inst = new SignalController();
+	
+	return *inst;
+}
+
+#ifndef _MSC_VER
 
 int SigIntHandler::handle()
 {
@@ -81,14 +102,54 @@ int SigUsr2Handler::handle()
 
   return 0;
 }
+#else
+int CtrlCHandler::handle()
+{
+  cLog.msg(Log::PRIO_NOTICE) << "CTRL-C Event received, exitting";
+
+  return 1;
+}
+
+int CtrlBreakHandler::handle()
+{
+  cLog.msg(Log::PRIO_NOTICE) << "CTRL-Break Event received, ignoring";
+
+  return 0;
+}
+
+int CtrlCloseHandler::handle()
+{
+  cLog.msg(Log::PRIO_NOTICE) << "Close Event received, exitting";
+
+  return 1;
+}
+
+int CtrlLogoffHandler::handle()
+{
+  cLog.msg(Log::PRIO_NOTICE) << "LogOff Event received, exitting";
+
+  return 1;
+}
+
+int CtrlShutdownHandler::handle()
+{
+  cLog.msg(Log::PRIO_NOTICE) << "Shutdown Event received, exitting";
+
+  return 1;
+}
+#endif
 
 SignalController::~SignalController() 
 {
   for(HandlerMap::iterator it = handler.begin(); it != handler.end(); ++it)
     delete it->second;
+
+#ifndef _MSC_VER
   if(thread) delete thread;
+#endif
 }
 
+#ifndef _MSC_VER
 void SignalController::handle(void *s)
 {
   SignalController* self = reinterpret_cast<SignalController*>(s);
@@ -106,9 +167,18 @@ void SignalController::handle(void *s)
     self->sigQueueSem.up();
   }
 }
+#else
+bool SignalController::handle(DWORD ctrlType)
+{
+  gSignalController.sigQueue.push(ctrlType);
+  gSignalController.sigQueueSem.up();
+  return true;
+}
+#endif
 
 void SignalController::init()
 {
+#ifndef _MSC_VER
   sigset_t signal_set;
   
   sigfillset(&signal_set);        
@@ -122,7 +192,7 @@ void SignalController::init()
 #else
 #error The signalhandler works only with pthreads
 #endif
-
+  
   thread = new boost::thread(boost::bind(handle, this));
 
   handler[SIGINT] = new SigIntHandler;
@@ -131,12 +201,24 @@ void SignalController::init()
   handler[SIGTERM] = new SigTermHandler;
   handler[SIGUSR1] = new SigUsr1Handler;
   handler[SIGUSR2] = new SigUsr2Handler;
+#else
+  if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)SignalController::handle, true)) {
+    std::stringstream msg;
+    msg << "Error on SetConsoleCtrlhandler: " << LogErrno(GetLastError());
+    throw std::runtime_error(msg.str());
+  }
+
+  handler[CTRL_C_EVENT] = new CtrlCHandler;
+  handler[CTRL_BREAK_EVENT] = new CtrlBreakHandler;
+  handler[CTRL_CLOSE_EVENT] = new CtrlCloseHandler;
+  handler[CTRL_LOGOFF_EVENT] = new CtrlLogoffHandler;
+  handler[CTRL_SHUTDOWN_EVENT] = new CtrlShutdownHandler;
+#endif
 }
 
 int SignalController::run()
 {
-  while(1) 
-  {
+  while(1) {
     sigQueueSem.down();
     int sigNum;
     {
@@ -157,3 +239,5 @@ int SignalController::run()
   }
   return 0;
 }
+
+#endif

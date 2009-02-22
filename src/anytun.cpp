@@ -476,8 +476,7 @@ int main(int argc, char* argv[])
 #endif
 
 #ifndef NO_SIGNALCONTROLLER
-    SignalController sig;
-    sig.init();
+    gSignalController.init();
 #endif
 
     OptionHost* connTo = new OptionHost();
@@ -503,7 +502,7 @@ int main(int argc, char* argv[])
     int ret = 0;
     gWinService.waitForStop();
 #elif !defined(NO_SIGNALCONTROLLER)
-    int ret = sig.run();  
+    int ret = gSignalController.run();  
 #else
     receiver(&p);
     int ret = 0;
