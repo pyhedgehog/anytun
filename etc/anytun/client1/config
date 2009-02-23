@@ -3,6 +3,8 @@
 #nodaemonize
 ## the sender id to use (has to be unique for multible anycast servers)
 #sender-id 1
+## log to syslog with level of 3
+log syslog:3,anytun-client1,daemon
 ## local anycast ip address to bind to
 #interface <ip-address>
 ## local anycast(data) port to bind to

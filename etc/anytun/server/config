@@ -33,6 +33,9 @@ auth-algo sha1
 ## make sure to use a different port for every server and client!
 port 4444
 
+## log to syslog with level of 3
+log syslog:3,anytun-server,daemon
+
 #############################
 ## Debug options            #
 #############################
