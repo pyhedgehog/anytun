@@ -12,6 +12,17 @@ libboost-system1.35-dev
 libboost-regex1.35-dev
 asciidoc (only for manpage)
 
+Windows
+-------
+OpenSSL
+ Developer: 
+ 	http://www.slproweb.com/download/Win32OpenSSL-0_9_8j.exe
+ Runtime Only: 
+ 	http://www.slproweb.com/download/Win32OpenSSL_Light-0_9_8j.exe
+Boost 1.35: 
+	http://www.boostpro.com/download/boost_1_35_0_setup.exe
+Microsoft Visual C++ 2008 Redistributable Package (x86):
+	http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
 
 OpenBSD
 -------
@@ -39,14 +50,6 @@ Building from source
 
 Notes: 
   - on OpenBSD you have to use gmake instead of make
-  - currently there is no syncronisation support for OpenBSD
-    you can build anytun without sync by invoking
-    
-    # make anytun-nosync 
-
-    instead of just 'make'
-
-
 
 Errors:
 -------
