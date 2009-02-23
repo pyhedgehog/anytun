@@ -270,7 +270,7 @@ void LogTargetSyslog::log(std::string msg, int prio)
   if(!opened)
     return;
 
-  syslog(prio + 2 | facility, "%s", msg.c_str());  
+  syslog((prio + 2) | facility, "%s", msg.c_str());  
 }
 
 LogTargetSyslog& LogTargetSyslog::setLogName(std::string l)

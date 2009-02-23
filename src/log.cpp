@@ -69,7 +69,8 @@ void Log::addTarget(std::string conf)
   Lock lock(mutex);
   LogTarget* target = targets.add(conf);
   target->open();
-  target->enable();
+  if(target->getMaxPrio() > 0)
+    target->enable();
 }
 
 void Log::addTarget(LogTargetList::target_type_t type, int prio, std::string conf)
@@ -77,7 +78,8 @@ void Log::addTarget(LogTargetList::target_type_t type, int prio, std::string con
   Lock lock(mutex);
   LogTarget* target = targets.add(type, prio, conf);
   target->open();
-  target->enable();
+  if(target->getMaxPrio() > 0)
+    target->enable();
 }
 
 void Log::log(std::string msg, int prio)
