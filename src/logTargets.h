@@ -50,6 +50,7 @@ class LogTarget
 public:
   LogTarget();
   LogTarget(int prio);
+  virtual ~LogTarget() {};
 
   virtual void open() = 0;
   virtual void close() = 0;
