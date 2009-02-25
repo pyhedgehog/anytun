@@ -40,8 +40,8 @@
 class syntax_error : public std::runtime_error
 {
 public:
-  syntax_error(std::string t, u_int32_t p) : runtime_error(t), pos(p) {};
-  u_int32_t pos;
+  syntax_error(std::string t, int32_t p) : runtime_error(t), pos(p) {};
+  int32_t pos;
 };
 std::ostream& operator<<(std::ostream& stream, syntax_error const& error);
 
@@ -77,6 +77,8 @@ std::istream& operator>>(std::istream& stream, OptionNetwork& network);
 
 typedef std::list<std::string> StringList;
 
+typedef enum { ANY, IPV4_ONLY, IPV6_ONLY } ResolvAddrType;
+
 class Options
 {
 public:
@@ -109,6 +111,8 @@ public:
   std::string getBindToPort();
   Options& setBindToPort(std::string b);
 
+  ResolvAddrType getResolvAddrType();
+  Options& setResolvAddrType(ResolvAddrType r);
   std::string getLocalAddr();
   Options& setLocalAddr(std::string l);
   std::string getLocalPort();
@@ -189,6 +193,7 @@ private:
   std::string file_name_;
   OptionHost bind_to_;
 
+  ResolvAddrType resolv_addr_type_;
   OptionHost local_;
   OptionHost remote_;
 

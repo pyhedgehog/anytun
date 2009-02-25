@@ -42,9 +42,12 @@
 std::ostream& operator<<(std::ostream& stream, syntax_error const& error)
 {
   stream << "syntax error: " << error.what() << std::endl;
-  stream << "              ";
-  for(u_int32_t i = 0; i < error.pos; ++i) stream << " ";
-  return stream << "^";
+  if(error.pos >= 0) {
+    stream << "              ";
+    for(int32_t i = 0; i < error.pos; ++i) stream << " ";
+    return stream << "^";
+  }
+  return stream;
 }
 
 void OptionHost::init(std::string addrPort)
@@ -157,6 +160,8 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   file_name_ = "";
   bind_to_.addr = "127.0.0.1";
   bind_to_.port = "2323";
+
+  resolv_addr_type_ = ANY;
 
   local_.addr = "";
   local_.port = "4444";
@@ -321,6 +326,7 @@ bool Options::parse(int argc, char* argv[])
 
   progname_ = argv[0];
   argc--;
+  bool ipv4_only = false, ipv6_only = false;
   int32_t ld_kdr_tmp = ld_kdr_;
   for(int i=1; argc > 0; ++i)
   {
@@ -361,6 +367,8 @@ bool Options::parse(int argc, char* argv[])
 
     PARSE_SCALAR_PARAM("-r","--remote-host", remote_.addr)
     PARSE_SCALAR_PARAM("-o","--remote-port", remote_.port)
+    PARSE_BOOL_PARAM("-4","--ipv4-only", ipv4_only)
+    PARSE_BOOL_PARAM("-6","--ipv6-only", ipv6_only)
 
 #endif
 #if defined(ANYTUN_OPTIONS)
@@ -410,6 +418,13 @@ bool Options::parse(int argc, char* argv[])
     else 
       throw syntax_error(str, 0);
   }
+  if(ipv4_only && ipv6_only)
+    throw syntax_error("-4 and -6 are mutual exclusive", -1);
+  if(ipv4_only)
+    resolv_addr_type_ = IPV4_ONLY;
+  if(ipv6_only)
+    resolv_addr_type_ = IPV6_ONLY;
+
   ld_kdr_ = static_cast<int8_t>(ld_kdr_tmp);
 
   return true;
@@ -543,6 +558,14 @@ void Options::printOptions()
   std::cout << "file_name = '" << file_name_ << "'" << std::endl;
   std::cout << "bind_to.addr = '" << bind_to_.addr << "'" << std::endl;
   std::cout << "bind_to.port = '" << bind_to_.port << "'" << std::endl;
+  std::cout << std::endl;
+  std::cout << "resolv_addr_type = ";
+  switch(resolv_addr_type_) {
+  case ANY: std::cout <<  "any" << std::endl; break;
+  case IPV4_ONLY: std::cout <<  "ipv4-only" << std::endl; break;
+  case IPV6_ONLY: std::cout <<  "ipv6-only" << std::endl; break;
+  default: std::cout <<  "?" << std::endl; break;
+  }
   std::cout << std::endl;
   std::cout << "local.addr = '" << local_.addr << "'" << std::endl;
   std::cout << "local.port = '" << local_.port << "'" << std::endl;
@@ -708,6 +731,18 @@ Options& Options::setBindToPort(std::string b)
 }
 
 
+ResolvAddrType Options::getResolvAddrType()
+{
+  ReadersLock lock(mutex);
+  return resolv_addr_type_;
+}
+
+Options& Options::setResolvAddrType(ResolvAddrType r)
+{
+  WritersLock lock(mutex);
+  resolv_addr_type_ = r;
+  return *this;
+}
 
 std::string Options::getLocalAddr()
 {

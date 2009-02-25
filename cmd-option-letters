@@ -1,3 +1,6 @@
+4: resolv ipv4 only (payload socket)
+6: resolv ipv6 only (payload socket)
+
 a: auth algo
 b:
 c: cipher
