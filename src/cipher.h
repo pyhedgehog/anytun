@@ -120,7 +120,7 @@ private:
       u_int16_t zero_;
     } salt_;
 	struct ATTR_PACKED {
-      u_int8_t fill_[SALT_LENGTH - sizeof(mux_t) - sizeof(sender_id_t) - 2 - sizeof(seq_nr_t)];
+      u_int8_t fill_[SALT_LENGTH - sizeof(mux_t) - sizeof(sender_id_t) - 2*sizeof(u_int8_t) - sizeof(seq_nr_t)];
       mux_t mux_;
       sender_id_t sender_id_;
       u_int8_t empty_[2];

@@ -196,7 +196,7 @@ private:
       u_int16_t zero_;
     } params_;
     struct ATTR_PACKED {
-      u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - 2 - sizeof(seq_nr_t)];
+      u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - 2*sizeof(u_int8_t) - sizeof(seq_nr_t)];
       u_int8_t label_;
       u_int8_t r_fill_[2];
       seq_nr_t r_;

@@ -1,36 +1,63 @@
 Dependencies
 ============
 
+Anytun can be built by using either libgcrypt or the openssl-crypto library. 
+The latter is more performant in most cases but there are some license 
+issues when using this library.
+
 Linux
 -----
 
-build-essential
-libgcrypt11-dev
-libboost1.35-dev
-libboost-thread1.35-dev
-libboost-system1.35-dev
-libboost-regex1.35-dev
-asciidoc (only for manpage)
+using libgcrypt:
+  libgcrypt11-dev
+
+using ssl crypto lib:
+  libssl-dev
+
+common:
+  build-essential
+  libboost-serialization1.35-dev
+  libboost-thread1.35-dev
+  libboost-system1.35-dev
+  libboost-regex1.35-dev
+  asciidoc (only for manpage)
+
 
 Windows
 -------
 OpenSSL
  Developer: 
  	http://www.slproweb.com/download/Win32OpenSSL-0_9_8j.exe
+
  Runtime Only: 
  	http://www.slproweb.com/download/Win32OpenSSL_Light-0_9_8j.exe
+  
 Boost 1.35: 
 	http://www.boostpro.com/download/boost_1_35_0_setup.exe
+
+  As it can take some time to install everything from boost here is a 
+  complete list of libraries which have to be installed in order to build anytun:
+   
+   * Serialization
+   * Thread 
+   * date_time
+   * System
+   * regex
+
 Microsoft Visual C++ 2008 Redistributable Package (x86):
 	http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
+
 
 OpenBSD
 -------
 
-libgcrypt
-libgpg-error
-boost
-gmake
+using libgcrypt:
+  libgcrypt
+  libgpg-error
+
+common:
+  boost
+  gmake
 
 
 
@@ -44,15 +71,29 @@ svn co http://anytun.org/svn/anytun/
 Building from source
 --------------------
 
-# cd src
-# ./configure
-# make
+using libgcrypt:
+
+ # cd src
+ # ./configure
+ # make
+
+using ssl crypto library:
+
+ # cd src
+ # ./configure --use-ssl-crypto
+ # make
+
 
 Notes: 
+  - try './configure --help' for further information
+  - if using openssl pre 0.9.8 you have to disable passphrase
+    because openssl had no SHA256 implementation prior to this
+    version
   - on OpenBSD you have to use gmake instead of make
 
+
 Errors:
--------
+=======
 
 Note: Cannot open TUN/TAP dev /dev/net/tun: No such file or directory (errno=2)
 Cannot open TUN/TAP dev /dev/anytun0: No such file or directory (errno=2)
