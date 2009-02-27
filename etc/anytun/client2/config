@@ -25,16 +25,9 @@ auth-algo sha1
 ## this should be al least 30 characters
 passphrase Creating_VPN_Tunnels_With_Anytun_Is_Easy
 
-## local ip address to bind to (for tunnel data)
-## (if you run an anycast cluster this has to be the anycast ip address)
-#interface <ip-address>
-
-## local port to bind to (for tunnel data)
-## make sure to use a different port for every server and client!
-port 4444
-
-## log to syslog with a level of 3
-log syslog:3,anytun-client2,daemon
+## The remote host and port
+remote-host example.com
+remote-port 4444
 
 #############################
 ## Debug options            #
@@ -46,9 +39,35 @@ log syslog:3,anytun-client2,daemon
 ## additional log to standard output with a level of 5
 #log stdout:5
 
+
 #############################
 ## Expert options           #
 #############################
+
+## log to syslog with a level of 3
+log syslog:3,anytun-client2,daemon
+
+## change user and group after init
+username nobody
+groupname nogroup
+
+## chroot to /var/run/anytun
+#chroot /var/run/anytun
+
+## key derivation pseudo random function
+#kd-prf null
+#kd-prf aes-ctr
+#kd-prf aes-ctr-128
+#kd-prf aes-ctr-192
+#kd-prf aes-ctr-256
+
+## local ip address to bind to (for tunnel data)
+## (if you run an anycast cluster this has to be the anycast ip address)
+#interface <ip-address>
+
+## local port to bind to (for tunnel data)
+## make sure to use a different port for every server and client!
+port 4444
 
 ## Device name
 #dev anytun0

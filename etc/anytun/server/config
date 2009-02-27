@@ -33,9 +33,6 @@ auth-algo sha1
 ## make sure to use a different port for every server and client!
 port 4444
 
-## log to syslog with a level of 3
-log syslog:3,anytun-server,daemon
-
 #############################
 ## Debug options            #
 #############################
@@ -50,6 +47,23 @@ log syslog:3,anytun-server,daemon
 #############################
 ## Expert options           #
 #############################
+
+## log to syslog with a level of 3
+log syslog:3,anytun-server,daemon
+
+## change user and group after init
+username nobody
+groupname nogroup
+
+## chroot to /var/run/anytun
+#chroot /var/run/anytun
+
+## key derivation pseudo random function
+#kd-prf null
+#kd-prf aes-ctr
+#kd-prf aes-ctr-128
+#kd-prf aes-ctr-192
+#kd-prf aes-ctr-256
 
 ## Device name
 #dev anytun0
