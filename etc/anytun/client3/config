@@ -1,52 +1,70 @@
-## Global Parameters
+#############################
+## Main options             #
+#############################
+
+## Client ID
+##  (has to be unique for each client)
+mux 3
+
+## device type tun = ip/ipv6, tap = ethernet
+type tun
+
+## payload encryption algorithm
+#cipher null
+#cipher aes-ctr-128
+#cipher aes-ctr-192
+#cipher aes-ctr-256
+cipher aes-ctr
+
+## message authentication algorithm
+#auth-algo null
+auth-algo sha1
+
+## Passphrase
+## this is used to generate the crypto-key and salt
+## this should be al least 30 characters
+passphrase Creating_VPN_Tunnels_With_Anytun_Is_Easy
+
+## local ip address to bind to (for tunnel data)
+## (if you run an anycast cluster this has to be the anycast ip address)
+#interface <ip-address>
+
+## local port to bind to (for tunnel data)
+## make sure to use a different port for every server and client!
+port 4444
+
+## log to syslog with a level of 3
+log syslog:3,anytun-client3,daemon
+
+#############################
+## Debug options            #
+#############################
+
 ## don't run in background
 #nodaemonize
-## the sender id to use (has to be unique for multible anycast servers)
-#sender-id 1
-## log to syslog with level of 3
-log syslog:3,anytun-client3,daemon
-## local anycast ip address to bind to
-#interface <ip-address>
-## local anycast(data) port to bind to
-#port 4444
-## local unicast(sync) ip address to bind to
-# sync-interface <ip-address>
-## local unicast(sync) port to bind to
-#sync-port 1234
-## remote hosts to sync with
-#sync-hosts <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]
+
+## additional log to standard output with a level of 5
+#log stdout:5
+
+#############################
+## Expert options           #
+#############################
+
 ## Device name
 #dev anytun0
-# device type tun = ip/ipv6, tap = ethernet
-type tun
-## payload encryption algorithm
-cipher aes-ctr
-# cipher null
-## message authentication algorithm
-auth-algo sha1
-# auth-algo null
-## Automaticaly configure the interface an set a route
-## 1st argument the local address for the tun/tap device
-## 2nd argument is either the remote address(tun) or netmask(tap)
-#ifconfig <local> <remote|netmask>
-## Controll Host for multi client support
-#control-host 127.0.0.1:4445
 
-### Connection Parameters (for clients without config server)
-## Allow all ipv4 and ipv6 traffic 
-## this does not set operating system routes
-route 0.0.0.0/0
-route ::/0
-## remote host
-remote-host example.com
-## remote port
-remote-port 4444
-##seqence number window size
-## 0 turns off replay protection (for manualk keying)
-window-size 0
-## the multiplex id to use
-mux 3
-## master key to use for encryption
-key 3123456789ABCDEF0123456789ABCDEF
-## master salt to use for encryption
-salt 3123456789ABCD0123456789ABCD
+## Automaticaly configure the interface an set a route
+##
+## We highly recommend the use of the post up script to do this
+##
+## the address hast to be supplied in CIDR notation
+#ifconfig <local>/<prefix length>
+
+##Manually set encryption key and salt
+## (this replaces the passphrase)
+#key 3123456789ABCDEF0123456789ABCDEF
+#salt 3123456789ABCD0123456789ABCD
+
+## Setting a window size > 0 will enable replay protection
+## This most likely will only work with external rekeying
+#window-size 0

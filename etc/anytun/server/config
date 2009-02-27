@@ -2,65 +2,77 @@
 ## multi connection support #
 #############################
 
-## Controll Host for multi client support
-## This enables multi-connection support and split configuration files per client
-## Make sure to use a unique port for each server, when runnig multible servers
+## control host for multi-client support
+## This enables multi-connection support and splits configuration files per client
+## Make sure to use a unique port for each server, when runnig multiple servers
 control-host 127.0.0.1:4444
 
 #############################
 ## Main options             #
 #############################
 
-## Device name
-dev anytun0
-
-# device type tun = ip/ipv6, tap = ethernet
+## device type tun = ip/ipv6, tap = ethernet
 type tun
 
 ## payload encryption algorithm
-cipher aes-ctr
 #cipher null
+#cipher aes-ctr-128
+#cipher aes-ctr-192
+#cipher aes-ctr-256
+cipher aes-ctr
 
 ## message authentication algorithm
-auth-algo sha1
 #auth-algo null
+auth-algo sha1
 
 ## local ip address to bind to (for tunnel data)
-## (if you operate an anycast cluster this must be the anycast ip address)
+## (if you run an anycast cluster this has to be the anycast ip address)
 #interface <ip-address>
 
 ## local port to bind to (for tunnel data)
 ## make sure to use a different port for every server and client!
 port 4444
 
-## log to syslog with level of 3
+## log to syslog with a level of 3
 log syslog:3,anytun-server,daemon
 
 #############################
 ## Debug options            #
 #############################
+
 ## don't run in background
 #nodaemonize
+
+## additional log to standard output with a level of 5
+#log stdout:5
+
 
 #############################
 ## Expert options           #
 #############################
+
+## Device name
+#dev anytun0
+
 ## Automaticaly configure the interface an set a route
 ##
 ## We highly recommend the use of the post up script to do this
 ##
-## 1st argument the local address for the tun/tap device
-## 2nd argument is either the remote address(tun) or netmask(tap)
-#ifconfig <local> <remote|netmask>
+## the address hast to be supplied in CIDR notation
+#ifconfig <local>/<prefix length>
 
 #############################
 ## Cluster options          #
 #############################
-## the sender id to use (has to be unique for multible anycast servers)
+
+## the sender id to use (has to be unique for multiple anycast servers)
 #sender-id 1
+
 ## local unicast(sync) ip address to bind to
-# sync-interface <ip-address>
+#sync-interface <ip-address>
+
 ## local unicast(sync) port to bind to
 #sync-port 1234
+
 ## remote hosts to sync with
 #sync-hosts <hostname|ip>:<port>[,<hostname|ip>:<port>[...]]

@@ -1,9 +1,46 @@
-route 192.168.123.2/32
-window-size 0
+#############################
+## main options             #
+#############################
+
+## Client ID
+##  (has to be unique for each client)
 mux 2
-key 2123456789ABCDEF0123456789ABCDEF
-salt 2123456789ABCD0123456789ABCD
-## remote host (autodetect if skiped)
+
+## Passphrase
+## this is used to generate the crypto-key and salt
+## this should be al least 30 characters
+passphrase Creating_VPN_Tunnels_With_Anytun_Is_Easy
+
+## staticially configure client address
+## (autodetect if skiped)
 #remote-host <hostname|ip>
-## remote host (autodetect if skiped)
 #remote-port 4444
+
+#############################
+## routing options          #
+#############################
+
+## Internal Routing entries
+## multiple routes allowed
+## make sure to also set a system route in the post-up script
+route 192.168.123.2/32
+route fec0::2/128
+
+## Add a subnet route
+## make sure to also set a system route in the post-up script
+#route 192.168.12.0/24
+#route fec0:2::/48
+
+
+#############################
+## Expert options           #
+#############################
+
+##Manually set encryption key and salt
+## (this replaces the passphrase)
+#key 2123456789ABCDEF0123456789ABCDEF
+#salt 2123456789ABCD0123456789ABCD
+
+## Setting a window size > 0 will enable replay protection
+## This most likely will only work with external rekeying
+#window-size 0

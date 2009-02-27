@@ -11,7 +11,7 @@ mux 1
 ## this should be al least 30 characters
 passphrase Creating_VPN_Tunnels_With_Anytun_Is_Easy
 
-## Staticially configure remote address
+## staticially configure client address
 ## (autodetect if skiped)
 #remote-host <hostname|ip>
 #remote-port 4444
@@ -21,14 +21,14 @@ passphrase Creating_VPN_Tunnels_With_Anytun_Is_Easy
 #############################
 
 ## Internal Routing entries
-## multible routes allowed
+## multiple routes allowed
 ## make sure to also set a system route in the post-up script
 route 192.168.123.1/32
 route fec0::1/128
 
 ## Add a subnet route
 ## make sure to also set a system route in the post-up script
-#route 192.168.12.0/24
+#route 192.168.11.0/24
 #route fec0:1::/48
 
 
@@ -40,6 +40,7 @@ route fec0::1/128
 ## (this replaces the passphrase)
 #key 0123456789ABCDEF0123456789ABCDEF
 #salt 0123456789ABCD0123456789ABCD
+
 ## Setting a window size > 0 will enable replay protection
 ## This most likely will only work with external rekeying
 #window-size 0
