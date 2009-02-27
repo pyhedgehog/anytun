@@ -36,7 +36,7 @@ route fec0::2/128
 ## Expert options           #
 #############################
 
-##Manually set encryption key and salt
+## Manually set encryption key and salt
 ## (this replaces the passphrase)
 #key 2123456789ABCDEF0123456789ABCDEF
 #salt 2123456789ABCD0123456789ABCD

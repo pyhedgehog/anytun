@@ -79,7 +79,7 @@ port 4444
 ## the address hast to be supplied in CIDR notation
 #ifconfig <local>/<prefix length>
 
-##Manually set encryption key and salt
+## Manually set encryption key and salt
 ## (this replaces the passphrase)
 #key 3123456789ABCDEF0123456789ABCDEF
 #salt 3123456789ABCD0123456789ABCD
