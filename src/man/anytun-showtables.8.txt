@@ -18,7 +18,7 @@ DESCRIPTION
 OPTIONS
 -------
 
-This Tool does not take any Options. It takes the sync information from
+This Tool does not take any options. It takes the sync information from
 the standard input and prints the routing table to the standard output.
 
 EXAMPLES

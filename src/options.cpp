@@ -342,7 +342,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_)
     PARSE_SCALAR_PARAM("-u","--username", username_)
     PARSE_SCALAR_PARAM("-g","--groupname", groupname_)
-    PARSE_SCALAR_PARAM("-C","--chroot-dir", chroot_dir_)
+    PARSE_SCALAR_PARAM("-C","--chroot", chroot_dir_)
     PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_)
   #endif
 
@@ -461,7 +461,7 @@ void Options::printUsage()
   std::cout << "   [-D|--nodaemonize]                  don't run in background" << std::endl;
   std::cout << "   [-u|--username] <username>          change to this user" << std::endl;
   std::cout << "   [-g|--groupname] <groupname>        change to this group" << std::endl;
-  std::cout << "   [-C|--chroot-dir] <path>            chroot to this directory" << std::endl;
+  std::cout << "   [-C|--chroot] <path>                chroot to this directory" << std::endl;
   std::cout << "   [-P|--write-pid] <path>             write pid to this file" << std::endl;
  #endif
 

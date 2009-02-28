@@ -10,13 +10,14 @@ SYNOPSIS
 
 *anytun-controld*
 [ *-h|--help* ]
+[ *-D|--nodaemonize* ]
+[ *-u|--username* <username> ]
+[ *-g|--groupname* <groupname> ]
+[ *-C|--chroot* <path> ]
+[ *-P|--write-pid* <filename> ]
+[ *-L|--log* <target>:<level>[,<param1>[,<param2>[..]]] ]
 [ *-f|--file* <path> ]
 [ *-X|--control-host* < <host>[:port>] | :<port> > ]
-[ *-D|--nodaemonize* ]
-[ *-C|--chroot* ]
-[ *-u|--username* <username> ]
-[ *-H|--chroot-dir* <path> ]
-[ *-P|--write-pid* <path> ]
 
 DESCRIPTION
 -----------
@@ -26,10 +27,61 @@ DESCRIPTION
 OPTIONS
 -------
 
+-D|--nodaemonize
+~~~~~~~~~~~~~~~~
+
+This option instructs *anytun* to run in foreground
+instead of becoming a daemon which is the default.
+
+-u|--username <username>
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+run as this user. If no group is specified (*-g*) the default group of 
+the user is used. The default is to not drop privileges.
+
+-g|--groupname <groupname>
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+run as this group. If no username is specified (*-u*) this gets ignored.
+The default is to not drop privileges.
+
+-C|--chroot <path>
+~~~~~~~~~~~~~~~~~~
+
+Instruct *anytun* to run in a chroot jail. The default is 
+to not run in chroot.
+
+-P|--write-pid <filename>
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Instruct *anytun* to write it's pid to this file. The default is 
+to not create a pid file.
+
+-L|--log <target>:<level>[,<param1>[,<param2>[..]]]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+add log target to logging system. This can be invoked several times
+in order to log to different targets at the same time. Every target 
+hast its own log level which is a number between 0 and 5. Where 0 means
+disabling log and 5 means debug messages are enabled.
+
+The following targets are supported:
+
+* *syslog* - log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
+* *file* - log to file, parameters <level>[,<path>]
+* *stdout* - log to standard output, parameters <level>
+* *stderr* - log to standard error, parameters <level> 
+
+The file target can be used more the once with different levels.
+If no target is provided at the command line a single target with the 
+following config is added:
+
+*syslog:3,uanytun,daemon*
+
 -f|--file <path>
 ~~~~~~~~~~~~~~~~
 
-The path to the config file.
+The path to the file which holds the sync information.
 
 -X|--control-host < <host>[:<port>] | :<port> >
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,34 +93,6 @@ all interfaces by omitting the address. If you want to specify an
 ipv6 address and a port you have to use [ and ] to seperate the address
 from the port, eg.: [::1]:1234. If you want to use the default port 
 [ and ] can be omitted. default: 127.0.0.1:2323
-
--D|--nodaemonize
-~~~~~~~~~~~~~~~~
-
-This option instructs *anytun-controld* to run in the foreground
-instead of becoming a daemon which is the default.
-
--C|--chroot
-~~~~~~~~~~~
-
-Instruct *anytun* to run in a chroot chail and drop privileges. The 
-default is not to run in chroot.
-
--u|--username <username>
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-if chroot change to this user. default: nobody
-
--H|--chroot-dir <directory>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-chroot to this directory. default: /var/run/anytun-controld
-
--P|--write-pid <path>
-~~~~~~~~~~~~~~~~~~~~~
-
-Instruct *anytun-controld* to write it's pid to this file. 
-The default is not to create a pid file.
 
 
 BUGS

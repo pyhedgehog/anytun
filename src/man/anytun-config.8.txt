@@ -10,13 +10,20 @@ SYNOPSIS
 
 *anytun-config*
 [ *-h|--help* ]
+[ *-L|--log* <target>:<level>[,<param1>[,<param2>[..]]]
 [ *-r|--remote-host* <hostname|ip> ]
 [ *-o|--remote-port* <port> ]
-[ *-w|--window-size* <window size> ]
+[ *-4|--ipv4-only* ]
+[ *-6|--ipv6-only* ]
+[ *-R|--route* <net>/<prefix length> ]
 [ *-m|--mux* <mux-id> ]
+[ *-w|--window-size* <window size> ]
+[ *-k|--kd-prf* <kd-prf type> ]
+[ *-l|--ld-kdr* <ld-kdr> ]
+[ *-O|--anytun02-compat* ]
+[ *-E|--passphrase* <pass phrase> ]
 [ *-K|--key* <master key> ]
 [ *-A|--salt* <master salt> ]
-[ *-T|--route* <net>/<prefix length> ]
 
 DESCRIPTION
 -----------
@@ -25,6 +32,27 @@ DESCRIPTION
 
 OPTIONS
 -------
+
+-L|--log <target>:<level>[,<param1>[,<param2>[..]]]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+add log target to logging system. This can be invoked several times
+in order to log to different targets at the same time. Every target 
+hast its own log level which is a number between 0 and 5. Where 0 means
+disabling log and 5 means debug messages are enabled.
+
+The following targets are supported:
+
+* *syslog* - log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
+* *file* - log to file, parameters <level>[,<path>]
+* *stdout* - log to standard output, parameters <level>
+* *stderr* - log to standard error, parameters <level> 
+
+The file target can be used more the once with different levels.
+If no target is provided at the command line a single target with the 
+following config is added:
+
+*syslog:3,uanytun,daemon*
 
 -r|--remote-host <hostname|ip>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,6 +74,28 @@ The UDP port used for payload data by the remote host
 a port, it is automatically determined after receiving
 the first data packet.
 
+-4|--ipv4-only
+~~~~~~~~~~~~~~
+
+Resolv to IPv4 addresses only. The default is to resolv both
+IPv4 and IPv6 addresses.
+
+-6|--ipv6-only
+~~~~~~~~~~~~~~
+
+Resolv to IPv6 addresses only. The default is to resolv both
+IPv4 and IPv6 addresses.
+
+-R|--route <net>/<prefix length>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+add a route to connection. This can be invoked several times.
+
+-m|--mux <mux-id>
+~~~~~~~~~~~~~~~~~
+
+the multiplex id to use. default: 0
+
 -w|--window-size <window size>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -63,45 +113,76 @@ by filtering packets according to their secuence number.
 By default the sequence window is disabled and therefore a
 window size of 0 is used.
 
--m|--mux <mux-id>
-~~~~~~~~~~~~~~~~~
+-k|--kd--prf <kd-prf type>
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-the multiplex id to use. default: 0
+key derivation pseudo random function.
+
+The pseudo random function which is used for calculating the 
+session keys and session salt.
+
+Possible values:
+
+* *null* - no random function, keys and salt are set to 0..00
+* *aes-ctr* - AES in counter mode with 128 Bits, default value
+* *aes-ctr-128* - AES in counter mode with 128 Bits
+* *aes-ctr-192* - AES in counter mode with 192 Bits
+* *aes-ctr-256* - AES in counter mode with 256 Bits
+
+-l|--ld-kdr <ld-kdr>
+~~~~~~~~~~~~~~~~~~~~
+
+The log2 of the key derivation rate. This is used by the key
+derivation to determine how often a new session key has to be
+generated. A value of -1 means to generate only one key and use
+it forever. The default is 0 which means to calculate a new key
+for every packet. A value of 1 would tell the key derivation
+to generate a new key after 2 packets, for 2 its 4 packets and 
+so on.
+
+-O|--anytun02-compat
+~~~~~~~~~~~~~~~~~~~~
+
+Enable compatibility mode with version of anytun 0.2.x and prior. 
+This is for backwards compaitbility to old internet draft of satp.
+
+-E|--passphrase <pass phrase>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This passphrase is used to generate the master key and master salt.
+For the master key the last n bits of the SHA256 digest of the 
+passphrase (where n is the length of the master key in bits) is used. 
+The master salt gets generated with the SHA1 digest. 
+You may force a specific key and or salt by using *--key* and *--salt*.
 
 -K|--key <master key>
 ~~~~~~~~~~~~~~~~~~~~~
 
-master key to use for encryption
+master key to use for key derivation
 
 Master key in hexadecimal notation, eg
 01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
-of 32 characters (16 bytes).
+of 32, 48 or 64 characters (128, 192 or 256 bits).
 
 -A|--salt <master salt>
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-master salt to use for encryption
+master salt to use for key derivation
 
 Master salt in hexadecimal notation, eg
 01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
 of 28 characters (14 bytes).
-
--T|--route <net>/<prefix length>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-add a route to connection. This can be invoked several times.
 
 
 EXAMPLES
 --------
 
 Add a client with Connection ID (Mux) 12 and add 2 Routes to this client
- 
---------------------------------------------------------------------------------------
-# anytun -w 0 -m 12 -K 0123456789ABCDEFFEDCBA9876543210 -A 0123456789ABCDDCBA9876543210 \
-         -R 192.0.2.0/24 -R 192.168.1.1/32 >> routingtable
---------------------------------------------------------------------------------------
 
+------------------------------------------------------------------------------------------------ 
+# anytun-config -w 0 -m 12 -K 0123456789ABCDEFFEDCBA9876543210 -A 0123456789ABCDDCBA9876543210 \
+                -R 192.0.2.0/24 -R 192.168.1.1/32 >> routingtable
+------------------------------------------------------------------------------------------------ 
 
 BUGS
 ----

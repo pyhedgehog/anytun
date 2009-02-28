@@ -11,21 +11,24 @@ SYNOPSIS
 *anytun*
 [ *-h|--help* ]
 [ *-D|--nodaemonize* ]
-[ *-C|--chroot* ]
 [ *-u|--username* <username> ]
-[ *-H|--chroot-dir* <directory> ]
+[ *-g|--groupname* <groupname> ]
+[ *-C|--chroot* <path> ]
 [ *-P|--write-pid* <filename> ]
+[ *-L|--log* <target>:<level>[,<param1>[,<param2>[..]]] ]
 [ *-i|--interface* <ip-address> ]
 [ *-p|--port* <port> ]
 [ *-r|--remote-host* <hostname|ip> ]
 [ *-o|--remote-port* <port> ]
+[ *-4|--ipv4-only* ]
+[ *-6|--ipv6-only* ]
 [ *-I|--sync-interface* <ip-address> ]
 [ *-S|--sync-port* port> ]
 [ *-M|--sync-hosts* <hostname|ip>[:<port>][,<hostname|ip>[:<port>][...]] ]
 [ *-X|--control-host* <hostname|ip>[:<port>]
 [ *-d|--dev* <name> ]
 [ *-t|--type* <tun|tap> ]
-[ *-n|--ifconfig* <local> <remote|netmask> ]
+[ *-n|--ifconfig* <local>/<prefix> ]
 [ *-x|--post-up-script* <script> ]
 [ *-R|--route* <net>/<prefix length> ]
 [ *-m|--mux* <mux-id> ]
@@ -33,10 +36,12 @@ SYNOPSIS
 [ *-w|--window-size* <window size> ]
 [ *-k|--kd-prf* <kd-prf type> ]
 [ *-l|--ld-kdr* <ld-kdr> ]
-[ *-c|--cipher* <cipher type> ]
-[ *-a|--auth-algo* <algo type> ]
+[ *-O|--anytun02-compat* ]
+[ *-E|--passphrase* <pass phrase> ]
 [ *-K|--key* <master key> ]
 [ *-A|--salt* <master salt> ]
+[ *-c|--cipher* <cipher type> ]
+[ *-a|--auth-algo* <algo type> ]
 
 DESCRIPTION
 -----------
@@ -57,30 +62,53 @@ passed to the daemon:
 -D|--nodaemonize
 ~~~~~~~~~~~~~~~~
 
-This option instructs *anytun* to run in the foreground
+This option instructs *anytun* to run in foreground
 instead of becoming a daemon which is the default.
-
--C|--chroot
-~~~~~~~~~~~
-
-Instruct *anytun* to run in a chroot chail and drop privileges. The 
-default is not to run in chroot.
 
 -u|--username <username>
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-if chroot change to this user. default: nobody
+run as this user. If no group is specified (*-g*) the default group of 
+the user is used. The default is to not drop privileges.
 
--H|--chroot-dir <directory>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-g|--groupname <groupname>
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-chroot to this directory. default: /var/run/anytun
+run as this group. If no username is specified (*-u*) this gets ignored.
+The default is to not drop privileges.
+
+-C|--chroot <path>
+~~~~~~~~~~~~~~~~~~
+
+Instruct *anytun* to run in a chroot jail. The default is 
+to not run in chroot.
 
 -P|--write-pid <filename>
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Instruct *anytun* to write it's pid to this file. The default is 
-not to create a pid file.
+to not create a pid file.
+
+-L|--log <target>:<level>[,<param1>[,<param2>[..]]]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+add log target to logging system. This can be invoked several times
+in order to log to different targets at the same time. Every target 
+hast its own log level which is a number between 0 and 5. Where 0 means
+disabling log and 5 means debug messages are enabled.
+
+The following targets are supported:
+
+* *syslog* - log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
+* *file* - log to file, parameters <level>[,<path>]
+* *stdout* - log to standard output, parameters <level>
+* *stderr* - log to standard error, parameters <level> 
+
+The file target can be used more the once with different levels.
+If no target is provided at the command line a single target with the 
+following config is added:
+
+*syslog:3,uanytun,daemon*
 
 -i|--interface <ip address>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,6 +149,18 @@ The UDP port used for payload data by the remote host
 (specified with -p on the remote host). If you do not specify
 a port, it is automatically determined after receiving
 the first data packet.
+
+-4|--ipv4-only
+~~~~~~~~~~~~~~
+
+Resolv to IPv4 addresses only. The default is to resolv both
+IPv4 and IPv6 addresses.
+
+-6|--ipv6-only
+~~~~~~~~~~~~~~
+
+Resolv to IPv6 addresses only. The default is to resolv both
+IPv4 and IPv6 addresses.
 
 -I|--sync-interface <ip-address>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -180,8 +220,8 @@ from the port, eg.: [::1]:1234. If you want to use the default port
 ~~~~~~~~~~~~~~~
 device name
 
-By default, tap0 is used for Ethernet tunnel interfaces,
-and tun0 for IP tunnels, respectively. This option can
+By default, tapN is used for Ethernet tunnel interfaces,
+and tunN for IP tunnels, respectively. This option can
 be used to manually override these defaults.
 
 -t|--type <tun|tap>
@@ -192,25 +232,15 @@ device type
 Type of the tunnels to create. Use tap for Ethernet
 tunnels, tun for IP tunnels.
 
--n|--ifconfig <local> <remote|netmask>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-n|--ifconfig <local>/<prefix>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *<local>* the local IP address for the tun/tap device
 
-*<remote|netmask>* the remote IP address (tun) or netmask (tap)
+*<prefix>* the prefix length of the network
 
-In tap/Ethernet tunnel mode:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The local IP address and subnet mask of the tunnel
-interface, in ifconfig style. The remote tunnel endpoint
-has to use a different IP address in the same subnet.
-
-In tun/IP tunnel mode:
-
-The local IP address of the tunnel interface and the
-IP address of the tunnel interface on the remote tunnel
-endpoint.
+The local IP address and prefix length. The remote tunnel endpoint
+has to use a different IP address in the same subnet
 
 -x|--post-up-script <script>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -223,18 +253,18 @@ is created. By default no script will be executed.
 
 add a route to connection. This can be invoked several times.
 
+-m|--mux <mux-id>
+~~~~~~~~~~~~~~~~~
+
+the multiplex id to use. default: 0
+
 -s|--sender-id  <sender id>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Each anycast tunnel endpoint needs a uniqe sender id
 (1, 2, 3, ...). It is needed to distinguish the senders
-in case of replay attacks. This option is ignored by
+in case of replay attacks. This option can be ignored on
 unicast endpoints. default: 0
-
--m|--mux <mux-id>
-~~~~~~~~~~~~~~~~~
-
-the multiplex id to use. default: 0
 
 -w|--window-size <window size>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -252,6 +282,66 @@ list and, as a consequence, the replay protection employed
 by filtering packets according to their secuence number.
 By default the sequence window is disabled and therefore a
 window size of 0 is used.
+
+-k|--kd--prf <kd-prf type>
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+key derivation pseudo random function.
+
+The pseudo random function which is used for calculating the 
+session keys and session salt.
+
+Possible values:
+
+* *null* - no random function, keys and salt are set to 0..00
+* *aes-ctr* - AES in counter mode with 128 Bits, default value
+* *aes-ctr-128* - AES in counter mode with 128 Bits
+* *aes-ctr-192* - AES in counter mode with 192 Bits
+* *aes-ctr-256* - AES in counter mode with 256 Bits
+
+-l|--ld-kdr <ld-kdr>
+~~~~~~~~~~~~~~~~~~~~
+
+The log2 of the key derivation rate. This is used by the key
+derivation to determine how often a new session key has to be
+generated. A value of -1 means to generate only one key and use
+it forever. The default is 0 which means to calculate a new key
+for every packet. A value of 1 would tell the key derivation
+to generate a new key after 2 packets, for 2 its 4 packets and 
+so on.
+
+-O|--anytun02-compat
+~~~~~~~~~~~~~~~~~~~~
+
+Enable compatibility mode with version of anytun 0.2.x and prior. 
+This is for backwards compaitbility to old internet draft of satp.
+
+-E|--passphrase <pass phrase>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This passphrase is used to generate the master key and master salt.
+For the master key the last n bits of the SHA256 digest of the 
+passphrase (where n is the length of the master key in bits) is used. 
+The master salt gets generated with the SHA1 digest. 
+You may force a specific key and or salt by using *--key* and *--salt*.
+
+-K|--key <master key>
+~~~~~~~~~~~~~~~~~~~~~
+
+master key to use for key derivation
+
+Master key in hexadecimal notation, eg
+01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
+of 32, 48 or 64 characters (128, 192 or 256 bits).
+
+-A|--salt <master salt>
+~~~~~~~~~~~~~~~~~~~~~~~
+
+master salt to use for key derivation
+
+Master salt in hexadecimal notation, eg
+01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
+of 28 characters (14 bytes).
 
 -c|--cipher <cipher type>
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -280,57 +370,27 @@ Possible values:
 * *null* - no message authentication
 * *sha1* - HMAC-SHA1, default value
 
-
 If HMAC-SHA1 is used, the packet length is increased by
 10 bytes. These 10 bytes contain the authentication data.
 
--k|--kd--prf <kd-prf type>
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-key derivation pseudo random function.
-
-The pseudo random function which is used for calculating the 
-session keys and session salt.
-
-Possible values:
-
-* *null* - no random function, keys and salt are set to 0..00
-* *aes-ctr* - AES in counter mode with 128 Bits, default value
-* *aes-ctr-128* - AES in counter mode with 128 Bits
-* *aes-ctr-192* - AES in counter mode with 192 Bits
-* *aes-ctr-256* - AES in counter mode with 256 Bits
-
--l|--ld-kdr <ld-kdr>
-~~~~~~~~~~~~~~~~~~~~
-
-The log2 of the key derivation rate. This is used by the key
-derivation to determine how ofen a new session key has to be
-generated. A value of -1 means to generate only one key and use
-it forever. The default is 0 which means to calculate a new key
-for every packet. A value of 1 would tell the key derivation
-to generate a new key after 2 packets, for 2 its 4 packets and 
-so on.
-
--K|--key <master key>
-~~~~~~~~~~~~~~~~~~~~~
-
-master key to use for encryption
-
-Master key in hexadecimal notation, eg
-01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
-of 32 characters (16 bytes).
-
--A|--salt <master salt>
-~~~~~~~~~~~~~~~~~~~~~~~
-
-master salt to use for encryption
-
-Master salt in hexadecimal notation, eg
-01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
-of 28 characters (14 bytes).
 
 EXAMPLES
 --------
+
+P2P Setup between two unicast enpoints:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Host A:
+^^^^^^^
+
+anytun -r hostb.example.com -t tun -n 192.168.123.1/30 -c aes-ctr-256 -k aes-ctr-256 \
+       -E have_a_very_safe_and_productive_day
+
+Host B:
+^^^^^^^
+anytun -r hosta.example.com -t tun -n 192.168.123.2/30 -c aes-ctr-256 -k aes-ctr-256 \
+       -E have_a_very_safe_and_productive_day
+
 
 One unicast and one anycast tunnel endpoint:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -338,32 +398,31 @@ One unicast and one anycast tunnel endpoint:
 Unicast tunnel endpoint:
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-anytun -r anycast.anytun.org -d anytun0 -t tun -n 192.0.2.2
-192.0.2.1 -w 0 -c null
+anytun -r anycast.anytun.org -d anytun0 -t tun -n 192.0.2.2/30 -a null -c null -w 0
 
 Anycast tunnel endpoints:
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 On the host with unicast hostname unicast1.anycast.anytun.org and anycast 
 hostname anycast.anytun.org:
---------------------------------------------------------------------------------------
-# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 \
-         -M unicast2.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1/30 -a null -c null -w 0 \
+         -S 2342 -M unicast2.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
+---------------------------------------------------------------------------------------
 
 On the host with unicast hostname unicast2.anycast.anytun.org and anycast
 hostname anycast.anytun.org:
---------------------------------------------------------------------------------------
-# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 \
-         -M unicast1.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1/30 -a null -c null -w 0 \
+         -S 2342 -M unicast1.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
+---------------------------------------------------------------------------------------
 
 On the host with unicast hostname unicast3.anycast.anytun.org and anycast
 hostname anycast.anytun.org:
---------------------------------------------------------------------------------------
-# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1 192.0.2.2 -w 0 -S 2342 \
-         -M unicast1.anycast.anytun.org:2342,unicast2.anycast.anytun.org:2342
---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1/30 -a null -c null -w 0 \
+         -S 2342 -M unicast1.anycast.anytun.org:2342,unicast2.anycast.anytun.org:2342
+---------------------------------------------------------------------------------------
 
 For more sophisticated examples (like multiple unicast endpoints to one
 anycast tunnel endpoint) please consult the man page of anytun-config(8).
