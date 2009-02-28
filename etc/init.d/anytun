@@ -12,8 +12,6 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/anytun
 ANYTUNCONFIG=/usr/bin/anytun-config
 CONTROLDAEMON=/usr/bin/anytun-controld
-CHROOTDIR='/var/run/anytun'
-# DAEMONOPTS="--username nobody --groupname nogroup --chroot $CHROOTDIR"
 NAME=anytun
 DESC=anytun
 CONFIG_DIR=/etc/anytun
@@ -31,7 +29,11 @@ start_vpn () {
   if [ -f $CONFIG_DIR/$NAME/config ] ; then
     POSTUP=''
     test -f  $CONFIG_DIR/$NAME/post-up.sh && POSTUP="-x $CONFIG_DIR/$NAME/post-up.sh"
-    DAEMONARG=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e '\w' | sed  's/^/--/' | tr '\n' ' '`
+    CHROOTDIR=`grep '^chroot' < $CONFIG_DIR/$NAME/config | sed 's/chroot\s*//'`
+    if [ -n "$CHROOTDIR" ] ; then
+      test -d $CHROOTDIR || mkdir -p $CHROOTDIR
+    fi
+    DAEMONARG=`sed 's/#.*//' < $CONFIG_DIR/$NAME/config | grep -e '\w' | sed  's/^/--/' | tr '\n' ' '`
     $DAEMON --write-pid /var/run/anytun.$NAME.pid $POSTUP \
       $DAEMONOPTS $DAEMONARG || STATUS="FAILED"
   else
@@ -74,7 +76,6 @@ set -e
 case "$1" in
   start)
   echo -n "Starting $DESC:"
-  test -d $CHROOTDIR || mkdir -p $CHROOTDIR
   if test -z "$2" ; then
     if [ -f $CONFIG_DIR/autostart ] ; then
       for NAME in `sed 's/#.*//'  <  $CONFIG_DIR/autostart | grep -e '\w'`; do
