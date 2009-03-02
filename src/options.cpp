@@ -488,6 +488,8 @@ void Options::printUsage()
 
   std::cout << "   [-r|--remote-host] <hostname|ip>    remote host" << std::endl;
   std::cout << "   [-o|--remote-port] <port>           remote port" << std::endl;
+  std::cout << "   [-4|--ipv4-only]                    always resolv IPv4 addresses" << std::endl;
+  std::cout << "   [-6|--ipv6-only]                    always resolv IPv6 addresses" << std::endl;
 
 #endif
 #if defined(ANYTUN_OPTIONS)
