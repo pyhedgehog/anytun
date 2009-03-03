@@ -39,6 +39,7 @@
 #include "datatypes.h"
 
 #include "log.h"
+#include "resolver.h"
 #include "buffer.h"
 #include "plainPacket.h"
 #include "encryptedPacket.h"
@@ -394,6 +395,14 @@ int main(int argc, char* argv[])
 
     cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
     gOpt.parse_post(); // print warnings
+
+//     gResolver.init();
+//     gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort());
+//     gResolver.resolveTcp(gOpt.getRemoteAddr(), gOpt.getRemotePort());
+
+//     while(1)
+//       boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+//     exit(0);
 
 #ifndef NO_DAEMON
 #ifndef NO_PRIVDROP

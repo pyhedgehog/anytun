@@ -56,7 +56,8 @@ OBJS := tunDevice.o \
        anytunError.o \
        options.o \
        seqWindow.o \
-			 routingTreeNode.o
+			 routingTreeNode.o \
+			 resolver.o
 
 SYNCOBJS := syncServer.o \
        syncClient.o \
@@ -73,7 +74,8 @@ ANYCTROBJS := signalController.o \
 						 logTargets.o \
 						 anytunError.o \
 						 syncTcpConnection.o \
-						 syncServer.o
+						 syncServer.o \
+						 resolver.o
 
 ANYCONFOBJS := log.o \
 						 logTargets.o \
@@ -95,7 +97,8 @@ ANYCONFOBJS := log.o \
 						 syncServer.o \
              syncTcpConnection.o \
 						 syncRouteCommand.o \
-						 syncConnectionCommand.o
+						 syncConnectionCommand.o \
+						 resolver.o
 
 EXECUTABLE := anytun anytun-config anytun-controld anytun-showtables anytun-nosync
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
