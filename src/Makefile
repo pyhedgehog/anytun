@@ -29,7 +29,9 @@
 ##  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+ifneq ($(MAKECMDGOALS),distclean)
 include include.mk
+endif
 
 OBJS := tunDevice.o \
        packetSource.o \
@@ -54,7 +56,7 @@ OBJS := tunDevice.o \
        anytunError.o \
        options.o \
        seqWindow.o \
-			 routingTreeNode.o \
+			 routingTreeNode.o
 
 SYNCOBJS := syncServer.o \
        syncClient.o \
@@ -114,8 +116,9 @@ all: $(EXECUTABLE) #libAnysync.a
    sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
    rm -f $@.$$$$; echo '(re)building $@'
 
+ifneq ($(MAKECMDGOALS),distclean)
 -include $(SRCS:%.cpp=%.d) $(SYNCSRCS:%.cpp=%.d) $(ANYCTRSRCS:%.cpp=%.d) $(ANYCONFSRCS:%.cpp=%.d) $(EXESRCS:%.cpp=%.d)
-
+endif
 
 strip: $(EXECUTABLE)
 	strip -s $(EXECUTABLE) 
