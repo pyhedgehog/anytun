@@ -79,15 +79,13 @@ void Resolver::init()
 	  thread_ = new boost::thread(boost::bind(&Resolver::run, this));
 }
 
-void Resolver::run(/*void* s*/)
+void Resolver::run()
 {
-  //Resolver* self = reinterpret_cast<Resolver*>(s);
-
   cLog.msg(Log::PRIO_DEBUG) << "Resolver Thread started";
 
   while(1) {
-    /*self->*/io_service_.run();
-    /*self->*/io_service_.reset();
+    io_service_.run();
+    io_service_.reset();
     boost::this_thread::sleep(boost::posix_time::milliseconds(250));
   }
 }

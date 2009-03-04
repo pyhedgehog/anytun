@@ -396,13 +396,7 @@ int main(int argc, char* argv[])
     cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
     gOpt.parse_post(); // print warnings
 
-//     gResolver.init();
-//     gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort());
-//     gResolver.resolveTcp(gOpt.getRemoteAddr(), gOpt.getRemotePort());
-
-//     while(1)
-//       boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-//     exit(0);
+    gResolver.init();
 
 #ifndef NO_DAEMON
 #ifndef NO_PRIVDROP
@@ -447,19 +441,9 @@ int main(int argc, char* argv[])
       src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
     HostList connect_to = gOpt.getRemoteSyncHosts();
-    
-	
 
     if(gOpt.getRemoteAddr() != "")
-    {
-      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(),
-			boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()));
-      ///*boost::asio::io_service io_service;
-      //UDPPacketSource::proto::resolver resolver(io_service);
-      //UDPPacketSource::proto::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
-      //UDPPacketSource::proto::endpoint endpoint = *resolver.resolve(query);
-      //createConnection(endpoint,gOpt.getSeqWindowSize(), gOpt.getMux());*/
-    }    
+      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()));
 
 #ifndef NO_ROUTING
     NetworkList routes = gOpt.getRoutes();
