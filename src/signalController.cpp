@@ -151,9 +151,8 @@ SignalController::~SignalController()
 }
 
 #ifndef _MSC_VER
-void SignalController::handle(void *s)
+void SignalController::handle()
 {
-  SignalController* self = reinterpret_cast<SignalController*>(s);
   sigset_t signal_set;
   int sigNum;
 
@@ -162,10 +161,10 @@ void SignalController::handle(void *s)
     sigfillset(&signal_set);
     sigwait(&signal_set, &sigNum);
     {
-      Lock(self->sigQueueMutex);
-      self->sigQueue.push(sigNum);
+      Lock lock(sigQueueMutex);
+      sigQueue.push(sigNum);
     }
-    self->sigQueueSem.up();
+    sigQueueSem.up();
   }
 }
 #else
@@ -194,7 +193,7 @@ void SignalController::init()
 #error The signalhandler works only with pthreads
 #endif
   
-  thread = new boost::thread(boost::bind(handle, this));
+  thread = new boost::thread(boost::bind(&SignalController::handle, this));
 
   handler[SIGINT] = new SigIntHandler;
   handler[SIGQUIT] = new SigQuitHandler;

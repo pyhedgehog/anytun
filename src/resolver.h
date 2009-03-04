@@ -60,7 +60,7 @@ public:
   static Resolver& instance();
 
   void init();
-  /*static */void run(/*void* s*/);
+  void run();
 
   void resolveUdp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::udp::endpoint)> const& onResolve);
   void resolveTcp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::tcp::endpoint)> const& onResolve);

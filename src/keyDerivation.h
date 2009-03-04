@@ -111,7 +111,11 @@ protected:
   SharedMutex mutex_;
 };
 
-BOOST_IS_ABSTRACT(KeyDerivation)
+#if BOOST_VERSION <= 103500 
+BOOST_IS_ABSTRACT(KeyDerivation);
+#else
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(KeyDerivation);
+#endif
 
 //****** NullKeyDerivation ******
 

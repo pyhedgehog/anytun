@@ -396,6 +396,10 @@ int main(int argc, char* argv[])
     cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
     gOpt.parse_post(); // print warnings
 
+#ifndef NO_SIGNALCONTROLLER
+        // this has to be called before the first thread is started
+    gSignalController.init();
+#endif
     gResolver.init();
 
 #ifndef NO_DAEMON
@@ -476,10 +480,6 @@ int main(int argc, char* argv[])
       pidFile << pid;
       pidFile.close();
     }
-#endif
-
-#ifndef NO_SIGNALCONTROLLER
-    gSignalController.init();
 #endif
 
     OptionHost* connTo = new OptionHost();

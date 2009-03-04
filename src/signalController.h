@@ -144,7 +144,7 @@ class SignalController
 public:
   static SignalController& instance();
 #ifndef _MSC_VER
-  static void handle(void* s);
+  void handle();
 #else
   static bool handle(DWORD ctrlType);
 #endif
