@@ -133,7 +133,7 @@ void TunDevice::init_post()
 
   if (ioctl(fd_, TUNGIFINFO, &ti) < 0) {
     ::close(fd_);
-    AnytunError::throwErr() << "can't enable multicast for interface";
+    AnytunError::throwErr() << "can't enable multicast for interface: " << AnytunErrno(errno);
   }
   
   ti.flags |= IFF_MULTICAST;
@@ -142,7 +142,7 @@ void TunDevice::init_post()
   
   if (ioctl(fd_, TUNSIFINFO, &ti) < 0) {
     ::close(fd_);
-    AnytunError::throwErr() << "can't enable multicast for interface";
+    AnytunError::throwErr() << "can't enable multicast for interface: " << AnytunErrno(errno);
   }
 }
 
@@ -154,10 +154,26 @@ void TunDevice::init_post()
   if(conf_.type_ == TYPE_TAP)
     with_pi_ = false;
 
-  int arg = 0;
-  ioctl(fd_, TUNSLMODE, &arg);
-  arg = 1;
-  ioctl(fd_, TUNSIFHEAD, &arg);
+  if(dev->type_ == TYPE_TUN) {
+    int arg = 0;
+    if(ioctl(dev->fd_, TUNSLMODE, &arg) < 0) {
+      ::close(fd_);
+      AnytunError::throwErr() << "can't disable link-layer mode for interface: " << AnytunErrno(errno);
+    }
+
+    arg = 1;
+    if(ioctl(dev->fd_, TUNSIFHEAD, &arg) < 0) {
+      ::close(fd_);
+      AnytunError::throwErr() << "can't enable multi-af modefor interface: " << AnytunErrno(errno);
+    }
+
+    arg = IFF_BROADCAST;
+    arg |= IFF_MULTICAST;
+    if(ioctl(dev->fd_, TUNSIFMODE, &arg) < 0) {
+      ::close(fd_);
+      AnytunError::throwErr() << "can't enable multicast for interface: " << AnytunErrno(errno);
+    }
+  }
 }
 
 #elif defined(__GNUC__) && defined(__NetBSD__)
