@@ -213,7 +213,7 @@ void sender(void* p)
 
       try {
         param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
-      } catch (std::exception& e) {
+      } catch (std::exception&) {
 				//TODO: do something here
 		  	//cLog.msg(Log::PRIO_ERROR) << "could not send data: " << e.what();
 	  	} 
@@ -448,13 +448,17 @@ int main(int argc, char* argv[])
 
     HostList connect_to = gOpt.getRemoteSyncHosts();
     
+	
+
     if(gOpt.getRemoteAddr() != "")
     {
-      boost::asio::io_service io_service;
-      UDPPacketSource::proto::resolver resolver(io_service);
-      UDPPacketSource::proto::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
-      UDPPacketSource::proto::endpoint endpoint = *resolver.resolve(query);
-      createConnection(endpoint,gOpt.getSeqWindowSize(), gOpt.getMux());
+		gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(),
+			boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()));
+      ///*boost::asio::io_service io_service;
+      //UDPPacketSource::proto::resolver resolver(io_service);
+      //UDPPacketSource::proto::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
+      //UDPPacketSource::proto::endpoint endpoint = *resolver.resolve(query);
+      //createConnection(endpoint,gOpt.getSeqWindowSize(), gOpt.getMux());*/
     }    
 
 #ifndef NO_ROUTING
