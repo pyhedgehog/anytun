@@ -132,7 +132,7 @@ bool TunDevice::getAdapter(std::string const& dev_name)
         continue;
 	  
 	  actual_name_ = nkey["Name"];
-	} catch(AnytunErrno& e) { continue; }
+	} catch(AnytunErrno&) { continue; }
 
     if(dev_name != "") {
       if(dev_name == actual_name_) {

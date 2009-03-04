@@ -186,7 +186,7 @@ void sender(void* p)
 					mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
 							//std::cout << " -> "<<mux << std::endl;
 					cit = gConnectionList.getConnection(mux);
-				} catch (std::exception& e) { continue; } // no route
+				} catch (std::exception&) { continue; } // no route
 			else
 				cit = gConnectionList.getBegin();
 #else
@@ -213,7 +213,7 @@ void sender(void* p)
 
       try {
         param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
-      } catch (std::exception&) {
+      } catch (std::exception& /*e*/) {
 				//TODO: do something here
 		  	//cLog.msg(Log::PRIO_ERROR) << "could not send data: " << e.what();
 	  	} 
@@ -250,7 +250,7 @@ void receiver(void* p)
       int len;
       try {
         len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
-      } catch (std::exception& e) { 
+      } catch (std::exception& /*e*/) { 
 				//TODO: do something here
 		  	//cLog.msg(Log::PRIO_ERROR) << "could not recive packet "<< e.what();
 		  	continue; 
