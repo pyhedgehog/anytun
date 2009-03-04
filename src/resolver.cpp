@@ -30,21 +30,22 @@
  */
 
 #include <boost/bind.hpp>
+#include <boost/system/error_code.hpp>
 
 #include "resolver.h"
 #include "log.h"
 
-template<class Proto> ResolveHandler<Proto>::ResolveHandler(const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::udp::endpoint)> const& onResolve) : addr_(addr), port_(port), callback_(onResolve)
+template<class Proto> ResolveHandler<Proto>::ResolveHandler(const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve) : addr_(addr), port_(port), callback_(onResolve)
 {
 }
 
 template<class Proto> void ResolveHandler<Proto>::operator()(const boost::system::error_code& e, const boost::asio::ip::basic_resolver_iterator<Proto> endpointIt)
 {
   cLog.msg(Log::PRIO_DEBUG) << "ResolveHandler<" << typeid(Proto).name() << ">() called, addr='" << addr_ << "', port='" << port_ << "'";
-  if(boost::system::errc:success == e) {
+  if(boost::system::posix_error::success == e) {
 	  callback_(*endpointIt);
   } else {
-	  cLog.msg(Log::PRIO_ERROR) <<  << "ResolveHandler<" << typeid(Proto).name() << ">(): " << e;
+	  cLog.msg(Log::PRIO_ERROR) << "ResolveHandler<" << typeid(Proto).name() << ">(): " << e;
   }
 }
 
@@ -100,7 +101,7 @@ void Resolver::resolveUdp(const std::string& addr, const std::string& port, boos
   udp_resolver_.async_resolve(query, handler);
 }
 
-void Resolver::resolveTcp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::udp::endpoint)> const& onResolve)
+void Resolver::resolveTcp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::tcp::endpoint)> const& onResolve)
 {
   cLog.msg(Log::PRIO_DEBUG) << "trying to resolv TCP: " << addr << " " << port;
 

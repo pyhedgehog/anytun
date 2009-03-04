@@ -452,7 +452,7 @@ int main(int argc, char* argv[])
 
     if(gOpt.getRemoteAddr() != "")
     {
-		gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(),
+      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(),
 			boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()));
       ///*boost::asio::io_service io_service;
       //UDPPacketSource::proto::resolver resolver(io_service);
