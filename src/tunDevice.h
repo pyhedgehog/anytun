@@ -46,13 +46,13 @@ public:
   TunDevice(std::string dev,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix);
   ~TunDevice();
   
-  int read(u_int8_t* buf, u_int32_t len);
-  int write(u_int8_t* buf, u_int32_t len);
+  int read(u_int8_t* buf, u_int32_t len) const;
+  int write(u_int8_t* buf, u_int32_t len) const;
 
-  std::string getActualName() { return actual_name_; }
-  std::string getActualNode() { return actual_node_; }
-  device_type_t getType() { return conf_.type_; }
-  std::string getTypeString()
+  const char* getActualName() const { return actual_name_.c_str(); }
+  const char* getActualNode() const { return actual_node_.c_str(); }
+  device_type_t getType() const { return conf_.type_; } 
+  const char* getTypeString() const
   {
 #ifndef _MSC_VER
     if(fd_ < 0)
@@ -77,7 +77,7 @@ private:
 
   void init_post();
   void do_ifconfig();
-  int fix_return(int ret, size_t pi_length);
+  int fix_return(int ret, size_t pi_length) const;
 
 #ifndef _MSC_VER
   int fd_;

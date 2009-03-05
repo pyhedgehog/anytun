@@ -480,10 +480,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\threadParam.h"
-				>
-			</File>
-			<File
 				RelativePath=".\threadUtils.hpp"
 				>
 			</File>

@@ -74,7 +74,6 @@
 #include "syncOnConnect.hpp"
 #endif
 
-#include "threadParam.h"
 #define MAX_PACKET_LENGTH 1600
 
 #include "cryptinit.hpp"
@@ -101,11 +100,9 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 }
 
 #ifndef ANYTUN_NOSYNC
-void syncConnector(void* p )
+void syncConnector(const OptionHost& connto)
 {
-	ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
-
-	SyncClient sc ( param->connto.addr, param->connto.port);
+	SyncClient sc(connto.addr, connto.port);
 	sc.run();
 }
 
@@ -141,12 +138,15 @@ void syncListener()
 }
 #endif
 
-void sender(void* p)
+void sender(const TunDevice* dev, PacketSource* src)
 {
+  if(!dev || !src) {
+    cLog.msg(Log::PRIO_ERROR) << "sender thread died becaause either dev or src pointer is null";    
+    return;
+  }
+
   try 
   {
-    ThreadParam* param = reinterpret_cast<ThreadParam*>(p);
-
     std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_OUTBOUND, gOpt.getAnytun02Compat()));
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_OUTBOUND) );
     
@@ -161,7 +161,7 @@ void sender(void* p)
       encrypted_packet.setLength(MAX_PACKET_LENGTH);
       
           // read packet from device
-      int len = param->dev.read(plain_packet.getPayload(), plain_packet.getPayloadLength());
+      int len = dev->read(plain_packet.getPayload(), plain_packet.getPayloadLength());
       if(len < 0)
         continue; // silently ignore device read errors, this is probably no good idea...
 
@@ -169,9 +169,9 @@ void sender(void* p)
         continue; // ignore short packets
       plain_packet.setPayloadLength(len);
           // set payload type
-      if(param->dev.getType() == TYPE_TUN)
+      if(dev->getType() == TYPE_TUN)
         plain_packet.setPayloadType(PAYLOAD_TYPE_TUN);
-      else if(param->dev.getType() == TYPE_TAP)
+      else if(dev->getType() == TYPE_TAP)
         plain_packet.setPayloadType(PAYLOAD_TYPE_TAP);
       else 
         plain_packet.setPayloadType(0);
@@ -212,7 +212,7 @@ void sender(void* p)
       a->generate(conn.kd_, encrypted_packet);
 
       try {
-        param->src.send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
+        src->send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
       } catch (std::exception& /*e*/) {
 				//TODO: do something here
 		  	//cLog.msg(Log::PRIO_ERROR) << "could not send data: " << e.what();
@@ -227,12 +227,15 @@ void sender(void* p)
   }
 }
 
-void receiver(void* p)
+void receiver(const TunDevice* dev, PacketSource* src)
 {
+  if(!dev || !src) {
+    cLog.msg(Log::PRIO_ERROR) << "receiver thread died becaause either dev or src pointer is null";    
+    return;
+  }
+
   try 
   {
-    ThreadParam* param = reinterpret_cast<ThreadParam*>(p); 
-    
     std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_INBOUND, gOpt.getAnytun02Compat()));
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_INBOUND));
     
@@ -249,7 +252,7 @@ void receiver(void* p)
           // read packet from socket
       int len;
       try {
-        len = param->src.recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
+        len = src->recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
       } catch (std::exception& /*e*/) { 
 				//TODO: do something here
 		  	//cLog.msg(Log::PRIO_ERROR) << "could not recive packet "<< e.what();
@@ -305,13 +308,13 @@ void receiver(void* p)
       c->decrypt(conn.kd_, encrypted_packet, plain_packet);
       
           // check payload_type
-      if((param->dev.getType() == TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN4 && 
+      if((dev->getType() == TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN4 && 
                                               plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN6) ||
-         (param->dev.getType() == TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
+         (dev->getType() == TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
         continue;
       
           // write it on the device
-      param->dev.write(plain_packet.getPayload(), plain_packet.getLength());
+      dev->write(plain_packet.getPayload(), plain_packet.getLength());
     }
   }
   catch(std::runtime_error& e) {
@@ -482,12 +485,9 @@ int main(int argc, char* argv[])
     }
 #endif
 
-    OptionHost* connTo = new OptionHost();
-    ThreadParam p(dev, *src, *connTo);
-
-    boost::thread senderThread(boost::bind(sender,&p));
+    boost::thread senderThread(boost::bind(sender, &dev, src));
 #if defined(WIN_SERVICE) || !defined(NO_SIGNALCONTROLLER)
-    boost::thread receiverThread(boost::bind(receiver,&p)); 
+    boost::thread receiverThread(boost::bind(receiver, &dev, src)); 
 #endif
 #ifndef ANYTUN_NOSYNC
     boost::thread * syncListenerThread;
@@ -495,9 +495,8 @@ int main(int argc, char* argv[])
       syncListenerThread = new boost::thread(boost::bind(syncListener));
     
     std::list<boost::thread *> connectThreads;
-    for(HostList::iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
-      ThreadParam * point = new ThreadParam(dev, *src, *it);
-      connectThreads.push_back(new boost::thread(boost::bind(syncConnector,point)));
+    for(HostList::const_iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
+      connectThreads.push_back(new boost::thread(boost::bind(syncConnector, *it)));
     }
 #endif
 
@@ -507,7 +506,7 @@ int main(int argc, char* argv[])
 #elif !defined(NO_SIGNALCONTROLLER)
     int ret = gSignalController.run();  
 #else
-    receiver(&p);
+    receiver(dev, *src);
     int ret = 0;
 #endif
     // TODO cleanup threads here!
