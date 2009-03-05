@@ -467,6 +467,18 @@ int main(int argc, char* argv[])
 			disableRouting=true;
 		}
 #endif
+
+#ifndef ANYTUN_NOSYNC
+    boost::thread * syncListenerThread;
+    if(gOpt.getLocalSyncPort() != "")
+      syncListenerThread = new boost::thread(boost::bind(syncListener));
+    
+    std::list<boost::thread *> connectThreads;
+    for(HostList::const_iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
+      connectThreads.push_back(new boost::thread(boost::bind(syncConnector, *it)));
+    }
+#endif
+
 #ifndef NO_DAEMON
     if(gOpt.getChrootDir() != "")
       do_chroot(gOpt.getChrootDir());
@@ -488,16 +500,6 @@ int main(int argc, char* argv[])
     boost::thread senderThread(boost::bind(sender, &dev, src));
 #if defined(WIN_SERVICE) || !defined(NO_SIGNALCONTROLLER)
     boost::thread receiverThread(boost::bind(receiver, &dev, src)); 
-#endif
-#ifndef ANYTUN_NOSYNC
-    boost::thread * syncListenerThread;
-    if(gOpt.getLocalSyncPort() != "")
-      syncListenerThread = new boost::thread(boost::bind(syncListener));
-    
-    std::list<boost::thread *> connectThreads;
-    for(HostList::const_iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
-      connectThreads.push_back(new boost::thread(boost::bind(syncConnector, *it)));
-    }
 #endif
 
 #if defined(WIN_SERVICE)
