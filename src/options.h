@@ -77,8 +77,6 @@ std::istream& operator>>(std::istream& stream, OptionNetwork& network);
 
 typedef std::list<std::string> StringList;
 
-typedef enum { ANY, IPV4_ONLY, IPV6_ONLY } ResolvAddrType;
-
 class Options
 {
 public:

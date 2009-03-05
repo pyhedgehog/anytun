@@ -35,7 +35,7 @@
 #include "resolver.h"
 #include "log.h"
 
-template<class Proto> ResolveHandler<Proto>::ResolveHandler(const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve) : addr_(addr), port_(port), callback_(onResolve)
+template<class Proto> ResolveHandler<Proto>::ResolveHandler(const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ResolvAddrType r) : addr_(addr), port_(port), callback_(onResolve), resolv_addr_type_(r)
 {
 }
 
@@ -90,20 +90,52 @@ void Resolver::run()
   }
 }
 
-void Resolver::resolveUdp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::udp::endpoint)> const& onResolve)
+using ::boost::asio::ip::udp;
+
+void Resolver::resolveUdp(const std::string& addr, const std::string& port, boost::function<void (udp::endpoint)> const& onResolve, ResolvAddrType r)
 {
   cLog.msg(Log::PRIO_DEBUG) << "trying to resolv UDP: " << addr << " " << port;
 
-  boost::asio::ip::udp::resolver::query query(addr, port);
-  UdpResolveHandler handler(addr, port, onResolve);
-  udp_resolver_.async_resolve(query, handler);
+  std::auto_ptr<udp::resolver::query> query;
+  if(addr != "") {
+    switch(r) {
+    case IPV4_ONLY: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), addr, port)); break;
+    case IPV6_ONLY: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), addr, port)); break;
+    default: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(addr, port)); break;
+    }
+  }
+  else {
+    switch(r) {
+    case IPV4_ONLY: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), port)); break;
+    case IPV6_ONLY: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), port)); break;
+    default: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(port)); break;
+    }
+  }
+  UdpResolveHandler handler(addr, port, onResolve, r);
+  udp_resolver_.async_resolve(*query, handler);
 }
 
-void Resolver::resolveTcp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::tcp::endpoint)> const& onResolve)
+using ::boost::asio::ip::tcp;
+
+void Resolver::resolveTcp(const std::string& addr, const std::string& port, boost::function<void (tcp::endpoint)> const& onResolve, ResolvAddrType r)
 {
   cLog.msg(Log::PRIO_DEBUG) << "trying to resolv TCP: " << addr << " " << port;
 
-  boost::asio::ip::tcp::resolver::query query(addr, port);
-  TcpResolveHandler handler(addr, port, onResolve);
-  tcp_resolver_.async_resolve(query, handler); 
+  std::auto_ptr<tcp::resolver::query> query;
+  if(addr != "") {
+    switch(r) {
+    case IPV4_ONLY: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), addr, port)); break;
+    case IPV6_ONLY: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), addr, port)); break;
+    default: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(addr, port)); break;
+    }
+  }
+  else {
+    switch(r) {
+    case IPV4_ONLY: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), port)); break;
+    case IPV6_ONLY: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), port)); break;
+    default: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(port)); break;
+    }
+  }
+  TcpResolveHandler handler(addr, port, onResolve, r);
+  tcp_resolver_.async_resolve(*query, handler); 
 }

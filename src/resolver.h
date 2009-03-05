@@ -36,19 +36,21 @@
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
 
+#include "datatypes.h"
 #include "threadUtils.hpp"
 
 template<class Proto>
 class ResolveHandler
 {
 public:
-  ResolveHandler(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::basic_endpoint<Proto>)> const& onResolve);
+  ResolveHandler(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ResolvAddrType r = ANY);
   void operator()(const boost::system::error_code& e, const boost::asio::ip::basic_resolver_iterator<Proto>);
 
 private:
   std::string addr_;
   std::string port_;
   boost::function<void (boost::asio::ip::basic_endpoint<Proto>)> callback_;
+  ResolvAddrType resolv_addr_type_;
 };
 
 typedef ResolveHandler<boost::asio::ip::udp> UdpResolveHandler;
@@ -62,8 +64,8 @@ public:
   void init();
   void run();
 
-  void resolveUdp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::udp::endpoint)> const& onResolve);
-  void resolveTcp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::tcp::endpoint)> const& onResolve);
+  void resolveUdp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::udp::endpoint)> const& onResolve, ResolvAddrType r = ANY);
+  void resolveTcp(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::tcp::endpoint)> const& onResolve, ResolvAddrType r = ANY);
 
 private:
   Resolver();

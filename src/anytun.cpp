@@ -447,22 +447,19 @@ int main(int argc, char* argv[])
     else
       src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
-    HostList connect_to = gOpt.getRemoteSyncHosts();
-
     if(gOpt.getRemoteAddr() != "")
-      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()));
+      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()), gOpt.getResolvAddrType());
 
+    HostList connect_to = gOpt.getRemoteSyncHosts();
 #ifndef NO_ROUTING
     NetworkList routes = gOpt.getRoutes();
 		NetworkList::const_iterator rit;
-		for(rit = routes.begin(); rit != routes.end(); ++rit)
-		{
+		for(rit = routes.begin(); rit != routes.end(); ++rit) {
 			NetworkAddress addr( rit->net_addr );
 			NetworkPrefix prefix( addr, static_cast<u_int8_t>(rit->prefix_length));
 			gRoutingTable.addRoute( prefix, gOpt.getMux() );
 		}
-		if (connect_to.begin() == connect_to.end() || gOpt.getDevType()!="tun")
-		{
+		if (connect_to.begin() == connect_to.end() || gOpt.getDevType()!="tun") {
     	cLog.msg(Log::PRIO_NOTICE) << "No sync/control host defined or not a tun device. Disabling multi connection support (routing)";
 			disableRouting=true;
 		}
