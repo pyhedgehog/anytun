@@ -58,6 +58,7 @@ void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& por
   gResolver.resolveTcp(addr, port, onResolve, r);
 }
 
+
 template<class Proto>
 ResolveHandler<Proto>::ResolveHandler(const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ResolvAddrType r) : addr_(addr), port_(port), callback_(onResolve), resolv_addr_type_(r)
 {
@@ -109,9 +110,19 @@ void Resolver::run()
   cLog.msg(Log::PRIO_DEBUG) << "Resolver Thread started";
 
   while(1) {
-    io_service_.run();
-    io_service_.reset();
-    boost::this_thread::sleep(boost::posix_time::milliseconds(250));
+    try {
+      io_service_.run();
+      io_service_.reset();
+      boost::this_thread::sleep(boost::posix_time::milliseconds(250));
+    }
+    catch(const std::runtime_error& e)
+    {
+      cLog.msg(Log::PRIO_ERROR) << "resolver caught runtime error, restarting: " << e.what();
+    }
+    catch(const std::exception& e)
+    {
+      cLog.msg(Log::PRIO_ERROR) << "resolver caught exception, restarting: " << e.what();
+    }
   }
 }
 

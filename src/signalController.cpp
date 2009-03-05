@@ -160,18 +160,13 @@ void SignalController::handle()
   {
     sigfillset(&signal_set);
     sigwait(&signal_set, &sigNum);
-    {
-      Lock lock(sigQueueMutex);
-      sigQueue.push(sigNum);
-    }
-    sigQueueSem.up();
+    inject(sigNum);
   }
 }
 #else
 bool SignalController::handle(DWORD ctrlType)
 {
-  gSignalController.sigQueue.push(ctrlType);
-  gSignalController.sigQueueSem.up();
+  gSignalController.inject(ctrlType);
   return true;
 }
 #endif
@@ -211,6 +206,15 @@ void SignalController::init()
   handler[CTRL_LOGOFF_EVENT] = new CtrlLogoffHandler;
   handler[CTRL_SHUTDOWN_EVENT] = new CtrlShutdownHandler;
 #endif
+}
+
+void SignalController::inject(int sig)
+{
+  {
+    Lock lock(sigQueueMutex);
+    sigQueue.push(sig);
+  }
+  sigQueueSem.up();
 }
 
 int SignalController::run()

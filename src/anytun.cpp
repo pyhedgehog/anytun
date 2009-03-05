@@ -399,26 +399,24 @@ int main(int argc, char* argv[])
     cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
     gOpt.parse_post(); // print warnings
 
+
+        // daemonizing has to done before any thread gets started
+#ifndef NO_DAEMON
+#ifndef NO_PRIVDROP
+		PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
+#endif
+    if(gOpt.getDaemonize()) {
+      daemonize();
+      daemonized = true;
+    }
+#endif
+
 #ifndef NO_SIGNALCONTROLLER
         // this has to be called before the first thread is started
     gSignalController.init();
 #endif
     gResolver.init();
-
-#ifndef NO_DAEMON
-#ifndef NO_PRIVDROP
-		PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
-#endif
-
-    std::ofstream pidFile;
-    if(gOpt.getPidFile() != "") {
-      pidFile.open(gOpt.getPidFile().c_str());
-      if(!pidFile.is_open()) {
-        std::cout << "can't open pid file" << std::endl;
-      }
-    }
-#endif
-    
+   
 #ifndef NO_CRYPT
     if(gOpt.getAnytun02Compat())
       cLog.msg(Log::PRIO_NOTICE) << "enabling anytun 0.2.x crypto compatiblity mode";      
@@ -477,21 +475,17 @@ int main(int argc, char* argv[])
 #endif
 
 #ifndef NO_DAEMON
-    if(gOpt.getChrootDir() != "")
-      do_chroot(gOpt.getChrootDir());
+    if(gOpt.getChrootDir() != "") {
+      try {
+        do_chroot(gOpt.getChrootDir());
+      }
+      catch(const std::runtime_error& e) {
+        cLog.msg(Log::PRIO_WARNING) << "ignroing chroot error: " << e.what();
+      }
+    }
 #ifndef NO_PRIVDROP
     privs.drop();
 #endif
-    if(gOpt.getDaemonize()) {
-      daemonize();
-      daemonized = true;
-    }
-
-    if(pidFile.is_open()) {
-      pid_t pid = getpid();
-      pidFile << pid;
-      pidFile.close();
-    }
 #endif
 
     boost::thread senderThread(boost::bind(sender, &dev, src));

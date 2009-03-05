@@ -109,6 +109,13 @@ void do_chroot(std::string const& chrootdir)
 
 void daemonize()
 {
+  std::ofstream pidFile;
+  if(gOpt.getPidFile() != "") {
+    pidFile.open(gOpt.getPidFile().c_str());
+    if(!pidFile.is_open())
+      AnytunError::throwErr() << "can't open pid file (" << gOpt.getPidFile() << "): " << AnytunErrno(errno);
+  }
+
   pid_t pid;
 
   pid = fork();
@@ -139,14 +146,19 @@ void daemonize()
     close(fd);
   fd = open("/dev/null",O_RDWR);        // stdin
   if(fd == -1)
-    cLog.msg(Log::PRIO_WARNING) << "can't open stdin (chroot and no link to /dev/null?)";
+    cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stdin";
   else {
     if(dup(fd) == -1)   // stdout
-      cLog.msg(Log::PRIO_WARNING) << "can't open stdout";
+      cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stdout";
     if(dup(fd) == -1)   // stderr
-      cLog.msg(Log::PRIO_WARNING) << "can't open stderr";
+      cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stderr";
   }
-  umask(027);
+
+  if(pidFile.is_open()) {
+    pid_t pid = getpid();
+    pidFile << pid;
+    pidFile.close();
+  }
 }
 #endif
 #endif

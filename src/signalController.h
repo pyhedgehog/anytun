@@ -151,6 +151,7 @@ public:
 
   void init();
   int run();
+  void inject(int sig);
 
 private:
   typedef std::map<int, SignalHandler*> HandlerMap;
