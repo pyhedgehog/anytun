@@ -30,29 +30,35 @@
  */
 
 #include <boost/asio.hpp>
+#include <boost/bind.hpp>
 
 #include "datatypes.h"
 #include "packetSource.h"
 #include "log.h"
+#include "resolver.h"
+#include "options.h"
+
+void PacketSource::waitUntilReady()
+{
+  ready_sem_.down();
+}
 
 UDPPacketSource::UDPPacketSource(std::string port) : sock_(io_service_)
 {
-  proto::resolver resolver(io_service_);
-  proto::resolver::query query(port);  
-  proto::endpoint e = *resolver.resolve(query);
-  cLog.msg(Log::PRIO_NOTICE) << "openeing socket: " << e;
-  sock_.open(e.protocol());
-  sock_.bind(e);
+  gResolver.resolveUdp("", port, boost::bind(&UDPPacketSource::onResolve, this, _1), gOpt.getResolvAddrType());
 }
 
 UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port) : sock_(io_service_)
 {
-  proto::resolver resolver(io_service_);
-  proto::resolver::query query(localaddr, port);  
-  proto::endpoint e = *resolver.resolve(query);
-  cLog.msg(Log::PRIO_NOTICE) << "openeing socket: " << e;
+  gResolver.resolveUdp(localaddr, port, boost::bind(&UDPPacketSource::onResolve, this, _1), gOpt.getResolvAddrType());
+}
+
+void UDPPacketSource::onResolve(const boost::asio::ip::udp::endpoint& e)
+{
+  cLog.msg(Log::PRIO_NOTICE) << "opening socket: " << e;
   sock_.open(e.protocol());
-  sock_.bind(e);  
+  sock_.bind(e);
+  ready_sem_.up();
 }
 
 u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote)

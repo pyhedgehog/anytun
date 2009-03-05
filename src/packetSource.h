@@ -35,8 +35,9 @@
 #include <boost/asio.hpp>
 
 #include "datatypes.h"
+#include "threadUtils.hpp"
 
-// TODO: fix this
+// TODO: fix this when other packetSource types are introduced
 typedef boost::asio::ip::udp::endpoint PacketSourceEndpoint;
 
 class PacketSource
@@ -46,6 +47,11 @@ public:
 
   virtual u_int32_t recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote) = 0;
   virtual void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote) = 0;
+
+  void waitUntilReady();
+
+protected:
+  Semaphore ready_sem_;
 };
 
 class UDPPacketSource : public PacketSource
@@ -58,6 +64,8 @@ public:
 
   u_int32_t recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote);
   void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote);
+
+  void onResolve(const boost::asio::ip::udp::endpoint& e);
 
 private:
 

@@ -29,8 +29,6 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NO_SIGNALCONTROLLER
-
 #include <map>
 #include <iostream>
 
@@ -241,4 +239,3 @@ int SignalController::run()
   return 0;
 }
 
-#endif

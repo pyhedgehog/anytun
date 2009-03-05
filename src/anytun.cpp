@@ -49,9 +49,7 @@
 #include "cipherFactory.h"
 #include "authAlgoFactory.h"
 #include "keyDerivationFactory.h"
-#ifndef NO_SIGNALCONTROLLER
 #include "signalController.h"
-#endif
 #ifdef WIN_SERVICE
 #include "win32/winService.h"
 #endif
@@ -325,6 +323,28 @@ void receiver(TunDevice* dev, PacketSource* src)
   }
 }
 
+void startSendRecvThreads(PrivInfo& privs, TunDevice* dev, PacketSource* src)
+{
+  src->waitUntilReady();
+  
+#ifndef NO_DAEMON
+  if(gOpt.getChrootDir() != "") {
+    try {
+      do_chroot(gOpt.getChrootDir());
+    }
+    catch(const std::runtime_error& e) {
+      cLog.msg(Log::PRIO_WARNING) << "ignroing chroot error: " << e.what();
+    }
+  }
+#ifndef NO_PRIVDROP
+  privs.drop();
+#endif
+#endif
+  
+  boost::thread(boost::bind(sender, dev, src));
+  boost::thread(boost::bind(receiver, dev, src)); 
+}
+
 #ifdef WIN_SERVICE
 int main(int argc, char* argv[])
 {
@@ -411,10 +431,8 @@ int main(int argc, char* argv[])
     }
 #endif
 
-#ifndef NO_SIGNALCONTROLLER
         // this has to be called before the first thread is started
     gSignalController.init();
-#endif
     gResolver.init();
    
 #ifndef NO_CRYPT
@@ -474,34 +492,17 @@ int main(int argc, char* argv[])
     }
 #endif
 
-#ifndef NO_DAEMON
-    if(gOpt.getChrootDir() != "") {
-      try {
-        do_chroot(gOpt.getChrootDir());
-      }
-      catch(const std::runtime_error& e) {
-        cLog.msg(Log::PRIO_WARNING) << "ignroing chroot error: " << e.what();
-      }
-    }
-#ifndef NO_PRIVDROP
-    privs.drop();
-#endif
-#endif
-
-    boost::thread senderThread(boost::bind(sender, &dev, src));
-#if defined(WIN_SERVICE) || !defined(NO_SIGNALCONTROLLER)
-    boost::thread receiverThread(boost::bind(receiver, &dev, src)); 
-#endif
+        // wait for packet source to finish in a seperate thread in order
+        // to be still able to process signals while waiting
+    boost::thread(boost::bind(startSendRecvThreads, privs, &dev, src));
 
 #if defined(WIN_SERVICE)
     int ret = 0;
     gWinService.waitForStop();
-#elif !defined(NO_SIGNALCONTROLLER)
-    int ret = gSignalController.run();  
 #else
-    receiver(dev, *src);
-    int ret = 0;
+    int ret = gSignalController.run();  
 #endif
+
     // TODO cleanup threads here!
     /*
     pthread_cancel(senderThread);

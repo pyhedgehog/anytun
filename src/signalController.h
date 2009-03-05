@@ -32,8 +32,6 @@
 #ifndef _SIGNAL_CONTROLLER_H_
 #define _SIGNAL_CONTROLLER_H_
 
-#ifndef NO_SIGNALCONTROLLER
-
 #include <map>
 #include <queue>
 
@@ -186,7 +184,5 @@ private:
 };
 
 extern SignalController& gSignalController;
-
-#endif
 
 #endif
