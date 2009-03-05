@@ -189,7 +189,7 @@ TunDevice::~TunDevice()
     CloseHandle(woverlapped_.hEvent);
 }
 
-int TunDevice::fix_return(int ret, size_t pi_length)
+int TunDevice::fix_return(int ret, size_t pi_length) const
 {
 // nothing to be done here
 	return 0;

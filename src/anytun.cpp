@@ -138,10 +138,10 @@ void syncListener()
 }
 #endif
 
-void sender(const TunDevice* dev, PacketSource* src)
+void sender(TunDevice* dev, PacketSource* src)
 {
   if(!dev || !src) {
-    cLog.msg(Log::PRIO_ERROR) << "sender thread died becaause either dev or src pointer is null";    
+    cLog.msg(Log::PRIO_ERROR) << "sender thread died because either dev or src pointer is null";    
     return;
   }
 
@@ -227,10 +227,10 @@ void sender(const TunDevice* dev, PacketSource* src)
   }
 }
 
-void receiver(const TunDevice* dev, PacketSource* src)
+void receiver(TunDevice* dev, PacketSource* src)
 {
   if(!dev || !src) {
-    cLog.msg(Log::PRIO_ERROR) << "receiver thread died becaause either dev or src pointer is null";    
+    cLog.msg(Log::PRIO_ERROR) << "receiver thread died because either dev or src pointer is null";    
     return;
   }
 

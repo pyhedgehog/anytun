@@ -46,8 +46,8 @@ public:
   TunDevice(std::string dev,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix);
   ~TunDevice();
   
-  int read(u_int8_t* buf, u_int32_t len) const;
-  int write(u_int8_t* buf, u_int32_t len) const;
+  int read(u_int8_t* buf, u_int32_t len);
+  int write(u_int8_t* buf, u_int32_t len);
 
   const char* getActualName() const { return actual_name_.c_str(); }
   const char* getActualNode() const { return actual_node_.c_str(); }
