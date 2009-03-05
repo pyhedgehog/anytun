@@ -98,7 +98,7 @@ int TunDevice::fix_return(int ret, size_t pi_length) const
   return (static_cast<size_t>(ret) > pi_length ? (ret - pi_length) : 0);
 }
 
-int TunDevice::read(u_int8_t* buf, u_int32_t len) const
+int TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
   if(fd_ < 0)
     return -1;
@@ -118,7 +118,7 @@ int TunDevice::read(u_int8_t* buf, u_int32_t len) const
     return(::read(fd_, buf, len));
 }
 
-int TunDevice::write(u_int8_t* buf, u_int32_t len) const
+int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
   if(fd_ < 0)
     return -1;
