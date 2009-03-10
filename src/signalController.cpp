@@ -58,6 +58,13 @@ SignalController& SignalController::instance()
 	return *inst;
 }
 
+int SigErrorHandler::handle(const std::string& msg)
+{
+  AnytunError::throwErr() << msg;
+
+  return 0;
+}
+
 #ifndef _MSC_VER
 
 int SigIntHandler::handle()
@@ -204,13 +211,15 @@ void SignalController::init()
   handler[CTRL_LOGOFF_EVENT] = new CtrlLogoffHandler;
   handler[CTRL_SHUTDOWN_EVENT] = new CtrlShutdownHandler;
 #endif
+
+  handler[SIGERROR] = new SigErrorHandler;
 }
 
-void SignalController::inject(int sig)
+void SignalController::inject(int sig, const std::string& msg)
 {
   {
     Lock lock(sigQueueMutex);
-    sigQueue.push(sig);
+    sigQueue.push(SigPair(sig, msg));
   }
   sigQueueSem.up();
 }
@@ -219,22 +228,27 @@ int SignalController::run()
 {
   while(1) {
     sigQueueSem.down();
-    int sigNum;
+    SigPair sig;
     {
       Lock lock(sigQueueMutex);
-      sigNum = sigQueue.front();
+      sig = sigQueue.front();
       sigQueue.pop();
     }
     
-    HandlerMap::iterator it = handler.find(sigNum);
+    HandlerMap::iterator it = handler.find(sig.first);
     if(it != handler.end())
     {
-      int ret = it->second->handle();
+      int ret;
+      if(sig.second == "")
+        ret = it->second->handle();
+      else
+        ret = it->second->handle(sig.second);
+
       if(ret)
         return ret;
     }
     else
-      cLog.msg(Log::PRIO_NOTICE) << "SIG " << sigNum << " caught - ignoring";
+      cLog.msg(Log::PRIO_NOTICE) << "SIG " << sig.first << " caught with message '" << sig.second << "'- ignoring";
   }
   return 0;
 }

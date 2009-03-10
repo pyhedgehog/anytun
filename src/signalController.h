@@ -41,12 +41,15 @@
 #include <csignal>
 #endif
 
+#define SIGERROR -1
+
 class SignalHandler
 {
 public:
   virtual ~SignalHandler() {}
 
   virtual int handle() { return 0; }
+  virtual int handle(const std::string& msg) { return 0; }
 
 protected:
   SignalHandler(int s) : sigNum(s) {}
@@ -54,6 +57,13 @@ protected:
 private:
   int sigNum;
   friend class SignalController;
+};
+
+class SigErrorHandler : public SignalHandler
+{
+public:
+  SigErrorHandler() : SignalHandler(SIGERROR) {}
+  int handle(const std::string& msg);
 };
 
 #ifndef _MSC_VER
@@ -149,7 +159,7 @@ public:
 
   void init();
   int run();
-  void inject(int sig);
+  void inject(int sig, const std::string& msg = "");
 
 private:
   typedef std::map<int, SignalHandler*> HandlerMap;
@@ -173,7 +183,8 @@ private:
   };
   friend class instanceCleaner;
 
-  std::queue<int> sigQueue;
+  typedef std::pair<int, std::string> SigPair;
+  std::queue<SigPair> sigQueue;
   Mutex sigQueueMutex;
   Semaphore sigQueueSem;
 

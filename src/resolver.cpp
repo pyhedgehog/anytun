@@ -34,6 +34,7 @@
 
 #include "resolver.h"
 #include "log.h"
+#include "signalController.h"
 
 using ::boost::asio::ip::udp;
 using ::boost::asio::ip::tcp;
@@ -68,7 +69,13 @@ template<class Proto>
 void ResolveHandler<Proto>::operator()(const boost::system::error_code& e, const boost::asio::ip::basic_resolver_iterator<Proto> endpointIt)
 {
   if(boost::system::posix_error::success == e) {
-	  callback_(*endpointIt);
+    try {
+      callback_(*endpointIt);
+    }
+    catch(const std::runtime_error& e)
+    {
+      gSignalController.inject(SIGERROR, e.what());
+    }
   } else {
 	  cLog.msg(Log::PRIO_ERROR) << "Error while resolving '" << addr_ << "' '" << port_ << "', retrying in 10 sec.";
     boost::thread(boost::bind(waitAndEnqueue<Proto>, 10, addr_, port_, callback_, resolv_addr_type_));
