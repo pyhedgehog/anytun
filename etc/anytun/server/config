@@ -25,6 +25,9 @@ cipher aes-ctr
 #auth-algo null
 auth-algo sha1
 
+##message auth tag length
+#auth-tag-length 10
+
 ## local ip address to bind to (for tunnel data)
 ## (if you run an anycast cluster this has to be the anycast ip address)
 #interface <ip-address>
