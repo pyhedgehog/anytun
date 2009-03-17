@@ -86,7 +86,7 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
   if(!packet.getAuthTagLength())
     return;
   
-  kd.generate(dir_, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
+  kd.generate(dir_, LABEL_AUTH, packet.getSeqNr(), key_);
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
@@ -126,7 +126,7 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
   if(!packet.getAuthTagLength())
     return true;
 
-  kd.generate(dir_, LABEL_SATP_MSG_AUTH, packet.getSeqNr(), key_);
+  kd.generate(dir_, LABEL_AUTH, packet.getSeqNr(), key_);
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {

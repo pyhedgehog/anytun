@@ -5,7 +5,7 @@ a: auth algo
 b: auth tag length (not yet)
 c: cipher
 d: device name
-e:
+e: role
 f: input file
 g: unix group
 h: print help text

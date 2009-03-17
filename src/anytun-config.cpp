@@ -53,15 +53,16 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
 {
   SeqWindow * seq = new SeqWindow(seqSize);
   seq_nr_t seq_nr_ = 0;
-  KeyDerivation * kd = KeyDerivationFactory::create( gOpt.getKdPrf() , gOpt.getAnytun02Compat() );
-  kd->init( gOpt.getKey(), gOpt.getSalt() );
+  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf(), gOpt.getAnytun02Compat());
+  kd->init(gOpt.getKey(), gOpt.getSalt(), gOpt.getPassphrase());
+  kd->setRole(gOpt.getRole());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
-  ConnectionParam connparam ( (*kd), (*seq), seq_nr_, remote_end );
-  cl.addConnection( connparam, mux );
+  ConnectionParam connparam ((*kd), (*seq), seq_nr_, remote_end);
+  cl.addConnection(connparam, mux);
 
   std::ostringstream sout;
-  boost::archive::text_oarchive oa( sout );
-  const SyncCommand scom( cl, mux );
+  boost::archive::text_oarchive oa(sout);
+  const SyncCommand scom(cl, mux);
 
   oa << scom;
   std::cout <<  std::setw(5) << std::setfill('0') << sout.str().size()<< ' ' << sout.str() << std::endl;
@@ -70,14 +71,14 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
   NetworkList::const_iterator rit;
   for(rit = routes.begin(); rit != routes.end(); ++rit)
   {
-    NetworkAddress addr( rit->net_addr.c_str() );
-    NetworkPrefix prefix( addr, rit->prefix_length );
+    NetworkAddress addr(rit->net_addr.c_str());
+    NetworkPrefix prefix(addr, rit->prefix_length);
     
-    gRoutingTable.addRoute( prefix, mux );
+    gRoutingTable.addRoute(prefix, mux);
     
     std::ostringstream sout2;
-    boost::archive::text_oarchive oa2( sout2 );
-    const SyncCommand scom2( prefix );
+    boost::archive::text_oarchive oa2(sout2);
+    const SyncCommand scom2(prefix);
     
     oa2 << scom2;
     std::cout <<  std::setw(5) << std::setfill('0') << sout2.str().size()<< ' ' << sout2.str() << std::endl;

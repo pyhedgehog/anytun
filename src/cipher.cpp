@@ -140,7 +140,7 @@ u_int32_t AesIcmCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen
 
 void AesIcmCipher::calcCtr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  kd.generate(dir_, LABEL_SATP_SALT, seq_nr, salt_);
+  kd.generate(dir_, LABEL_SALT, seq_nr, salt_);
 
 
   if(anytun02_compat_) {
@@ -164,7 +164,7 @@ void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_
     return;
 #endif
 
-  kd.generate(dir_, LABEL_SATP_ENCRYPTION, seq_nr, key_);
+  kd.generate(dir_, LABEL_ENC, seq_nr, key_);
 #ifdef USE_SSL_CRYPTO
   int ret = AES_set_encrypt_key(key_.getBuf(), key_.getLength()*8, &aes_key_);
   if(ret) {

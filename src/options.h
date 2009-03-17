@@ -77,6 +77,8 @@ std::istream& operator>>(std::istream& stream, OptionNetwork& network);
 
 typedef std::list<std::string> StringList;
 
+typedef enum { ROLE_LEFT, ROLE_RIGHT } role_t;
+
 class Options
 {
 public:
@@ -149,8 +151,8 @@ public:
   Options& setAuthAlgo(std::string a);
   std::string getKdPrf();
   Options& setKdPrf(std::string k);
-  int8_t getLdKdr();
-  Options& setLdKdr(int8_t l);
+  role_t getRole();
+  Options& setRole(role_t r);
   bool getAnytun02Compat();
   Options& setAnytun02Compat(bool a);
   std::string getPassphrase();
@@ -211,7 +213,7 @@ private:
   std::string cipher_;
   std::string auth_algo_;
   std::string kd_prf_;
-  int8_t ld_kdr_;
+  role_t role_;
   bool anytun02_compat_;
   std::string passphrase_;
   Buffer key_;

@@ -51,6 +51,7 @@ typedef u_int32_t seq_nr_t;
 typedef u_int16_t sender_id_t;
 typedef u_int16_t payload_type_t;
 typedef u_int16_t mux_t;
+typedef u_int32_t satp_prf_label_t;
 
 typedef enum { ANY, IPV4_ONLY, IPV6_ONLY } ResolvAddrType;
 

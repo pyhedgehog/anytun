@@ -35,7 +35,7 @@ SYNOPSIS
 [ *-s|--sender-id* <sender id> ]
 [ *-w|--window-size* <window size> ]
 [ *-k|--kd-prf* <kd-prf type> ]
-[ *-O|--anytun02-compat* ]
+[ *-e|--role <role>* ]
 [ *-E|--passphrase* <pass phrase> ]
 [ *-K|--key* <master key> ]
 [ *-A|--salt* <master salt> ]
@@ -298,11 +298,15 @@ Possible values:
 * *aes-ctr-192* - AES in counter mode with 192 Bits
 * *aes-ctr-256* - AES in counter mode with 256 Bits
 
--O|--anytun02-compat
-~~~~~~~~~~~~~~~~~~~~
+-e|--role <role>
+~~~~~~~~~~~~~~~~
 
-Enable compatibility mode with version of anytun 0.2.x and prior. 
-This is for backwards compaitbility to old internet draft of satp.
+SATP uses different session keys for inbound and outbound traffic. The
+role parameter is used to determine which keys to use for outbound or
+inbound packets. On both sides of a vpn connection different roles have 
+to be used. Possible values are *left* and *right*. You may also use 
+*alice* or *server* as a replacement for *left* and *bob* or *client* as 
+a replacement for *right*. By default *left* is used.
 
 -E|--passphrase <pass phrase>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -372,12 +376,12 @@ Host A:
 ^^^^^^^
 
 anytun -r hostb.example.com -t tun -n 192.168.123.1/30 -c aes-ctr-256 -k aes-ctr-256 \
-       -E have_a_very_safe_and_productive_day
+       -E have_a_very_safe_and_productive_day -e left
 
 Host B:
 ^^^^^^^
 anytun -r hosta.example.com -t tun -n 192.168.123.2/30 -c aes-ctr-256 -k aes-ctr-256 \
-       -E have_a_very_safe_and_productive_day
+       -E have_a_very_safe_and_productive_day -e right
 
 
 One unicast and one anycast tunnel endpoint:
@@ -386,31 +390,31 @@ One unicast and one anycast tunnel endpoint:
 Unicast tunnel endpoint:
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-anytun -r anycast.anytun.org -d anytun0 -t tun -n 192.0.2.2/30 -a null -c null -w 0
+anytun -r anycast.anytun.org -d anytun0 -t tun -n 192.0.2.2/30 -a null -c null -w 0 -e client
 
 Anycast tunnel endpoints:
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 On the host with unicast hostname unicast1.anycast.anytun.org and anycast 
 hostname anycast.anytun.org:
----------------------------------------------------------------------------------------
-# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1/30 -a null -c null -w 0 \
+-------------------------------------------------------------------------------------------------
+# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1/30 -a null -c null -w 0 -e server \
          -S 2342 -M unicast2.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
 
 On the host with unicast hostname unicast2.anycast.anytun.org and anycast
 hostname anycast.anytun.org:
----------------------------------------------------------------------------------------
-# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1/30 -a null -c null -w 0 \
+-------------------------------------------------------------------------------------------------
+# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1/30 -a null -c null -w 0 -e server \
          -S 2342 -M unicast1.anycast.anytun.org:2342,unicast3.anycast.anytun.org:2342
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
 
 On the host with unicast hostname unicast3.anycast.anytun.org and anycast
 hostname anycast.anytun.org:
----------------------------------------------------------------------------------------
-# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1/30 -a null -c null -w 0 \
+-------------------------------------------------------------------------------------------------
+# anytun -i anycast.anytun.org -d anytun0 -t tun -n 192.0.2.1/30 -a null -c null -w 0 -e server \
          -S 2342 -M unicast1.anycast.anytun.org:2342,unicast2.anycast.anytun.org:2342
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
 
 For more sophisticated examples (like multiple unicast endpoints to one
 anycast tunnel endpoint) please consult the man page of anytun-config(8).

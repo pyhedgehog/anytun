@@ -50,6 +50,9 @@
 #define MUX_T_NTOH(a) ntohs(a)
 #define MUX_T_HTON(a) htons(a)
 
+#define SATP_PRF_LABEL_T_NTOH(a) ntohl(a)
+#define SATP_PRF_LABEL_T_HTON(a) htonl(a)
+
 //#define AUTH_TAG_T_NTOH(a) ntohl(a)
 //#define AUTH_TAG_T_HTON(a) htonl(a)
 

@@ -187,7 +187,7 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   auth_algo_ = "null";
   kd_prf_ = "null";
 #endif
-  ld_kdr_ = 0;
+  role_ = ROLE_LEFT;
   anytun02_compat_ = false;
 }
 
@@ -327,7 +327,7 @@ bool Options::parse(int argc, char* argv[])
   progname_ = argv[0];
   argc--;
   bool ipv4_only = false, ipv6_only = false;
-  int32_t ld_kdr_tmp = ld_kdr_;
+  std::string role = "";
   for(int i=1; argc > 0; ++i)
   {
     std::string str(argv[i]);
@@ -397,7 +397,7 @@ bool Options::parse(int argc, char* argv[])
 
   #ifndef NO_CRYPT
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
-//    PARSE_SIGNED_INT_PARAM("-l","--ld-kdr", ld_kdr_tmp)
+    PARSE_SCALAR_PARAM("-e","--role", role)
     PARSE_BOOL_PARAM("-O","--anytun02-compat", anytun02_compat_)
   #ifndef NO_PASSPHRASE
     PARSE_PHRASE_PARAM_SEC("-E","--passphrase", passphrase_)
@@ -425,7 +425,14 @@ bool Options::parse(int argc, char* argv[])
   if(ipv6_only)
     resolv_addr_type_ = IPV6_ONLY;
 
-  ld_kdr_ = static_cast<int8_t>(ld_kdr_tmp);
+  if(role != "") {
+    if(role == "alice" || role == "server" || role == "left")
+      role_ = ROLE_LEFT;
+    else if(role == "bob" || role == "client" || role == "right")
+      role_ = ROLE_RIGHT;
+    else
+      throw syntax_error("unknown role name: " + role, -1); 
+  }
 
   return true;
 }
@@ -520,7 +527,7 @@ void Options::printUsage()
 
  #ifndef NO_CRYPT
   std::cout << "   [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
-//  std::cout << "   [-l|--ld-kdr] <ld-kdr>              log2 of key derivation rate" << std::endl;
+  std::cout << "   [-e|--role] <role>                  left (alice) or right (bob)" << std::endl;
   std::cout << "   [-O|--anytun02-compat]              enable compatiblity mode for anytun 0.2.x and prior" << std::endl;
  #ifndef NO_PASSPHRASE
   std::cout << "   [-E|--passphrase] <pass phrase>     a passprhase to generate master key and salt from" << std::endl;
@@ -596,7 +603,12 @@ void Options::printOptions()
   std::cout << "cipher = '" << cipher_ << "'" << std::endl;
   std::cout << "auth_algo = '" << auth_algo_ << "'" << std::endl;
   std::cout << "kd_prf = '" << kd_prf_ << "'" << std::endl;
-  std::cout << "ld_kdr = " << static_cast<int32_t>(ld_kdr_) << std::endl;
+  std::cout << "role = ";
+  switch(role_) {
+  case ROLE_LEFT: std::cout << "left" << std::endl; break;
+  case ROLE_RIGHT: std::cout << "right" << std::endl; break;
+  default: std::cout << "??" << std::endl; break;
+  }
   std::cout << "anytun02_compat = " << anytun02_compat_ << std::endl;
   std::cout << "passphrase = '" << passphrase_ << "'" << std::endl;
   std::cout << "key = " << key_.getHexDumpOneLine() << std::endl;
@@ -972,16 +984,16 @@ Options& Options::setKdPrf(std::string k)
   return *this;
 }
 
-int8_t Options::getLdKdr()
+role_t Options::getRole()
 {
   ReadersLock lock(mutex);
-  return ld_kdr_;
+  return role_;
 }
 
-Options& Options::setLdKdr(int8_t l)
+Options& Options::setRole(role_t r)
 {
   WritersLock lock(mutex);
-  ld_kdr_ = l;
+  role_ = r;
   return *this;
 }
 

@@ -86,7 +86,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 	seq_nr_t seq_nr_=0;
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf(), gOpt.getAnytun02Compat());
   kd->init(gOpt.getKey(), gOpt.getSalt(), gOpt.getPassphrase());
-  kd->setLogKDRate(gOpt.getLdKdr());
+  kd->setRole(gOpt.getRole());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
 
 	ConnectionParam connparam ((*kd), (*seq), seq_nr_, remote_end);
@@ -418,7 +418,6 @@ int main(int argc, char* argv[])
 
     cLog.msg(Log::PRIO_NOTICE) << "anytun started...";
     gOpt.parse_post(); // print warnings
-
 
         // daemonizing has to done before any thread gets started
 #ifndef NO_DAEMON

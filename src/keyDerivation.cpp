@@ -50,12 +50,10 @@
 #endif
 #endif
 
-void KeyDerivation::setLogKDRate(const int8_t log_rate)
+void KeyDerivation::setRole(const role_t role)
 {
   WritersLock lock(mutex_);
-  ld_kdr_ = log_rate;
-  if(ld_kdr_ > (int8_t)(sizeof(seq_nr_t) * 8))
-    ld_kdr_ = sizeof(seq_nr_t) * 8;
+  role_ = role;
 }
 
 #ifndef NO_CRYPT
@@ -120,6 +118,47 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
 #endif
 #endif
 
+satp_prf_label_t KeyDerivation::convertLabel(kd_dir_t dir, satp_prf_label_t label)
+{
+  switch(label) {
+  case LABEL_ENC: {
+    if(dir == KD_OUTBOUND) {
+      if(role_ == ROLE_LEFT) return LABEL_LEFT_ENC;
+      if(role_ == ROLE_RIGHT) return LABEL_RIGHT_ENC;
+    }
+    else {
+      if(role_ == ROLE_LEFT) return LABEL_RIGHT_ENC;
+      if(role_ == ROLE_RIGHT) return LABEL_LEFT_ENC;
+    }
+    break;
+  }
+  case LABEL_SALT: {
+    if(dir == KD_OUTBOUND) {
+      if(role_ == ROLE_LEFT) return LABEL_LEFT_SALT;
+      if(role_ == ROLE_RIGHT) return LABEL_RIGHT_SALT;
+    }
+    else {
+      if(role_ == ROLE_LEFT) return LABEL_RIGHT_SALT;
+      if(role_ == ROLE_RIGHT) return LABEL_LEFT_SALT;
+    }
+    break;
+  }
+  case LABEL_AUTH: {
+    if(dir == KD_OUTBOUND) {
+      if(role_ == ROLE_LEFT) return LABEL_LEFT_AUTH;
+      if(role_ == ROLE_RIGHT) return LABEL_RIGHT_AUTH;
+    }
+    else {
+      if(role_ == ROLE_LEFT) return LABEL_RIGHT_AUTH;
+      if(role_ == ROLE_RIGHT) return LABEL_LEFT_AUTH;
+    }
+    break;
+  }
+  }
+
+  return label;
+}
+
 //****** NullKeyDerivation ******
 
 bool NullKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key)
@@ -176,7 +215,7 @@ AesIcmKeyDerivation::~AesIcmKeyDerivation()
 void AesIcmKeyDerivation::init(Buffer key, Buffer salt, std::string passphrase)
 {
   WritersLock lock(mutex_);
-  
+
   is_initialized_ = false;
 #ifndef NO_PASSPHRASE
   if(passphrase != "" && !key.getLength())
@@ -257,17 +296,8 @@ std::string AesIcmKeyDerivation::printType()
   return sstr.str();
 }
 
-bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, seq_nr_t* r, satp_prf_label_t label, seq_nr_t seq_nr)
+bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr)
 {
-  *r = 0;
-  if(ld_kdr_ >= 0)
-    *r = seq_nr >> ld_kdr_;
-
-  if(key_store_[dir][label].key_.getLength() && key_store_[dir][label].r_ == *r) {
-    if(!(*r) || (seq_nr % (*r)))
-      return false;
-  }
-
   if(master_salt_.getLength() != SALT_LENGTH) {
     cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::calcCtr: salt lengths don't match";
     return false;
@@ -276,11 +306,11 @@ bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, seq_nr_t* r, satp_prf_label_t la
   ctr_[dir].salt_.zero_ = 0;
   if(anytun02_compat_) {
     ctr_[dir].params_compat_.label_ ^= label;
-    ctr_[dir].params_compat_.r_ ^= SEQ_NR_T_HTON(*r);
+    ctr_[dir].params_compat_.seq_ ^= SEQ_NR_T_HTON(seq_nr);
   }
   else {
-    ctr_[dir].params_.label_ ^= label;
-    ctr_[dir].params_.r_ ^= SEQ_NR_T_HTON(*r);
+    ctr_[dir].params_.label_ ^= SATP_PRF_LABEL_T_HTON(convertLabel(dir, label));
+    ctr_[dir].params_.seq_ ^= SEQ_NR_T_HTON(seq_nr);
   }
 
   return true;
@@ -293,20 +323,10 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
   if(!is_initialized_)
     return false;
 
-  seq_nr_t r;
-  calcCtr(dir, &r, label, seq_nr);
-  bool result = calcCtr(dir, &r, label, seq_nr);
-  if(!result) {
-    u_int32_t len = key.getLength();
-    if(len > key_store_[dir][label].key_.getLength()) {
-      cLog.msg(Log::PRIO_WARNING) << "KeyDerivation::generate: stored (old) key for label " << label << " is too short, filling with zeros";
-      std::memset(key.getBuf(), 0, len);
-      len = key_store_[dir][label].key_.getLength();
-    }
-    std::memcpy(key.getBuf(), key_store_[dir][label].key_.getBuf(), len);
+  if(!calcCtr(dir, label, seq_nr)) {
     return false;
   }
-  
+ 
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {
@@ -324,7 +344,6 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << AnytunGpgError(err);
   }
-  return true;
 #else
   if(CTR_LENGTH != AES_BLOCK_SIZE) {
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
@@ -336,16 +355,6 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
   AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);
 #endif
   
-  if(!ld_kdr_)
-    return true;
-
-  if(key_store_[dir][label].key_.getLength() < key.getLength()) {
-    key_store_[dir][label].key_.setLength(key.getLength());
-  }
-
-  std::memcpy(key_store_[dir][label].key_.getBuf(), key.getBuf(), key.getLength());
-  key_store_[dir][label].r_ = r;
-
   return true;
 }
 #endif

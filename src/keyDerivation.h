@@ -36,6 +36,7 @@
 #include "buffer.h"
 #include "threadUtils.hpp"
 #include "syncBuffer.h"
+#include "options.h"
 
 #ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
@@ -47,38 +48,36 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
-#define KD_LABEL_COUNT 3
-typedef enum {
-  LABEL_SATP_ENCRYPTION  = 0x00,
-  LABEL_SATP_MSG_AUTH    = 0x01,
-  LABEL_SATP_SALT        = 0x02,
-} satp_prf_label_t;
+#define LABEL_ENC 0
+#define LABEL_AUTH 1
+#define LABEL_SALT 2
 
-typedef enum {
-  KD_INBOUND = 0,
-  KD_OUTBOUND = 1
-} kd_dir_t;
+#define LABEL_LEFT_ENC 0xDEADBEEF
+#define LABEL_RIGHT_ENC 0xDEAE0010
+#define LABEL_LEFT_SALT 0xDF10416F
+#define LABEL_RIGHT_SALT 0xDF13FF90
+#define LABEL_LEFT_AUTH 0xE0000683
+#define LABEL_RIGHT_AUTH 0xE001B97C
 
-typedef struct {
-  Buffer key_;
-  seq_nr_t r_;
-} key_store_t;
+typedef enum { KD_INBOUND, KD_OUTBOUND } kd_dir_t;
 
 class KeyDerivation
 {
 public:
-  KeyDerivation() : is_initialized_(false), ld_kdr_(0), anytun02_compat_(false), key_length_(0), master_salt_(0), master_key_(0) {};
-  KeyDerivation(bool a) : is_initialized_(false), ld_kdr_(0), anytun02_compat_(a), key_length_(0), master_salt_(0), master_key_(0) {};
-  KeyDerivation(u_int16_t key_length) : is_initialized_(false), ld_kdr_(0), anytun02_compat_(false), key_length_(key_length), master_salt_(0), master_key_(0) {};
-  KeyDerivation(bool a, u_int16_t key_length) : is_initialized_(false), ld_kdr_(0), anytun02_compat_(a), key_length_(key_length), master_salt_(0), master_key_(0) {};
+  KeyDerivation() : is_initialized_(false), role_(ROLE_LEFT), anytun02_compat_(false), key_length_(0), master_salt_(0), master_key_(0) {};
+  KeyDerivation(bool a) : is_initialized_(false), role_(ROLE_LEFT), anytun02_compat_(a), key_length_(0), master_salt_(0), master_key_(0) {};
+  KeyDerivation(u_int16_t key_length) : is_initialized_(false), role_(ROLE_LEFT), anytun02_compat_(false), key_length_(key_length), master_salt_(0), master_key_(0) {};
+  KeyDerivation(bool a, u_int16_t key_length) : is_initialized_(false), role_(ROLE_LEFT), anytun02_compat_(a), key_length_(key_length), master_salt_(0), master_key_(0) {};
   virtual ~KeyDerivation() {};
 
-  void setLogKDRate(const int8_t ld_rate);
+  void setRole(const role_t role);
 
   virtual void init(Buffer key, Buffer salt, std::string passphrase = "") = 0;
   virtual bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key) = 0;
 
   virtual std::string printType() { return "GenericKeyDerivation"; };
+
+  satp_prf_label_t convertLabel(kd_dir_t dir, satp_prf_label_t label);  
 
 protected:
   virtual void updateMasterKey() = 0;
@@ -94,7 +93,7 @@ protected:
 	void serialize(Archive & ar, const unsigned int version)
 	{
  		WritersLock lock(mutex_);
-    ar & ld_kdr_;
+    ar & role_;
     ar & key_length_;
     ar & master_salt_;
     ar & master_key_;
@@ -102,7 +101,7 @@ protected:
 	}
 
   bool is_initialized_;
-  int8_t ld_kdr_;             // ld(key_derivation_rate)
+  role_t role_;
   bool anytun02_compat_;
   u_int16_t key_length_;
   SyncBuffer master_salt_;
@@ -166,7 +165,7 @@ public:
 private:
   void updateMasterKey();
 
-  bool calcCtr(kd_dir_t dir, seq_nr_t* r, satp_prf_label_t label, seq_nr_t seq_nr);
+  bool calcCtr(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr);
 
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -182,8 +181,6 @@ private:
   u_int8_t ecount_buf_[2][AES_BLOCK_SIZE];
 #endif
 
-  key_store_t key_store_[2][KD_LABEL_COUNT];
-
 #ifdef _MSC_VER
   #pragma pack(push, 1)
 #endif  
@@ -194,16 +191,16 @@ private:
       u_int16_t zero_;
     } salt_;
 	struct ATTR_PACKED {
-      u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - sizeof(seq_nr_t)];
-      u_int8_t label_;
-      seq_nr_t r_;
+      u_int8_t fill_[SALT_LENGTH - sizeof(satp_prf_label_t) - sizeof(seq_nr_t)];
+      satp_prf_label_t label_;
+      seq_nr_t seq_;
       u_int16_t zero_;
     } params_;
     struct ATTR_PACKED {
       u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - 2*sizeof(u_int8_t) - sizeof(seq_nr_t)];
       u_int8_t label_;
-      u_int8_t r_fill_[2];
-      seq_nr_t r_;
+      u_int8_t seq_fill_[2];
+      seq_nr_t seq_;
       u_int16_t zero_;
     } params_compat_;
   } ctr_[2];
