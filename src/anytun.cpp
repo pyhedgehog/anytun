@@ -149,7 +149,7 @@ void sender(TunDevice* dev, PacketSource* src)
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_OUTBOUND) );
     
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
-    EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
+    EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, gOpt.getAuthTagLength());
     
     u_int16_t mux = gOpt.getMux();
     PacketSourceEndpoint emptyEndpoint;
@@ -237,7 +237,7 @@ void receiver(TunDevice* dev, PacketSource* src)
     std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_INBOUND, gOpt.getAnytun02Compat()));
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_INBOUND));
     
-    EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH);
+    EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, gOpt.getAuthTagLength());
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     
     while(1) {

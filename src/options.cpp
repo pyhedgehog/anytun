@@ -38,6 +38,7 @@
 #include "datatypes.h"
 #include "options.h"
 #include "log.h"
+#include "authAlgoFactory.h"
 
 std::ostream& operator<<(std::ostream& stream, syntax_error const& error)
 {
@@ -181,10 +182,12 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
 #ifndef NO_CRYPT
   cipher_ = "aes-ctr";
   auth_algo_ = "sha1";
+  auth_tag_length_ = 10;
   kd_prf_ = "aes-ctr";
 #else
   cipher_ = "null";
   auth_algo_ = "null";
+  auth_tag_length_ = 0;
   kd_prf_ = "null";
 #endif
   role_ = ROLE_LEFT;
@@ -412,6 +415,7 @@ bool Options::parse(int argc, char* argv[])
   #ifndef NO_CRYPT
     PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
+    PARSE_SCALAR_PARAM("-b","--auth-tag-length", auth_tag_length_)
   #endif
 
 #endif
@@ -443,6 +447,19 @@ void Options::parse_post()
     kd_prf_ = "null";
   if((cipher_ != "null" || auth_algo_ != "null") && kd_prf_ == "null")
     cLog.msg(Log::PRIO_WARNING) << "using NULL key derivation with encryption and or authentication enabled!";
+
+
+#if defined(ANYTUN_OPTIONS)
+  u_int32_t tag_len_max = AuthAlgoFactory::getDigestLength(auth_algo_);
+  if(!tag_len_max) auth_tag_length_ = 0;
+  else if(tag_len_max < auth_tag_length_) {
+    cLog.msg(Log::PRIO_WARNING) << auth_algo_ << " auth algo can't generate tags of length " << auth_tag_length_ << ", using maximum tag length(" << tag_len_max << ")";
+    auth_tag_length_ = tag_len_max;
+  }
+#endif
+
+  if(anytun02_compat_)
+    cLog.msg(Log::PRIO_WARNING) << "--anytun02-compat is deprecated and very likly to be removed by the next release";
   
   if(dev_name_ == "" && dev_type_ == "")
     dev_type_ = "tun";
@@ -528,7 +545,6 @@ void Options::printUsage()
  #ifndef NO_CRYPT
   std::cout << "   [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
   std::cout << "   [-e|--role] <role>                  left (alice) or right (bob)" << std::endl;
-  std::cout << "   [-O|--anytun02-compat]              enable compatiblity mode for anytun 0.2.x and prior" << std::endl;
  #ifndef NO_PASSPHRASE
   std::cout << "   [-E|--passphrase] <pass phrase>     a passprhase to generate master key and salt from" << std::endl;
  #endif
@@ -542,6 +558,7 @@ void Options::printUsage()
  #ifndef NO_CRYPT
   std::cout << "   [-c|--cipher] <cipher type>         payload encryption algorithm" << std::endl;
   std::cout << "   [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
+  std::cout << "   [-b|--auth-tag-length]              length of the auth tag" << std::endl;
  #endif
 
 #endif
@@ -602,6 +619,7 @@ void Options::printOptions()
   std::cout << std::endl;
   std::cout << "cipher = '" << cipher_ << "'" << std::endl;
   std::cout << "auth_algo = '" << auth_algo_ << "'" << std::endl;
+  std::cout << "auth_tag_length = " << auth_tag_length_ << std::endl;
   std::cout << "kd_prf = '" << kd_prf_ << "'" << std::endl;
   std::cout << "role = ";
   switch(role_) {
@@ -970,6 +988,20 @@ Options& Options::setAuthAlgo(std::string a)
   auth_algo_ = a;
   return *this;
 }
+
+u_int32_t Options::getAuthTagLength()
+{
+  ReadersLock lock(mutex);
+  return auth_tag_length_;
+}
+
+Options& Options::setAuthTagLength(u_int32_t a)
+{
+  WritersLock lock(mutex);
+  auth_tag_length_ = a;
+  return *this;
+}
+
 
 std::string Options::getKdPrf()
 {

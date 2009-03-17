@@ -39,8 +39,8 @@
 #include "log.h"
 #include "anytunError.h"
 
-EncryptedPacket::EncryptedPacket(u_int32_t payload_length, bool allow_realloc)
-  : Buffer(payload_length + sizeof(struct HeaderStruct), allow_realloc)
+EncryptedPacket::EncryptedPacket(u_int32_t payload_length, u_int32_t auth_tag_length, bool allow_realloc)
+  : Buffer(payload_length + sizeof(struct HeaderStruct), allow_realloc), auth_tag_length_(auth_tag_length)
 {
   header_ = reinterpret_cast<struct HeaderStruct*>(buf_);
   payload_ = buf_ + sizeof(struct HeaderStruct);
@@ -118,7 +118,7 @@ u_int32_t EncryptedPacket::getPayloadLength() const
   if(!auth_tag_)
     return (length_ > sizeof(struct HeaderStruct)) ? (length_ - sizeof(struct HeaderStruct)) : 0;
   
-  return (length_ > (sizeof(struct HeaderStruct) + AUTHTAG_SIZE)) ? (length_ - sizeof(struct HeaderStruct) - AUTHTAG_SIZE) : 0;
+  return (length_ > (sizeof(struct HeaderStruct) + auth_tag_length_)) ? (length_ - sizeof(struct HeaderStruct) - auth_tag_length_) : 0;
 }
 
 void EncryptedPacket::setPayloadLength(u_int32_t payload_length)
@@ -143,11 +143,11 @@ void EncryptedPacket::reinit()
   
   if(auth_tag_)
   {
-    if(length_ < (sizeof(struct HeaderStruct) + AUTHTAG_SIZE)) {
+    if(length_ < (sizeof(struct HeaderStruct) + auth_tag_length_)) {
       auth_tag_ = NULL;
       AnytunError::throwErr() << "auth-tag can't be enabled, buffer is too small"; 
     }
-    auth_tag_ = buf_ + length_ - AUTHTAG_SIZE;
+    auth_tag_ = buf_ + length_ - auth_tag_length_;
   }  
 }
 
@@ -169,7 +169,7 @@ u_int32_t EncryptedPacket::getAuthenticatedPortionLength()
   if(!auth_tag_)
     return length_;
   
-  return (length_ > AUTHTAG_SIZE) ? (length_ - AUTHTAG_SIZE) : 0;
+  return (length_ > auth_tag_length_) ? (length_ - auth_tag_length_) : 0;
 }
 
 void EncryptedPacket::withAuthTag(bool b)
@@ -179,10 +179,10 @@ void EncryptedPacket::withAuthTag(bool b)
   
   if(b)
   {
-    if(length_ < (sizeof(struct HeaderStruct) + AUTHTAG_SIZE))
+    if(length_ < (sizeof(struct HeaderStruct) + auth_tag_length_))
       AnytunError::throwErr() << "auth-tag can't be enabled, buffer is too small";
     
-    auth_tag_ = buf_ + length_ - AUTHTAG_SIZE;
+    auth_tag_ = buf_ + length_ - auth_tag_length_;
   }
   else
     auth_tag_ = NULL;
@@ -194,7 +194,7 @@ void EncryptedPacket::addAuthTag()
     return;
 
   auth_tag_ = buf_; // will be set to the correct value @ reinit
-  setLength(length_ + AUTHTAG_SIZE);
+  setLength(length_ + auth_tag_length_);
   if(auth_tag_ == buf_) // reinit was not called by setLength
     reinit();
 }
@@ -205,7 +205,7 @@ void EncryptedPacket::removeAuthTag()
     return;
 
   auth_tag_ = NULL;
-  setLength(length_ - AUTHTAG_SIZE);
+  setLength(length_ - auth_tag_length_);
 }
 
 u_int8_t* EncryptedPacket::getAuthTag()
@@ -216,7 +216,7 @@ u_int8_t* EncryptedPacket::getAuthTag()
 u_int32_t EncryptedPacket::getAuthTagLength()
 {
   if(auth_tag_)
-    return AUTHTAG_SIZE;
+    return auth_tag_length_;
 
   return 0;
 }

@@ -149,6 +149,8 @@ public:
   Options& setCipher(std::string c);
   std::string getAuthAlgo();
   Options& setAuthAlgo(std::string a);
+  u_int32_t getAuthTagLength();
+  Options& setAuthTagLength(u_int32_t a);
   std::string getKdPrf();
   Options& setKdPrf(std::string k);
   role_t getRole();
@@ -212,6 +214,7 @@ private:
 
   std::string cipher_;
   std::string auth_algo_;
+  u_int32_t auth_tag_length_;
   std::string kd_prf_;
   role_t role_;
   bool anytun02_compat_;

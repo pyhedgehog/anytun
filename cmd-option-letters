@@ -2,7 +2,7 @@
 6: resolv ipv6 only (payload socket)
 
 a: auth algo
-b: auth tag length (not yet)
+b: auth tag length
 c: cipher
 d: device name
 e: role
@@ -42,7 +42,7 @@ K: master key
 L: logging
 M: remote sync hosts
 N: 
-O: anytun 0.2 compat mode
+O: anytun 0.2 compat mode // deprecated
 P: write pid file
 Q:
 R: route
