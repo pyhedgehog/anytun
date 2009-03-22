@@ -34,34 +34,33 @@
 
 #include "resolver.h"
 #include "log.h"
-#include "signalController.h"
 
 using ::boost::asio::ip::udp;
 using ::boost::asio::ip::tcp;
 
 template<class Proto>
-void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ResolvAddrType r)
+void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
 {
   cLog.msg(Log::PRIO_ERROR) << "the resolver only supports udp and tcp";
 }
 
 template<>
-void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<udp>)> const& onResolve, ResolvAddrType r)
+void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<udp>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
 {
   boost::this_thread::sleep(boost::posix_time::milliseconds(s * 1000));
-  gResolver.resolveUdp(addr, port, onResolve, r);
+  gResolver.resolveUdp(addr, port, onResolve, onError, r);
 }
 
 template<>
-void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<tcp>)> const& onResolve, ResolvAddrType r)
+void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<tcp>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
 {
   boost::this_thread::sleep(boost::posix_time::milliseconds(s * 1000));
-  gResolver.resolveTcp(addr, port, onResolve, r);
+  gResolver.resolveTcp(addr, port, onResolve, onError, r);
 }
 
 
 template<class Proto>
-ResolveHandler<Proto>::ResolveHandler(const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ResolvAddrType r) : addr_(addr), port_(port), callback_(onResolve), resolv_addr_type_(r)
+ResolveHandler<Proto>::ResolveHandler(const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r) : addr_(addr), port_(port), onResolve_(onResolve), onError_(onError), resolv_addr_type_(r)
 {
 }
 
@@ -70,15 +69,15 @@ void ResolveHandler<Proto>::operator()(const boost::system::error_code& e, const
 {
   if(boost::system::posix_error::success == e) {
     try {
-      callback_(*endpointIt);
+      onResolve_(*endpointIt);
     }
     catch(const std::runtime_error& e)
     {
-      gSignalController.inject(SIGERROR, e.what());
+      onError_(e);
     }
   } else {
-	  cLog.msg(Log::PRIO_ERROR) << "Error while resolving '" << addr_ << "' '" << port_ << "', retrying in 10 sec.";
-    boost::thread(boost::bind(waitAndEnqueue<Proto>, 10, addr_, port_, callback_, resolv_addr_type_));
+    cLog.msg(Log::PRIO_ERROR) << "Error while resolving '" << addr_ << "' '" << port_ << "', retrying in 10 sec.";
+    boost::thread(boost::bind(waitAndEnqueue<Proto>, 10, addr_, port_, onResolve_, onError_, resolv_addr_type_));
   }
 }
 
@@ -134,7 +133,7 @@ void Resolver::run()
 }
 
 
-void Resolver::resolveUdp(const std::string& addr, const std::string& port, boost::function<void (udp::endpoint)> const& onResolve, ResolvAddrType r)
+void Resolver::resolveUdp(const std::string& addr, const std::string& port, UdpResolveCallback const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
 {
   cLog.msg(Log::PRIO_DEBUG) << "trying to resolv UDP: '" << addr << "' '" << port << "'";
 
@@ -153,11 +152,11 @@ void Resolver::resolveUdp(const std::string& addr, const std::string& port, boos
     default: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(port)); break;
     }
   }
-  UdpResolveHandler handler(addr, port, onResolve, r);
+  UdpResolveHandler handler(addr, port, onResolve, onError, r);
   udp_resolver_.async_resolve(*query, handler);
 }
 
-void Resolver::resolveTcp(const std::string& addr, const std::string& port, boost::function<void (tcp::endpoint)> const& onResolve, ResolvAddrType r)
+void Resolver::resolveTcp(const std::string& addr, const std::string& port, TcpResolveCallback const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
 {
   cLog.msg(Log::PRIO_DEBUG) << "trying to resolv TCP: '" << addr << "' '" << port << "'";
 
@@ -176,6 +175,6 @@ void Resolver::resolveTcp(const std::string& addr, const std::string& port, boos
     default: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(port)); break;
     }
   }
-  TcpResolveHandler handler(addr, port, onResolve, r);
+  TcpResolveHandler handler(addr, port, onResolve, onError, r);
   tcp_resolver_.async_resolve(*query, handler); 
 }

@@ -37,6 +37,7 @@
 #include "log.h"
 #include "resolver.h"
 #include "options.h"
+#include "signalController.h"
 
 void PacketSource::waitUntilReady()
 {
@@ -45,12 +46,12 @@ void PacketSource::waitUntilReady()
 
 UDPPacketSource::UDPPacketSource(std::string port) : sock_(io_service_)
 {
-  gResolver.resolveUdp("", port, boost::bind(&UDPPacketSource::onResolve, this, _1), gOpt.getResolvAddrType());
+  gResolver.resolveUdp("", port, boost::bind(&UDPPacketSource::onResolve, this, _1), boost::bind(&UDPPacketSource::onError, this, _1), gOpt.getResolvAddrType());
 }
 
 UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port) : sock_(io_service_)
 {
-  gResolver.resolveUdp(localaddr, port, boost::bind(&UDPPacketSource::onResolve, this, _1), gOpt.getResolvAddrType());
+  gResolver.resolveUdp(localaddr, port, boost::bind(&UDPPacketSource::onResolve, this, _1), boost::bind(&UDPPacketSource::onError, this, _1), gOpt.getResolvAddrType());
 }
 
 void UDPPacketSource::onResolve(const boost::asio::ip::udp::endpoint& e)
@@ -59,6 +60,11 @@ void UDPPacketSource::onResolve(const boost::asio::ip::udp::endpoint& e)
   sock_.open(e.protocol());
   sock_.bind(e);
   ready_sem_.up();
+}
+
+void UDPPacketSource::onError(const std::runtime_error& e)
+{
+  gSignalController.inject(SIGERROR, e.what());
 }
 
 u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote)

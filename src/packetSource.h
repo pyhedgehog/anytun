@@ -66,6 +66,7 @@ public:
   void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote);
 
   void onResolve(const boost::asio::ip::udp::endpoint& e);
+  void onError(const std::runtime_error& e);
 
 private:
 

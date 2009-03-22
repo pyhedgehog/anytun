@@ -97,6 +97,11 @@ void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seq
 #endif
 }
 
+void createConnectionError(const std::exception& e)
+{
+  gSignalController.inject(SIGERROR, e.what());
+}
+
 #ifndef ANYTUN_NOSYNC
 void syncConnector(const OptionHost& connto)
 {
@@ -463,7 +468,7 @@ int main(int argc, char* argv[])
       src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
     if(gOpt.getRemoteAddr() != "")
-      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()), gOpt.getResolvAddrType());
+      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()), boost::bind(createConnectionError, _1), gOpt.getResolvAddrType());
 
     HostList connect_to = gOpt.getRemoteSyncHosts();
 #ifndef NO_ROUTING
