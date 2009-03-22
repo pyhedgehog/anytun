@@ -179,11 +179,18 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   mux_ = 0;
   seq_window_size_ = 0;
 
+#if !defined(ANYCONF_OPTIONS)
 #ifndef NO_CRYPT
   cipher_ = "aes-ctr";
   auth_algo_ = "sha1";
   auth_tag_length_ = 10;
   kd_prf_ = "aes-ctr";
+#else
+  cipher_ = "null";
+  auth_algo_ = "null";
+  auth_tag_length_ = 0;
+  kd_prf_ = "null";
+#endif
 #else
   cipher_ = "null";
   auth_algo_ = "null";

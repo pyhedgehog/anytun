@@ -43,13 +43,14 @@
 #include "routingTable.h"
 #include "networkAddress.h"
 #include "packetSource.h"
+#include "resolver.h"
 
 #include "syncQueue.h"
 #include "syncCommand.h"
 
 
 
-void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux)
+void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux, Semaphore& sem)
 {
   SeqWindow * seq = new SeqWindow(seqSize);
   seq_nr_t seq_nr_ = 0;
@@ -83,11 +84,18 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
     oa2 << scom2;
     std::cout <<  std::setw(5) << std::setfill('0') << sout2.str().size()<< ' ' << sout2.str() << std::endl;
   }    
+  sem.up();
+}
+
+void createConnectionError(const std::exception& e, Semaphore& sem, int& ret)
+{
+  cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error: " << e.what();
+  ret = -1;
+  sem.up();
 }
 
 int main(int argc, char* argv[])
 {
-  int ret=0;
   try 
   {
     bool result = gOpt.parse(argc, argv);
@@ -114,19 +122,21 @@ int main(int argc, char* argv[])
 
   gOpt.parse_post(); // print warnings  
 
+  gResolver.init();
 
 	ConnectionList cl;
 	SyncQueue queue;
 
+  Semaphore sem;
+  int ret = 0;
 	UDPPacketSource::proto::endpoint endpoint;
-	if (gOpt.getRemoteAddr()!="" && gOpt.getRemotePort()!="")
-	{
-		boost::asio::io_service io_service;
-		UDPPacketSource::proto::resolver resolver(io_service);
-		UDPPacketSource::proto::resolver::query query(gOpt.getRemoteAddr(), gOpt.getRemotePort());
-		endpoint = *resolver.resolve(query);
+	if (gOpt.getRemoteAddr()!="" && gOpt.getRemotePort()!="") {
+    gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), 
+                         boost::bind(createConnection, _1, boost::ref(cl), gOpt.getSeqWindowSize(), boost::ref(queue), gOpt.getMux(), boost::ref(sem)),
+                         boost::bind(createConnectionError, _1, boost::ref(sem), boost::ref(ret)), 
+                         gOpt.getResolvAddrType());
+    sem.down();
   }
-	createConnection(endpoint,cl,gOpt.getSeqWindowSize(), queue, gOpt.getMux());
 
   return ret;
 }

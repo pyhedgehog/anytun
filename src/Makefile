@@ -97,7 +97,8 @@ ANYCONFOBJS := log.o \
 						 syncServer.o \
              syncTcpConnection.o \
 						 syncRouteCommand.o \
-						 syncConnectionCommand.o
+						 syncConnectionCommand.o \
+						 resolver.o
 
 EXECUTABLE := anytun anytun-config anytun-controld anytun-showtables anytun-nosync
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
