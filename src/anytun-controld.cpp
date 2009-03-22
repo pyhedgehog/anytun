@@ -42,23 +42,22 @@
 #include "log.h"
 #include "signalController.h"
 #include "options.h"
+#include "resolver.h"
 
 #include "syncServer.h"
 #include "daemon.hpp"
 
 void syncOnConnect(SyncTcpConnection * connptr)
 {
-  std::ifstream file( gOpt.getFileName().c_str() );
-  if( file.is_open() )
-	{
-	   std::string line;
-		 while (! file.eof() )
-		 {
-		   getline (file,line);
-			 connptr->Send(line);
-		 }
-	 file.close();
-	}
+  std::ifstream file(gOpt.getFileName().c_str());
+  if(file.is_open()) {
+    std::string line;
+    while (!file.eof()) {
+      getline (file,line);
+      connptr->Send(line);
+    }
+    file.close();
+  }
 }
 
 void syncListener()
@@ -66,30 +65,15 @@ void syncListener()
  boost::asio::io_service io_service;
   try
   {
-		SyncTcpConnection::proto::resolver resolver(io_service);
-		SyncTcpConnection::proto::endpoint e;
-		if(gOpt.getBindToAddr()!="")
-		{
-			SyncTcpConnection::proto::resolver::query query(gOpt.getBindToAddr(), gOpt.getBindToPort());
-			e = *resolver.resolve(query);
-		} else {
-			SyncTcpConnection::proto::resolver::query query(gOpt.getBindToPort());
-			e = *resolver.resolve(query);
-		}
-
-
-    SyncServer server(io_service,e);
-		server.onConnect=boost::bind(syncOnConnect,_1);
-    io_service.run();
+    SyncServer server(gOpt.getBindToAddr(), gOpt.getBindToPort(), boost::bind(syncOnConnect, _1));
+    server.run();
   }
-  catch (std::exception& e)
-  {
-    std::string addr = gOpt.getBindToAddr() == "" ? "*" : gOpt.getBindToAddr();
-    cLog.msg(Log::PRIO_ERROR) << "cannot bind to " << addr << ":" << gOpt.getBindToPort()
-                            << " (" << e.what() << ") exiting.." << std::endl;
-    //return false;
+  catch(std::runtime_error& e) {
+    cLog.msg(Log::PRIO_ERROR) << "sync listener thread died due to an uncaught runtime_error: " << e.what();
   }
-  //return true;
+  catch(std::exception& e) {
+    cLog.msg(Log::PRIO_ERROR) << "sync listener thread died due to an uncaught exception: " << e.what();
+  }
 }
 
 int main(int argc, char* argv[])
@@ -134,33 +118,19 @@ int main(int argc, char* argv[])
     }
     
     PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
-
-    std::ofstream pidFile;
-    if(gOpt.getPidFile() != "") {
-      pidFile.open(gOpt.getPidFile().c_str());
-      if(!pidFile.is_open()) {
-        std::cout << "can't open pid file" << std::endl;
-      }
+    if(gOpt.getDaemonize()) {
+      daemonize();
+      daemonized = true;
     }
+
+    gSignalController.init();
+    gResolver.init();
     
     if(gOpt.getChrootDir() != "")
       do_chroot(gOpt.getChrootDir());
     
     privs.drop();
 
-    if(gOpt.getDaemonize()) {
-      daemonize();
-      daemonized = true;
-    }
-
-    if(pidFile.is_open()) {
-      pid_t pid = getpid();
-      pidFile << pid;
-      pidFile.close();
-    }
-
-    gSignalController.init();
-    
     boost::thread * syncListenerThread;
     syncListenerThread = new boost::thread(boost::bind(syncListener));
     

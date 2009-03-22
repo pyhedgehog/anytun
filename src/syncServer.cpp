@@ -30,41 +30,60 @@
  */
 
 #include "syncServer.h"
+#include "resolver.h"
+#include "log.h"
 
 //using asio::ip::tcp;
 
-SyncServer::SyncServer(boost::asio::io_service& io_service, SyncTcpConnection::proto::endpoint tcp_endpoint )
-    : acceptor_(io_service, tcp_endpoint)
+SyncServer::SyncServer(std::string localaddr, std::string port, ConnectCallback onConnect) 
+  : acceptor_(io_service_), onConnect_(onConnect)
 {
-  start_accept();
+  gResolver.resolveTcp(localaddr, port, boost::bind(&SyncServer::onResolve, this, _1), boost::bind(&SyncServer::onResolvError, this, _1));
 }
 
-void SyncServer::start_accept()
+void SyncServer::onResolve(const SyncTcpConnection::proto::endpoint& e)
 {
-  Lock lock(mutex_);
-  SyncTcpConnection::pointer new_connection =
-    SyncTcpConnection::create(acceptor_.io_service());
-  conns_.push_back(new_connection);
-  
-  acceptor_.async_accept(new_connection->socket(),
-                         boost::bind(&SyncServer::handle_accept, this, new_connection,
-                                     boost::asio::placeholders::error));
+  acceptor_.open(e.protocol());
+  acceptor_.set_option(boost::asio::socket_base::reuse_address(true));
+  acceptor_.bind(e);
+  acceptor_.listen();
+  start_accept();
+  ready_sem_.up();
+  cLog.msg(Log::PRIO_NOTICE) << "sync server listening on " << e;
+}
+
+void SyncServer::onResolvError(const std::runtime_error& e)
+{
+  cLog.msg(Log::PRIO_ERROR) << "sync server bind/listen failed: " << e.what();
+      // TODO: stop daemon??
+}
+
+void SyncServer::run()
+{
+  ready_sem_.down();
+  io_service_.run();
 }
 
 void SyncServer::send(std::string message)
 {
   Lock lock(mutex_);
-  for(std::list<SyncTcpConnection::pointer>::iterator it = conns_.begin() ;it != conns_.end(); ++it) {
+  for(std::list<SyncTcpConnection::pointer>::iterator it = conns_.begin() ;it != conns_.end(); ++it)
     (*it)->Send(message);
-  }
 }
 
-void  SyncServer::handle_accept(SyncTcpConnection::pointer new_connection,
-    const boost::system::error_code& error)
+void SyncServer::start_accept()
 {
-  if (!error)
-  {
-    new_connection->onConnect=onConnect;
+  Lock lock(mutex_);
+  SyncTcpConnection::pointer new_connection = SyncTcpConnection::create(acceptor_.io_service());
+  conns_.push_back(new_connection);
+  acceptor_.async_accept(new_connection->socket(),
+                         boost::bind(&SyncServer::handle_accept, this, new_connection, boost::asio::placeholders::error));
+}
+
+void SyncServer::handle_accept(SyncTcpConnection::pointer new_connection, const boost::system::error_code& error)
+{
+  if (!error) {
+    new_connection->onConnect = onConnect_;
     new_connection->start();
     start_accept();
   }

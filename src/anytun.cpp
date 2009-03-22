@@ -80,7 +80,7 @@
 
 bool disableRouting = false;
 
-void createConnection(const PacketSourceEndpoint & remote_end, window_size_t seqSize, mux_t mux)
+void createConnection(const PacketSourceEndpoint& remote_end, window_size_t seqSize, mux_t mux)
 {
 	SeqWindow* seq = new SeqWindow(seqSize);
 	seq_nr_t seq_nr_=0;
@@ -105,39 +105,24 @@ void createConnectionError(const std::exception& e)
 #ifndef ANYTUN_NOSYNC
 void syncConnector(const OptionHost& connto)
 {
-	SyncClient sc(connto.addr, connto.port);
-	sc.run();
+  SyncClient sc(connto.addr, connto.port);
+  sc.run();
 }
 
 void syncListener()
 {
   try
   {
-    boost::asio::io_service io_service;
-		SyncTcpConnection::proto::resolver resolver(io_service);
-		SyncTcpConnection::proto::endpoint e;
-		if(gOpt.getLocalSyncAddr()!="")
-		{
-			SyncTcpConnection::proto::resolver::query query(gOpt.getLocalSyncAddr(), gOpt.getLocalSyncPort());
-			e = *resolver.resolve(query);
-		} else {
-			SyncTcpConnection::proto::resolver::query query(gOpt.getLocalSyncPort());
-			e = *resolver.resolve(query);
-		}
-
-
-    SyncServer server(io_service,e);
-		server.onConnect=boost::bind(syncOnConnect,_1);
-		gSyncQueue.setSyncServerPtr(&server);
-    io_service.run();
+    SyncServer server(gOpt.getLocalSyncAddr(), gOpt.getLocalSyncPort(), boost::bind(syncOnConnect, _1));
+    gSyncQueue.setSyncServerPtr(&server);
+    server.run();
   }
-  catch (std::exception& e)
-  {
-    std::string addr = gOpt.getLocalSyncAddr() == "" ? "*" : gOpt.getLocalSyncAddr();
-    cLog.msg(Log::PRIO_ERROR) << "sync: cannot bind to " << addr << ":" << gOpt.getLocalSyncPort()
-                            << " (" << e.what() << ")" << std::endl;
+  catch(std::runtime_error& e) {
+    cLog.msg(Log::PRIO_ERROR) << "sync listener thread died due to an uncaught runtime_error: " << e.what();
   }
-
+  catch(std::exception& e) {
+    cLog.msg(Log::PRIO_ERROR) << "sync listener thread died due to an uncaught exception: " << e.what();
+  }
 }
 #endif
 
@@ -350,6 +335,8 @@ void startSendRecvThreads(PrivInfo& privs, TunDevice* dev, PacketSource* src)
   boost::thread(boost::bind(receiver, dev, src)); 
 }
 
+
+
 #ifdef WIN_SERVICE
 int main(int argc, char* argv[])
 {
@@ -461,11 +448,7 @@ int main(int argc, char* argv[])
     }
 #endif
     
-    PacketSource* src;
-    if(gOpt.getLocalAddr() == "")
-      src = new UDPPacketSource(gOpt.getLocalPort());
-    else
-      src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
+    PacketSource* src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
     if(gOpt.getRemoteAddr() != "")
       gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()), boost::bind(createConnectionError, _1), gOpt.getResolvAddrType());
@@ -486,14 +469,13 @@ int main(int argc, char* argv[])
 #endif
 
 #ifndef ANYTUN_NOSYNC
-    boost::thread * syncListenerThread;
+    boost::thread* syncListenerThread = NULL;
     if(gOpt.getLocalSyncPort() != "")
       syncListenerThread = new boost::thread(boost::bind(syncListener));
     
-    std::list<boost::thread *> connectThreads;
-    for(HostList::const_iterator it = connect_to.begin() ;it != connect_to.end(); ++it) { 
-      connectThreads.push_back(new boost::thread(boost::bind(syncConnector, *it)));
-    }
+    boost::thread_group connectThreads;
+    for(HostList::const_iterator it = connect_to.begin() ;it != connect_to.end(); ++it)
+      connectThreads.create_thread(boost::bind(syncConnector, *it));
 #endif
 
         // wait for packet source to finish in a seperate thread in order
@@ -507,31 +489,13 @@ int main(int argc, char* argv[])
     int ret = gSignalController.run();  
 #endif
 
-    // TODO cleanup threads here!
-    /*
-    pthread_cancel(senderThread);
-    pthread_cancel(receiverThread);  
-#ifndef ANYTUN_NOSYNC
-    if ( gOpt.getLocalSyncPort())
-      pthread_cancel(syncListenerThread);  
-    for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)
-      pthread_cancel(*it);
-#endif
-    
-    pthread_join(senderThread, NULL);
-    pthread_join(receiverThread, NULL);
-#ifndef ANYTUN_NOSYNC
-    if ( gOpt.getLocalSyncPort())
-      pthread_join(syncListenerThread, NULL);
-    
-    for( std::list<pthread_t>::iterator it = connectThreads.begin() ;it != connectThreads.end(); ++it)
-      pthread_join(*it, NULL);
-#endif
-    if(src)
-      delete src;
-    if(connTo)
-      delete connTo;
-    */
+// TODO: stop all threads and cleanup
+// 
+//     if(src)
+//       delete src;
+//     if(connTo)
+//       delete connTo;
+
 #if defined(WIN_SERVICE)
     gWinService.stop();
 #endif

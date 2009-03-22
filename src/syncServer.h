@@ -44,18 +44,28 @@
 #include <list>
 #include "syncTcpConnection.h"
 
+typedef boost::function<void (SyncTcpConnection *)> ConnectCallback;
+
 class SyncServer
 {
 public:
-  SyncServer(boost::asio::io_service& io_service, SyncTcpConnection::proto::endpoint tcp_endpoint );
-	boost::function<void(SyncTcpConnection *)> onConnect;
+  SyncServer(std::string localaddr, std::string port, ConnectCallback onConnect);
+  void onResolve(const SyncTcpConnection::proto::endpoint& e);
+  void onResolvError(const std::runtime_error& e);
+  
+  void run();
+  void send(std::string message);
+  
   std::list<SyncTcpConnection::pointer> conns_;
-	void send(std::string message);
+  
 private:
   void start_accept();
-  void handle_accept(SyncTcpConnection::pointer new_connection,
-      const boost::system::error_code& error);
-	Mutex mutex_; //Mutex for list conns_
+  void handle_accept(SyncTcpConnection::pointer new_connection, const boost::system::error_code& error);
+  
+  Mutex mutex_; //Mutex for list conns_
+  boost::asio::io_service io_service_;
   SyncTcpConnection::proto::acceptor acceptor_;
+  ConnectCallback onConnect_;
+  Semaphore ready_sem_;
 };
 #endif

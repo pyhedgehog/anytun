@@ -59,7 +59,6 @@ class UDPPacketSource : public PacketSource
 public:
   typedef boost::asio::ip::udp proto;
 
-  UDPPacketSource(std::string port);
   UDPPacketSource(std::string localaddr, std::string port);
 
   u_int32_t recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote);
