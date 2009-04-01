@@ -8,9 +8,10 @@
   <!ENTITY rfc2401 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2401.xml'>
   <!ENTITY rfc2119 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
   <!ENTITY rfc2003 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2003.xml'>
+  <!ENTITY rfc2104 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2104.xml'>
 ]>
 <?rfc toc='yes'?>
-<rfc ipr='full3978' docName='rfc-gsenger-pointner-secure-anycast-tunneling-protocol-01'>
+<rfc ipr='full3978' docName='draft-gsenger-pointner-secure-anycast-tunneling-protocol-01'>
   <front>
     <title>secure anycast tunneling protocol (SATP)</title>
     <author initials='O.G.' surname='Gsenger' fullname='Othmar Gsenger'>
@@ -210,23 +211,23 @@ Tunneling of IPv6 over IPv4 with RTP payload
         <figure anchor="prot_header_table">
           <preamble>Protocol Format</preamble>
           <artwork>
-      0                   1                   2                   3
-      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |                         sequence number                       | |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
-     |           sender ID           |              MUX              | |
-   +#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+ |
-   | |         payload type          |                               | |
-   | +-------------------------------+                               | |
-   | |              ....        payload        ...                   | |
-   | |                               +-------------------------------+ |
-   | |                               | padding (OPT) | pad count(OPT)| |
-   +#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+-+
-   | :                 authentication tag (RECOMMENDED)              : |
-   | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
-   |                                                                   |
-   +- Encrypted Portion                       Authenticated Portion ---+
+   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                         sequence number                       | |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+  |           sender ID           |              MUX              | |
++#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+ |
+| |         payload type          |                               | |
+| +-------------------------------+                               | |
+| |              ....        payload        ...                   | |
+| |                               +-------------------------------+ |
+| |                               | padding (OPT) | pad count(OPT)| |
++#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+-+
+| :                 authentication tag (RECOMMENDED)              : |
+| +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+|                                                                   |
++- Encrypted Portion                       Authenticated Portion ---+
           </artwork>
         </figure>
         <t></t>
@@ -270,7 +271,7 @@ HEX
       </section>
       <section title="padding (OPTIONAL)">
         <t>
-          Padding of max 255 octets. None of the pre-defined encryption transforms uses any padding; for these, the plaintext and encrypted payload sizes match exactly. Transforms are based on transforms of the SRTP protocol and therefore might use the RTP padding format, so a RTP-like padding is supported. If the padding count field is present, the padding count field MUST be set to the padding length.
+          Padding of max 255 octets. None of the pre-defined encryption transforms uses any padding; for these, the plaintext and encrypted payload sizes match exactly. Transforms which may be added in future (see <xref target="sec_adding_transform" />) MUST define wheter they need padding or not and if they need it they MUST define a proper padding format. If the padding count field is present, the padding count field MUST be set to the padding length.
         </t>
       </section>
       <section title="padding count (OPTIONAL)">
@@ -291,7 +292,7 @@ HEX
       </t>
       <section title="Basic Concepts">
         <t>
-          In order to cope with anycast and packet loss it is important to being able to process one packet on its own without the need for packets from the past as an additional information source. Therefore SATP as well as <xref target="RFC3711">SRTP</xref> defines a so called cryptographic context. This context consits of all information which is needed to process a single SATP packet and is divided into packet specific parameters and global parameters. The packet specific parameters can be found in the protocol header and global parameters have to be generated by the key exchange mechanism external to SATP (see <xref target="sec_key_mgmt" />. For anycast sender the global parameters have to be synchronized between all host which share the same anycast address. The packet specific parameters MUST NOT be synchronized.<vspace blankLines="0" />
+          In order to cope with anycast and packet loss it is important to beeing able to process one packet on its own without the need for packets from the past as an additional information source. Therefore SATP as well as <xref target="RFC3711">SRTP</xref> defines a so called cryptographic context. This context consits of all information which is needed to process a single SATP packet and is divided into packet specific parameters and global parameters. The packet specific parameters can be found in the protocol header and global parameters have to be generated by the key exchange mechanism external to SATP (see <xref target="sec_key_mgmt" />). For anycast sender the global parameters have to be synchronized between all hosts which share the same anycast address. The packet specific parameters MUST NOT be synchronized.<vspace blankLines="0" />
 SATP uses two types of keys: master keys and session keys. A session key is meant to be used for a cryptographic transform (encrytion or message authentication) for one packet. The master keys are used to derive packet-specific session keys in a cryptographical secure way.
         </t>
         <section title="Cryptographic Contexts">
@@ -299,12 +300,16 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
             <t>
               As mentioned above global parameters HAVE TO either be provided by the key exchange mechanism or configured manually.
               <list style="symbols">
-                <t>master key(s) which MUST be random and kept secret</t>
-                <t>if needed master salt(s) which MUST be random an MAY be public (RECOMMENDED to be secret as well)</t>
+                <t>a master key(s) which MUST be random and kept secret</t>
+                <t>a master salt which MUST be random and MAY be public (RECOMMENDED to be kept secret as well)</t>
+                <t>a role specifier used by the key derivation to determine which session keys to generate for outbound or inbound traffic</t>
+                <t>identifier for the key derivation pseudo random function</t>
                 <t>identifier for the encryption algorithm (i.e. cipher and its mode of operation)</t>
-                <t>identifier for the authentication algorithm</t>
+                <t>if used an identifier for the authentication algorithm</t>
                 <t>transform specific parameters such as key lengths, see <xref target="sec_pref_transform"/></t>
-                <t>a replay list for each sender (see <xref target="sec_mapping_context" />), maintained by the receiver which contains the sequence numbers of received and authenticated packets, this list may be implemented as a sliding window</t>
+                <t>if used the length of the authentication tag which should be truncated to the packet</t>
+                <t>an indicator which specifies if padding is needed or not (presence of padding count field)</t>
+                <t>a replay list for each sender (see <xref target="sec_mapping_context" />), maintained by the receiver which contains the sequence numbers of received and authenticated packets, this lists may be implemented as a sliding window</t>
                 <t>a [ From , To ] value pair which specifies the lifetime of a master key (including the range endpoints), expressed in terms of a pair of 32-bit sequence numbers.</t>
               </list>
             </t>
@@ -324,55 +329,166 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
               <vspace blankLines="1" />
               context id = [ source address , source port ]
               <vspace blankLines="1" />
-              In order to cope with anycast sender and replay protection there HAS TO be more than one replay list per context. Each replay list inside a cryptographic context SHALL be uniquely identified by the sender id.
+              In order to cope with anycast sender and replay protection there HAS TO be more than one replay list per context. Each replay list inside a cryptographic context SHALL be uniquely identified by the sender id.<vspace blankLines="0" />
+              
             </t>
           </section>
         </section>
-        <section title="SATP Packet Processing  ">
-          <t></t>
-        </section>
-        <section title="Key derivation">
+        <section title="SATP Packet Processing">
           <t>
-            All transforms (predfined or not) .. the SATP key derivation HAS TO be used .. uses pseudo random function .. master key and salt as seed
+            Before any SATP packet can be processed a cryptographic context HAS TO be initialized by the key management mechanism. After that a SATP sender SHALL do the following to create a SATP packet:
+            <list style="numbers">
+              <t>Determine the next sequence number to use.</t>
+              <t>Determine the crypotgraphic context as described in <xref target="sec_mapping_context" />.</t>
+              <t>Determine the master key and master salt for the packets sequence number.</t>
+              <t>Compute all session keys and session salts which are needed by the encryption transform using the key derivation pseudo random function.</t>
+              <t>Encrypt the payload type field concatenated with the payload to produce the encrypted packet using the encryption algorithm defined by the cryptographic context.</t>
+              <t>Fill in sender id, mux and sequence number fields.</t>
+              <t>If needed compute the session authentication key using the key derivation pseudo random function.</t>
+              <t>Generate the authentication tag over the authenticated portion using the authentication algorithm defined by the cryptographic context and append it to the packet.</t>
+              <t>Send the packet out to the receiver.</t>
+            </list>
+            On receiver side the packet SHALL be processed as follows:
+            <list style="numbers">
+              <t>Determine the crypotgraphic context as described in <xref target="sec_mapping_context" />.</t>
+              <t>Determine the master key and master salt for the packets sequence number.</t>
+              <t>Check if the packet was replayed using the replay list for the packets sender id.</t>
+              <t>If needed compute the session authentication key using the key derivation pseudo random function.</t>
+              <t>Generate the authentication tag over the authenticated portion using the authentication algorithm defined by the crpyptographic context and compare it with the tag appended to the received packet. If it is equal remove the tag and move on. If it is not equal drop the packet.</t>
+              <t>Store the sequence number in the replay list.</t>
+              <t>Compute all session keys and session salts which are needed by the encryption transform using the key derivation pseudo random function.</t>
+              <t>Decrypt the encrypted portion using the encryption algorithm defined by the cryptographic context.</t>
+              <t>Check if the payload type is supported by this tunnel endpoint and discard the packet in case it isn't supported.</t>
+              <t>Remove all fields beside the payload itself from the packet.</t>
+            </list>
+          </t>
+        </section>
+        <section title="Key derivation" anchor="sec_key_derivation">
+          <t>
+            Any encryption or message authentication transform which is used (predefined or newly introduced according to <xref target="sec_adding_transform" />) MUST obtain its secret values (keys and salts) using the SATP key derivation. After the key exchange mechanism has signaled all needed parameters (i.e. master key and salt) no additional communiction between sender and receiver is needed until the next rekeying takes place. To achieve this the key derivation uses an pseudo random function seeded by the master key, master salt, the packets sequence number and a label (identifier for the key to compute).
           </t>
           <figure anchor="key_derivation">
             <preamble>SATP key derivation</preamble>            
             <artwork>
-    packet sequence nummber ----------+
-                                      |
-    packet mux value -------------+   |
-                                  |   |
-    packet sender id ---------+   |   |
-                              |   |   |
-                              V   V   V
- +------------+             +------------+
- |            | master key  |            |--> session encryption key
- | ext. key   |------------>| key        |
- | management |             |            |--> session encryption salt
- | mechanism  |------------>| derivation |
- |            | master salt |            |--> session authentication key
- +------------+             +------------+
+   packet sequence nummber ----+
+                               |
+                               V
+  +------------+ master +------------+
+  |            | key    |            |--> session encryption key
+  | ext. key   |------->| key        |
+  | management |        |            |--> session encryption salt
+  | mechanism  |------->| derivation |
+  |            | master |            |--> session authentication key
+  +------------+ salt   +------------+
             </artwork>
           </figure>
+          <t>
+            <xref target="RFC3711">SRTP</xref> defines a pseudo random function as follows: <vspace blankLines="0" />
+            Let m and n be positive integers. A pseudo-random function family is a set of keyed functions {PRF_n(k,x)} such that for the (secret) random key k, given m-bit x, PRF_n(k,x) is an n-bit string, computationally indistinguishable from random n-bit strings.<vspace blankLines="1" />
+            For SATP key generation a pseudo random function with at least m = 128 MUST be used. A predefined transform can be found in <xref target="sec_pref_kdprf" />.
+            The input x of the PRF SHOULD be calculated as follows:
+            <list style="numbers">
+              <t>Let key_id = label || sequence_number, with label defined as below.</t>
+              <t>Let x = key_id XOR master_salt, where key_id and master_salt are aligend so that their least significant bits agree (right-alignment).</t>
+            </list>
+            For each key derived by the key derivation there MUST exist a unique label, a 32-bit constant. In order to increase security SATP uses different session keys for inbound and outbound traffic. The role specifier from the cryptographic context is used to determine which session keys to use for inbound and outbound packets.
+            The labels can be computed by calculateing the SHA1 hash over an increasing label-index. The label value are the 32 leftmost bits of this hash value.
+            We currently define 6 labels (label-index from 1 to 6) future extensions may use labels with an index from 7 upwards.
+          </t>
+          <texttable title="Key Derivation Labels">
+            <ttcol align="left">key type</ttcol>
+            <ttcol align="left">role</ttcol>
+            <ttcol align="center">label-index</ttcol>
+            <ttcol align="center">label</ttcol>
+            <c>encryption key</c>
+            <c>left</c>
+            <c>1</c>
+            <c>0x356A192B</c>
+            <c>encryption key</c>
+            <c>right</c>
+            <c>2</c>
+            <c>0xDA4B9237</c>
+            <c>encryption salt</c>
+            <c>left</c>
+            <c>3</c>
+            <c>0x77DE68DA</c>
+            <c>encryption salt</c>
+            <c>right</c>
+            <c>4</c>
+            <c>0x1B645389</c>
+            <c>authentication key</c>
+            <c>left</c>
+            <c>5</c>
+            <c>0xAC3478D6</c>
+            <c>authentication key</c>
+            <c>right</c>
+            <c>6</c>
+            <c>0xC1DFD96E</c>
+          </texttable>
+          <t>
+            The role parameter specifies which label should be used for outbound packets. This means a endpoint with role left MUST use the labels marked with left for outgoing packets and expects inbound packets to be encrypted/authenticated using the labels marked with right.
+          </t>
         </section>
       </section>
       <section title="Predefined Transforms" anchor="sec_pref_transform">
+        <t>
+          While SATP as well as SRTP allows the use of various encryption and message authentication algorithms interoperable implementations MUST support at least the following transforms. To add additional transforms see <xref target="sec_adding_transform" />.
+        </t>
         <section title="Encryption">
+          <section title="NULL Encryption">
+            <t>
+              If confidendtiality of the SATP packet is not an issue the null encryption transform can be used to increase performance. This transform just copies the plaintext input into the ciphertext output wihtout any padding. The identifier for that transfrom SHOULD be NULL and it don't needs any transform specific parameters. It also doesn't need any key or salt values computed by the key derivation.
+            </t>
+          </section>
+          <section title="AES in Counter Mode">
+            <t>
+              The following describes how to use AES in counter mode for SATP encryption. The identifier for that transform SHOULD be AES-CTR-&lt;key_length&gt; or just AES-CTR in which case the key length defaults to 128 bits. Beside the key length there no additional transfrom specific parameters. This transform needs a key of length &lt;key_length&gt; and a 112 bit salt. These values can be generated using the key derivation pseudo random function as follows:<vspace blankLines="1" />
+              session_key = PRF_&lt;key_length&gt;(master_key, x)<vspace blankLines="0" />
+              session_salt = PRF_112(master_key, x)<vspace blankLines="0" />
+              with PRF and x defined as in <xref target="sec_key_derivation" />.<vspace blankLines="1" />
+              Basically AES in counter mode generates a pseudo random keystream seeded by the session key, session salt as well as the sequence number, sender id and mux value of the packet and encrypts a single SATP packet using this stream. The encryption process consits of the generation of that keystream and then bitwise exclusive-oring it onto the packets payload. If the packet length doesn't fit a multiple of 128 bits the remaining bits (least significant) of the keystream are simple ingored. Therefore this transform does not need any padding. Decryption of the packet can be achieved by generating the same keystream and exclusive-oring it onto the encrypted portion. 
+            </t>
+            <section title="Keystram Generation">
+              <t>
+                In principle AES in counter mode consists of encrypting an incrementing integer. However the starting point of the integer value has to be randomized to get a good pseudo random key stream. A keystream consits of several keystream segements with a size of 128 bits (AES blocksize). Each segement can be computed by applying AES with key k on the block CTR. The whole keystream is a concatination of all its successive segements. Therefore a keystream looks as follows:<vspace blankLines="1" />
+                AES(session_key, CTR) || AES(session_key, CTR + 1 mod 2^128) || AES(session_key, CTR + 2 mod 2^128) ...<vspace blankLines="1" />
+                where the 128 bit value CTR is defined as follows:<vspace blankLines="1" />
+                CTR = (session_salt * 2^16) XOR (mux * 2^80) XOR (sender_id * 2^64) XOR (sequence_number * 2^16)<vspace blankLines="1" />
+                where each of the four terms are padded with as many leading zeros to form a 128 bit value.
+              </t>
+              <t>
+                Mind that the 16 least siginificant bits of CTR are zero. These bits are used for the counter. Therefore the number of blocks generated for one packet MUST NOT exceed 2^16 to avoid keystream reuse. This means that the packet length MUST NOT exceed 2^16 * 128 bits = 2^23 bits to ensure the security of the encryption.
+              </t>
+            </section>
+          </section>
         </section>
         <section title="Authentication and Integrity">
+          <t>
+            It is RECOMMENDED to use an authentication tag and if it is used it should be processed as follows. The sender generates the tag over the authenticated portion truncates it to the left-most (most significant) bits to fit the authentication tag length signaled by the key exchange mechanism. After that it simple appends the tag to the packet. The receiver computes the tag in the same way as the sender and compares if with the received tag. If they don't match the packet HAS TO be discarded and the incident SHOULD be logged.
+          </t>
+          <section title="HMAC-SHA1">
+            <t>
+              This transform uses HMAC-SHA1 as described in <xref target="RFC2104" />) as message authentication algorithm. The identifier for the transfrom SHOULD be SHA1 and it don't needs any transform specific parameters. The key should be derived using the key derivation pseudo random function:<vspace blankLines="1" />
+              session_auth_key = PRF_20(master_key, x)<vspace blankLines="0" />
+              with PRF and x defined as in <xref target="sec_key_derivation" />
+            </t>
+          </section>
         </section>
-        <section title="Key Derivation Pseudo Random Functions">
+        <section title="Key Derivation Pseudo Random Functions" anchor="sec_pref_kdprf">
+          <section title="AES in Counter Mode">
+            <t>
+              <xref target="sec_key_derivation" /> defined a pseudo random function which SHOULD be used to derive session keys and salts. This describes the use of AES in counter mode as  PRF. The identifier for this PRF SHOULD be AES-CTR-&lt;key_length&gt; or just AES-CTR in which case the key length defaults to 128 bits. Beside the key length there are no additional transform specific parameters. This transform needs a master key of length key_length and a 112 bit master salt. The pseudo random string consists of several segements with a size of 128 bits (AES blocksize). The whole string can be computed as follows:<vspace blankLines="1" />
+              AES(master_key, CTR) || AES(master_key, CTR + 1 mod 2^128) || AES(master_key, CTR + 2 mod 2^128) ...<vspace blankLines="1" />
+              where the 128 bit value CTR is defined as x * 2^16, with x defined as in <xref target="sec_key_derivation" />.<vspace blankLines="1" />
+              This pseudo random function can produce pseudo random string up to a lenght of 2^23 bits. If the requested output length n does not fit multiples of 128 the output SHOULD be truncated to the n first (left-most) bits. Therefore there are n/128, rounded up, applications of AES needed to produce the output string.
+            </t>
+          </section>
         </section>
       </section>
-      <section title="Default and Mandatory-to-implement Transforms">
-        <section title="Encryption">
-        </section>
-        <section title="Authentication and Integrity">
-        </section>
-        <section title="Key Derivation Pseudo Random Functions">
-        </section>
-      </section>
-      <section title="Adding SATP Transforms">
+      <section title="Adding SATP Transforms" anchor="sec_adding_transform">
+        <t>
+          If a new transform is to be added to SATP a standard track RFC MUST be written to define the usage of the new transform. Any overlap between the new RFC and this document SHOULD be avoided but it MAY be needed to update some of the information in this document. For example new parameters MAY be added to the cryptographic context or there MAY be additional steps in SATP packet processing.
+        </t>
       </section>
     </section>
     
@@ -401,6 +517,7 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
       &rfc3711;
       &rfc2119;
       &rfc2003;
+      &rfc2104;
     </references>
     <references title="Informational References">
       &rfc2784; 
