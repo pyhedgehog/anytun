@@ -65,7 +65,7 @@
     <section title='Introduction'>
       <t>
         SATP is a mixture of a generic encapsulation protocol like <xref target="RFC2784">GRE</xref> and a secure tunneling protocol as <xref target="RFC2401">IPsec</xref> in tunnel mode.  It can be used to build redundant virtual private network (VPN) connections.  It supports peer-to-peer tunnels, where tunnel endpoints can be any combination of unicast, multicast or anycast hosts, so it defines a <xref target="RFC1546">Host Anycast Service</xref>. Encryption is done per packet, so the protocol is robust against packet loss and routing changes.
-To reduce header overhead, encryption techniques of <xref target="RFC3711">SRTP</xref> are being used.
+To reduce header overhead, encryption techniques similar to <xref target="RFC3711">SRTP</xref> are being used.
       </t>
       <section title='Notational Conventions'>
         <t>
@@ -234,7 +234,7 @@ Tunneling of IPv6 over IPv4 with RTP payload
       </section>
       <section title="sequence number">
         <t>
-          The sequence number is a 32 bit unsigned integer in network byte order. It starts with a random value and is increased by 1 for every sent packet. After the maximum value it starts over from 0. This overrun causes the ROC to be increased.
+          The sequence number is a 32 bit unsigned integer in network byte order. The starting point is signaled by the key exchange mechanism and then value is then increased by 1 for every packet sent. After the maximum value it starts over from 0.
         </t>
       </section>
       <section title="sender ID">
@@ -300,16 +300,16 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
             <t>
               As mentioned above global parameters HAVE TO either be provided by the key exchange mechanism or configured manually.
               <list style="symbols">
-                <t>a master key(s) which MUST be random and kept secret</t>
-                <t>a master salt which MUST be random and MAY be public (RECOMMENDED to be kept secret as well)</t>
-                <t>a role specifier used by the key derivation to determine which session keys to generate for outbound or inbound traffic</t>
-                <t>identifier for the key derivation pseudo random function</t>
-                <t>identifier for the encryption algorithm (i.e. cipher and its mode of operation)</t>
-                <t>if used an identifier for the authentication algorithm</t>
-                <t>transform specific parameters such as key lengths, see <xref target="sec_pref_transform"/></t>
-                <t>if used the length of the authentication tag which should be truncated to the packet</t>
-                <t>an indicator which specifies if padding is needed or not (presence of padding count field)</t>
-                <t>a replay list for each sender (see <xref target="sec_mapping_context" />), maintained by the receiver which contains the sequence numbers of received and authenticated packets, this lists may be implemented as a sliding window</t>
+                <t>a master key(s) which MUST be random and kept secret.</t>
+                <t>a master salt which MUST be random and MAY be public (RECOMMENDED to be kept secret as well).</t>
+                <t>a role specifier used by the key derivation to determine which session keys to generate for outbound or inbound traffic.</t>
+                <t>identifier for the key derivation pseudo random function.</t>
+                <t>identifier for the encryption algorithm (i.e. cipher and its mode of operation).</t>
+                <t>if used an identifier for the authentication algorithm.</t>
+                <t>transform specific parameters such as key lengths, see <xref target="sec_pref_transform"/>.</t>
+                <t>if used the length of the authentication tag which should be truncated to the packet.</t>
+                <t>an indicator which specifies if padding is needed or not (presence of padding count field).</t>
+                <t>a replay list for each sender (see <xref target="sec_mapping_context" />), maintained by the receiver which contains the sequence numbers of received and authenticated packets, this lists may be implemented as a sliding window.</t>
                 <t>a [ From , To ] value pair which specifies the lifetime of a master key (including the range endpoints), expressed in terms of a pair of 32-bit sequence numbers.</t>
               </list>
             </t>
@@ -342,11 +342,10 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
               <t>Determine the crypotgraphic context as described in <xref target="sec_mapping_context" />.</t>
               <t>Determine the master key and master salt for the packets sequence number.</t>
               <t>Compute all session keys and session salts which are needed by the encryption transform using the key derivation pseudo random function.</t>
-              <t>Encrypt the payload type field concatenated with the payload to produce the encrypted packet using the encryption algorithm defined by the cryptographic context.</t>
+              <t>Encrypt the payload type field concatenated with the payload to produce the encrypted portion of the packet using the encryption algorithm defined by the cryptographic context.</t>
               <t>Fill in sender id, mux and sequence number fields.</t>
               <t>If needed compute the session authentication key using the key derivation pseudo random function.</t>
               <t>Generate the authentication tag over the authenticated portion using the authentication algorithm defined by the cryptographic context and append it to the packet.</t>
-              <t>Send the packet out to the receiver.</t>
             </list>
             On receiver side the packet SHALL be processed as follows:
             <list style="numbers">
@@ -442,7 +441,7 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
           </section>
           <section title="AES in Counter Mode">
             <t>
-              The following describes how to use AES in counter mode for SATP encryption. The identifier for that transform SHOULD be AES-CTR-&lt;key_length&gt; or just AES-CTR in which case the key length defaults to 128 bits. Beside the key length there no additional transfrom specific parameters. This transform needs a key of length &lt;key_length&gt; and a 112 bit salt. These values can be generated using the key derivation pseudo random function as follows:<vspace blankLines="1" />
+              The following describes how to use AES in counter mode for SATP encryption. The identifier for that transform SHOULD be AES-CTR-&lt;key_length&gt; or just AES-CTR in which case the key length defaults to 128 bits. Beside the key length there are no additional transfrom specific parameters. This transform needs a key of length &lt;key_length&gt; and a 112 bit salt. These values can be generated using the key derivation pseudo random function as follows:<vspace blankLines="1" />
               session_key = PRF_&lt;key_length&gt;(master_key, x)<vspace blankLines="0" />
               session_salt = PRF_112(master_key, x)<vspace blankLines="0" />
               with PRF and x defined as in <xref target="sec_key_derivation" />.<vspace blankLines="1" />
@@ -468,7 +467,7 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
           </t>
           <section title="HMAC-SHA1">
             <t>
-              This transform uses HMAC-SHA1 as described in <xref target="RFC2104" />) as message authentication algorithm. The identifier for the transfrom SHOULD be SHA1 and it don't needs any transform specific parameters. The key should be derived using the key derivation pseudo random function:<vspace blankLines="1" />
+              This transform uses HMAC-SHA1 (as described in <xref target="RFC2104" />) as message authentication algorithm. The identifier for the transfrom SHOULD be SHA1 and it don't needs any transform specific parameters. The key should be derived using the key derivation pseudo random function:<vspace blankLines="1" />
               session_auth_key = PRF_20(master_key, x)<vspace blankLines="0" />
               with PRF and x defined as in <xref target="sec_key_derivation" />
             </t>
@@ -477,10 +476,10 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
         <section title="Key Derivation Pseudo Random Functions" anchor="sec_pref_kdprf">
           <section title="AES in Counter Mode">
             <t>
-              <xref target="sec_key_derivation" /> defined a pseudo random function which SHOULD be used to derive session keys and salts. This describes the use of AES in counter mode as  PRF. The identifier for this PRF SHOULD be AES-CTR-&lt;key_length&gt; or just AES-CTR in which case the key length defaults to 128 bits. Beside the key length there are no additional transform specific parameters. This transform needs a master key of length key_length and a 112 bit master salt. The pseudo random string consists of several segements with a size of 128 bits (AES blocksize). The whole string can be computed as follows:<vspace blankLines="1" />
+              <xref target="sec_key_derivation" /> defines a pseudo random function which SHOULD be used to derive session keys and salts. This describes the use of AES in counter mode as  PRF. The identifier for this PRF SHOULD be AES-CTR-&lt;key_length&gt; or just AES-CTR in which case the key length defaults to 128 bits. Beside the key length there are no additional transform specific parameters. This transform needs a master key of length key_length and a 112 bit master salt. The pseudo random string consists of several segements with a size of 128 bits (AES blocksize). The whole string can be computed as follows:<vspace blankLines="1" />
               AES(master_key, CTR) || AES(master_key, CTR + 1 mod 2^128) || AES(master_key, CTR + 2 mod 2^128) ...<vspace blankLines="1" />
               where the 128 bit value CTR is defined as x * 2^16, with x defined as in <xref target="sec_key_derivation" />.<vspace blankLines="1" />
-              This pseudo random function can produce pseudo random string up to a lenght of 2^23 bits. If the requested output length n does not fit multiples of 128 the output SHOULD be truncated to the n first (left-most) bits. Therefore there are n/128, rounded up, applications of AES needed to produce the output string.
+              This pseudo random function can produce pseudo random strings up to a length of 2^23 bits. If the requested output length n does not fit multiples of 128 bits the output SHOULD be truncated to the n first (left-most) bits. Therefore there are n/128, rounded up, applications of AES needed to produce the output string.
             </t>
           </section>
         </section>
@@ -497,7 +496,7 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
 
     <section title="Security Considerations">
       <t>
-        As the cryptography of SATP is based on <xref target="RFC3711">SRTP</xref>, it shares the same security issues. This section will only discuss some small changes. Please read <xref target="RFC3711">SRTP RFC3711 section 9</xref> for details.
+        As the cryptography of SATP is based on <xref target="RFC3711">SRTP</xref>, it basically shares the same security issues. This section will only discuss some small changes. Please read <xref target="RFC3711">SRTP RFC3711 section 9</xref> for details.
       </t>
       <section title="Replay protection">
         <t>
