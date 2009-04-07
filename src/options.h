@@ -182,6 +182,10 @@ private:
 
   ::SharedMutex mutex;
 
+
+  bool cluster_opts;
+  bool connection_opts;
+
   std::string progname_;
   bool daemonize_;
   std::string username_;

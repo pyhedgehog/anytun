@@ -162,6 +162,9 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   progname_ = "anytun";
 #endif
 
+  cluster_opts = false;
+  connection_opts = false;
+
   daemonize_ = true;
   username_ = "";
   groupname_ = "";
@@ -214,15 +217,21 @@ Options::~Options()
 {
 }
 
-#define PARSE_BOOL_PARAM(SHORT, LONG, VALUE)                                    \
-    else if(str == SHORT || str == LONG)                                        \
-      VALUE = true;
+#define NOTHING
 
-#define PARSE_INVERSE_BOOL_PARAM(SHORT, LONG, VALUE)                            \
-    else if(str == SHORT || str == LONG)                                        \
-      VALUE = false;
+#define PARSE_BOOL_PARAM(SHORT, LONG, VALUE, DO_POST)                           \
+    else if(str == SHORT || str == LONG) {                                      \
+      VALUE = true;                                                             \
+      DO_POST;                                                                  \
+    }
 
-#define PARSE_SIGNED_INT_PARAM(SHORT, LONG, VALUE)                              \
+#define PARSE_INVERSE_BOOL_PARAM(SHORT, LONG, VALUE, DO_POST)                   \
+    else if(str == SHORT || str == LONG) {                                      \
+      VALUE = false;                                                            \
+      DO_POST;                                                                  \
+    }
+
+#define PARSE_SIGNED_INT_PARAM(SHORT, LONG, VALUE, DO_POST)                     \
     else if(str == SHORT || str == LONG)                                        \
     {                                                                           \
       if(argc < 1)                                                              \
@@ -232,9 +241,10 @@ Options::~Options()
       tmp >> VALUE;                                                             \
       argc--;                                                                   \
       i++;                                                                      \
+      DO_POST;                                                                  \
     }
 
-#define PARSE_SCALAR_PARAM(SHORT, LONG, VALUE)                                  \
+#define PARSE_SCALAR_PARAM(SHORT, LONG, VALUE, DO_POST)                         \
     else if(str == SHORT || str == LONG)                                        \
     {                                                                           \
       if(argc < 1)                                                              \
@@ -248,9 +258,10 @@ Options::~Options()
       tmp >> VALUE;                                                             \
       argc--;                                                                   \
       i++;                                                                      \
+      DO_POST;                                                                  \
     }
 
-#define PARSE_SCALAR_PARAM2(SHORT, LONG, VALUE1, VALUE2)                        \
+#define PARSE_SCALAR_PARAM2(SHORT, LONG, VALUE1, VALUE2, DO_POST)               \
     else if(str == SHORT || str == LONG)                                        \
     {                                                                           \
       if(argc < 1)                                                              \
@@ -271,9 +282,10 @@ Options::~Options()
       tmp >> VALUE2;                                                            \
       argc-=2;                                                                  \
       i+=2;                                                                     \
+      DO_POST;                                                                  \
     }
 
-#define PARSE_CSLIST_PARAM(SHORT, LONG, LIST, TYPE)                             \
+#define PARSE_CSLIST_PARAM(SHORT, LONG, LIST, TYPE, DO_POST)                    \
     else if(str == SHORT || str == LONG)                                        \
     {                                                                           \
       if(argc < 1)                                                              \
@@ -283,17 +295,18 @@ Options::~Options()
         throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
       }                                                                         \
       std::stringstream tmp(argv[i+1]);                                         \
-			while (tmp.good())                                                        \
-			{                                                                         \
-				std::string tmp_line;                                                   \
-				getline(tmp,tmp_line,',');                                              \
-				LIST.push_back(TYPE(tmp_line));                                         \
-			}                                                                         \
+      while (tmp.good())                                                        \
+      {                                                                         \
+        std::string tmp_line;                                                   \
+        getline(tmp,tmp_line,',');                                              \
+        LIST.push_back(TYPE(tmp_line));                                         \
+      }                                                                         \
       argc--;                                                                   \
       i++;                                                                      \
+      DO_POST;                                                                  \
     }
 
-#define PARSE_HEXSTRING_PARAM_SEC(SHORT, LONG, VALUE)                           \
+#define PARSE_HEXSTRING_PARAM_SEC(SHORT, LONG, VALUE, DO_POST)                  \
     else if(str == SHORT || str == LONG)                                        \
     {                                                                           \
       if(argc < 1)                                                              \
@@ -307,9 +320,10 @@ Options::~Options()
         argv[i+1][j] = '#';                                                     \
       argc--;                                                                   \
       i++;                                                                      \
+      DO_POST;                                                                  \
     }
 
-#define PARSE_PHRASE_PARAM_SEC(SHORT, LONG, VALUE)                              \
+#define PARSE_PHRASE_PARAM_SEC(SHORT, LONG, VALUE, DO_POST)                     \
     else if(str == SHORT || str == LONG)                                        \
     {                                                                           \
       if(argc < 1)                                                              \
@@ -323,9 +337,10 @@ Options::~Options()
         argv[i+1][j] = '#';                                                     \
       argc--;                                                                   \
       i++;                                                                      \
+      DO_POST;                                                                  \
     }
 
-#define PARSE_STRING_LIST(SHORT, LONG, LIST)                                    \
+#define PARSE_STRING_LIST(SHORT, LONG, LIST, DO_POST)                           \
     else if(str == SHORT || str == LONG)                                        \
     {                                                                           \
       if(argc < 1)                                                              \
@@ -337,6 +352,7 @@ Options::~Options()
       LIST.push_back(argv[i+1]);                                                \
       argc--;                                                                   \
       i++;                                                                      \
+      DO_POST;                                                                  \
     }
 
 bool Options::parse(int argc, char* argv[])
@@ -358,79 +374,79 @@ bool Options::parse(int argc, char* argv[])
 #if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
 
   #ifndef NO_DAEMON
-    PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_)
-    PARSE_SCALAR_PARAM("-u","--username", username_)
-    PARSE_SCALAR_PARAM("-g","--groupname", groupname_)
-    PARSE_SCALAR_PARAM("-C","--chroot", chroot_dir_)
-    PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_)
+    PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_, NOTHING)
+    PARSE_SCALAR_PARAM("-u","--username", username_, NOTHING)
+    PARSE_SCALAR_PARAM("-g","--groupname", groupname_, NOTHING)
+    PARSE_SCALAR_PARAM("-C","--chroot", chroot_dir_, NOTHING)
+    PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_, NOTHING)
   #endif
 
 #endif
 
-    PARSE_STRING_LIST("-L","--log", log_targets_)
+    PARSE_STRING_LIST("-L","--log", log_targets_, NOTHING)
 
 #if defined(ANYCTR_OPTIONS)
 
-    PARSE_SCALAR_PARAM("-f","--file", file_name_)
-    PARSE_SCALAR_PARAM("-X","--control-host", bind_to_)
+    PARSE_SCALAR_PARAM("-f","--file", file_name_, NOTHING)
+    PARSE_SCALAR_PARAM("-X","--control-host", bind_to_, NOTHING)
 
 #endif
 #if defined(ANYTUN_OPTIONS)
 
-    PARSE_SCALAR_PARAM("-i","--interface", local_.addr)
-    PARSE_SCALAR_PARAM("-p","--port", local_.port)
-    PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_)
+    PARSE_SCALAR_PARAM("-i","--interface", local_.addr, NOTHING)
+    PARSE_SCALAR_PARAM("-p","--port", local_.port, NOTHING)
+    PARSE_SCALAR_PARAM("-s","--sender-id", sender_id_, NOTHING)
 
 #endif
 #if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
 
-    PARSE_SCALAR_PARAM("-r","--remote-host", remote_.addr)
-    PARSE_SCALAR_PARAM("-o","--remote-port", remote_.port)
-    PARSE_BOOL_PARAM("-4","--ipv4-only", ipv4_only)
-    PARSE_BOOL_PARAM("-6","--ipv6-only", ipv6_only)
+    PARSE_SCALAR_PARAM("-r","--remote-host", remote_.addr, connection_opts = true)
+    PARSE_SCALAR_PARAM("-o","--remote-port", remote_.port, connection_opts = true)
+    PARSE_BOOL_PARAM("-4","--ipv4-only", ipv4_only, connection_opts = true)
+    PARSE_BOOL_PARAM("-6","--ipv6-only", ipv6_only, connection_opts = true)
 
 #endif
 #if defined(ANYTUN_OPTIONS)
 
-    PARSE_SCALAR_PARAM("-I","--sync-interface", local_sync_.addr)
-    PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_.port)
-    PARSE_CSLIST_PARAM("-M","--sync-hosts", remote_sync_hosts_, OptionHost)
-    PARSE_CSLIST_PARAM("-X","--control-host", remote_sync_hosts_, OptionHost)
+    PARSE_SCALAR_PARAM("-I","--sync-interface", local_sync_.addr, cluster_opts = true)
+    PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_.port, cluster_opts = true)
+    PARSE_CSLIST_PARAM("-M","--sync-hosts", remote_sync_hosts_, OptionHost, cluster_opts = true)
+    PARSE_CSLIST_PARAM("-X","--control-host", remote_sync_hosts_, OptionHost, cluster_opts = true)
 
-    PARSE_SCALAR_PARAM("-d","--dev", dev_name_)
-    PARSE_SCALAR_PARAM("-t","--type", dev_type_)
-    PARSE_SCALAR_PARAM("-n","--ifconfig", ifconfig_param_)
+    PARSE_SCALAR_PARAM("-d","--dev", dev_name_, NOTHING)
+    PARSE_SCALAR_PARAM("-t","--type", dev_type_, NOTHING)
+    PARSE_SCALAR_PARAM("-n","--ifconfig", ifconfig_param_, NOTHING)
   #ifndef NO_EXEC
-    PARSE_SCALAR_PARAM("-x","--post-up-script", post_up_script_)
+    PARSE_SCALAR_PARAM("-x","--post-up-script", post_up_script_, NOTHING)
   #endif
 
 #endif
 #if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
 
   #ifndef NO_ROUTING
-    PARSE_CSLIST_PARAM("-R","--route", routes_, OptionNetwork)
+    PARSE_CSLIST_PARAM("-R","--route", routes_, OptionNetwork, connection_opts = true)
   #endif
 
-    PARSE_SCALAR_PARAM("-m","--mux", mux_)
-    PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_)
+    PARSE_SCALAR_PARAM("-m","--mux", mux_, connection_opts = true)
+    PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_, connection_opts = true)
 
   #ifndef NO_CRYPT
-    PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
-    PARSE_SCALAR_PARAM("-e","--role", role)
+    PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_, connection_opts = true)
+    PARSE_SCALAR_PARAM("-e","--role", role, connection_opts = true)
   #ifndef NO_PASSPHRASE
-    PARSE_PHRASE_PARAM_SEC("-E","--passphrase", passphrase_)
+    PARSE_PHRASE_PARAM_SEC("-E","--passphrase", passphrase_, connection_opts = true)
   #endif
-    PARSE_HEXSTRING_PARAM_SEC("-K","--key", key_)
-    PARSE_HEXSTRING_PARAM_SEC("-A","--salt", salt_)
+    PARSE_HEXSTRING_PARAM_SEC("-K","--key", key_, connection_opts = true)
+    PARSE_HEXSTRING_PARAM_SEC("-A","--salt", salt_, connection_opts = true)
   #endif
 
 #endif
 #if defined(ANYTUN_OPTIONS)
 
   #ifndef NO_CRYPT
-    PARSE_SCALAR_PARAM("-c","--cipher", cipher_)
-    PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_)
-    PARSE_SCALAR_PARAM("-b","--auth-tag-length", auth_tag_length_)
+    PARSE_SCALAR_PARAM("-c","--cipher", cipher_, NOTHING)
+    PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_, NOTHING)
+    PARSE_SCALAR_PARAM("-b","--auth-tag-length", auth_tag_length_, NOTHING)
   #endif
 
 #endif
@@ -458,6 +474,11 @@ bool Options::parse(int argc, char* argv[])
 
 void Options::parse_post()
 {
+#if defined(ANYTUN_OPTIONS)
+  if(cluster_opts && connection_opts)
+    cLog.msg(Log::PRIO_WARNING) << "you have provided options for cluster support as well as connection oriented options, we strongly recommend to use anytun-config and anytun-controld when building a cluster";
+#endif
+    
   if(cipher_ == "null" && auth_algo_ == "null")
     kd_prf_ = "null";
   if((cipher_ != "null" || auth_algo_ != "null") && kd_prf_ == "null")
@@ -533,9 +554,9 @@ void Options::printUsage()
   std::cout << "   [-I|--sync-interface] <ip-address>  local unicast(sync) ip address to bind to" << std::endl;
   std::cout << "   [-S|--sync-port] <port>             local unicast(sync) port to bind to" << std::endl;
   std::cout << "   [-M|--sync-hosts] <hostname|ip>[:<port>][,<hostname|ip>[:<port>][...]]"<< std::endl;
-	std::cout << "                                       remote hosts to sync with" << std::endl;
+  std::cout << "                                       remote hosts to sync with" << std::endl;
   std::cout << "   [-X|--control-host] <hostname|ip>[:<port>]"<< std::endl;
-	std::cout << "                                       fetch the config from this host" << std::endl;
+  std::cout << "                                       fetch the config from this host" << std::endl;
 
   std::cout << "   [-d|--dev] <name>                   device name" << std::endl;
   std::cout << "   [-t|--type] <tun|tap>               device type" << std::endl;
@@ -868,7 +889,7 @@ Options& Options::setLocalSyncPort(std::string l)
 HostList Options::getRemoteSyncHosts()
 {
   ReadersLock lock(mutex);
-	return remote_sync_hosts_;
+  return remote_sync_hosts_;
 }
 
 
