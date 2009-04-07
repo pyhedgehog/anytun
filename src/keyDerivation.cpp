@@ -54,6 +54,7 @@ void KeyDerivation::setRole(const role_t role)
 {
   WritersLock lock(mutex_);
   role_ = role;
+  cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation: using role " << role_;
 }
 
 #ifndef NO_CRYPT

@@ -51,6 +51,16 @@ std::ostream& operator<<(std::ostream& stream, syntax_error const& error)
   return stream;
 }
 
+std::ostream& operator<<(std::ostream& stream, role_t const& role)
+{
+  switch(role) {
+  case ROLE_LEFT: stream << "left"; break;
+  case ROLE_RIGHT:  stream << "right"; break;
+  default: stream << "unknown"; break;
+  }  
+  return stream;
+}
+
 void OptionHost::init(std::string addrPort)
 {
   std::string origAddrPort(addrPort);

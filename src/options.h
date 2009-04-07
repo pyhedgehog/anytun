@@ -78,6 +78,7 @@ std::istream& operator>>(std::istream& stream, OptionNetwork& network);
 typedef std::list<std::string> StringList;
 
 typedef enum { ROLE_LEFT, ROLE_RIGHT } role_t;
+std::ostream& operator<<(std::ostream& stream, role_t const& role);
 
 class Options
 {
