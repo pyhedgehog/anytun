@@ -79,18 +79,7 @@ AesIcmCipher::AesIcmCipher(kd_dir_t d) : Cipher(d), key_(u_int32_t(DEFAULT_KEY_L
   init();
 }
 
-
-AesIcmCipher::AesIcmCipher(kd_dir_t d, bool a) : Cipher(d, a), key_(u_int32_t(DEFAULT_KEY_LENGTH/8)), salt_(u_int32_t(SALT_LENGTH))
-{
-  init();
-}
-
 AesIcmCipher::AesIcmCipher(kd_dir_t d, u_int16_t key_length) : Cipher(d), key_(u_int32_t(key_length/8)), salt_(u_int32_t(SALT_LENGTH))
-{
-  init(key_length);
-}
-
-AesIcmCipher::AesIcmCipher(kd_dir_t d, bool a, u_int16_t key_length) : Cipher(d, a), key_(u_int32_t(key_length/8)), salt_(u_int32_t(SALT_LENGTH))
 {
   init(key_length);
 }
@@ -141,12 +130,6 @@ u_int32_t AesIcmCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen
 void AesIcmCipher::calcCtr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
   kd.generate(dir_, LABEL_SALT, seq_nr, salt_);
-
-
-  if(anytun02_compat_) {
-    if(!salt_[u_int32_t(0)])
-      salt_[u_int32_t(0)] = 1;
-  }
 
   std::memcpy(ctr_.salt_.buf_, salt_.getBuf(), SALT_LENGTH);
   ctr_.salt_.zero_ = 0;

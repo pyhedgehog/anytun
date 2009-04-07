@@ -54,7 +54,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
 {
   SeqWindow * seq = new SeqWindow(seqSize);
   seq_nr_t seq_nr_ = 0;
-  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf(), gOpt.getAnytun02Compat());
+  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(gOpt.getKey(), gOpt.getSalt(), gOpt.getPassphrase());
   kd->setRole(gOpt.getRole());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;

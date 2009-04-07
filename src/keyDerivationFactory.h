@@ -40,7 +40,7 @@
 class KeyDerivationFactory
 {
 public:
-  static KeyDerivation* create(std::string const& type, bool anytun02_compat=false);
+  static KeyDerivation* create(std::string const& type);
 
 private:
   KeyDerivationFactory();

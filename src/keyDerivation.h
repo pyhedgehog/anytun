@@ -64,10 +64,8 @@ typedef enum { KD_INBOUND, KD_OUTBOUND } kd_dir_t;
 class KeyDerivation
 {
 public:
-  KeyDerivation() : is_initialized_(false), role_(ROLE_LEFT), anytun02_compat_(false), key_length_(0), master_salt_(0), master_key_(0) {};
-  KeyDerivation(bool a) : is_initialized_(false), role_(ROLE_LEFT), anytun02_compat_(a), key_length_(0), master_salt_(0), master_key_(0) {};
-  KeyDerivation(u_int16_t key_length) : is_initialized_(false), role_(ROLE_LEFT), anytun02_compat_(false), key_length_(key_length), master_salt_(0), master_key_(0) {};
-  KeyDerivation(bool a, u_int16_t key_length) : is_initialized_(false), role_(ROLE_LEFT), anytun02_compat_(a), key_length_(key_length), master_salt_(0), master_key_(0) {};
+  KeyDerivation() : is_initialized_(false), role_(ROLE_LEFT), key_length_(0), master_salt_(0), master_key_(0) {};
+  KeyDerivation(u_int16_t key_length) : is_initialized_(false), role_(ROLE_LEFT), key_length_(key_length), master_salt_(0), master_key_(0) {};
   virtual ~KeyDerivation() {};
 
   void setRole(const role_t role);
@@ -102,7 +100,6 @@ protected:
 
   bool is_initialized_;
   role_t role_;
-  bool anytun02_compat_;
   u_int16_t key_length_;
   SyncBuffer master_salt_;
   SyncBuffer master_key_;
@@ -148,9 +145,7 @@ class AesIcmKeyDerivation : public KeyDerivation
 {
 public:
   AesIcmKeyDerivation();
-  AesIcmKeyDerivation(bool a);
   AesIcmKeyDerivation(u_int16_t key_length);
-  AesIcmKeyDerivation(bool a, u_int16_t key_length);
   ~AesIcmKeyDerivation();
 
   static const u_int16_t DEFAULT_KEY_LENGTH = 128;
@@ -186,23 +181,16 @@ private:
 #endif  
   union ATTR_PACKED key_derivation_aesctr_ctr_union {
     u_int8_t buf_[CTR_LENGTH];
-	struct ATTR_PACKED {
+    struct ATTR_PACKED {
       u_int8_t buf_[SALT_LENGTH];
       u_int16_t zero_;
     } salt_;
-	struct ATTR_PACKED {
+    struct ATTR_PACKED {
       u_int8_t fill_[SALT_LENGTH - sizeof(satp_prf_label_t) - sizeof(seq_nr_t)];
       satp_prf_label_t label_;
       seq_nr_t seq_;
       u_int16_t zero_;
     } params_;
-    struct ATTR_PACKED {
-      u_int8_t fill_[SALT_LENGTH - sizeof(u_int8_t) - 2*sizeof(u_int8_t) - sizeof(seq_nr_t)];
-      u_int8_t label_;
-      u_int8_t seq_fill_[2];
-      seq_nr_t seq_;
-      u_int16_t zero_;
-    } params_compat_;
   } ctr_[2];
 #ifdef _MSC_VER  
   #pragma pack(pop)

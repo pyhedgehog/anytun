@@ -155,8 +155,6 @@ public:
   Options& setKdPrf(std::string k);
   role_t getRole();
   Options& setRole(role_t r);
-  bool getAnytun02Compat();
-  Options& setAnytun02Compat(bool a);
   std::string getPassphrase();
   Options& setPassphrase(std::string p);
   Options& setKey(std::string k);
@@ -217,7 +215,6 @@ private:
   u_int32_t auth_tag_length_;
   std::string kd_prf_;
   role_t role_;
-  bool anytun02_compat_;
   std::string passphrase_;
   Buffer key_;
   Buffer salt_;

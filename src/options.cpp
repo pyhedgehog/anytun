@@ -198,7 +198,6 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   kd_prf_ = "null";
 #endif
   role_ = ROLE_LEFT;
-  anytun02_compat_ = false;
 }
 
 Options::~Options()
@@ -408,7 +407,6 @@ bool Options::parse(int argc, char* argv[])
   #ifndef NO_CRYPT
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_)
     PARSE_SCALAR_PARAM("-e","--role", role)
-    PARSE_BOOL_PARAM("-O","--anytun02-compat", anytun02_compat_)
   #ifndef NO_PASSPHRASE
     PARSE_PHRASE_PARAM_SEC("-E","--passphrase", passphrase_)
   #endif
@@ -465,9 +463,6 @@ void Options::parse_post()
   }
 #endif
 
-  if(anytun02_compat_)
-    cLog.msg(Log::PRIO_WARNING) << "--anytun02-compat is deprecated and very likly to be removed by the next release";
-  
   if(dev_name_ == "" && dev_type_ == "")
     dev_type_ = "tun";
 }
@@ -634,7 +629,6 @@ void Options::printOptions()
   case ROLE_RIGHT: std::cout << "right" << std::endl; break;
   default: std::cout << "??" << std::endl; break;
   }
-  std::cout << "anytun02_compat = " << anytun02_compat_ << std::endl;
   std::cout << "passphrase = '" << passphrase_ << "'" << std::endl;
   std::cout << "key = " << key_.getHexDumpOneLine() << std::endl;
   std::cout << "salt = " << salt_.getHexDumpOneLine() << std::endl;
@@ -1033,19 +1027,6 @@ Options& Options::setRole(role_t r)
 {
   WritersLock lock(mutex);
   role_ = r;
-  return *this;
-}
-
-bool Options::getAnytun02Compat()
-{
-  ReadersLock lock(mutex);
-  return anytun02_compat_;
-}
-
-Options& Options::setAnytun02Compat(bool a)
-{
-  WritersLock lock(mutex);
-  anytun02_compat_ = a;
   return *this;
 }
 

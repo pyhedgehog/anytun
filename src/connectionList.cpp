@@ -128,7 +128,7 @@ ConnectionParam & ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
 
   SeqWindow * seq= new SeqWindow(0);
   seq_nr_t seq_nr_=0;
-  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf(), gOpt.getAnytun02Compat());
+  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   ConnectionParam conn ((*kd), (*seq), seq_nr_, PacketSourceEndpoint());
 	connections_.insert(ConnectionMap::value_type(mux, conn));

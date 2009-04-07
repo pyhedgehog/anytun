@@ -42,7 +42,7 @@ K: master key
 L: logging
 M: remote sync hosts
 N: 
-O: anytun 0.2 compat mode // deprecated
+O: 
 P: write pid file
 Q:
 R: route
