@@ -447,7 +447,7 @@ SATP uses two types of keys: master keys and session keys. A session key is mean
               with PRF and x defined as in <xref target="sec_key_derivation" />.<vspace blankLines="1" />
               Basically AES in counter mode generates a pseudo random keystream seeded by the session key, session salt as well as the sequence number, sender id and mux value of the packet and encrypts a single SATP packet using this stream. The encryption process consits of the generation of that keystream and then bitwise exclusive-oring it onto the packets payload. If the packet length doesn't fit a multiple of 128 bits the remaining bits (least significant) of the keystream are simple ingored. Therefore this transform does not need any padding. Decryption of the packet can be achieved by generating the same keystream and exclusive-oring it onto the encrypted portion. 
             </t>
-            <section title="Keystram Generation">
+            <section title="Keystream Generation">
               <t>
                 In principle AES in counter mode consists of encrypting an incrementing integer. However the starting point of the integer value has to be randomized to get a good pseudo random key stream. A keystream consits of several keystream segements with a size of 128 bits (AES blocksize). Each segement can be computed by applying AES with key k on the block CTR. The whole keystream is a concatination of all its successive segements. Therefore a keystream looks as follows:<vspace blankLines="1" />
                 AES(session_key, CTR) || AES(session_key, CTR + 1 mod 2^128) || AES(session_key, CTR + 2 mod 2^128) ...<vspace blankLines="1" />

@@ -48,18 +48,6 @@ Microsoft Visual C++ 2008 Redistributable Package (x86):
 	http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
 
 
-OpenBSD
--------
-
-using libgcrypt:
-  libgcrypt
-  libgpg-error
-
-common:
-  boost
-  gmake
-
-
 
 Installation
 ============
@@ -89,7 +77,6 @@ Notes:
   - if using openssl pre 0.9.8 you have to disable passphrase
     because openssl had no SHA256 implementation prior to this
     version
-  - on OpenBSD you have to use gmake instead of make
 
 
 Errors:

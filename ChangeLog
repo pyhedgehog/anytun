@@ -1,16 +1,22 @@
-2008.12.23 -- Version 0.3_rc1_svn655
-* IMPORTANT: no automatic default route
-	if you are using anytun in single connection mode
-	(without configuration server)
-	make sure to add
-	route 0.0.0.0/0 for ipv4 and
-	route ::/0 for ipv6 to your config
-* changed used libarys (to boost)
+2009.??.?? -- Version 0.3 svn???
+
+* updated to new protocol specification (extended label and crypto role)
+  Due to this changes this version is incompatible to version 0.2 and prior
+* the auth tag length can now be configured
+* added extended logging support (syslog, file stdout and stderr)
+* changed -n|--ifconfig parameter to new behavior
+  tun and tap devices now use the same syntax
+* added seperate resolver thread
+* fixed packet length errors
+* dropping privileges is now possible wihtout chroot
 * full ipv6 support
- - ipv6 multible connection routing
+ - ipv6 multiple connection routing
  - syncronisation over ipv6
  - 4in6,6in6 tunnels
-* code cleanup for easier porting
+* replaced several dependencies with boost libs
+* ported basic functionality to Windows
+* dropped OpenBSD Port due to multi threading issues
+* code cleanup
 
 2008.6.20 -- Version 0.2.1svn556
 
