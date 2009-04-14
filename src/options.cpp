@@ -208,7 +208,7 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   cipher_ = "null";
   auth_algo_ = "null";
   auth_tag_length_ = 0;
-  kd_prf_ = "null";
+  kd_prf_ = "aes-ctr";
 #endif
   role_ = ROLE_LEFT;
 }
@@ -477,15 +477,12 @@ void Options::parse_post()
 #if defined(ANYTUN_OPTIONS)
   if(cluster_opts && connection_opts)
     cLog.msg(Log::PRIO_WARNING) << "you have provided options for cluster support as well as connection oriented options, we strongly recommend to use anytun-config and anytun-controld when building a cluster";
-#endif
-    
+
   if(cipher_ == "null" && auth_algo_ == "null")
     kd_prf_ = "null";
   if((cipher_ != "null" || auth_algo_ != "null") && kd_prf_ == "null")
     cLog.msg(Log::PRIO_WARNING) << "using NULL key derivation with encryption and or authentication enabled!";
 
-
-#if defined(ANYTUN_OPTIONS)
   u_int32_t tag_len_max = AuthAlgoFactory::getDigestLength(auth_algo_);
   if(!tag_len_max) auth_tag_length_ = 0;
   else if(tag_len_max < auth_tag_length_) {
