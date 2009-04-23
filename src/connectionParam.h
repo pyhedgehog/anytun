@@ -71,7 +71,7 @@ private:
 		UDPPacketSource::proto::endpoint endpoint(boost::asio::ip::address::from_string(remote_host), remote_port);
 		//This is a workarround, against race condition in sync process
 		//TODO: find a better solution
-		if (endpoint != emptyEndpoint || remote_host == "::" || remote_host == "[::]" || remote_host == "0.0.0.0")
+		if (endpoint != emptyEndpoint && remote_host != "::" && remote_host != "[::]" && remote_host != "0.0.0.0")
 			remote_end_ = endpoint;
 	}
 };
