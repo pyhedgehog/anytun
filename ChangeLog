@@ -1,4 +1,4 @@
-2009.??.?? -- Version 0.3 svn???
+2009.5.1 -- Version 0.3 svn834
 
 * updated to new protocol specification (extended label and crypto role)
   Due to this changes this version is incompatible to version 0.2 and prior
