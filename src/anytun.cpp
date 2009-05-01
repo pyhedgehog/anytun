@@ -313,6 +313,14 @@ void receiver(TunDevice* dev, PacketSource* src)
   }
 }
 
+#ifndef NO_EXEC
+void startPostUpScript(TunDevice* dev) 
+{
+  cLog.msg(Log::PRIO_NOTICE) << "executing post-up script '" << gOpt.getPostUpScript() << "'";
+  execScript(gOpt.getPostUpScript(), dev->getActualName(), dev->getActualNode());
+}
+#endif
+
 #ifndef NO_DAEMON
 void startSendRecvThreads(PrivInfo& privs, TunDevice* dev, PacketSource* src)
 #else
@@ -443,10 +451,8 @@ int main(int argc, char* argv[])
     cLog.msg(Log::PRIO_NOTICE) << "dev opened - name '" << dev.getActualName() << "', node '" << dev.getActualNode() << "'";
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
 #ifndef NO_EXEC
-    if(gOpt.getPostUpScript() != "") {
-      cLog.msg(Log::PRIO_NOTICE) << "executing post-up script '" << gOpt.getPostUpScript() << "'";
-      execScript(gOpt.getPostUpScript(), dev.getActualName(), dev.getActualNode());
-    }
+    if(gOpt.getPostUpScript() != "")
+      boost::thread(boost::bind(startPostUpScript, &dev));
 #endif
     
     PacketSource* src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
