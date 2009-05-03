@@ -44,6 +44,8 @@
 #include <strsafe.h>
 #endif
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 LogTarget::LogTarget() : opened(false), enabled(false), max_prio(Log::PRIO_NOTICE)
 {
 }
@@ -326,7 +328,7 @@ void LogTargetFile::log(std::string msg, int prio)
   if(!opened)
     return;
 
-  logfile << Log::prioToString(prio) << ": " << msg << std::endl;
+  logfile << boost::posix_time::second_clock::local_time() << " " << Log::prioToString(prio) << ": " << msg << std::endl;
 }
 
 LogTargetFile& LogTargetFile::setLogFilename(std::string l)
@@ -366,7 +368,7 @@ void LogTargetStdout::log(std::string msg, int prio)
   if(!opened)
     return;
 
-  stream << "LOG-" << Log::prioToString(prio) << ": " << msg << std::endl;
+  stream << boost::posix_time::second_clock::local_time() << " " << Log::prioToString(prio) << ": " << msg << std::endl;
 }
 #endif
 
