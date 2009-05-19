@@ -1,4 +1,4 @@
-1 otti@vilap ~/anytun % sudo ./satp.py
+otti@vilap ~/anytun % sudo ./satp.py
 INFO: did not find python gnuplot wrapper . Won't be able to plot
 INFO: Can't import PyX. Won't be able to use psdump() or pdfdump()
 INFO: Can't find Crypto python lib. Won't be able to decrypt WEP
