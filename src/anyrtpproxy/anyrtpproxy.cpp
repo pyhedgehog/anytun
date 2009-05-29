@@ -211,7 +211,7 @@ void chrootAndDrop(string const& chrootdir, string const& username)
 {
 	if (getuid() != 0)
 	{
-	  std::cerr << "this programm has to be run as root in order to run in a chroot" << std::endl;
+	  std::cerr << "this program has to be run as root in order to run in a chroot" << std::endl;
 		exit(-1);
 	}	
 

@@ -97,7 +97,7 @@ private:
 void do_chroot(std::string const& chrootdir)
 {
   if (getuid() != 0)
-    AnytunError::throwErr() << "this programm has to be run as root in order to run in a chroot";
+    AnytunError::throwErr() << "this program has to be run as root in order to run in a chroot";
 
   if(chroot(chrootdir.c_str()))
     AnytunError::throwErr() << "can't chroot to " << chrootdir;
