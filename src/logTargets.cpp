@@ -328,7 +328,8 @@ void LogTargetFile::log(std::string msg, int prio)
   if(!opened)
     return;
 
-  logfile << boost::posix_time::second_clock::local_time() << " " << Log::prioToString(prio) << ": " << msg << std::endl;
+  std::string timestamp = boost::posix_time::to_simple_string(boost::posix_time::second_clock::local_time());
+  logfile << timestamp << " " << Log::prioToString(prio) << ": " << msg << std::endl;
 }
 
 LogTargetFile& LogTargetFile::setLogFilename(std::string l)
@@ -368,7 +369,8 @@ void LogTargetStdout::log(std::string msg, int prio)
   if(!opened)
     return;
 
-  stream << boost::posix_time::second_clock::local_time() << " " << Log::prioToString(prio) << ": " << msg << std::endl;
+  std::string timestamp = boost::posix_time::to_simple_string(boost::posix_time::second_clock::local_time());
+  stream << timestamp << " " << Log::prioToString(prio) << ": " << msg << std::endl;
 }
 #endif
 
