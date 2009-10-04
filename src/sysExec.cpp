@@ -107,19 +107,14 @@ void anytun_exec(std::string const& script, StringVector const& args, StringList
   argv[args.size() + 1] = NULL;
 
   char** evp;
-  if(env.size()) {
-    evp = new char*[env.size() + 1];
-    unsigned int i = 0;
-    for(StringList::const_iterator it = env.begin(); it != env.end(); ++it) {
-      evp[i] = new char[it->size() + 1];
-      std::strcpy(evp[i], it->c_str());
-      ++i;
-    }
-    evp[env.size()] = NULL;
-  } else {
-    evp = new char*[1];
-    evp[0] = NULL;
+  evp = new char*[env.size() + 1];
+  unsigned int i = 0;
+  for(StringList::const_iterator it = env.begin(); it != env.end(); ++it) {
+    evp[i] = new char[it->size() + 1];
+    std::strcpy(evp[i], it->c_str());
+    ++i;
   }
+  evp[env.size()] = NULL;
   
   execve(script.c_str(), argv, evp);
       // if execve returns, an error occurred, but logging doesn't work 
