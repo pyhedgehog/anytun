@@ -31,6 +31,7 @@
 
 #include <string.h>
 #include <sstream>
+#include <boost/assign.hpp>
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -46,6 +47,7 @@
 #include "threadUtils.hpp"
 #include "log.h"
 #include "anytunError.h"
+#include "sysExec.h"
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
 {
@@ -155,19 +157,8 @@ void TunDevice::init_post()
 
 void TunDevice::do_ifconfig()
 {
-  std::ostringstream command;
-  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.addr_.toString()
-          << " netmask " << conf_.netmask_.toString() << " mtu " << conf_.mtu_;
-
-  int result = system(command.str().c_str());
-  if(result == -1)
-    cLog.msg(Log::PRIO_ERROR) << "Execution of ifconfig failed: " << AnytunErrno(errno);
-  else {
-    if(WIFEXITED(result))
-      cLog.msg(Log::PRIO_NOTICE) << "ifconfig returned " << WEXITSTATUS(result);  
-    else if(WIFSIGNALED(result))
-      cLog.msg(Log::PRIO_NOTICE) << "ifconfig terminated after signal " << WTERMSIG(result);
-    else
-      cLog.msg(Log::PRIO_ERROR) << "Execution of ifconfig: unkown error";
-  }
+  std::ostringstream mtu_ss;
+  mtu_ss << conf_.mtu_;
+  StringVector args = boost::assign::list_of(actual_name_)(conf_.addr_.toString())("netmask")(conf_.netmask_.toString())("mtu")(mtu_ss.str());
+  anytun_exec("/sbin/ifconfig", args);
 }

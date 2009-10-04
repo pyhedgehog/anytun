@@ -29,6 +29,9 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
+#include <boost/assign.hpp>
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
@@ -41,8 +44,6 @@
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
-
-#include <sstream>
 
 #include "tunDevice.h"
 #include "threadUtils.hpp"
@@ -250,34 +251,23 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
 
 void TunDevice::do_ifconfig()
 {
-  std::ostringstream command;
-  command << "/sbin/ifconfig " << actual_name_ << " " << conf_.addr_.toString()
-          << " netmask " << conf_.netmask_.toString() << " mtu " << conf_.mtu_;
+  std::ostringstream mtu_ss;
+  mtu_ss << conf_.mtu_;
+  StringVector args = boost::assign::list_of(actual_name_)(conf_.addr_.toString())("netmask")(conf_.netmask_.toString())("mtu")(mtu_ss.str());
 
   if(conf_.type_ == TYPE_TUN)
-    command << " up";
+    args.push_back("up");
   else {
 #if defined(__GNUC__) && defined(__OpenBSD__)
-    command << " link0";
+    args.push_back("link0");
 #elif defined(__GNUC__) && defined(__FreeBSD__)
-    command << " up";
+    args.push_back("up");
 #elif defined(__GNUC__) && defined(__NetBSD__)
-    command << "";
+        // nothing to be done here
 #else
  #error This Device works just for OpenBSD, FreeBSD or NetBSD
 #endif
   }
 
-  int result = system(command.str().c_str());
-  if(result == -1)
-    cLog.msg(Log::PRIO_ERROR) << "Execution of ifconfig failed" << AnytunErrno(errno);
-  else {
-    if(WIFEXITED(result))
-      cLog.msg(Log::PRIO_NOTICE) << "ifconfig returned " << WEXITSTATUS(result);  
-    else if(WIFSIGNALED(result))
-      cLog.msg(Log::PRIO_NOTICE) << "ifconfig terminated after signal " << WTERMSIG(result);
-    else
-      cLog.msg(Log::PRIO_ERROR) << "Execution of ifconfig: unkown error";
-  }
-
+  anytun_exec("/sbin/ifconfig", args);
 }
