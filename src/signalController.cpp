@@ -149,10 +149,6 @@ SignalController::~SignalController()
 {
   for(HandlerMap::iterator it = handler.begin(); it != handler.end(); ++it)
     delete it->second;
-
-#ifndef _MSC_VER
-  if(thread) delete thread;
-#endif
 }
 
 #ifndef _MSC_VER
@@ -193,7 +189,7 @@ void SignalController::init()
 #error The signalhandler works only with pthreads
 #endif
   
-  thread = new boost::thread(boost::bind(&SignalController::handle, this));
+  boost::thread(boost::bind(&SignalController::handle, this));
 
   handler[SIGINT] = new SigIntHandler;
   handler[SIGQUIT] = new SigQuitHandler;
