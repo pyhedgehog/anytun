@@ -248,7 +248,7 @@ int SignalController::run()
         return ret;
     }
     else
-      cLog.msg(Log::PRIO_NOTICE) << "SIG " << sig.first << " caught with message '" << sig.second << "'- ignoring";
+      cLog.msg(Log::PRIO_NOTICE) << "SIG " << sig.first << " caught with message '" << sig.second << "' - ignoring";
   }
   return 0;
 }

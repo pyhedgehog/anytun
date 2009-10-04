@@ -29,12 +29,11 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/bind.hpp>
+#include <boost/thread.hpp>
+#include <boost/assign.hpp>
 #include <iostream>
 #include <fstream>
-
-
-#include <boost/bind.hpp>
-#include <cerrno>     // for ENOMEM
 
 #include "datatypes.h"
 
@@ -76,7 +75,7 @@
 
 #include "cryptinit.hpp"
 #include "daemon.hpp"
-#include "sysexec.hpp"
+#include "sysExec.h"
 
 bool disableRouting = false;
 
@@ -313,14 +312,6 @@ void receiver(TunDevice* dev, PacketSource* src)
   }
 }
 
-#ifndef NO_EXEC
-void startPostUpScript(TunDevice* dev) 
-{
-  cLog.msg(Log::PRIO_NOTICE) << "executing post-up script '" << gOpt.getPostUpScript() << "'";
-  execScript(gOpt.getPostUpScript(), dev->getActualName(), dev->getActualNode());
-}
-#endif
-
 #ifndef NO_DAEMON
 void startSendRecvThreads(PrivInfo& privs, TunDevice* dev, PacketSource* src)
 #else
@@ -451,8 +442,11 @@ int main(int argc, char* argv[])
     cLog.msg(Log::PRIO_NOTICE) << "dev opened - name '" << dev.getActualName() << "', node '" << dev.getActualNode() << "'";
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
 #ifndef NO_EXEC
-    if(gOpt.getPostUpScript() != "")
-      boost::thread(boost::bind(startPostUpScript, &dev));
+    if(gOpt.getPostUpScript() != "") {
+      cLog.msg(Log::PRIO_NOTICE) << "executing post-up script '" << gOpt.getPostUpScript() << "'";
+      StringVector args = boost::assign::list_of(dev.getActualName())(dev.getActualNode());
+      anytun_exec(gOpt.getPostUpScript(), args);
+    }
 #endif
     
     PacketSource* src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());

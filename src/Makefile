@@ -53,6 +53,7 @@ OBJS := tunDevice.o \
        signalController.o \
        log.o \
        logTargets.o \
+       sysExec.o \
        anytunError.o \
        options.o \
        seqWindow.o \

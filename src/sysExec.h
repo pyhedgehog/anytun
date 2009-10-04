@@ -29,46 +29,22 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SYSEXEC_HPP
-#define _SYSEXEC_HPP
+#ifndef _SYSEXEC_H_
+#define _SYSEXEC_H_
 #ifndef NO_EXEC
 
-int execScript(std::string const& script, std::string const& ifname, std::string const& ifnode)
-{
-  pid_t pid;
-  pid = fork();
-  if(!pid) {
-    int fd;
-    for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
-      close(fd);
+#include <vector>
+#include <list>
+#include <string>
 
-    fd = open("/dev/null",O_RDWR);        // stdin
-    if(fd == -1)
-      cLog.msg(Log::PRIO_WARNING) << "can't open stdin";
-    else {
-      if(dup(fd) == -1)   // stdout
-        cLog.msg(Log::PRIO_WARNING) << "can't open stdout";
-      if(dup(fd) == -1)   // stderr
-        cLog.msg(Log::PRIO_WARNING) << "can't open stderr";
-    }
-    execl("/bin/sh", "/bin/sh", script.c_str(), ifname.c_str(), ifnode.c_str(), (char*)NULL);
-        // if execl return, an error occurred
-    cLog.msg(Log::PRIO_ERROR) << "error on executing script: " << AnytunErrno(errno);
-    return -1;
-  }
-  int status = 0;
-  waitpid(pid, &status, 0);
-  if(WIFEXITED(status))
-    cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' returned " << WEXITSTATUS(status);  
-  else if(WIFSIGNALED(status))
-    cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' terminated after signal " << WTERMSIG(status);
-  else
-    cLog.msg(Log::PRIO_ERROR) << "executing script: unkown error";
+typedef std::vector<std::string> StringVector;
+typedef std::list<std::string> StringList;
 
-  return status;
-}
-
+void anytun_exec(std::string const& script);
+void anytun_exec(std::string const& script, StringVector const& args);
+void anytun_exec(std::string const& script, StringList const& env);
+void anytun_exec(std::string const& script, StringVector const& args, StringList const& env);
+void waitForScript(std::string const& script, pid_t pid, int pipefd);
 
 #endif
 #endif
-
