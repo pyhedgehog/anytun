@@ -104,8 +104,7 @@ void anytun_exec(std::string const& script, StringVector const& args, StringList
     argv[i+1] = new char[args[i].size() + 1];
     std::strcpy(argv[i+1], args[i].c_str());
   }
-  argv[args.size() + 1] = new char[1];
-  argv[args.size() + 1][0] = NULL;
+  argv[args.size() + 1] = NULL;
 
   char** evp;
   if(env.size()) {
@@ -116,12 +115,10 @@ void anytun_exec(std::string const& script, StringVector const& args, StringList
       std::strcpy(evp[i], it->c_str());
       ++i;
     }
-    evp[env.size()] = new char[1];
-    evp[env.size()][0] = NULL;
+    evp[env.size()] = NULL;
   } else {
     evp = new char*[1];
-    evp[0] = new char[1];
-    evp[0][0] = NULL;
+    evp[0] = NULL;
   }
   
   execve(script.c_str(), argv, evp);
