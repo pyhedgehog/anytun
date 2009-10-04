@@ -326,7 +326,7 @@ void startSendRecvThreads(TunDevice* dev, PacketSource* src)
       do_chroot(gOpt.getChrootDir());
     }
     catch(const std::runtime_error& e) {
-      cLog.msg(Log::PRIO_WARNING) << "ignroing chroot error: " << e.what();
+      cLog.msg(Log::PRIO_WARNING) << "ignoring chroot error: " << e.what();
     }
   }
 #ifndef NO_PRIVDROP
