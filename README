@@ -23,6 +23,20 @@ common:
   asciidoc (only for manpage)
 
 
+Freebsd
+-------
+
+using libgcrypt:
+   security/libgcrypt
+
+using ssl crypto lib:
+   <nothing here>
+
+common:
+   devel/boost
+   devel/gmake
+
+
 Windows
 -------
 OpenSSL
@@ -77,6 +91,7 @@ Notes:
   - if using openssl pre 0.9.8 you have to disable passphrase
     because openssl had no SHA256 implementation prior to this
     version
+  - on FreeBSD you have to use gmake instead of make
 
 
 Errors:
