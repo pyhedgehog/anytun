@@ -49,10 +49,11 @@
 #include "threadUtils.hpp"
 #include "log.h"
 #include "anytunError.h"
+#include "sysExec.h"
 
 #define DEVICE_FILE_MAX 255
 
-TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, std::string ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
+TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
 {
   std::string device_file = "/dev/";
   bool dynamic = true;
@@ -155,22 +156,22 @@ void TunDevice::init_post()
   if(conf_.type_ == TYPE_TAP)
     with_pi_ = false;
 
-  if(dev->type_ == TYPE_TUN) {
+  if(conf_.type_ == TYPE_TUN) {
     int arg = 0;
-    if(ioctl(dev->fd_, TUNSLMODE, &arg) < 0) {
+    if(ioctl(fd_, TUNSLMODE, &arg) < 0) {
       ::close(fd_);
       AnytunError::throwErr() << "can't disable link-layer mode for interface: " << AnytunErrno(errno);
     }
 
     arg = 1;
-    if(ioctl(dev->fd_, TUNSIFHEAD, &arg) < 0) {
+    if(ioctl(fd_, TUNSIFHEAD, &arg) < 0) {
       ::close(fd_);
       AnytunError::throwErr() << "can't enable multi-af modefor interface: " << AnytunErrno(errno);
     }
 
     arg = IFF_BROADCAST;
     arg |= IFF_MULTICAST;
-    if(ioctl(dev->fd_, TUNSIFMODE, &arg) < 0) {
+    if(ioctl(fd_, TUNSIFMODE, &arg) < 0) {
       ::close(fd_);
       AnytunError::throwErr() << "can't enable multicast for interface: " << AnytunErrno(errno);
     }
@@ -198,7 +199,7 @@ int TunDevice::fix_return(int ret, size_t pi_length) const
   if(ret < 0)
     return ret;
 
-  return (static_cast<size_t>(ret) > type_length ? (ret - type_length) : 0);
+  return (static_cast<size_t>(ret) > pi_length ? (ret - pi_length) : 0);
 }
 
 int TunDevice::read(u_int8_t* buf, u_int32_t len)

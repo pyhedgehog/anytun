@@ -47,6 +47,7 @@
 #endif
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/version.hpp>
 
 #define LABEL_ENC 0
 #define LABEL_AUTH 1
