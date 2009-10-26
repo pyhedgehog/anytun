@@ -16,6 +16,7 @@ NAME=anytun
 DESC=anytun
 CONFIG_DIR=/etc/anytun
 VARCONFIG_DIR=/var/run/anytun-controld
+VARRUN_DIR=/var/run/anytun
 
 test -x $DAEMON || exit 0
 
@@ -33,8 +34,9 @@ start_vpn () {
     if [ -n "$CHROOTDIR" ] ; then
       test -d $CHROOTDIR || mkdir -p $CHROOTDIR
     fi
+    test -d $VARRUN_DIR || mkdir -p $VARRUN_DIR
     DAEMONARG=`sed 's/#.*//' < $CONFIG_DIR/$NAME/config | grep -e '\w' | sed  's/^/--/' | tr '\n' ' '`
-    $DAEMON --write-pid /var/run/anytun.$NAME.pid $POSTUP \
+    $DAEMON --write-pid $VARRUN_DIR/$NAME.pid $POSTUP \
       $DAEMONOPTS $DAEMONARG || STATUS="FAILED"
   else
     STATUS="no config found"
@@ -99,7 +101,7 @@ case "$1" in
   stop)
   echo -n "Stoping $DESC:"
   if test -z "$2" ; then
-    for PIDFILE in `ls /var/run/anytun.*.pid 2> /dev/null`; do
+    for PIDFILE in `ls $VARRUN_DIR/*.pid 2> /dev/null`; do
       NAME=`echo $PIDFILE | cut -c17-`
       NAME=${NAME%%.pid}
       echo -n " $NAME"
@@ -108,8 +110,8 @@ case "$1" in
   else
     while shift ; do
       [ -z "$1" ] && break
-      if test -e /var/run/anytun.$1.pid ; then
-        PIDFILE=`ls /var/run/anytun.$1.pid 2> /dev/null`
+      if test -e $VARRUN_DIR/$1.pid ; then
+        PIDFILE=`ls $VARRUN_DIR/$1.pid 2> /dev/null`
         NAME=`echo $PIDFILE | cut -c17-`
         NAME=${NAME%%.pid}
         echo -n " $NAME"
@@ -124,7 +126,7 @@ case "$1" in
   reload)
   echo -n "Reloading $DESC:"
   if test -z "$2" ; then
-    for PIDFILE in `ls /var/run/anytun.*.pid 2> /dev/null`; do
+    for PIDFILE in `ls $VARRUN_DIR/*.pid 2> /dev/null`; do
       NAME=`echo $PIDFILE | cut -c17-`
       NAME=${NAME%%.pid}
       echo -n " $NAME"
@@ -139,8 +141,8 @@ case "$1" in
   else
     while shift ; do
       [ -z "$1" ] && break
-      if test -e /var/run/anytun.$1.pid ; then
-        PIDFILE=`ls /var/run/anytun.$1.pid 2> /dev/null`
+      if test -e $VARRUN_DIR/$1.pid ; then
+        PIDFILE=`ls $VARRUN_DIR/$1.pid 2> /dev/null`
         NAME=`echo $PIDFILE | cut -c17-`
         NAME=${NAME%%.pid}
         echo -n " $NAME"
@@ -161,7 +163,7 @@ case "$1" in
   force-reload)
   echo -n "Restarting $DESC:"
   if test -z "$2" ; then
-    for PIDFILE in `ls /var/run/anytun.*.pid 2> /dev/null`; do
+    for PIDFILE in `ls $VARRUN_DIR/*.pid 2> /dev/null`; do
       NAME=`echo $PIDFILE | cut -c17-`
       NAME=${NAME%%.pid}
       echo -n " $NAME"
@@ -172,8 +174,8 @@ case "$1" in
   else
     while shift ; do
       [ -z "$1" ] && break
-      if test -e /var/run/anytun.$1.pid ; then
-        PIDFILE=`ls /var/run/anytun.$1.pid 2> /dev/null`
+      if test -e $VARRUN_DIR/$1.pid ; then
+        PIDFILE=`ls $VARRUN_DIR/$1.pid 2> /dev/null`
         NAME=`echo $PIDFILE | cut -c17-`
         NAME=${NAME%%.pid}
         echo -n " $NAME"
