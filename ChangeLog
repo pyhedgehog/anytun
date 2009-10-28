@@ -1,4 +1,5 @@
-2009.10.28 -- Version 0.3.1 svn850
+2009.10.28 -- Version 0.3.1 svn851
+* switched to GPLv3 or higher
 * Changed Windows TAP driver version to support 64-bit windows
 * fixed some memory errors
 * improved logging
