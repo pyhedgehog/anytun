@@ -1,3 +1,10 @@
+2009.10.28 -- Version 0.3.1 svn850
+* Changed Windows TAP driver version to support 64-bit windows
+* fixed some memory errors
+* improved logging
+* improved post up script execution
+* builds on FreeBSD now
+
 2009.5.1 -- Version 0.3 svn834
 
 * updated to new protocol specification (extended label and crypto role)
