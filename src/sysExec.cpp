@@ -46,6 +46,7 @@
 #include <sys/select.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cstring>
 
 void anytun_exec(std::string const& script)
 {

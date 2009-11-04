@@ -32,7 +32,7 @@
 
 #include "threadUtils.hpp"
 #include "datatypes.h"
-
+#include <cstring>
 #include "seqWindow.h"
 
 SeqWindowElement::SeqWindowElement()

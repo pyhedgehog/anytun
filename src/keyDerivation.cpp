@@ -42,6 +42,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstring>
 
 #ifndef NO_CRYPT
 #ifndef NO_PASSPHRASE
@@ -86,7 +87,7 @@ void KeyDerivation::calcMasterKey(std::string passphrase, u_int16_t length)
 #endif
   master_key_.setLength(length);
 
-  memcpy(master_key_.getBuf(), &digest.getBuf()[digest.getLength() - master_key_.getLength()], master_key_.getLength());
+  std::memcpy(master_key_.getBuf(), &digest.getBuf()[digest.getLength() - master_key_.getLength()], master_key_.getLength());
 }
 
 void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
@@ -115,7 +116,7 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
 #endif
   master_salt_.setLength(length);
 
-  memcpy(master_salt_.getBuf(), &digest.getBuf()[digest.getLength() - master_salt_.getLength()], master_salt_.getLength());
+  std::memcpy(master_salt_.getBuf(), &digest.getBuf()[digest.getLength() - master_salt_.getLength()], master_salt_.getLength());
 }
 #endif
 #endif
@@ -288,7 +289,7 @@ bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, satp_prf_label_t label, seq_nr_t
     cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::calcCtr: salt lengths don't match";
     return false;
   }
-  memcpy(ctr_[dir].salt_.buf_, master_salt_.getBuf(), SALT_LENGTH);
+  std::memcpy(ctr_[dir].salt_.buf_, master_salt_.getBuf(), SALT_LENGTH);
   ctr_[dir].salt_.zero_ = 0;
   ctr_[dir].params_.label_ ^= SATP_PRF_LABEL_T_HTON(convertLabel(dir, label));
   ctr_[dir].params_.seq_ ^= SEQ_NR_T_HTON(seq_nr);
