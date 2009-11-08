@@ -55,8 +55,8 @@ port 4444
 log syslog:3,anytun-server,daemon
 
 ## change user and group after init
-username nobody
-groupname nogroup
+username anytun
+groupname anytun
 
 ## chroot to /var/run/anytun
 #chroot /var/run/anytun
