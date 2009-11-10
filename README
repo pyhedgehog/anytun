@@ -68,7 +68,7 @@ Installation
 
 Getting the source via subversion:
 ----------------------------------
-svn co http://anytun.org/svn/anytun/
+svn co http://svn.anytun.org/anytun/
 
 Building from source
 --------------------
