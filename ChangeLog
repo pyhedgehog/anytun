@@ -1,3 +1,9 @@
+200?.??.?? -- Version ?
+
+* added install target to build system
+* cleaned up manpages
+* moved to new svn location
+
 2009.10.28 -- Version 0.3.1 svn852
 * switched to GPLv3 or higher
 * Changed Windows TAP driver version to support 64-bit windows
