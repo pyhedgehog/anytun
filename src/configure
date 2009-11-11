@@ -33,6 +33,8 @@
 
 TARGET=`uname -s`
 
+EBUILD_COMPAT=0
+
 CXXFLAGS='-g -Wall -O2 -DLOG_SYSLOG -DLOG_FILE -DLOG_STDOUT'
 LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system -lboost_date_time'
 
@@ -98,14 +100,19 @@ do
   --disable-routing)
     ROUTING=0
   ;;
+  --ebuild-compat)
+    EBUILD_COMPAT=1
+  ;;
   --help)
     print_usage
     exit 0
   ;;
   *)
-    echo "Unknown argument: $arg"
-    print_usage
-    exit 1
+    if [ $EBUILD_COMPAT -ne 1 ]; then
+      echo "Unknown argument: $arg"
+      print_usage
+      exit 1
+    fi
   ;;
   esac
 done
