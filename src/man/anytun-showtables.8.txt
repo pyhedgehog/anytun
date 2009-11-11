@@ -8,12 +8,14 @@ anytun-showtables - anycast tunneling routing table visualization utility
 SYNOPSIS
 --------
 
-*anytun-showtables*
+....
+anytun-showtables
+....
 
 DESCRIPTION
 -----------
 
-*anytun-showtables* displays routing and connection tables used by *anytun*. It can be used to display a saved routing/connection table used by *anytun-controld* or to connect to a the sync port of *anytun*.
+*anytun-showtables* displays routing and connection tables used by *Anytun*. It can be used to display a saved routing/connection table used by *anytun-controld* or to connect to a the sync port of *Anytun*.
 
 OPTIONS
 -------
@@ -38,7 +40,7 @@ Print current routing table and watch changes
 
 BUGS
 ----
-Most likely there are some bugs in *anytun*. If you find a bug, please let
+Most likely there are some bugs in *Anytun*. If you find a bug, please let
 the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO
@@ -47,19 +49,11 @@ anytun(8), anytun-controld(8), anytun-config(8)
 
 AUTHORS
 -------
-Design of SATP and wizards of this implementation:
 
 Othmar Gsenger <otti@anytun.org>
 Erwin Nindl <nine@anytun.org>
 Christian Pointner <equinox@anytun.org>
 
-Debian packaging:
-
-Andreas Hirczy <ahi@itp.tu-graz.ac.at>
-
-Manual page:
-
-Alexander List <alex@debian.org>
 
 RESOURCES
 ---------

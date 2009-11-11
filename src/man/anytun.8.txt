@@ -8,40 +8,42 @@ anytun - anycast tunneling daemon
 SYNOPSIS
 --------
 
-*anytun*
-[ *-h|--help* ]
-[ *-D|--nodaemonize* ]
-[ *-u|--username* <username> ]
-[ *-g|--groupname* <groupname> ]
-[ *-C|--chroot* <path> ]
-[ *-P|--write-pid* <filename> ]
-[ *-L|--log* <target>:<level>[,<param1>[,<param2>[..]]] ]
-[ *-i|--interface* <ip-address> ]
-[ *-p|--port* <port> ]
-[ *-r|--remote-host* <hostname|ip> ]
-[ *-o|--remote-port* <port> ]
-[ *-4|--ipv4-only* ]
-[ *-6|--ipv6-only* ]
-[ *-I|--sync-interface* <ip-address> ]
-[ *-S|--sync-port* port> ]
-[ *-M|--sync-hosts* <hostname|ip>[:<port>][,<hostname|ip>[:<port>][...]] ]
-[ *-X|--control-host* <hostname|ip>[:<port>]
-[ *-d|--dev* <name> ]
-[ *-t|--type* <tun|tap> ]
-[ *-n|--ifconfig* <local>/<prefix> ]
-[ *-x|--post-up-script* <script> ]
-[ *-R|--route* <net>/<prefix length> ]
-[ *-m|--mux* <mux-id> ]
-[ *-s|--sender-id* <sender id> ]
-[ *-w|--window-size* <window size> ]
-[ *-k|--kd-prf* <kd-prf type> ]
-[ *-e|--role <role>* ]
-[ *-E|--passphrase* <pass phrase> ]
-[ *-K|--key* <master key> ]
-[ *-A|--salt* <master salt> ]
-[ *-c|--cipher* <cipher type> ]
-[ *-a|--auth-algo* <algo type> ]
-[ *-b|--auth-tag-length* <length> ]
+....
+anytun
+  [ -h|--help ]
+  [ -D|--nodaemonize ]
+  [ -u|--username <username> ]
+  [ -g|--groupname <groupname> ]
+  [ -C|--chroot <path> ]
+  [ -P|--write-pid <filename> ]
+  [ -L|--log <target>:<level>[,<param1>[,<param2>[..]]] ]
+  [ -i|--interface <ip-address> ]
+  [ -p|--port <port> ]
+  [ -r|--remote-host <hostname|ip> ]
+  [ -o|--remote-port <port> ]
+  [ -4|--ipv4-only ]
+  [ -6|--ipv6-only ]
+  [ -I|--sync-interface <ip-address> ]
+  [ -S|--sync-port port> ]
+  [ -M|--sync-hosts <hostname|ip>[:<port>][,<hostname|ip>[:<port>][...]] ]
+  [ -X|--control-host <hostname|ip>[:<port>]
+  [ -d|--dev <name> ]
+  [ -t|--type <tun|tap> ]
+  [ -n|--ifconfig <local>/<prefix> ]
+  [ -x|--post-up-script <script> ]
+  [ -R|--route <net>/<prefix length> ]
+  [ -m|--mux <mux-id> ]
+  [ -s|--sender-id <sender id> ]
+  [ -w|--window-size <window size> ]
+  [ -k|--kd-prf <kd-prf type> ]
+  [ -e|--role <role> ]
+  [ -E|--passphrase <pass phrase> ]
+  [ -K|--key <master key> ]
+  [ -A|--salt <master salt> ]
+  [ -c|--cipher <cipher type> ]
+  [ -a|--auth-algo <algo type> ]
+  [ -b|--auth-tag-length <length> ]
+....
 
 DESCRIPTION
 -----------
@@ -59,318 +61,229 @@ OPTIONS
 no difference between client and server. The following options can be
 passed to the daemon:
 
--D|--nodaemonize
-~~~~~~~~~~~~~~~~
-
-This option instructs *anytun* to run in foreground
-instead of becoming a daemon which is the default.
-
--u|--username <username>
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-run as this user. If no group is specified (*-g*) the default group of 
-the user is used. The default is to not drop privileges.
-
--g|--groupname <groupname>
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-run as this group. If no username is specified (*-u*) this gets ignored.
-The default is to not drop privileges.
-
--C|--chroot <path>
-~~~~~~~~~~~~~~~~~~
-
-Instruct *anytun* to run in a chroot jail. The default is 
-to not run in chroot.
-
--P|--write-pid <filename>
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Instruct *anytun* to write it's pid to this file. The default is 
-to not create a pid file.
-
--L|--log <target>:<level>[,<param1>[,<param2>[..]]]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-add log target to logging system. This can be invoked several times
-in order to log to different targets at the same time. Every target 
-hast its own log level which is a number between 0 and 5. Where 0 means
-disabling log and 5 means debug messages are enabled.
-
-The following targets are supported:
-
-* *syslog* - log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
-* *file* - log to file, parameters <level>[,<path>]
-* *stdout* - log to standard output, parameters <level>
-* *stderr* - log to standard error, parameters <level> 
-
-The file target can be used more the once with different levels.
-If no target is provided at the command line a single target with the 
-following config is added:
-
-*syslog:3,uanytun,daemon*
-
--i|--interface <ip address>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This IP address is used as the sender address for outgoing
-packets. In case of anycast tunnel endpoints, the anycast
-IP has to be used. In case of unicast endpoints, the
-address is usually derived correctly from the routing
-table. The default is to not use a special inteface and just
-bind on all interfaces.
-
--p|--port <port>
-~~~~~~~~~~~~~~~~
-
-local anycast(data) port to bind to
-
-The local UDP port that is used to send and receive the
-payload data. The two tunnel endpoints can use different
-ports. If a tunnel endpoint consists of multiple anycast
-hosts, all hosts have to use the same port. default: 4444
-
--r|--remote-host <hostname|ip>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-remote host
-
-This option can be used to specify the remote tunnel
-endpoint. In case of anycast tunnel endpoints, the
-anycast IP address has to be used. If you do not specify
-an address, it is automatically determined after receiving
-the first data packet.
-
--o|--remote-port <port>
-~~~~~~~~~~~~~~~~~~~~~~~
-remote port
-
-The UDP port used for payload data by the remote host
-(specified with -p on the remote host). If you do not specify
-a port, it is automatically determined after receiving
-the first data packet.
-
--4|--ipv4-only
-~~~~~~~~~~~~~~
-
-Resolv to IPv4 addresses only. The default is to resolv both
-IPv4 and IPv6 addresses.
-
--6|--ipv6-only
-~~~~~~~~~~~~~~
-
-Resolv to IPv6 addresses only. The default is to resolv both
-IPv4 and IPv6 addresses.
-
--I|--sync-interface <ip-address>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-local unicast(sync) ip address to bind to
-
-This option is only needed for tunnel endpoints consisting
-of multiple anycast hosts. The unicast IP address of
-the anycast host can be used here. This is needed for
-communication with the other anycast hosts. The default is to 
-not use a special inteface and just bind on all interfaces. However
-this is only the case if synchronisation is active see *--sync-port*.
-
--S|--sync-port <port>
-~~~~~~~~~~~~~~~~~~~~~
-
-local unicast(sync) port to bind to
-
-This option is only needed for tunnel endpoints
-consisting of multiple anycast hosts. This port is used
-by anycast hosts to synchronize information about tunnel
-endpoints. No payload data is transmitted via this port.
-By default the synchronisation is disabled an therefore the
-port is kept empty.
-
-It is possible to obtain a list of active connections
-by telnetting into this port. This port is read-only
-and unprotected by default. It is advised to protect
-this port using firewall rules and, eventually, IPsec.
-
--M|--sync-hosts <hostname|ip>[:<port>],[<hostname|ip>[:<port>][...]]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-remote hosts to sync with
-
-This option is only needed for tunnel endpoints consisting
-of multiple anycast hosts. Here, one has to specify all
-unicast IP addresses of all other anycast hosts that
-comprise the anycast tunnel endpoint. By default synchronisation is
-disabled and therefore this is empty. Mind that the port can be
-omitted in which case port 2323 is used. If you want to specify an
-ipv6 address and a port you have to use [ and ] to seperate the address
-from the port, eg.: [::1]:1234. If you want to use the default port 
-[ and ] can be omitted.
-
--X|--control-host <hostname|ip>[:<port>]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-fetch the config from this host. The default is not to use a control
-host and therefore this is empty. Mind that the port can be omitted 
-in which case port 2323 is used. If you want to specify an
-ipv6 address and a port you have to use [ and ] to seperate the address
-from the port, eg.: [::1]:1234. If you want to use the default port 
-[ and ] can be omitted.
-
--d|--dev <name>
-~~~~~~~~~~~~~~~
-device name
-
-By default, tapN is used for Ethernet tunnel interfaces,
-and tunN for IP tunnels, respectively. This option can
-be used to manually override these defaults.
-
--t|--type <tun|tap>
-~~~~~~~~~~~~~~~~~~~
-
-device type
-
-Type of the tunnels to create. Use tap for Ethernet
-tunnels, tun for IP tunnels.
-
--n|--ifconfig <local>/<prefix>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-*<local>* the local IP address for the tun/tap device
-
-*<prefix>* the prefix length of the network
-
-The local IP address and prefix length. The remote tunnel endpoint
-has to use a different IP address in the same subnet
-
--x|--post-up-script <script>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This option instructs *anytun* to run this script after the interface 
-is created. By default no script will be executed.
-
--R|--route <net>/<prefix length>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-add a route to connection. This can be invoked several times.
-
--m|--mux <mux-id>
-~~~~~~~~~~~~~~~~~
-
-the multiplex id to use. default: 0
-
--s|--sender-id  <sender id>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Each anycast tunnel endpoint needs a uniqe sender id
-(1, 2, 3, ...). It is needed to distinguish the senders
-in case of replay attacks. This option can be ignored on
-unicast endpoints. default: 0
-
--w|--window-size <window size>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-seqence window size
-
-Sometimes, packets arrive out of order on the receiver
-side. This option defines the size of a list of received
-packets' sequence numbers. If, according to this list,
-a received packet has been previously received or has
-been transmitted in the past, and is therefore not in
-the list anymore, this is interpreted as a replay attack
-and the packet is dropped. A value of 0 deactivates this
-list and, as a consequence, the replay protection employed
-by filtering packets according to their secuence number.
-By default the sequence window is disabled and therefore a
-window size of 0 is used.
-
--k|--kd--prf <kd-prf type>
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-key derivation pseudo random function.
-
-The pseudo random function which is used for calculating the 
-session keys and session salt.
-
-Possible values:
-
-* *null* - no random function, keys and salt are set to 0..00
-* *aes-ctr* - AES in counter mode with 128 Bits, default value
-* *aes-ctr-128* - AES in counter mode with 128 Bits
-* *aes-ctr-192* - AES in counter mode with 192 Bits
-* *aes-ctr-256* - AES in counter mode with 256 Bits
-
--e|--role <role>
-~~~~~~~~~~~~~~~~
-
-SATP uses different session keys for inbound and outbound traffic. The
-role parameter is used to determine which keys to use for outbound or
-inbound packets. On both sides of a vpn connection different roles have 
-to be used. Possible values are *left* and *right*. You may also use 
-*alice* or *server* as a replacement for *left* and *bob* or *client* as 
-a replacement for *right*. By default *left* is used.
-
--E|--passphrase <pass phrase>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This passphrase is used to generate the master key and master salt.
-For the master key the last n bits of the SHA256 digest of the 
-passphrase (where n is the length of the master key in bits) is used. 
-The master salt gets generated with the SHA1 digest. 
-You may force a specific key and or salt by using *--key* and *--salt*.
-
--K|--key <master key>
-~~~~~~~~~~~~~~~~~~~~~
-
-master key to use for key derivation
-
-Master key in hexadecimal notation, eg
-01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
-of 32, 48 or 64 characters (128, 192 or 256 bits).
-
--A|--salt <master salt>
-~~~~~~~~~~~~~~~~~~~~~~~
-
-master salt to use for key derivation
-
-Master salt in hexadecimal notation, eg
-01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
-of 28 characters (14 bytes).
-
--c|--cipher <cipher type>
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-payload encryption algorithm
-
-Encryption algorithm used for encrypting the payload
-
-Possible values:
-
-* *null* - no encryption
-* *aes-ctr* - AES in counter mode with 128 Bits, default value
-* *aes-ctr-128* - AES in counter mode with 128 Bits
-* *aes-ctr-192* - AES in counter mode with 192 Bits
-* *aes-ctr-256* - AES in counter mode with 256 Bits
-
--a|--auth-algo <algo type>
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-message authentication algorithm
-
-This option sets the message authentication algorithm.
-
-Possible values:
-
-* *null* - no message authentication
-* *sha1* - HMAC-SHA1, default value
-
-If HMAC-SHA1 is used, the packet length is increased. The additional bytes 
-contain the authentication data. see *-b|--auth-tag-length* for more info.
-
--b|--auth-tag-length <length>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The number of bytes to use for the auth tag. This value defaults to 10 bytes 
-unless the *null* auth algo is used in which case it defaults to 0. 
+*-D, --nodaemonize*::
+   This option instructs *Anytun* to run in foreground
+   instead of becoming a daemon which is the default.
+
+*-u, --username <username>*::
+   run as this user. If no group is specified (*-g*) the default group of 
+   the user is used. The default is to not drop privileges.
+
+*-g, --groupname <groupname>*::
+   run as this group. If no username is specified (*-u*) this gets ignored.
+   The default is to not drop privileges.
+
+*-C, --chroot <path>*::
+   Instruct *Anytun* to run in a chroot jail. The default is 
+   to not run in chroot.
+
+*-P, --write-pid <filename>*::
+   Instruct *Anytun* to write it's pid to this file. The default is 
+   to not create a pid file.
+
+*-L, --log <target>:<level>[,<param1>[,<param2>[..]]]*::
+   add log target to logging system. This can be invoked several times
+   in order to log to different targets at the same time. Every target 
+   hast its own log level which is a number between 0 and 5. Where 0 means
+   disabling log and 5 means debug messages are enabled. +
+   The file target can be used more the once with different levels.
+   If no target is provided at the command line a single target with the 
+   config *syslog:3,anytun,daemon* is added. +
+   The following targets are supported:
+
+   *syslog*;; log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
+   *file*;; log to file, parameters <level>[,<path>]
+   *stdout*;; log to standard output, parameters <level>
+   *stderr*;; log to standard error, parameters <level> 
+
+*-i, --interface <ip address>*::
+   This IP address is used as the sender address for outgoing
+   packets. In case of anycast tunnel endpoints, the anycast
+   IP has to be used. In case of unicast endpoints, the
+   address is usually derived correctly from the routing
+   table. The default is to not use a special inteface and just
+   bind on all interfaces.
+
+*-p, --port <port>*::
+   The local UDP port that is used to send and receive the
+   payload data. The two tunnel endpoints can use different
+   ports. If a tunnel endpoint consists of multiple anycast
+   hosts, all hosts have to use the same port. default: 4444
+
+*-r, --remote-host <hostname|ip>*::
+   This option can be used to specify the remote tunnel
+   endpoint. In case of anycast tunnel endpoints, the
+   anycast IP address has to be used. If you do not specify
+   an address, it is automatically determined after receiving
+   the first data packet.
+
+*-o, --remote-port <port>*::
+   The UDP port used for payload data by the remote host
+   (specified with -p on the remote host). If you do not specify
+   a port, it is automatically determined after receiving
+   the first data packet.
+
+*-4, --ipv4-only*::
+   Resolv to IPv4 addresses only. The default is to resolv both
+   IPv4 and IPv6 addresses.
+
+*-6, --ipv6-only*::
+   Resolv to IPv6 addresses only. The default is to resolv both
+   IPv4 and IPv6 addresses.
+
+*-I, --sync-interface <ip-address>*::
+   local unicast(sync) ip address to bind to +
+   This option is only needed for tunnel endpoints consisting
+   of multiple anycast hosts. The unicast IP address of
+   the anycast host can be used here. This is needed for
+   communication with the other anycast hosts. The default is to 
+   not use a special inteface and just bind on all interfaces. However
+   this is only the case if synchronisation is active see *--sync-port*.
+
+*-S, --sync-port <port>*::
+   local unicast(sync) port to bind to +
+   This option is only needed for tunnel endpoints
+   consisting of multiple anycast hosts. This port is used
+   by anycast hosts to synchronize information about tunnel
+   endpoints. No payload data is transmitted via this port.
+   By default the synchronisation is disabled an therefore the
+   port is kept empty. +
+   It is possible to obtain a list of active connections
+   by telnetting into this port. This port is read-only
+   and unprotected by default. It is advised to protect
+   this port using firewall rules and, eventually, IPsec.
+
+*-M, --sync-hosts <hostname|ip>[:<port>],[<hostname|ip>[:<port>][...]]*::
+   remote hosts to sync with +
+   This option is only needed for tunnel endpoints consisting
+   of multiple anycast hosts. Here, one has to specify all
+   unicast IP addresses of all other anycast hosts that
+   comprise the anycast tunnel endpoint. By default synchronisation is
+   disabled and therefore this is empty. Mind that the port can be
+   omitted in which case port 2323 is used. If you want to specify an
+   ipv6 address and a port you have to use [ and ] to seperate the address
+   from the port, eg.: [::1]:1234. If you want to use the default port 
+   [ and ] can be omitted.
+
+*-X, --control-host <hostname|ip>[:<port>]*::
+   fetch the config from this host. The default is not to use a control
+   host and therefore this is empty. Mind that the port can be omitted 
+   in which case port 2323 is used. If you want to specify an
+   ipv6 address and a port you have to use [ and ] to seperate the address
+   from the port, eg.: [::1]:1234. If you want to use the default port 
+   [ and ] can be omitted.
+
+*-d, --dev <name>*::
+   device name +
+   By default, tapN is used for Ethernet tunnel interfaces,
+   and tunN for IP tunnels, respectively. This option can
+   be used to manually override these defaults.
+
+*-t, --type <tun|tap>*::
+   device type +
+   Type of the tunnels to create. Use tap for Ethernet
+   tunnels, tun for IP tunnels.
+
+*-n, --ifconfig <local>/<prefix>*::
+   The local IP address and prefix length. The remote tunnel endpoint
+   has to use a different IP address in the same subnet.
+
+   *<local>*;; the local IP address for the tun/tap device
+   *<prefix>*;; the prefix length of the network
+
+*-x, --post-up-script <script>*::
+   This option instructs *Anytun* to run this script after the interface 
+   is created. By default no script will be executed.
+
+*-R, --route <net>/<prefix length>*::
+   add a route to connection. This can be invoked several times.
+
+*-m, --mux <mux-id>*::
+   the multiplex id to use. default: 0
+
+*-s, --sender-id  <sender id>*::
+   Each anycast tunnel endpoint needs a uniqe sender id
+   (1, 2, 3, ...). It is needed to distinguish the senders
+   in case of replay attacks. This option can be ignored on
+   unicast endpoints. default: 0
+
+*-w, --window-size <window size>*::
+   seqence window size +
+   Sometimes, packets arrive out of order on the receiver
+   side. This option defines the size of a list of received
+   packets' sequence numbers. If, according to this list,
+   a received packet has been previously received or has
+   been transmitted in the past, and is therefore not in
+   the list anymore, this is interpreted as a replay attack
+   and the packet is dropped. A value of 0 deactivates this
+   list and, as a consequence, the replay protection employed
+   by filtering packets according to their secuence number.
+   By default the sequence window is disabled and therefore a
+   window size of 0 is used.
+
+*-k, --kd--prf <kd-prf type>*::
+   key derivation pseudo random function +
+   The pseudo random function which is used for calculating the 
+   session keys and session salt. +
+   Possible values:
+
+   *null*;; no random function, keys and salt are set to 0..00
+   *aes-ctr*;; AES in counter mode with 128 Bits, default value
+   *aes-ctr-128*;; AES in counter mode with 128 Bits
+   *aes-ctr-192*;; AES in counter mode with 192 Bits
+   *aes-ctr-256*;; AES in counter mode with 256 Bits
+
+*-e, --role <role>*::
+   SATP uses different session keys for inbound and outbound traffic. The
+   role parameter is used to determine which keys to use for outbound or
+   inbound packets. On both sides of a vpn connection different roles have 
+   to be used. Possible values are *left* and *right*. You may also use 
+   *alice* or *server* as a replacement for *left* and *bob* or *client* as 
+   a replacement for *right*. By default *left* is used.
+
+*-E, --passphrase <pass phrase>*::
+   This passphrase is used to generate the master key and master salt.
+   For the master key the last n bits of the SHA256 digest of the 
+   passphrase (where n is the length of the master key in bits) is used. 
+   The master salt gets generated with the SHA1 digest. 
+   You may force a specific key and or salt by using *--key* and *--salt*.
+
+*-K, --key <master key>*::
+   master key to use for key derivation +
+   Master key in hexadecimal notation, e.g.
+   01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
+   of 32, 48 or 64 characters (128, 192 or 256 bits).
+
+*-A, --salt <master salt>*::
+   master salt to use for key derivation +
+   Master salt in hexadecimal notation, e.g.
+   01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
+   of 28 characters (14 bytes).
+
+*-c, --cipher <cipher type>*::
+   payload encryption algorithm +
+   Encryption algorithm used for encrypting the payload +
+   Possible values:
+
+   *null*;; no encryption
+   *aes-ctr*;; AES in counter mode with 128 Bits, default value
+   *aes-ctr-128*;; AES in counter mode with 128 Bits
+   *aes-ctr-192*;; AES in counter mode with 192 Bits
+   *aes-ctr-256*;; AES in counter mode with 256 Bits
+
+*-a, --auth-algo <algo type>*::
+   message authentication algorithm +
+   This option sets the message authentication algorithm. +
+   If HMAC-SHA1 is used, the packet length is increased. The additional bytes 
+   contain the authentication data. see *--auth-tag-length* for more info. +
+   Possible values:
+
+   *null*;; no message authentication
+   *sha1*;; HMAC-SHA1, default value
+
+*-b, --auth-tag-length <length>*::
+   The number of bytes to use for the auth tag. This value defaults to 10 bytes 
+   unless the *null* auth algo is used in which case it defaults to 0. 
 
 
 EXAMPLES
@@ -429,7 +342,7 @@ anycast tunnel endpoint) please consult the man page of anytun-config(8).
 
 BUGS
 ----
-Most likely there are some bugs in *anytun*. If you find a bug, please let
+Most likely there are some bugs in *Anytun*. If you find a bug, please let
 the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO
@@ -438,19 +351,11 @@ anytun-config(8), anytun-controld(8), anytun-showtables(8)
 
 AUTHORS
 -------
-Design of SATP and wizards of this implementation:
 
 Othmar Gsenger <otti@anytun.org>
 Erwin Nindl <nine@anytun.org>
 Christian Pointner <equinox@anytun.org>
 
-Debian packaging:
-
-Andreas Hirczy <ahi@itp.tu-graz.ac.at>
-
-Manual page:
-
-Alexander List <alex@debian.org>
 
 RESOURCES
 ---------

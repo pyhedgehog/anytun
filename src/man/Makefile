@@ -30,29 +30,26 @@
 ##  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+VERSION=$(shell cat ../../version)
+
+MANPAGES := anytun.8 anytun-controld.8 anytun-config.8 anytun-showtables.8 anyrtpproxy.8
+XML := $(MANPAGES:%.8=%.8.xml) 
+
 all: manpage
 
-anytun.8: anytun.8.txt
-	a2x -f manpage anytun.8.txt
+define create-manpage
+	a2x -f manpage $(1)
+	@ sed -i -e 's/\[FIXME: source\]/anytun ${VERSION}/' $(2)
+	@ sed -i -e 's/\[FIXME: manual\]/$(2:.8=) user manual/' $(2)
+	@ sed -i -e 's/^\($(subst -,\\-,$(2:.8=))\)$$/\\fB\1\\fR/' $(2)
+	@ sed -i -e 's/^  \[ \([^ ]*\)/  [ \\fB\1\\fR/' $(2)
+endef
 
-anytun-controld.8: anytun-controld.8.txt
-	a2x -f manpage anytun-controld.8.txt
+%.8: %.8.txt
+	$(call create-manpage,$<,$@)
 
-anytun-config.8: anytun-config.8.txt
-	a2x -f manpage anytun-config.8.txt
-
-anytun-showtables.8: anytun-showtables.8.txt
-	a2x -f manpage anytun-showtables.8.txt
-
-anyrtpproxy.8: anyrtpproxy.8.txt
-	a2x -f manpage anyrtpproxy.8.txt
-
-
-manpage: anytun.8 anytun-controld.8 anytun-config.8 anytun-showtables.8 anyrtpproxy.8
+manpage: $(MANPAGES)
 
 clean:
-	rm -f anytun.8 anytun.8.xml
-	rm -f anytun-controld.8 anytun-controld.8.xml
-	rm -f anytun-config.8 anytun-config.8.xml
-	rm -f anytun-showtables.8 anytun-showtables.8.xml
-	rm -f anyrtpproxy.8 anyrtpproxy.8.xml
+	rm -f $(MANPAGES)
+	rm -f $(XML)

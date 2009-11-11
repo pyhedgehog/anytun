@@ -8,96 +8,77 @@ anytun-controld - anycast tunneling control daemon
 SYNOPSIS
 --------
 
-*anytun-controld*
-[ *-h|--help* ]
-[ *-D|--nodaemonize* ]
-[ *-u|--username* <username> ]
-[ *-g|--groupname* <groupname> ]
-[ *-C|--chroot* <path> ]
-[ *-P|--write-pid* <filename> ]
-[ *-L|--log* <target>:<level>[,<param1>[,<param2>[..]]] ]
-[ *-f|--file* <path> ]
-[ *-X|--control-host* < <host>[:port>] | :<port> > ]
+....
+anytun-controld
+  [ -h|--help ]
+  [ -D|--nodaemonize ]
+  [ -u|--username <username> ]
+  [ -g|--groupname <groupname> ]
+  [ -C|--chroot <path> ]
+  [ -P|--write-pid <filename> ]
+  [ -L|--log <target>:<level>[,<param1>[,<param2>[..]]] ]
+  [ -f|--file <path> ]
+  [ -X|--control-host < <host>[:port>] | :<port> > ]
+....
 
 DESCRIPTION
 -----------
 
-*anytun-controld* configures the multi-connection support for *anytun*. It reads a connection/routing table and outputs it via a tcp socket to all connected *anytun* servers. When the control daemon is restarted with a new connection/routing table all *anytun* servers automatically load the new configuration. Please make sure to protect that information as it contains the connection keys.
+*anytun-controld* configures the multi-connection support for *Anytun*. It reads a connection/routing table and outputs it via a tcp socket to all connected *Anytun* servers. When the control daemon is restarted with a new connection/routing table all *Anytun* servers automatically load the new configuration. Please make sure to protect that information as it contains the connection keys.
 
 OPTIONS
 -------
 
--D|--nodaemonize
-~~~~~~~~~~~~~~~~
+*-D, --nodaemonize*::
+   This option instructs *anytun-controld* to run in foreground
+   instead of becoming a daemon which is the default.
 
-This option instructs *anytun* to run in foreground
-instead of becoming a daemon which is the default.
+*-u, --username <username>*::
+   run as this user. If no group is specified (*-g*) the default group of 
+   the user is used. The default is to not drop privileges.
 
--u|--username <username>
-~~~~~~~~~~~~~~~~~~~~~~~~
+*-g, --groupname <groupname>*::
+   run as this group. If no username is specified (*-u*) this gets ignored.
+   The default is to not drop privileges.
 
-run as this user. If no group is specified (*-g*) the default group of 
-the user is used. The default is to not drop privileges.
+*-C, --chroot <path>*::
+   Instruct *anytun-controld* to run in a chroot jail. The default is 
+   to not run in chroot.
 
--g|--groupname <groupname>
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+*-P, --write-pid <filename>*::
+   Instruct *anytun-controld* to write it's pid to this file. The default is 
+   to not create a pid file.
 
-run as this group. If no username is specified (*-u*) this gets ignored.
-The default is to not drop privileges.
+*-L, --log <target>:<level>[,<param1>[,<param2>[..]]]*::
+   add log target to logging system. This can be invoked several times
+   in order to log to different targets at the same time. Every target 
+   hast its own log level which is a number between 0 and 5. Where 0 means
+   disabling log and 5 means debug messages are enabled. +
+   The file target can be used more the once with different levels.
+   If no target is provided at the command line a single target with the 
+   config *syslog:3,anytun-controld,daemon* is added. +
+   The following targets are supported:
 
--C|--chroot <path>
-~~~~~~~~~~~~~~~~~~
+   *syslog*;; log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
+   *file*;; log to file, parameters <level>[,<path>]
+   *stdout*;; log to standard output, parameters <level>
+   *stderr*;; log to standard error, parameters <level> 
 
-Instruct *anytun* to run in a chroot jail. The default is 
-to not run in chroot.
+*-f, --file <path>*::
+   The path to the file which holds the sync information.
 
--P|--write-pid <filename>
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Instruct *anytun* to write it's pid to this file. The default is 
-to not create a pid file.
-
--L|--log <target>:<level>[,<param1>[,<param2>[..]]]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-add log target to logging system. This can be invoked several times
-in order to log to different targets at the same time. Every target 
-hast its own log level which is a number between 0 and 5. Where 0 means
-disabling log and 5 means debug messages are enabled.
-
-The following targets are supported:
-
-* *syslog* - log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
-* *file* - log to file, parameters <level>[,<path>]
-* *stdout* - log to standard output, parameters <level>
-* *stderr* - log to standard error, parameters <level> 
-
-The file target can be used more the once with different levels.
-If no target is provided at the command line a single target with the 
-following config is added:
-
-*syslog:3,uanytun,daemon*
-
--f|--file <path>
-~~~~~~~~~~~~~~~~
-
-The path to the file which holds the sync information.
-
--X|--control-host < <host>[:<port>] | :<port> >
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The local ip address and or tcp port to bind to. Mind that if an 
-address is given the port can be omitted in which case port 2323 
-is used. You can also specify to listen on an specific port but on
-all interfaces by omitting the address. If you want to specify an
-ipv6 address and a port you have to use [ and ] to seperate the address
-from the port, eg.: [::1]:1234. If you want to use the default port 
-[ and ] can be omitted. default: 127.0.0.1:2323
+*-X, --control-host <hostname|ip>[:<port>]*::
+   fetch the config from this host. The default is not to use a control
+   host and therefore this is empty. Mind that the port can be omitted 
+   in which case port 2323 is used. If you want to specify an
+   ipv6 address and a port you have to use [ and ] to seperate the address
+   from the port, eg.: [::1]:1234. If you want to use the default port 
+   [ and ] can be omitted.
 
 
 BUGS
 ----
-Most likely there are some bugs in *anytun*. If you find a bug, please let
+Most likely there are some bugs in *Anytun*. If you find a bug, please let
 the developers know at satp@anytun.org. Of course, patches are preferred.
 
 SEE ALSO
@@ -106,19 +87,11 @@ anytun(8), anytun-config(8), anytun-showtables(8)
 
 AUTHORS
 -------
-Design of SATP and wizards of this implementation:
 
 Othmar Gsenger <otti@anytun.org>
 Erwin Nindl <nine@anytun.org>
 Christian Pointner <equinox@anytun.org>
 
-Debian packaging:
-
-Andreas Hirczy <ahi@itp.tu-graz.ac.at>
-
-Manual page:
-
-Alexander List <alex@debian.org>
 
 RESOURCES
 ---------

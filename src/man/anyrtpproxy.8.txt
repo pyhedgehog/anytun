@@ -8,20 +8,22 @@ anyrtpproxy - anycast rtpproxy
 SYNOPSIS
 --------
 
-*anyrtpproxy*
-[ *-h|--help* ]
-[ *-D|--nodaemonize* ]
-[ *-C|--chroot* ]
-[ *-u|--username* <username> ]
-[ *-H|--chroot-dir* <directory> ]
-[ *-P|--write-pid* <filename> ]
-[ *-i|--interface* <ip-address> ]
-[ *-s|--control* <hostname|ip>[:<port>] ]
-[ *-p|--port-range* <start> <end> ]
-[ *-n|--nat* ]
-[ *-o|--no-nat-once* ]
-[ *-S|--sync-port* port> ]
-[ *-M|--sync-hosts* <hostname|ip>:<port>[,<hostname|ip>:<port>[...]] ]
+....
+anyrtpproxy
+  [ -h|--help ]
+  [ -D|--nodaemonize ]
+  [ -C|--chroot ]
+  [ -u|--username <username> ]
+  [ -H|--chroot-dir <directory> ]
+  [ -P|--write-pid <filename> ]
+  [ -i|--interface <ip-address> ]
+  [ -s|--control <hostname|ip>[:<port>] ]
+  [ -p|--port-range <start> <end> ]
+  [ -n|--nat ]
+  [ -o|--no-nat-once ]
+  [ -S|--sync-port port> ]
+  [ -M|--sync-hosts <hostname|ip>:<port>[,<hostname|ip>:<port>[...]] ]
+....
 
 
 DESCRIPTION
@@ -29,89 +31,62 @@ DESCRIPTION
 
 *anyrtpproxy* is a rtpproxy which can be used in combination with anycast. It uses
 the same control protocol than rtpproxy though it can be controled through the nathelper
-plugin of openser. *anyrtpproxy* uses the same synchronisation protocol than *anytun* 
+plugin of openser. *anyrtpproxy* uses the same synchronisation protocol than *Anytun* 
 to sync the session information among all anycast instances.
 
 
 OPTIONS
 -------
 
--D|--nodaemonize
-~~~~~~~~~~~~~~~~
+*-D, --nodaemonize*::
+   This option instructs *anyrtpproxy* to run in the foreground
+   instead of becoming a daemon.
 
-This option instructs *anyrtpproxy* to run in the foreground
-instead of becoming a daemon.
+*-C, --chroot*::
+   chroot and drop privileges
 
--C|--chroot
-~~~~~~~~~~~
+*-u, --username <username>*::
+   if chroot change to this user
 
-chroot and drop privileges
+*-H, --chroot-dir <directory>*::
+   chroot to this directory
 
--u|--username <username>
-~~~~~~~~~~~~~~~~~~~~~~~~
+*-P, --write-pid <filename>*::
+   write pid to this file
 
-if chroot change to this user
+*-i, --interface <ip address>*::
+  The local interface to listen on for RTP packets
 
--H|--chroot-dir <directory>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*-s, --control <hostname|ip>[:<port>]*::
+   The local address and port to listen on for control messages from openser
 
-chroot to this directory
+*-p, --port-range <start> <end>*::
+   A pool of ports which should be used by *anyrtpproxy* to relay RTP packets. 
+   The range may not overlap between the anycast instances
 
--P|--write-pid <filename>
-~~~~~~~~~~~~~~~~~~~~~~~~~
+*-n, --nat*::
+   Allow to learn the remote address and port in order to handle clients behind nat.
+   This option should only be enabled if the source is authenticated (i.e. through 
+   *anytun*) 
 
-write pid to this file
+*-o, --no-nat-once*::
+   Disable learning of remote address and port in case the first packet does not 
+   come from the client which is specified by openser during configuration. Invoking
+   this parameter increases the security level of the system but in case of nat needs
+   a working nat transversal such as stun.
 
--i|--interface <ip address>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*-S, --sync-port <port>*::
+   local unicast(sync) port to bind to +
+   This port is used by anycast hosts to synchronize information about tunnel
+   endpoints. No payload data is transmitted via this port. +
+   It is possible to obtain a list of active connections by telnetting into 
+   this port. This port is read-only and unprotected by default. It is advised 
+   to protect this port using firewall rules and, eventually, IPsec.
 
-The local interface to listen on for RTP packets
-
--s|--control <hostname|ip>[:<port>]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The local address and port to listen on for control messages from openser
-
--p|--port-range <start> <end>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-A pool of ports which should be used by *anyrtpproxy* to relay RTP packets. 
-The range may not overlap between the anycast instances
-
--n|--nat
-~~~~~~~~
-
-Allow to learn the remote address and port in order to handle clients behind nat.
-This option should only be enabled if the source is authenticated (i.e. through 
-*anytun*) 
-
--o|--no-nat-once
-~~~~~~~~~~~~~~~~
-
-Disable learning of remote address and port in case the first packet does not 
-come from the client which is specified by openser during configuration. Invoking
-this parameter increases the security level of the system but in case of nat needs
-a working nat transversal such as stun.
-
--S|--sync-port <port>
-~~~~~~~~~~~~~~~~~~~~~
-
-local unicast(sync) port to bind to
-
-This port is used by anycast hosts to synchronize information about tunnel
-endpoints. No payload data is transmitted via this port.
-
-It is possible to obtain a list of active connections by telnetting into 
-this port. This port is read-only and unprotected by default. It is advised 
-to protect this port using firewall rules and, eventually, IPsec.
-
--M|--sync-hosts <hostname|ip>:<port>,[<hostname|ip>:<port>[...]]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-remote hosts to sync with
-
-Here, one has to specify all unicast IP addresses of all 
-other anycast hosts that comprise the anycast tunnel endpoint.
+*-M, --sync-hosts <hostname|ip>:<port>,[<hostname|ip>:<port>[...]]*::
+   remote hosts to sync with +
+   Here, one has to specify all unicast IP addresses of all 
+   other anycast hosts that comprise the anycast tunnel endpoint.
 
 EXAMPLES
 --------
@@ -141,8 +116,6 @@ hostname anycast.anytun.org:
 --------------------------------------------------------------------------------------
 
 
-
-
 BUGS
 ----
 Most likely there are some bugs in *anyrtpproxy*. If you find a bug, please let
@@ -154,19 +127,11 @@ anytun(8)
 
 AUTHORS
 -------
-Design of SATP and wizards of this implementation:
 
 Othmar Gsenger <otti@anytun.org>
 Erwin Nindl <nine@anytun.org>
 Christian Pointner <equinox@anytun.org>
 
-Debian packaging:
-
-Andreas Hirczy <ahi@itp.tu-graz.ac.at>
-
-Manual page:
-
-Alexander List <alex@debian.org>
 
 RESOURCES
 ---------
