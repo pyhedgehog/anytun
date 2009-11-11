@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ENCRYPTED_PACKET_H_
-#define _ENCRYPTED_PACKET_H_
+#ifndef ANYTUN_encryptedPacket_h_INCLUDED
+#define ANYTUN_encryptedPacket_h_INCLUDED
 
 #include "datatypes.h"
 #include "buffer.h"

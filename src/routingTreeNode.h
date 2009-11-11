@@ -30,9 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ROUTING_TREE_NODE_H
-#define _ROUTING_TREE_NODE_H
-
+#ifndef ANYTUN_routingTreeNode_h_INCLUDED
+#define ANYTUN_routingTreeNode_h_INCLUDED
 
 #include "threadUtils.hpp"
 #include "datatypes.h"

@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _PLAIN_PACKET_H_
-#define _PLAIN_PACKET_H_
+#ifndef ANYTUN_plainPacket_h_INCLUDED
+#define ANYTUN_plainPacket_h_INCLUDED
 
 #include "datatypes.h"
 #include "buffer.h"

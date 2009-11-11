@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CRYPTINIT_HPP
-#define _CRYPTINIT_HPP
+#ifndef ANYTUN_cryptinit_hpp_INCLUDED
+#define ANYTUN_cryptinit_hpp_INCLUDED
 
 #ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
@@ -111,4 +111,3 @@ bool initLibGCrypt()
 #endif
 
 #endif
-

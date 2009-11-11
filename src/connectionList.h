@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONNECTION_LIST_H
-#define _CONNECTION_LIST_H
+#ifndef ANYTUN_connectionList_h_INCLUDED
+#define ANYTUN_connectionList_h_INCLUDED
 
 #include <map>
 #include <deque>

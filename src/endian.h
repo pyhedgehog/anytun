@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ENDIAN_H_
-#define _ENDIAN_H_
+#ifndef ANYTUN_endian_h_INCLUDED
+#define ANYTUN_endian_h_INCLUDED
 
 #ifndef _WIN32
 #include <arpa/inet.h>

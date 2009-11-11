@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LOG_TARGETS_H_
-#define _LOG_TARGETS_H_
+#ifndef ANYTUN_logTargets_h_INCLUDED
+#define ANYTUN_logTargets_h_INCLUDED
 
 #include <string>
 #include <map>

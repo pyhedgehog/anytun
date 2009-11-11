@@ -29,9 +29,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef _CIPHER_FACTORY_H_
-#define _CIPHER_FACTORY_H_
+#ifndef ANYTUN_cipherFactory_h_INCLUDED
+#define ANYTUN_cipherFactory_h_INCLUDED
 
 #include <string>
 

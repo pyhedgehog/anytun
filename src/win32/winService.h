@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WIN_SERVICE_H_
-#define _WIN_SERVICE_H_
+#ifndef ANYTUN_win32_winService_h_INCLUDED
+#define ANYTUN_win32_winService_h_INCLUDED
 
 #ifdef WIN_SERVICE
 

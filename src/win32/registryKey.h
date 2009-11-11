@@ -29,6 +29,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef ANYTUN_win32_registryKey_h_INCLUDED
+#define ANYTUN_win32_registryKey_h_INCLUDED
 
 #include <string.h>
 #include <windows.h>
@@ -56,3 +58,5 @@ private:
   bool opened_;
   std::string name_;
 };
+
+#endif

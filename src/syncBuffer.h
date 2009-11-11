@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SYNCBUFFER_H_
-#define _SYNCBUFFER_H_
+#ifndef ANYTUN_syncBuffer_h_INCLUDED
+#define ANYTUN_syncBuffer_h_INCLUDED
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>

@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RESOLVER_H_
-#define _RESOLVER_H_
+#ifndef ANYTUN_resolver_h_INCLUDED
+#define ANYTUN_resolver_h_INCLUDED
 
 #include <queue>
 #include <boost/asio.hpp>

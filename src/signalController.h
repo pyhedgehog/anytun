@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SIGNAL_CONTROLLER_H_
-#define _SIGNAL_CONTROLLER_H_
+#ifndef ANYTUN_signalController_h_INCLUDED
+#define ANYTUN_signalController_h_INCLUDED
 
 #include <map>
 #include <queue>

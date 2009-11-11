@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _BUFFER_H_
-#define _BUFFER_H_
+#ifndef ANYTUN_buffer_h_INCLUDED
+#define ANYTUN_buffer_h_INCLUDED
 
 #include "datatypes.h"
 #include <string>

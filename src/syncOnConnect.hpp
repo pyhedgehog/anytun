@@ -30,6 +30,11 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef ANYTUN_syncOnConnect_hpp_INCLUDED
+#define ANYTUN_syncOnConnect_hpp_INCLUDED
+
+// TODO required headers
+
 void syncOnConnect(SyncTcpConnection * connptr)
 {
   //TODO Locking here	
@@ -67,3 +72,4 @@ void syncOnConnect(SyncTcpConnection * connptr)
 	}
 }
 
+#endif

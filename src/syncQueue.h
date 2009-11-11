@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SYNC_QUEUE_H
-#define _SYNC_QUEUE_H
+#ifndef ANYTUN_syncQueue_h_INCLUDED
+#define ANYTUN_syncQueue_h_INCLUDED
 
 #include <deque>
 #include <queue>

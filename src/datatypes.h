@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DATATYPES_H_
-#define _DATATYPES_H_
+#ifndef ANYTUN_datatypes_h_INCLUDED
+#define ANYTUN_datatypes_h_INCLUDED
 
 #include <boost/cstdint.hpp>
 #include <boost/integer_traits.hpp>

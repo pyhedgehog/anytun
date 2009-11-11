@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ROUTINGTABLE_H
-#define _ROUTINGTABLE_H
+#ifndef ANYTUN_routingTable_h_INCLUDED
+#define ANYTUN_routingTable_h_INCLUDED
 
 #include <map>
 #include <deque>

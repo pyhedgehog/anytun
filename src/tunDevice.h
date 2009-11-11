@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _TUNDEVICE_H_
-#define _TUNDEVICE_H_
+#ifndef ANYTUN_tunDevice_h_INCLUDED
+#define ANYTUN_tunDevice_h_INCLUDED
 
 #include "buffer.h"
 #include "deviceConfig.hpp"

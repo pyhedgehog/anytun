@@ -25,6 +25,8 @@
  *  distribution); if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef ANYTUN_win32_common_h_INCLUDED
+#define ANYTUN_win32_common_h_INCLUDED
 
 //===============================================
 // This file is included both by OpenVPN and
@@ -80,3 +82,5 @@
 //=========================================================
 
 #define TAP_COMPONENT_ID "tap0901"
+
+#endif

@@ -29,14 +29,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef ANYTUN_threadUtils_hpp_INCLUDED
+#define ANYTUN_threadUtils_hpp_INCLUDED
+
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/thread/condition.hpp>
 
 #include "datatypes.h"
-#ifndef __THREADUTILS__
-#define __THREADUTILS__
+
 typedef boost::mutex::scoped_lock Lock;
 typedef boost::mutex Mutex;
 

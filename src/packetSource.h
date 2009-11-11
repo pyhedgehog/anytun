@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _PACKET_SOURCE_H_
-#define _PACKET_SOURCE_H_
+#ifndef ANYTUN_packetSource_h_INCLUDED
+#define ANYTUN_packetSource_h_INCLUDED
 
 #include <boost/asio.hpp>
 

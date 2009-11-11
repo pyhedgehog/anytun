@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SYNCCONNECTIONCOMMAND_H
-#define _SYNCCONNECTIONCOMMAND_H
+#ifndef ANYTUN_syncConnectionCommands_h_INCLUDED
+#define ANYTUN_syncConnectionCommands_h_INCLUDED
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -62,4 +62,4 @@ private:
 };
 
 
-#endif // _SYNCCOMMAND_H
+#endif

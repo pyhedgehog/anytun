@@ -29,8 +29,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SYNCCOMMAND_H
-#define _SYNCCOMMAND_H
+#ifndef ANYTUN_syncCommand_h_INCLUDED
+#define ANYTUN_syncCommand_h_INCLUDED
+
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
@@ -77,4 +78,4 @@ private:
 };
 
 
-#endif // _SYNCCOMMAND_H
+#endif

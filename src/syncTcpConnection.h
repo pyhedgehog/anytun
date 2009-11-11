@@ -29,9 +29,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef ANYTUN_syncTcpConnection_h_INCLUDED
+#define ANYTUN_syncTcpConnection_h_INCLUDED
 
-#ifndef _SYNCTCPCONNECTION_H_
-#define _SYNCTCPCONNECTION_H_
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/function.hpp>
@@ -63,4 +63,5 @@ private:
       size_t /*bytes_transferred*/);
   proto::socket socket_;
 };
+
 #endif

@@ -30,10 +30,9 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SYNC_SERVER_H_
-#define _SYNC_SERVER_H_
-//#include <iostream>
-//#include <string>
+#ifndef ANYTUN_syncServer_h_INCLUDED
+#define ANYTUN_syncServer_h_INCLUDED
+
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -69,4 +68,5 @@ private:
   ConnectCallback onConnect_;
   Semaphore ready_sem_;
 };
+
 #endif

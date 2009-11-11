@@ -29,9 +29,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef _CONNECTIONPARAM_H_
-#define _CONNECTIONPARAM_H_
+#ifndef ANYTUN_connectionParam_h_INCLUDED
+#define ANYTUN_connectionParam_h_INCLUDED
 
 #include "keyDerivation.h"
 #include "seqWindow.h"

@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ROUTING_TREE_
-#define __ROUTING_TREE_
+#ifndef ANYTUN_routingTree_hpp_INCLUDED
+#define ANYTUN_routingTree_hpp_INCLUDED
 
 #include "anytunError.h"
 
@@ -101,5 +101,3 @@ public:
 };
 
 #endif
-  
-  

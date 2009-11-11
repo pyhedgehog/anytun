@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DAEMON_HPP
-#define _DAEMON_HPP
+#ifndef ANYTUN_daemon_hpp_INCLUDED
+#define ANYTUN_daemon_hpp_INCLUDED
 #ifndef NO_DAEMON
 
 #include <poll.h>
@@ -163,4 +163,3 @@ void daemonize()
 }
 #endif
 #endif
-

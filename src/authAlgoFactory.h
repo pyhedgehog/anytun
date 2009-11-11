@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AUTHALGO_FACTORY_H_
-#define _AUTHALGO_FACTORY_H_
+#ifndef ANYTUN_authAlgoFactory_h_INCLUDED
+#define ANYTUN_authAlgoFactory_h_INCLUDED
 
 #include <string>
 

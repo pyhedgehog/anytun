@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _NETWORK_PREFIX_H
-#define _NETWORK_PREFIX_H
+#ifndef ANYTUN_networkPrefix_h_INCLUDED
+#define ANYTUN_networkPrefix_h_INCLUDED
 
 #include "threadUtils.hpp"
 #include "datatypes.h"

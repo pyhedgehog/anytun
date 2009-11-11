@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LOG_H_
-#define _LOG_H_
+#ifndef ANYTUN_log_h_INCLUDED
+#define ANYTUN_log_h_INCLUDED
 
 #include <string>
 #include <sstream>

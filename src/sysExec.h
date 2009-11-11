@@ -30,8 +30,9 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SYSEXEC_H_
-#define _SYSEXEC_H_
+#ifndef ANYTUN_sysExec_h_INCLUDED
+#define ANYTUN_sysExec_h_INCLUDED
+
 #ifndef NO_EXEC
 
 #include <vector>

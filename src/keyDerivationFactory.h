@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _KEYDERIVATION_FACTORY_H_
-#define _KEYDERIVATION_FACTORY_H_
+#ifndef ANYTUN_keyDerivationFactory_h_INCLUDED
+#define ANYTUN_keyDerivationFactory_h_INCLUDED
 
 #include <string>
 

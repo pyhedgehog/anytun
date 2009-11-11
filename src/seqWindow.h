@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SEQ_WINDOW_H_
-#define _SEQ_WINDOW_H_
+#ifndef ANYTUN_seqWindow_h_INCLUDED
+#define ANYTUN_seqWindow_h_INCLUDED
 
 #include <map>
 #include <deque>

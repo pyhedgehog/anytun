@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _KEYDERIVATION_H_
-#define _KEYDERIVATION_H_
+#ifndef ANYTUN_keyDerivation_h_INCLUDED
+#define ANYTUN_keyDerivation_h_INCLUDED
 
 #include "datatypes.h"
 #include "buffer.h"
@@ -202,4 +202,3 @@ private:
 #endif
 
 #endif
-

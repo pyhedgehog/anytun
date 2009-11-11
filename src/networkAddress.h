@@ -30,8 +30,10 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _NETWORK_ADDRESS_H
-#define _NETWORK_ADDRESS_H
+#ifndef ANYTUN_networkAddress_h_INCLUDED
+#define ANYTUN_networkAddress_h_INCLUDED
+
+// TODO not required here
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 

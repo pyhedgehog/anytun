@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DEVICE_CONFIG_HPP_
-#define _DEVICE_CONFIG_HPP_
+#ifndef ANYTUN_deviceConfig_hpp_INCLUDED
+#define ANYTUN_deviceConfig_hpp_INCLUDED
 
 #include "networkAddress.h"
 #include <boost/asio.hpp>

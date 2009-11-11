@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ANYTUN_ERROR_H
-#define _ANYTUN_ERROR_H
+#ifndef ANYTUN_anytunError_h_INCLUDED
+#define ANYTUN_anytunError_h_INCLUDED
 
 #include <sstream>
 #include <boost/system/system_error.hpp>

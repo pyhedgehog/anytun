@@ -29,8 +29,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SYNCROUTECOMMAND_H
-#define _SYNCROUTECOMMAND_H
+#ifndef ANYTUN_syncRouteCommands_h_INCLUDED
+#define ANYTUN_syncRouteCommands_h_INCLUDED
+
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
@@ -63,4 +64,4 @@ private:
 };
 
 
-#endif // _SYNCCOMMAND_H
+#endif
