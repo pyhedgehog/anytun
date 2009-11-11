@@ -126,14 +126,14 @@ ifneq ($(MAKECMDGOALS),distclean)
 endif
 
 strip: $(EXECUTABLES)
-	strip -s $(EXECUTABLES) 
+	$(STRIP) -s $(EXECUTABLES) 
 
 anytun: $(OBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
 
 anytun-static: $(OBJS) $(SYNCOBJS) anytun-noprivdrop.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun-noprivdrop.o -o $@ -Bstatic -lstdc++ -static $(LDFLAGS) -lpthread
-	strip -s anytun-static
+	$(STRIP) -s anytun-static
 
 anytun-nosync: $(OBJS) anytun-nosync.o
 	$(LD) $(OBJS) anytun-nosync.o -o $@ $(LDFLAGS)
@@ -203,14 +203,10 @@ install: all install-bin install-etc install-man
 install-bin: $(EXECUTABLES)
 	mkdir -p $(DESTDIR)$(SBINDIR)
 	install -m 755 anytun $(DESTDIR)$(SBINDIR)
-	$(STRIP) $(DESTDIR)$(SBINDIR)/anytun
 	mkdir -p $(DESTDIR)$(BINDIR)
 	install -m 755 anytun-config $(DESTDIR)$(BINDIR)
-	$(STRIP) $(DESTDIR)$(BINDIR)/anytun-config
 	install -m 755 anytun-controld $(DESTDIR)$(BINDIR)
-	$(STRIP) $(DESTDIR)$(BINDIR)/anytun-controld
 	install -m 755 anytun-showtables $(DESTDIR)$(BINDIR)
-	$(STRIP) $(DESTDIR)$(BINDIR)/anytun-showtables
 
 install-etc:
 	mkdir -p $(DESTDIR)$(ETCDIR)/anytun
