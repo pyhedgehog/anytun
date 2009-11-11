@@ -94,6 +94,25 @@ Notes:
     version
   - on FreeBSD you have to use gmake instead of make
 
+Installing
+----------
+
+# sudo make install
+
+This will install anytun under the --prefix defined with configure.
+
+Uninstalling
+------------
+
+# sudo make remove
+
+This removes everytthing except for the config files
+
+# sudo make purge
+
+This also removes the config files
+
+
 
 Errors:
 =======
@@ -111,23 +130,3 @@ cd /dev
 edit /etc/modules and add the line
 tun
 to load the module automatically
-
-
-Installing
-==========
-
-# sudo make install
-
-This will install anytun under the --prefix defined with configure.
-
-
-Uninstalling
-============
-
-# sudo make remove
-
-This removes everytthing except for the config files
-
-# sudo make purge
-
-This also removes the config files
