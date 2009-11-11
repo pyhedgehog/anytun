@@ -102,7 +102,7 @@ ANYCONFOBJS := log.o \
 						 syncConnectionCommand.o \
 						 resolver.o
 
-EXECUTABLE := anytun anytun-config anytun-controld anytun-showtables anytun-nosync
+EXECUTABLES := anytun anytun-config anytun-controld anytun-showtables anytun-nosync
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
 
 SRCS := $(OBJS:%.o=%.cpp)
@@ -113,7 +113,7 @@ EXESRCS := $(EXEOBJS:%.o=%.cpp)
 
 .PHONY: distclean cleanall clean ctags
 
-all: $(EXECUTABLE) #libAnysync.a 
+all: $(EXECUTABLES) #libAnysync.a 
 
 %.d: %.cpp
 	@set -e; rm -f $@; \
@@ -125,8 +125,8 @@ ifneq ($(MAKECMDGOALS),distclean)
 -include $(SRCS:%.cpp=%.d) $(SYNCSRCS:%.cpp=%.d) $(ANYCTRSRCS:%.cpp=%.d) $(ANYCONFSRCS:%.cpp=%.d) $(EXESRCS:%.cpp=%.d)
 endif
 
-strip: $(EXECUTABLE)
-	strip -s $(EXECUTABLE) 
+strip: $(EXECUTABLES)
+	strip -s $(EXECUTABLES) 
 
 anytun: $(OBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
@@ -188,7 +188,7 @@ clean:
 	rm -f *.o
 	rm -f *.d
 	rm -f *.d.*
-	rm -f $(EXECUTABLE)
+	rm -f $(EXECUTABLES)
 	rm -f anytun-nosync
 	rm -f -r doc/html/*
 	rm -f -r doc/latex/*
@@ -198,3 +198,76 @@ clean:
 manpage:
 	@cd man ; $(MAKE)
 
+install: all install-bin install-etc install-man
+
+install-bin: $(EXECUTABLES)
+	mkdir -p $(DESTDIR)$(SBINDIR)
+	install -m 755 anytun $(DESTDIR)$(SBINDIR)
+	$(STRIP) $(DESTDIR)$(SBINDIR)/anytun
+	mkdir -p $(DESTDIR)$(BINDIR)
+	install -m 755 anytun-config $(DESTDIR)$(BINDIR)
+	$(STRIP) $(DESTDIR)$(BINDIR)/anytun-config
+	install -m 755 anytun-controld $(DESTDIR)$(BINDIR)
+	$(STRIP) $(DESTDIR)$(BINDIR)/anytun-controld
+	install -m 755 anytun-showtables $(DESTDIR)$(BINDIR)
+	$(STRIP) $(DESTDIR)$(BINDIR)/anytun-showtables
+
+install-etc:
+	mkdir -p $(DESTDIR)$(ETCDIR)/anytun
+	install -m 644 ../etc/anytun/autostart $(DESTDIR)$(ETCDIR)/anytun/autostart
+	@( cd '../etc/anytun/' ;                                                                               \
+     for dir in `ls`; do                                                                                 \
+       if [ -d $$dir ]; then                                                                             \
+         echo "install $$dir configuration" ;                                                            \
+         cd $$dir ;                                                                                      \
+         mkdir -p $(DESTDIR)$(ETCDIR)/anytun/$$dir ;                                                     \
+         install -m 600 config $(DESTDIR)$(ETCDIR)/anytun/$$dir/config ;                                 \
+         if [ -e 'post-up.sh' ]; then                                                                    \
+           install -m 755 post-up.sh $(DESTDIR)$(ETCDIR)/anytun/$$dir/post-up.sh ;                       \
+         fi ;                                                                                            \
+         if [ -d 'conf.d' ]; then                                                                        \
+           mkdir -p $(DESTDIR)$(ETCDIR)/anytun/$$dir/conf.d ;                                            \
+           cd conf.d ;                                                                                   \
+           for file in `ls`; do                                                                          \
+             if [ -f $$file ]; then                                                                      \
+               install -m 644 $$file $(DESTDIR)$(ETCDIR)/anytun/$$dir/conf.d ;                           \
+             fi ;                                                                                        \
+           done ;                                                                                        \
+           cd .. ;                                                                                       \
+         fi ;                                                                                            \
+         cd .. ;                                                                                         \
+       fi ;                                                                                              \
+     done                                                                                                \
+   )
+	mkdir -p $(DESTDIR)$(ETCDIR)/init.d
+	install -m 755 ../etc/init.d/anytun $(DESTDIR)$(ETCDIR)/init.d/anytun
+	@ sed -i 's#DAEMON=/usr/sbin/anytun#DAEMON=$(SBINDIR)/anytun#' $(DESTDIR)$(ETCDIR)/init.d/anytun
+	@ sed -i 's#ANYTUNCONFIG=/usr/bin/anytun-config#ANYTUNCONFIG=$(BINDIR)/anytun-config#' $(DESTDIR)$(ETCDIR)/init.d/anytun
+	@ sed -i 's#CONTROLDAEMON=/usr/bin/anytun-controld#CONTROLDAEMON=$(BINDIR)/anytun-controld#' $(DESTDIR)$(ETCDIR)/init.d/anytun
+	@ sed -i 's#CONFIG_DIR=/etc/anytun#CONFIG_DIR=$(ETCDIR)/anytun#' $(DESTDIR)$(ETCDIR)/init.d/anytun
+
+
+install-man: manpage
+	mkdir -p $(DESTDIR)$(MANDIR)/man8/
+	install -m 644 man/anytun.8 $(DESTDIR)$(MANDIR)/man8/
+	gzip $(DESTDIR)$(MANDIR)/man8/anytun.8
+	install -m 644 man/anytun-config.8 $(DESTDIR)$(MANDIR)/man8/
+	gzip $(DESTDIR)$(MANDIR)/man8/anytun-config.8
+	install -m 644 man/anytun-controld.8 $(DESTDIR)$(MANDIR)/man8/
+	gzip $(DESTDIR)$(MANDIR)/man8/anytun-controld.8
+	install -m 644 man/anytun-showtables.8 $(DESTDIR)$(MANDIR)/man8/
+	gzip $(DESTDIR)$(MANDIR)/man8/anytun-showtables.8
+
+remove:
+	rm -f $(DESTDIR)$(SBINDIR)/anytun
+	rm -f $(DESTDIR)$(BINDIR)/anytun-config
+	rm -f $(DESTDIR)$(BINDIR)/anytun-controld
+	rm -f $(DESTDIR)$(BINDIR)/anytun-showtables
+	rm -f $(DESTDIR)$(MANDIR)/man8/anytun.8.gz
+	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-config.8.gz
+	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-controld.8.gz
+	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-showtables.8.gz
+	rm -f $(DESTDIR)$(ETCDIR)/init.d/anytun
+
+purge: remove
+	rm -rf $(DESTDIR)$(ETCDIR)/anytun/

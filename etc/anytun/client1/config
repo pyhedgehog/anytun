@@ -53,8 +53,8 @@ remote-port 4444
 log syslog:3,anytun-client1,daemon
 
 ## change user and group after init
-username anytun
-groupname anytun
+#username anytun
+#groupname anytun
 
 ## chroot to users home directory
 #chroot /var/run/anytun
