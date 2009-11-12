@@ -35,72 +35,72 @@ include include.mk
 endif
 
 OBJS := tunDevice.o \
-       packetSource.o \
-       buffer.o \
-       syncBuffer.o \
-			 plainPacket.o \
-			 encryptedPacket.o \
-       cipher.o \
-       authAlgo.o \
-			 keyDerivation.o \
-			 cipherFactory.o \
-			 authAlgoFactory.o \
-			 keyDerivationFactory.o \
-			 connectionList.o \
-			 connectionParam.o \
-			 networkAddress.o \
-			 networkPrefix.o \
-			 routingTable.o \
-       signalController.o \
-       log.o \
-       logTargets.o \
-       sysExec.o \
-       anytunError.o \
-       options.o \
-       seqWindow.o \
-			 routingTreeNode.o \
-			 resolver.o
+        packetSource.o \
+        buffer.o \
+        syncBuffer.o \
+        plainPacket.o \
+        encryptedPacket.o \
+        cipher.o \
+        authAlgo.o \
+        keyDerivation.o \
+        cipherFactory.o \
+        authAlgoFactory.o \
+        keyDerivationFactory.o \
+        connectionList.o \
+        connectionParam.o \
+        networkAddress.o \
+        networkPrefix.o \
+        routingTable.o \
+        signalController.o \
+        log.o \
+        logTargets.o \
+        sysExec.o \
+        anytunError.o \
+        options.o \
+        seqWindow.o \
+        routingTreeNode.o \
+        resolver.o
 
 SYNCOBJS := syncServer.o \
-       syncClient.o \
-       syncQueue.o \
-			 syncCommand.o \
-       syncRouteCommand.o \
-       syncConnectionCommand.o \
-       syncTcpConnection.o
+            syncClient.o \
+            syncQueue.o \
+            syncCommand.o \
+            syncRouteCommand.o \
+            syncConnectionCommand.o \
+            syncTcpConnection.o
 
 ANYCTROBJS := signalController.o \
-							anyCtrOptions.o \
-						 buffer.o \
-						 log.o \
-						 logTargets.o \
-						 anytunError.o \
-						 syncTcpConnection.o \
-						 syncServer.o \
-						 resolver.o
+              anyCtrOptions.o \
+              buffer.o \
+              log.o \
+              logTargets.o \
+              anytunError.o \
+              syncTcpConnection.o \
+              syncServer.o \
+              resolver.o
 
 ANYCONFOBJS := log.o \
-						 logTargets.o \
-						 anytunError.o \
-						 buffer.o \
-						 keyDerivation.o \
-						 keyDerivationFactory.o \
-						 networkAddress.o \
-						 networkPrefix.o \
-						 connectionList.o \
-						 connectionParam.o \
-						 routingTreeNode.o \
-						 anyConfOptions.o \
-						 routingTable.o \
-						 seqWindow.o \
-						 syncQueue.o \
-						 syncBuffer.o \
-						 syncCommand.o \
-						 syncServer.o \
-             syncTcpConnection.o \
-						 syncRouteCommand.o \
-						 syncConnectionCommand.o \
-						 resolver.o
+               logTargets.o \
+               anytunError.o \
+               buffer.o \
+               keyDerivation.o \
+               keyDerivationFactory.o \
+               networkAddress.o \
+               networkPrefix.o \
+               connectionList.o \
+               connectionParam.o \
+               routingTreeNode.o \
+               anyConfOptions.o \
+               routingTable.o \
+               seqWindow.o \
+               syncQueue.o \
+               syncBuffer.o \
+               syncCommand.o \
+               syncServer.o \
+               syncTcpConnection.o \
+               syncRouteCommand.o \
+               syncConnectionCommand.o \
+               resolver.o
 
 EXECUTABLES := anytun anytun-config anytun-controld anytun-showtables anytun-nosync
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
@@ -111,14 +111,14 @@ ANYCTRSRCS := $(ANYCTROBJS:%.o=%.cpp)
 ANYCONFSRCS := $(ANYCONFOBJS:%.o=%.cpp)
 EXESRCS := $(EXEOBJS:%.o=%.cpp)
 
-.PHONY: distclean cleanall clean ctags
+.PHONY: distclean cleanall clean manpage install install-bin install-etc install-man uninstall remove purge
 
 all: $(EXECUTABLES) #libAnysync.a 
 
 %.d: %.cpp
-	@set -e; rm -f $@; \
-	 $(CXX) -MM $(CXXFLAGS) $< > $@.$$$$; \
-   sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	@set -e; rm -f $@;                                    \
+   $(CXX) -MM $(CXXFLAGS) $< > $@.$$$$;                 \
+   sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@;  \
    rm -f $@.$$$$; echo '(re)building $@'
 
 ifneq ($(MAKECMDGOALS),distclean)
@@ -201,42 +201,42 @@ manpage:
 install: all install-bin install-etc install-man
 
 install-bin: $(EXECUTABLES)
-	mkdir -p $(DESTDIR)$(SBINDIR)
-	install -m 755 anytun $(DESTDIR)$(SBINDIR)
-	mkdir -p $(DESTDIR)$(BINDIR)
-	install -m 755 anytun-config $(DESTDIR)$(BINDIR)
-	install -m 755 anytun-controld $(DESTDIR)$(BINDIR)
-	install -m 755 anytun-showtables $(DESTDIR)$(BINDIR)
+	$(INSTALL) -d $(DESTDIR)$(SBINDIR)
+	$(INSTALL) -m 755 anytun $(DESTDIR)$(SBINDIR)
+	$(INSTALL) -d $(DESTDIR)$(BINDIR)
+	$(INSTALL) -m 755 anytun-config $(DESTDIR)$(BINDIR)
+	$(INSTALL) -m 755 anytun-controld $(DESTDIR)$(BINDIR)
+	$(INSTALL) -m 755 anytun-showtables $(DESTDIR)$(BINDIR)
 
 install-etc:
-	mkdir -p $(DESTDIR)$(ETCDIR)/anytun
-	install -m 644 ../etc/anytun/autostart $(DESTDIR)$(ETCDIR)/anytun/autostart
-	@( cd '../etc/anytun/' ;                                                                               \
-     for dir in `ls`; do                                                                                 \
-       if [ -d $$dir ]; then                                                                             \
-         echo "install $$dir configuration" ;                                                            \
-         cd $$dir ;                                                                                      \
-         mkdir -p $(DESTDIR)$(ETCDIR)/anytun/$$dir ;                                                     \
-         install -m 600 config $(DESTDIR)$(ETCDIR)/anytun/$$dir/config ;                                 \
-         if [ -e 'post-up.sh' ]; then                                                                    \
-           install -m 755 post-up.sh $(DESTDIR)$(ETCDIR)/anytun/$$dir/post-up.sh ;                       \
-         fi ;                                                                                            \
-         if [ -d 'conf.d' ]; then                                                                        \
-           mkdir -p $(DESTDIR)$(ETCDIR)/anytun/$$dir/conf.d ;                                            \
-           cd conf.d ;                                                                                   \
-           for file in `ls`; do                                                                          \
-             if [ -f $$file ]; then                                                                      \
-               install -m 644 $$file $(DESTDIR)$(ETCDIR)/anytun/$$dir/conf.d ;                           \
-             fi ;                                                                                        \
-           done ;                                                                                        \
-           cd .. ;                                                                                       \
-         fi ;                                                                                            \
-         cd .. ;                                                                                         \
-       fi ;                                                                                              \
-     done                                                                                                \
+	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/anytun
+	$(INSTALL) -m 644 ../etc/anytun/autostart $(DESTDIR)$(ETCDIR)/anytun/autostart
+	@( cd '../etc/anytun/' ;                                                              \
+     for dir in `ls`; do                                                                \
+       if [ -d $$dir ]; then                                                            \
+         echo "install $$dir configuration" ;                                           \
+         cd $$dir ;                                                                     \
+         $(INSTALL) -d $(DESTDIR)$(ETCDIR)/anytun/$$dir ;                               \
+         $(INSTALL) -m 600 config $(DESTDIR)$(ETCDIR)/anytun/$$dir/config ;             \
+         if [ -e 'post-up.sh' ]; then                                                   \
+           $(INSTALL) -m 755 post-up.sh $(DESTDIR)$(ETCDIR)/anytun/$$dir/post-up.sh ;   \
+         fi ;                                                                           \
+         if [ -d 'conf.d' ]; then                                                       \
+           $(INSTALL) -d $(DESTDIR)$(ETCDIR)/anytun/$$dir/conf.d ;                      \
+           cd conf.d ;                                                                  \
+           for file in `ls`; do                                                         \
+             if [ -f $$file ]; then                                                     \
+               $(INSTALL) -m 644 $$file $(DESTDIR)$(ETCDIR)/anytun/$$dir/conf.d ;       \
+             fi ;                                                                       \
+           done ;                                                                       \
+           cd .. ;                                                                      \
+         fi ;                                                                           \
+         cd .. ;                                                                        \
+       fi ;                                                                             \
+     done                                                                               \
    )
-	mkdir -p $(DESTDIR)$(ETCDIR)/init.d
-	install -m 755 ../etc/init.d/anytun $(DESTDIR)$(ETCDIR)/init.d/anytun
+	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/init.d
+	$(INSTALL) -m 755 ../etc/init.d/anytun $(DESTDIR)$(ETCDIR)/init.d/anytun
 	@ sed -i 's#DAEMON=/usr/sbin/anytun#DAEMON=$(SBINDIR)/anytun#' $(DESTDIR)$(ETCDIR)/init.d/anytun
 	@ sed -i 's#ANYTUNCONFIG=/usr/bin/anytun-config#ANYTUNCONFIG=$(BINDIR)/anytun-config#' $(DESTDIR)$(ETCDIR)/init.d/anytun
 	@ sed -i 's#CONTROLDAEMON=/usr/bin/anytun-controld#CONTROLDAEMON=$(BINDIR)/anytun-controld#' $(DESTDIR)$(ETCDIR)/init.d/anytun
@@ -244,15 +244,17 @@ install-etc:
 
 
 install-man: manpage
-	mkdir -p $(DESTDIR)$(MANDIR)/man8/
-	install -m 644 man/anytun.8 $(DESTDIR)$(MANDIR)/man8/
+	$(INSTALL) -d $(DESTDIR)$(MANDIR)/man8/
+	$(INSTALL) -m 644 man/anytun.8 $(DESTDIR)$(MANDIR)/man8/
 	gzip $(DESTDIR)$(MANDIR)/man8/anytun.8
-	install -m 644 man/anytun-config.8 $(DESTDIR)$(MANDIR)/man8/
+	$(INSTALL) -m 644 man/anytun-config.8 $(DESTDIR)$(MANDIR)/man8/
 	gzip $(DESTDIR)$(MANDIR)/man8/anytun-config.8
-	install -m 644 man/anytun-controld.8 $(DESTDIR)$(MANDIR)/man8/
+	$(INSTALL) -m 644 man/anytun-controld.8 $(DESTDIR)$(MANDIR)/man8/
 	gzip $(DESTDIR)$(MANDIR)/man8/anytun-controld.8
-	install -m 644 man/anytun-showtables.8 $(DESTDIR)$(MANDIR)/man8/
+	$(INSTALL) -m 644 man/anytun-showtables.8 $(DESTDIR)$(MANDIR)/man8/
 	gzip $(DESTDIR)$(MANDIR)/man8/anytun-showtables.8
+
+uninstall: remove
 
 remove:
 	rm -f $(DESTDIR)$(SBINDIR)/anytun

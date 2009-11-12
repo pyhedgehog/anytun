@@ -32,8 +32,10 @@
 
 VERSION=$(shell cat ../../version)
 
-MANPAGES := anytun.8 anytun-controld.8 anytun-config.8 anytun-showtables.8 anyrtpproxy.8
+MANPAGES := anytun.8 anytun-controld.8 anytun-config.8 anytun-showtables.8 #anyrtpproxy.8
 XML := $(MANPAGES:%.8=%.8.xml) 
+
+.PHONY: clean
 
 all: manpage
 
