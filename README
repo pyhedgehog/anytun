@@ -114,6 +114,36 @@ This also removes the config files
 
 
 
+Usage:
+======
+
+init.d script
+-------------
+
+The init.d script can be used to start anytun at boot time. It searches for 
+configuration files which reside at $CONFIG_DIR. For each instance of anytun
+which should be started there must be a directory containing at least a file
+named config. This file must contain all command line parameter which should
+be used when starting the daemon. One line for each parameter. Empty lines and
+lines starting with # are ignored. Besides the config file there may be a script
+named post-up.sh which will be called when the tun/tap device comes up. 
+Furthermore there may be a directory called conf.d containing config files for 
+anytun-config. The syntax of this files is quite the same as those for anytun. 
+These files are used to configure a multi connection setup using anytun-config 
+and anytun-controld
+This is an example of how the script can be used to start anytun:
+
+# /etc/init.d/anytun start client1 p2p-a
+
+In this case the script will start 2 instances of anytun using the config files
+$CONFIG_DIR/client1/config and $CONFIG_DIR/p2p-a/config. 
+If no instance name is specified the script will use the file $CONFIG_DIR/autostart
+to determine which instances to start or stop. This file must contain a list 
+of instance names which should be used when no names are specified at the command 
+line. One line for each name. Empty lines and lines starting with # are ignored.
+
+
+
 Errors:
 =======
 
