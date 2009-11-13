@@ -51,8 +51,6 @@ SyncCommand::SyncCommand(NetworkPrefix np )
 
 SyncCommand::~SyncCommand()
 {
-	if (scc_)
-		delete scc_;
-	if (src_)
-		delete src_;
+	delete scc_;
+	delete src_;
 }

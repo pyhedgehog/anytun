@@ -151,7 +151,7 @@ void sender(TunDevice* dev, PacketSource* src)
           // read packet from device
       int len = dev->read(plain_packet.getPayload(), plain_packet.getPayloadLength());
       if(len < 0)
-        continue; // silently ignore device read errors, this is probably no good idea...
+        continue; // TODO silently ignore device read errors, this is probably no good idea...
 
       if(static_cast<u_int32_t>(len) < PlainPacket::getHeaderLength())
         continue; // ignore short packets
@@ -453,7 +453,8 @@ int main(int argc, char* argv[])
     PacketSource* src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
     if(gOpt.getRemoteAddr() != "")
-      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()), boost::bind(createConnectionError, _1), gOpt.getResolvAddrType());
+      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()),
+        boost::bind(createConnectionError, _1), gOpt.getResolvAddrType());
 
     HostList connect_to = gOpt.getRemoteSyncHosts();
 #ifndef NO_ROUTING

@@ -65,7 +65,7 @@ void SyncServer::run()
   io_service_.run();
 }
 
-void SyncServer::send(std::string message)
+void SyncServer::send(std::string message) // TODO const&
 {
   Lock lock(mutex_);
   for(std::list<SyncTcpConnection::pointer>::iterator it = conns_.begin() ;it != conns_.end(); ++it)

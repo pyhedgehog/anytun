@@ -88,6 +88,7 @@ void SyncClient::run()
 	}
 }
 
+// callback when sync-info is received from remote sync-server
 void SyncClient::readAndProcess(SyncTcpConnection::proto::socket & socket)
 {
 	ConnectionList & cl_ (gConnectionList);
