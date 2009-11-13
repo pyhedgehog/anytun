@@ -50,7 +50,7 @@ DESCRIPTION
 
 *Anytun* is an implementation of the Secure Anycast Tunneling Protocol
 (SATP). It provides a complete VPN solution similar to OpenVPN or
-IPsec in tunnel mode. The main difference is that anycast enables the
+IPsec in tunnel mode. The main difference is that anycast allows a
 setup of tunnels between an arbitrary combination of anycast, unicast
 and multicast hosts.
 
