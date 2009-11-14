@@ -162,8 +162,7 @@ void SignalController::handle()
   sigset_t signal_set;
   int sigNum;
 
-  while(1) 
-  {
+  for(;;) {
     sigfillset(&signal_set);
     sigwait(&signal_set, &sigNum);
     inject(sigNum);
@@ -227,7 +226,7 @@ void SignalController::inject(int sig, const std::string& msg)
 
 int SignalController::run()
 {
-  while(1) {
+  for(;;) {
     sigQueueSem.down();
     SigPair sig;
     {

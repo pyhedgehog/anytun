@@ -161,7 +161,7 @@ void sender(TunDevice* dev, PacketSource* src)
     
     u_int16_t mux = gOpt.getMux();
     PacketSourceEndpoint emptyEndpoint;
-    while(1) {
+    for(;;) {
       plain_packet.setLength(MAX_PACKET_LENGTH);
       encrypted_packet.withAuthTag(false);
       encrypted_packet.setLength(MAX_PACKET_LENGTH);
@@ -251,7 +251,7 @@ void receiver(TunDevice* dev, PacketSource* src)
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, gOpt.getAuthTagLength());
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     
-    while(1) {
+    for(;;) {
       PacketSourceEndpoint remote_end;
 
       plain_packet.setLength(MAX_PACKET_LENGTH);
