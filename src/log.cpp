@@ -40,8 +40,6 @@
 
 #include "threadUtils.hpp"
 
-Log* Log::inst = NULL;
-Mutex Log::instMutex;
 Log& cLog = Log::instance();
 
 LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), prio(src.prio) 
@@ -51,7 +49,7 @@ LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), 
 
 LogStringBuilder::LogStringBuilder(Log& l, int p) : log(l), prio(p) 
 {
-      // do something on the start of the line.
+  // do something on the start of the line.
 }
 
 LogStringBuilder::~LogStringBuilder() 
@@ -61,12 +59,8 @@ LogStringBuilder::~LogStringBuilder()
 
 Log& Log::instance()
 {
-  Lock lock(instMutex);
-  static instanceCleaner c;
-  if(!inst)
-    inst = new Log();
-  
-  return *inst;
+  static Log instance;
+  return instance;
 }
 
 void Log::addTarget(std::string conf)

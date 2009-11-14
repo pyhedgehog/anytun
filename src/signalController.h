@@ -165,16 +165,6 @@ private:
   SignalController(const SignalController &s); // = delete
   void operator=(const SignalController &s); // = delete
 
-  static SignalController* inst;
-  static Mutex instMutex;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-      if(SignalController::inst != NULL)
-        delete SignalController::inst;
-    }
-  };
-  friend class instanceCleaner;
-
   typedef std::pair<int, std::string> SigPair;
   std::queue<SigPair> sigQueue;
   Mutex sigQueueMutex;

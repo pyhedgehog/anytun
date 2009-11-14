@@ -74,15 +74,6 @@ public:
 private:
   RoutingTable(const RoutingTable &s);  // = delete;
   void operator=(const RoutingTable &s); // = delete;
-
-  static Mutex instMutex;
-  static RoutingTable* inst;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-     if(RoutingTable::inst != 0)
-       delete RoutingTable::inst;
-    }
-  };
   
   boost::array<RoutingMap,3> routes_;       // TODO array of _3_ routing maps?
   boost::array<RoutingTreeNode,3> root_;

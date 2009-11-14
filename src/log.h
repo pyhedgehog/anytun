@@ -80,25 +80,14 @@ public:
 private:
   Log() {};
   ~Log() {};
+  
   Log(const Log &l); // = delete
   void operator=(const Log &l); // = delete
-
-  static Log* inst;
-  static Mutex instMutex;
-  class instanceCleaner {
-    public: ~instanceCleaner()
-    {
-      if(Log::inst != 0)
-        delete Log::inst;
-    }
-  };
-  friend class instanceCleaner;
 
   void log(std::string msg, int prio);
 
   Mutex mutex;
   friend class LogStringBuilder;
-
   LogTargetList targets;
 };
 

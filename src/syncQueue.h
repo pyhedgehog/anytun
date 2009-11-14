@@ -55,14 +55,6 @@ public:
   bool empty();
 
 private:
-  static Mutex instMutex;
-  static SyncQueue* inst;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-     if(SyncQueue::inst != 0)
-       delete SyncQueue::inst;
-   }
-  };
   SyncQueue(const SyncQueue &s); // = delete;
   void operator=(const SyncQueue &s); // = delete;
   Mutex mutex_;

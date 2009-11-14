@@ -45,18 +45,12 @@
 #include "datatypes.h"
 #include "syncQueue.h"
 
-SyncQueue* SyncQueue::inst = NULL;
-Mutex SyncQueue::instMutex;
 SyncQueue& gSyncQueue = SyncQueue::instance();
 
 SyncQueue& SyncQueue::instance()
 {
-  Lock lock(instMutex);
-  static instanceCleaner c;
-  if(!inst)
-    inst = new SyncQueue();
-
-  return *inst;
+  static SyncQueue instance;
+  return instance;
 }
 
 void SyncQueue::push(const SyncCommand& scom )
@@ -73,7 +67,7 @@ void SyncQueue::push(const SyncCommand& scom )
 void SyncQueue::push(const std::string& str )
 {
   Lock lock(mutex_);
-  //	std::cout << "Debug" << std:endl;
+  // std::cout << "Debug" << std:endl;
   if (syncServer_)
     syncServer_->send(str);
 }
