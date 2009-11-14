@@ -198,7 +198,15 @@ clean:
 manpage:
 	@cd man ; $(MAKE)
 
-install: all install-bin install-etc install-examples install-man
+ifdef EXAMPLESDIR
+INSTALL_TARGETS := install-bin install-etc install-examples install-man
+REMOVE_TARGETS := remove-examples
+else
+INSTALL_TARGETS := install-bin install-etc install-man
+REMOVE_TARGETS := 
+endif
+
+install: all $(INSTALL_TARGETS)
 
 install-bin: $(EXECUTABLES)
 	$(INSTALL) -d $(DESTDIR)$(SBINDIR)
@@ -255,7 +263,7 @@ install-man: manpage
 
 uninstall: remove
 
-remove:
+remove: $(REMOVE_TARGETS)
 	rm -f $(DESTDIR)$(SBINDIR)/anytun
 	rm -f $(DESTDIR)$(BINDIR)/anytun-config
 	rm -f $(DESTDIR)$(BINDIR)/anytun-controld
@@ -265,6 +273,8 @@ remove:
 	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-controld.8
 	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-showtables.8
 	rm -f $(DESTDIR)$(ETCDIR)/init.d/anytun
+
+remove-examples:
 	rm -rf $(DESTDIR)$(EXAMPLESDIR)/anytun/
 
 purge: remove

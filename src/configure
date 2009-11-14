@@ -48,6 +48,7 @@ SBINDIR=''
 ETCDIR=''
 MANDIR=''
 EXAMPLESDIR=''
+INSTALLEXAMPLES=1
 
 print_usage() {
   echo "configure --help                    print this"
@@ -58,6 +59,7 @@ print_usage() {
   echo "          --sysconfdir=<DIR>        the path to the system configuration directory (default: $PREFIX/etc"
   echo "          --mandir=<DIR>            the path to the system man pages (default: $PREFIX/share/man)"
   echo "          --examplesdir=<DIR>       the path to the examples files (default: $PREFIX/share/examples)"
+  echo "          --no-examples             dont't install example files"
   echo "          --use-ssl-crypto          use ssl crypto library instead of libgcrypt"
   echo "          --no-crypto               disable crypto at all (only NULL cipher)"
   echo "          --disable-passphrase      disable master key and salt passphrase"
@@ -89,6 +91,9 @@ do
   ;;
   --examplesdir=*)
     EXAMPLESDIR=${arg#--examplesdir=}
+  ;;
+  --no-examples)
+    INSTALLEXAMPLES=0
   ;;
   --use-ssl-crypto)
     CRYPTO_LIB='ssl'
@@ -179,19 +184,19 @@ if [ $ROUTING -eq 0 ]; then
 fi
 
 if [ -z "$BINDIR" ]; then
- BINDIR=$PREFIX/bin
+  BINDIR=$PREFIX/bin
 fi
 
 if [ -z "$SBINDIR" ]; then
- SBINDIR=$PREFIX/sbin
+  SBINDIR=$PREFIX/sbin
 fi
 
 if [ -z "$ETCDIR" ]; then
- ETCDIR=$PREFIX/etc
+  ETCDIR=$PREFIX/etc
 fi
 
 if [ -z "$MANDIR" ]; then
- MANDIR=$PREFIX/share/man
+  MANDIR=$PREFIX/share/man
 fi
 
 if [ -z "$EXAMPLESDIR" ]; then
@@ -216,7 +221,10 @@ BINDIR := $BINDIR
 SBINDIR := $SBINDIR
 ETCDIR := $ETCDIR
 MANDIR := $MANDIR
-EXAMPLESDIR := $EXAMPLESDIR
 EOF
+
+if [ $INSTALLEXAMPLES -eq 1 ]; then
+  echo "EXAMPLESDIR := $EXAMPLESDIR" >> include.mk
+fi
 
 exit 0
