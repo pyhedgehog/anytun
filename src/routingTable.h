@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definition of class RoutingTable.
+ */
 /*
  *  anytun
  *
@@ -29,7 +33,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_routingTable_h_INCLUDED
 #define ANYTUN_routingTable_h_INCLUDED
 
@@ -42,39 +45,47 @@
 #include "networkPrefix.h"
 #include "routingTreeNode.h"
 #include "boost/array.hpp"
+
+/// Maps from a network prefix to a TODO mux-id.
 typedef std::map<NetworkPrefix,u_int16_t> RoutingMap;
 
-class RoutingTable
-{
+/// Stores and handles a routing table consisting of a mish-mash of network prefixes and mux-ids.
+class RoutingTable {
 public:
-	static RoutingTable& instance();
-	RoutingTable();
-	~RoutingTable();
-	void addRoute(const NetworkPrefix & ,u_int16_t);
-	void updateRouteTreeUnlocked(const NetworkPrefix & pref);
-	void delRoute(const NetworkPrefix & );
-	u_int16_t getRoute(const NetworkAddress &);
-	bool empty(network_address_type_t type);
-	void clear(network_address_type_t type);
+  static RoutingTable& instance();
+  RoutingTable();
+  ~RoutingTable();
+  
+  void addRoute(const NetworkPrefix & ,u_int16_t);
+  void updateRouteTreeUnlocked(const NetworkPrefix & pref);
+  void delRoute(const NetworkPrefix & );
+  u_int16_t getRoute(const NetworkAddress &);
+  
+  bool empty(network_address_type_t type);
+  void clear(network_address_type_t type);
+  
   Mutex& getMutex();
-	u_int16_t* getOrNewRoutingTEUnlocked(const NetworkPrefix & addr);
-	u_int16_t getCountUnlocked(network_address_type_t type);
-	RoutingMap::iterator getBeginUnlocked(network_address_type_t type);
-	RoutingMap::iterator getEndUnlocked(network_address_type_t type);
+  
+  u_int16_t* getOrNewRoutingTEUnlocked(const NetworkPrefix & addr);
+  u_int16_t getCountUnlocked(network_address_type_t type);
+  RoutingMap::iterator getBeginUnlocked(network_address_type_t type);
+  RoutingMap::iterator getEndUnlocked(network_address_type_t type);
 
 private:
+  RoutingTable(const RoutingTable &s);  // = delete;
+  void operator=(const RoutingTable &s); // = delete;
+
   static Mutex instMutex;
-	static RoutingTable* inst;
+  static RoutingTable* inst;
   class instanceCleaner {
     public: ~instanceCleaner() {
      if(RoutingTable::inst != 0)
        delete RoutingTable::inst;
-   }
-	};
-	RoutingTable(const RoutingTable &s);
-  void operator=(const RoutingTable &s);
-	boost::array<RoutingMap,3> routes_;
-	boost::array<RoutingTreeNode,3> root_;
+    }
+  };
+  
+  boost::array<RoutingMap,3> routes_;       // TODO array of _3_ routing maps?
+  boost::array<RoutingTreeNode,3> root_;
   Mutex mutex_;
 };
 

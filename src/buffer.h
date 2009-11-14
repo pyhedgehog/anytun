@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Definition of Buffer.
+ */
 /*
  *  anytun
  *
@@ -29,16 +33,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_buffer_h_INCLUDED
 #define ANYTUN_buffer_h_INCLUDED
 
-#include "datatypes.h"
 #include <string>
+#include "datatypes.h"
 
 class TunDevice;
 class UDPPacketSource;
 
+/// A buffer, much like a vector.
+// TODO reimplement it, using std::vector, or boost::array, whatever fits better.
 class Buffer
 {
 public:

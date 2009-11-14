@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of ConnectionParam.
+ */
 /*
  *  anytun
  *
@@ -32,10 +36,14 @@
 
 #include "connectionParam.h"
 
-ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq_window,seq_nr_t seq_nr, PacketSourceEndpoint remote_end) : kd_(kd),seq_window_(seq_window),seq_nr_(seq_nr), remote_end_(remote_end)
+ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq_window,seq_nr_t seq_nr, PacketSourceEndpoint remote_end)
+  : kd_(kd), seq_window_(seq_window),
+    seq_nr_(seq_nr), remote_end_(remote_end)
 {
 }
 
-ConnectionParam::ConnectionParam(const ConnectionParam & src) : kd_(src.kd_),seq_window_(src.seq_window_),seq_nr_(src.seq_nr_),remote_end_(src.remote_end_),mutex_()
+ConnectionParam::ConnectionParam(const ConnectionParam & src)
+  : kd_(src.kd_), seq_window_(src.seq_window_), seq_nr_(src.seq_nr_),
+    remote_end_(src.remote_end_), mutex_()
 {
 }

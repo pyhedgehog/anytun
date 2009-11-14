@@ -1,3 +1,6 @@
+/**
+ *  \file
+ */
 /*
  *  anytun
  *
@@ -34,42 +37,41 @@
 #define ANYTUN_syncOnConnect_hpp_INCLUDED
 
 // TODO required headers
-
+/// Syncs complete information for new Anytun server connections.
 void syncOnConnect(SyncTcpConnection * connptr)
 {
   //TODO Locking here	
-  ConnectionList & cl_(gConnectionList);
+  ConnectionList& cl_ = gConnectionList;
   ConnectionMap::iterator cit = cl_.getBeginUnlocked();
-  for (;cit!=cl_.getEndUnlocked();++cit)
-  {
+  for (; cit != cl_.getEndUnlocked(); ++cit) {
     std::ostringstream sout;
     boost::archive::text_oarchive oa(sout);
-    const SyncCommand scom(cl_,cit->first);
+    const SyncCommand scom(cl_, cit->first);
     oa << scom;
+    
     std::stringstream lengthout;
-    lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
+    lengthout << std::setw(5) << std::setfill('0') << sout.str().size() << ' ';
     connptr->Send(lengthout.str());
     connptr->Send(sout.str());
   }
   //TODO Locking here	
-	network_address_type_t types[] = {ipv4,ipv6,ethernet};
-	for (int types_idx=0; types_idx<3; types_idx++)
-	{
-		network_address_type_t type = types[types_idx];
-		RoutingMap::iterator it = gRoutingTable.getBeginUnlocked(type);
-		for (;it!=gRoutingTable.getEndUnlocked(type);++it)
-		{
-			NetworkPrefix tmp(it->first);
-			std::ostringstream sout;
-			boost::archive::text_oarchive oa(sout);
-			const SyncCommand scom(tmp);
-			oa << scom;
-			std::stringstream lengthout;
-			lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
-			connptr->Send(lengthout.str());
-			connptr->Send(sout.str());
-		}
-	}
+  network_address_type_t types[] = {ipv4, ipv6, ethernet};
+  for (int types_idx = 0; types_idx < 3; types_idx++) {
+    network_address_type_t type = types[types_idx];
+    RoutingMap::iterator it = gRoutingTable.getBeginUnlocked(type);
+    
+    for (; it != gRoutingTable.getEndUnlocked(type); ++it) {
+      NetworkPrefix tmp(it->first);
+      std::ostringstream sout;
+      boost::archive::text_oarchive oa(sout);
+      const SyncCommand scom(tmp);
+      oa << scom;
+      std::stringstream lengthout;
+      lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
+      connptr->Send(lengthout.str());
+      connptr->Send(sout.str());
+    }
+  }
 }
 
 #endif

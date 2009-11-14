@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief TODO write file description
+ */
 /*
  *  anytun
  *
@@ -29,7 +33,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_encryptedPacket_h_INCLUDED
 #define ANYTUN_encryptedPacket_h_INCLUDED
 
@@ -37,14 +40,14 @@
 #include "buffer.h"
 
 class Cipher;
-class EncryptedPacket : public Buffer
-{
-public:
 
+class EncryptedPacket : public Buffer {
+public:
   /**
    * Packet constructor
-   * @param the length of the payload 
-   * @param allow reallocation of buffer
+   * \param payload_length  the length of the payload 
+   * \param auth_tag_length allow reallocation of buffer
+   * \param allow_realloc   set whether reallocation is allowed
    */
   EncryptedPacket(u_int32_t payload_length, u_int32_t auth_tag_length, bool allow_realloc = false);
 
@@ -55,69 +58,69 @@ public:
 
   /**
    * Get the length of the header
-   * @return the length of the header
+   * \return the length of the header
    */
   static u_int32_t getHeaderLength();
 
   /**
    * Get the sequence number
-   * @return seqence number
+   * \return seqence number
    */
   seq_nr_t getSeqNr() const;
 
   /**
    * Set the seqence number
-   * @param seq_nr sequence number
+   * \param seq_nr sequence number
    */
   void setSeqNr(seq_nr_t seq_nr);
 
   /**
    * Get the sender id
-   * @return sender id
+   * \return sender id
    */
   sender_id_t getSenderId() const;
 
   /**
    * Set the sender id
-   * @param sender_id sender id
+   * \param sender_id sender id
    */
   void setSenderId(sender_id_t sender_id);
 
   /**
    * Get the mulitplex id
-   * @return multiplex id
+   * \return multiplex id
    */
   mux_t getMux() const;
 
   /**
    * Set the multiplex id
-   * @param mux multiplex id
+   * \param mux multiplex id
    */
   void setMux(mux_t mux);
 
   /**
    * Set the header of a packet
-   * @param seq_nr sequence number
-   * @param sender_id sender id
-   * @param mux multiplex id
+   * \param seq_nr sequence number
+   * \param sender_id sender id
+   * \param mux multiplex id
    */
   void setHeader(seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
   /**
    * Get the length of the payload
-   * @return the length of the payload
+   * \return the length of the payload
    */
   u_int32_t getPayloadLength() const;
 
   /**
    * Set the length of the payload
-   * @param length length of the payload
+   * \param payload_length length of the payload in bytes.
    */
   void setPayloadLength(u_int32_t payload_length);
 
   /**
    * Get the the payload
-   * @return the Pointer to the payload
+   * \return the Pointer to the payload
    */
   u_int8_t* getPayload();
 
@@ -140,8 +143,7 @@ private:
 #ifdef _MSC_VER
   #pragma pack(push, 1)
 #endif  
-  struct ATTR_PACKED HeaderStruct
-  {
+  struct ATTR_PACKED HeaderStruct {
     seq_nr_t seq_nr;
     sender_id_t sender_id;
     mux_t mux;
@@ -151,7 +153,7 @@ private:
 #endif
 
   struct HeaderStruct* header_;
-	u_int8_t * payload_;
+  u_int8_t * payload_;
   u_int8_t * auth_tag_;
   u_int32_t  auth_tag_length_;
 };

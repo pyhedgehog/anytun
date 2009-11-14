@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definition of class SyncClient.
+ */
 /*
  *  anytun
  *
@@ -34,18 +38,29 @@
 
 #include <string>
 #include "syncTcpConnection.h"
-class SyncClient
-{
-public:
-	SyncClient(std::string hostname,std::string port);
 
-	void run();
+/// Retrieves sync-information from the sync-port of another Anytun server.
+/**
+ *  TODO and does what?
+ */
+class SyncClient {
+public:
+  /**
+   * @param hostname    hostname/ip of the remote sync-server
+   * @param port        port of the remote sync-server
+   */
+  SyncClient(std::string hostname,std::string port);
+
+  /// Starts reading/processing the sync-info, blocks until ... TODO
+  void run();
+
 private:
-	void readAndProcess(SyncTcpConnection::proto::socket & socket);
-	void readExactly(SyncTcpConnection::proto::socket & socket,size_t toread, std::iostream &);
-	std::string hostname_;
-	std::string port_;
+  void readAndProcess(SyncTcpConnection::proto::socket & socket);
+  void readExactly(SyncTcpConnection::proto::socket & socket,size_t toread, std::iostream &);
+  
+  std::string hostname_;
+  std::string port_;
 };
 
 
-#endif // _SYNCSOCKET_H
+#endif

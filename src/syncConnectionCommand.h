@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definition of class SyncConnectionCommand.
+ */
 /*
  *  anytun
  *
@@ -29,7 +33,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_syncConnectionCommands_h_INCLUDED
 #define ANYTUN_syncConnectionCommands_h_INCLUDED
 
@@ -39,27 +42,28 @@
 #include "connectionList.h"
 #include "threadUtils.hpp"
 
-class SyncConnectionCommand
-{
+/// Used to serialize sync-info for changes to a connection.
+class SyncConnectionCommand {
 public:
-	SyncConnectionCommand(ConnectionList & cl );
-	SyncConnectionCommand(ConnectionList & cl ,u_int16_t mux);
-	u_int16_t getMux() const;
+  SyncConnectionCommand(ConnectionList& cl );
+  SyncConnectionCommand(ConnectionList& cl, u_int16_t mux);
+  u_int16_t getMux() const;
 
 private:
-	SyncConnectionCommand(const SyncConnectionCommand &);
-	ConnectionList & cl_;
-	u_int16_t mux_;
+  SyncConnectionCommand(const SyncConnectionCommand &);
+  ConnectionList & cl_;
+  u_int16_t mux_;
+
   friend class boost::serialization::access;
+
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
   {
-		Lock lock(cl_.getMutex());
+    Lock lock(cl_.getMutex());
     ar & mux_;
-		ConnectionParam & conn = cl_.getOrNewConnectionUnlocked(mux_);
-		ar & conn;
-	}
+    ConnectionParam & conn = cl_.getOrNewConnectionUnlocked(mux_);
+    ar & conn;
+  }
 };
-
 
 #endif

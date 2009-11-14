@@ -1,5 +1,10 @@
-/*
- *  anytun
+/**
+ * \file
+ * \brief
+ * Contains definitions for formatting error-codes to user-readable output,
+ * and provide meaningful exception-messages.
+ */ 
+/*  anytun
  *
  *  The secure anycast tunneling protocol (satp) defines a protocol used
  *  for communication between any combination of unicast and anycast
@@ -28,21 +33,27 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
-
 #ifndef ANYTUN_anytunError_h_INCLUDED
 #define ANYTUN_anytunError_h_INCLUDED
-
 #include <sstream>
 #include <boost/system/system_error.hpp>
 #include "datatypes.h"
 
+// TODO is this define used in <gcrypt.h>?
 #define STERROR_TEXT_MAX 200
 
 #ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
 
+/// Used as ostream tag to format GPG error codes.
+/**
+ *  \code
+ *  std::cerr << "GPG Error: " << AnytunGpgError(errorCode) << std::endl;
+ *  \endcode
+ */
 class AnytunGpgError
 {
 public:
@@ -53,6 +64,12 @@ std::ostream& operator<<(std::ostream& stream, AnytunGpgError const& value);
 #endif
 #endif
 
+/// ostream tag to format errno-values.
+/**
+ *  \code
+ *  std::cerr << "errno: " << AnytunErrno(errno) << std::endl;
+ *  \endcode
+ */
 class AnytunErrno
 {
 public:
@@ -61,11 +78,17 @@ public:
 };
 std::ostream& operator<<(std::ostream& stream, AnytunErrno const& value);
 
+/// Utility to build exception messages.
+/**
+ *  \see AnytunError::throwErr
+ */
 class ErrorStringBuilder 
 {
 public:
   ErrorStringBuilder(ErrorStringBuilder const& src) { stream << src.stream.str(); };
   ErrorStringBuilder() {};
+  
+  // TODO throwing in a destructor will terminate the program if another exception is already active!!!
   ~ErrorStringBuilder() { throw std::runtime_error(stream.str()); };
 
   template<class T>
@@ -75,9 +98,18 @@ private:
   std::stringstream stream;
 };
 
+/// Craz exception factory class.
 class AnytunError
 {
 public:
+  /// Used in Anytun to throw a \c runtime_error.
+  /**
+   *  \code
+   *  AnytunError::throwErr() << "This message starts with " << 1 << " string, and some other streamed stuff.";
+   *  \endcode
+   * 
+   *  TODO Due to the ~ErrorStringBuilder() issue, should be changed too: throw AnytunError() << "now I stream";
+   */
   static ErrorStringBuilder throwErr() { return ErrorStringBuilder(); }
 };
 

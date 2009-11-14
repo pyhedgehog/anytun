@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief TODO write file description.
+ */
 /*
  *  anytun
  *
@@ -29,33 +33,32 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_plainPacket_h_INCLUDED
 #define ANYTUN_plainPacket_h_INCLUDED
 
 #include "datatypes.h"
 #include "buffer.h"
-
 #include "networkAddress.h"
 
 class Cipher;
+
+// TODO why are those payloads macros?
 /**
- * plain SATP packet class<br>
+ * plain SATP packet class
  * includes payload_type and payload
  */
-
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0000
 #define PAYLOAD_TYPE_TUN4 0x0800
 #define PAYLOAD_TYPE_TUN6 0x86DD 
 
-class PlainPacket : public Buffer
-{
+/// A PlainPacket is a packet that ... TODO
+class PlainPacket : public Buffer {
 public:
   /**
    * Packet constructor
-   * @param the length of the payload 
-   * @param allow reallocation of buffer
+   * \param payload_length the length of the payload 
+   * \param allow_realloc allow reallocation of buffer
    */
   PlainPacket(u_int32_t payload_length, bool allow_realloc = false);
 
@@ -66,41 +69,41 @@ public:
 
   /**
    * Get the length of the header
-   * @return the length of the header
+   * \return the length of the header
    */
   static u_int32_t getHeaderLength();
 
   /**
    * Get the payload type
-   * @return the id of the payload type 
+   * \return the id of the payload type 
    */
   payload_type_t getPayloadType() const;
 
   /**
    * Set the payload type
-   * @param payload_type payload type id
+   * \param payload_type payload type id
    */
   void setPayloadType(payload_type_t payload_type);
 
   /**
    * Get the length of the payload
-   * @return the length of the payload
+   * \return the length of the payload
    */
   u_int32_t getPayloadLength() const;
 
   /**
    * Set the length of the payload
-   * @param length length of the payload
+   * \param payload_length length of the payload in bytes
    */
   void setPayloadLength(u_int32_t payload_length);
 
   /**
    * Get the the payload
-   * @return the Pointer to the payload
+   * \return the Pointer to the payload
    */
   u_int8_t* getPayload();
 
-//  NetworkAddress getSrcAddr() const;
+  //  NetworkAddress getSrcAddr() const;
   NetworkAddress getDstAddr() const;
 
 private:

@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief Implementation of SyncRouteCommand.
+ */
 /*
  *  anytun
  *
@@ -29,19 +33,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "syncRouteCommand.h"
 
 SyncRouteCommand::SyncRouteCommand()
-{	
+{
 }
 
-SyncRouteCommand::SyncRouteCommand( const NetworkPrefix & addr )
-:addr_(addr)
-{	
+SyncRouteCommand::SyncRouteCommand(const NetworkPrefix & addr)
+  : addr_(addr)
+{
 }
-
 
 NetworkPrefix SyncRouteCommand::getPrefix() const 
 {
-	return addr_;
+  return addr_;
 }

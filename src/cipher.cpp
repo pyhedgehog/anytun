@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of the various ciphers.
+ */
 /*
  *  anytun
  *
@@ -44,17 +48,17 @@
 
 void Cipher::encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-	u_int32_t len = cipher(kd, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
-	out.setSenderId(sender_id);
-	out.setSeqNr(seq_nr);
+  u_int32_t len = cipher(kd, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
+  out.setSenderId(sender_id);
+  out.setSeqNr(seq_nr);
   out.setMux(mux);
-	out.setPayloadLength(len);
+  out.setPayloadLength(len);
 }
 
 void Cipher::decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out)
 {
-	u_int32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
-	out.setLength(len);
+  u_int32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
+  out.setLength(len);
 }
 
 
@@ -62,13 +66,13 @@ void Cipher::decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out)
 
 u_int32_t NullCipher::cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
+  std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
 }
 
 u_int32_t NullCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
+  std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
 }
 
@@ -188,4 +192,3 @@ void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_
 #endif
 }
 #endif
-

@@ -1,3 +1,8 @@
+/**
+ *  \file
+ *  \brief Contains definitions used for process privilege handling when
+ *  Anytun is executed as daemon.
+ */
 /*
  *  anytun
  *
@@ -29,9 +34,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_daemon_hpp_INCLUDED
 #define ANYTUN_daemon_hpp_INCLUDED
+
 #ifndef NO_DAEMON
 
 #include <poll.h>
@@ -46,9 +51,11 @@
 #include "anytunError.h"
 
 #ifndef NO_PRIVDROP
-class PrivInfo
-{
+
+/// Utility for process-privilege handling when Anytun is a daemon.
+class PrivInfo {
 public:
+  /// Stores the TODO
   PrivInfo(std::string const& username, std::string const& groupname)
   {
     pw_ = NULL;
@@ -70,6 +77,12 @@ public:
       AnytunError::throwErr() << "unkown group " << groupname;
   }
 
+  /// Drops the processes' privileges.
+  /**
+   *  In \a main() a \a PrivInfo object is created to store the
+   *  user information just before daemonizing.  After daemoniz- and
+   *  chroot-ing the unnecessary privileges are thrown away.
+   */
   void drop()
   {
     if(!pw_ || !gr_)
@@ -95,6 +108,8 @@ private:
 };
 #endif
 
+/// Does a chroot, and provides somehow informational error messages in case something fails.
+inline
 void do_chroot(std::string const& chrootdir)
 {
   if (getuid() != 0)
@@ -108,6 +123,8 @@ void do_chroot(std::string const& chrootdir)
     AnytunError::throwErr() << "can't change to /";
 }
 
+/// Daemonizes the process, i.e. let its execution in the background.
+inline
 void daemonize()
 {
   std::ofstream pidFile;
@@ -139,10 +156,10 @@ void daemonize()
   if ((chdir("/")) < 0)
     AnytunError::throwErr() << "daemonizing failed at chdir(): " << AnytunErrno(errno) << ", exitting";
 
-//  std::cout << "running in background now..." << std::endl;
+  //  std::cout << "running in background now..." << std::endl;
 
   int fd;
-//  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
+  //  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
   for (fd=0;fd<=2;fd++) // close all file descriptors
     close(fd);
   fd = open("/dev/null",O_RDWR);        // stdin

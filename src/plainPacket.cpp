@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of PlainPacket.
+ */
 /*
  *  anytun
  *
@@ -69,8 +73,8 @@ void PlainPacket::setPayloadType(payload_type_t payload_type)
     }
 
     char * ip_version_ptr = reinterpret_cast<char *>(payload_);
-		char ip_version = ip_version_ptr[0];
-		ip_version >>=4;
+    char ip_version = ip_version_ptr[0];
+    ip_version >>=4;
     if(ip_version == 4)
       *payload_type_ = PAYLOAD_TYPE_T_HTON(PAYLOAD_TYPE_TUN4);
     else if(ip_version == 6)
@@ -91,8 +95,8 @@ u_int32_t PlainPacket::getPayloadLength() const
 void PlainPacket::setPayloadLength(u_int32_t payload_length)
 {
   Buffer::setLength(payload_length + sizeof(payload_type_t));
-      // depending on allow_realloc buf_ may point to another address
-      // therefore in this case reinit() gets called by Buffer::setLength()
+  // depending on allow_realloc buf_ may point to another address
+  // therefore in this case reinit() gets called by Buffer::setLength()
 }
 
 void PlainPacket::reinit()
@@ -147,35 +151,34 @@ NetworkAddress PlainPacket::getSrcAddr() const
 
 NetworkAddress PlainPacket::getDstAddr() const
 {
-	if(!payload_type_ || !payload_)
-		return NetworkAddress();
+  if(!payload_type_ || !payload_)
+    return NetworkAddress();
 
-	payload_type_t type = PAYLOAD_TYPE_T_NTOH(*payload_type_);
+  payload_type_t type = PAYLOAD_TYPE_T_NTOH(*payload_type_);
 
-	if(type == PAYLOAD_TYPE_TAP) // Ehternet
-	{
-		// TODO
-		return NetworkAddress();
-	}
-	else if(type == PAYLOAD_TYPE_TUN4) // IPv4
-	{
-		if(length_ < (sizeof(payload_type_t)+5*4))
-			return NetworkAddress();
-		char * hdr = reinterpret_cast<char *>(payload_);
-		boost::asio::ip::address_v4::bytes_type ip_octets;
-		for (int i=0; i<4;i++)
-			ip_octets[i]=hdr[4*4+i];
-		return NetworkAddress(boost::asio::ip::address_v4(ip_octets));
-	}
-	else if(type == PAYLOAD_TYPE_TUN6) // IPv6
-	{
-		if(length_ < (sizeof(payload_type_t)+2*16+2*4))
-			return NetworkAddress();
-		char * hdr = reinterpret_cast<char *>(payload_);
-		boost::asio::ip::address_v6::bytes_type ip_octets;
-		for (int i=0; i<16;i++)
-			ip_octets[i]=hdr[2*4+16+i];
-		return NetworkAddress(boost::asio::ip::address_v6(ip_octets));
-	}
-	return NetworkAddress();
+  if(type == PAYLOAD_TYPE_TAP) { // Ethernet
+    // TODO
+    return NetworkAddress();
+  }
+  else if(type == PAYLOAD_TYPE_TUN4) { // IPv4
+    if(length_ < (sizeof(payload_type_t)+5*4))
+      return NetworkAddress();
+    char * hdr = reinterpret_cast<char *>(payload_);
+    boost::asio::ip::address_v4::bytes_type ip_octets;
+    for (int i=0; i<4;i++)
+      ip_octets[i]=hdr[4*4+i];
+    return NetworkAddress(boost::asio::ip::address_v4(ip_octets));
+  }
+  else if(type == PAYLOAD_TYPE_TUN6) { // IPv6
+    if(length_ < (sizeof(payload_type_t)+2*16+2*4))
+      return NetworkAddress();
+    
+    char * hdr = reinterpret_cast<char *>(payload_);
+    boost::asio::ip::address_v6::bytes_type ip_octets;
+    for (int i = 0; i < 16; i++)
+      ip_octets[i]=hdr[2*4+16+i];
+    
+    return NetworkAddress(boost::asio::ip::address_v6(ip_octets));
+  }
+  return NetworkAddress();
 }

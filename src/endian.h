@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Includes the platform specific libs for byte order conversion functions.
+ */
 /*
  *  anytun
  *
@@ -29,7 +33,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_endian_h_INCLUDED
 #define ANYTUN_endian_h_INCLUDED
 
@@ -38,6 +41,8 @@
 #else
 #include <Winsock2.h>
 #endif
+
+// TODO all this specific ntoh/hton macros... what are they really for?
 
 #define SEQ_NR_T_NTOH(a) ntohl(a)
 #define SEQ_NR_T_HTON(a) htonl(a)

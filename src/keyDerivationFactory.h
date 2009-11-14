@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definition of class KeyDerivationFactory.
+ */
 /*
  *  anytun
  *
@@ -29,25 +33,22 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_keyDerivationFactory_h_INCLUDED
 #define ANYTUN_keyDerivationFactory_h_INCLUDED
 
 #include <string>
-
 #include "datatypes.h"
 #include "keyDerivation.h"
 
-class KeyDerivationFactory
-{
+/// Creates key-derivation objects by name.
+class KeyDerivationFactory {
 public:
   static KeyDerivation* create(std::string const& type);
 
 private:
-  KeyDerivationFactory();
-  KeyDerivationFactory(const KeyDerivationFactory& src);
-  void operator=(const KeyDerivationFactory& src);
-  ~KeyDerivationFactory();
+  KeyDerivationFactory(); // = delete
+  KeyDerivationFactory(const KeyDerivationFactory& src); // = delete
+  void operator=(const KeyDerivationFactory& src); // = delete
 };
 
 #endif

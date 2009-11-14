@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definitions used for command line option handling.
+ */
 /*
  *  anytun
  *
@@ -29,25 +33,24 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_options_h_INCLUDED
 #define ANYTUN_options_h_INCLUDED
 
+#include <list>
 #include "datatypes.h"
 #include "buffer.h"
 #include "threadUtils.hpp"
-#include <list>
 
-class syntax_error : public std::runtime_error
-{
+/// Indicates a syntax error in the command-line.
+class syntax_error : public std::runtime_error {
 public:
   syntax_error(std::string t, int32_t p) : runtime_error(t), pos(p) {};
   int32_t pos;
 };
 std::ostream& operator<<(std::ostream& stream, syntax_error const& error);
 
-class OptionHost
-{
+/// Stores the options required for a host-specification, like TODO
+class OptionHost {
 public:
   OptionHost() : addr(""), port("") {};
   OptionHost(std::string addrPort) { init(addrPort); };
@@ -56,13 +59,13 @@ public:
   void init(std::string addrPort);
 
   std::string addr;
-	std::string port;
+  std::string port;
 };
 typedef std::list<OptionHost> HostList;
 std::istream& operator>>(std::istream& stream, OptionHost& host);
 
-class OptionNetwork
-{
+/// Stores the options required for a network-specifiction, like TODO
+class OptionNetwork {
 public:
   OptionNetwork() : net_addr(""), prefix_length(0) {};
   OptionNetwork(std::string network) { init(network); };
@@ -81,8 +84,8 @@ typedef std::list<std::string> StringList;
 typedef enum { ROLE_LEFT, ROLE_RIGHT } role_t;
 std::ostream& operator<<(std::ostream& stream, role_t const& role);
 
-class Options
-{
+/// Stores all of Anytun's command-line options after parsing.
+class Options {
 public:
   static Options& instance();
 
@@ -128,7 +131,7 @@ public:
   Options& setLocalSyncAddr(std::string l);
   std::string getLocalSyncPort();
   Options& setLocalSyncPort(std::string l);
-	HostList getRemoteSyncHosts();
+  HostList getRemoteSyncHosts();
 
   std::string getDevName();
   Options& setDevName(std::string d);
@@ -204,7 +207,7 @@ private:
   OptionHost remote_;
 
   OptionHost local_sync_;
-	HostList remote_sync_hosts_;
+  HostList remote_sync_hosts_;
 
   std::string dev_name_;
   std::string dev_type_;

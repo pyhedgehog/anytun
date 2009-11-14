@@ -1,3 +1,6 @@
+/**
+ *  \file
+ */
 /*
  *  anytun
  *
@@ -29,20 +32,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_tunDevice_h_INCLUDED
 #define ANYTUN_tunDevice_h_INCLUDED
-
-#include "buffer.h"
-#include "deviceConfig.hpp"
-#include "threadUtils.hpp"
 
 #ifdef _MSC_VER
 #include <windows.h>
 #endif
 
-class TunDevice
-{
+#include "buffer.h"
+#include "deviceConfig.hpp"
+#include "threadUtils.hpp"
+
+/// Provdes read/write operations to a tunneling device.
+class TunDevice {
 public:
   TunDevice(std::string dev,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix);
   ~TunDevice();
@@ -85,7 +87,7 @@ private:
 #else
   bool getAdapter(std::string const& dev_name);
   DWORD performIoControl(DWORD controlCode, LPVOID inBuffer, DWORD inBufferSize,
-                        LPVOID outBuffer, DWORD outBufferSize);
+    LPVOID outBuffer, DWORD outBufferSize);
   HANDLE handle_;
   OVERLAPPED roverlapped_, woverlapped_;
 #endif

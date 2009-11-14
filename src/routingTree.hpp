@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definition of class RoutingTree.
+ */
 /*
  *  anytun
  *
@@ -29,34 +33,31 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_routingTree_hpp_INCLUDED
 #define ANYTUN_routingTree_hpp_INCLUDED
 
 #include "anytunError.h"
 
+/// Monster Horror thing which does something with routing.
 class RoutingTree {
-
 public:
   template <class BinaryType>
-  static void walk(BinaryType bytes ,RoutingTreeNode * node,u_int8_t length,u_int16_t mux)
+  static void walk(BinaryType bytes, RoutingTreeNode* node, u_int8_t length, u_int16_t mux)
   {
-    for (int i=0; i<(length/8); i++)
-    {
+    for (int i=0; i<(length/8); i++) {
       if (!node->nodes_[bytes[i]])
         node->nodes_[bytes[i]] = new RoutingTreeNode;
       node=node->nodes_[bytes[i]];
     }
-    if (length%8)
-    {
-      unsigned char idx=0xff;
-      idx <<=8-(length%8);
-      idx &= bytes[length/8];
-      unsigned char maxidx=0xff;
-      maxidx>>=(length%8);
-      maxidx|=idx;
-      for (unsigned char i=idx; i<=maxidx; i++)
-      {
+    if (length % 8) {
+      unsigned char idx = 0xff;
+      idx <<= 8 - (length % 8);
+      idx &= bytes[length / 8];
+      unsigned char maxidx = 0xff;
+      maxidx >>= (length % 8);
+      maxidx |= idx;
+      
+      for (unsigned char i = idx; i <= maxidx; i++) {
         if (!node->nodes_[i])
           node->nodes_[i] = new RoutingTreeNode;
         node->nodes_[i]->valid_=true;
@@ -69,23 +70,19 @@ public:
   }
   
   template <class BinaryType>
-  static u_int16_t find(BinaryType bytes ,RoutingTreeNode & root )
+  static u_int16_t find(BinaryType bytes, RoutingTreeNode& root)
   {
-    bool valid=0;
-    u_int16_t mux=0;
+    bool valid = 0;
+    u_int16_t mux = 0;
     RoutingTreeNode * node = &root;
-    if (root.valid_)
-    {
+    if (root.valid_) {
       mux=root.mux_;
       valid=1;
     }
-    for (size_t level=0;level<bytes.size();level++)
-    {
-      if (node->nodes_[bytes[level]])
-      {
+    for (size_t level = 0; level < bytes.size(); level++) {
+      if (node->nodes_[bytes[level]]) {
         node=node->nodes_[bytes[level]];
-        if(node->valid_)
-        {
+        if (node->valid_) {
           mux=node->mux_;
           valid=1;
         }
@@ -97,7 +94,6 @@ public:
       AnytunError::throwErr() << "no route";
     return mux;
   }
-
 };
 
 #endif

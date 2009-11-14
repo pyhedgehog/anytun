@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of SyncConnectionCommand.
+ */
 /*
  *  anytun
  *
@@ -29,19 +33,21 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "syncConnectionCommand.h"
 
-SyncConnectionCommand::SyncConnectionCommand(ConnectionList & cl )
-:cl_(cl)
-{	
+SyncConnectionCommand::SyncConnectionCommand(ConnectionList& cl)
+  : cl_(cl)
+{
 }
 
-SyncConnectionCommand::SyncConnectionCommand(ConnectionList & cl, u_int16_t mux )
-:cl_(cl),mux_(mux)
-{	
+SyncConnectionCommand::SyncConnectionCommand(ConnectionList& cl, u_int16_t mux)
+  : cl_(cl), 
+    mux_(mux)
+{
 }
 
 u_int16_t SyncConnectionCommand::getMux() const 
 {
-	return mux_;
+  return mux_;
 }

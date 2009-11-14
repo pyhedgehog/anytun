@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of ConnectionList.
+ */
 /*
  *  anytun
  *
@@ -105,17 +109,17 @@ ConnectionMap::iterator ConnectionList::getEndUnlocked()
 
 const ConnectionMap::iterator ConnectionList::getConnection(u_int16_t mux)
 {
-	Lock lock(mutex_);
-	ConnectionMap::iterator it = connections_.find(mux);
-	return it;
+  Lock lock(mutex_);
+  ConnectionMap::iterator it = connections_.find(mux);
+  return it;
 }
 
 
 ConnectionParam & ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
 {
-	ConnectionMap::iterator it = connections_.find(mux);
-	if(it!=connections_.end())
-		return it->second;
+  ConnectionMap::iterator it = connections_.find(mux);
+  if (it != connections_.end())
+    return it->second;
 
   u_int8_t key[] = {
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
@@ -132,21 +136,21 @@ ConnectionParam & ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
   ConnectionParam conn ((*kd), (*seq), seq_nr_, PacketSourceEndpoint());
-	connections_.insert(ConnectionMap::value_type(mux, conn));
-	it = connections_.find(mux);
-	return it->second;
+  connections_.insert(ConnectionMap::value_type(mux, conn));
+  it = connections_.find(mux);
+  return it->second;
 }
 
 void ConnectionList::clear()
 {
   Lock lock(mutex_);
-	connections_.clear();
+  connections_.clear();
 }
 
 bool ConnectionList::empty()
 {
   Lock lock(mutex_);
-	return connections_.empty();
+  return connections_.empty();
 }
 
 Mutex& ConnectionList::getMutex()

@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definitions of the ostream streaming operators for Anytun error classes.
+ */
 /*
  *  anytun
  *

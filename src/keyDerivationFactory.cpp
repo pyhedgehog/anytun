@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of KeyDerivationFactory.
+ */
 /*
  *  anytun
  *
@@ -54,4 +58,3 @@ KeyDerivation* KeyDerivationFactory::create(std::string const& type)
   else
     throw std::invalid_argument("key derivation prf not available");
 }
-

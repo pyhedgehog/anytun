@@ -1,3 +1,6 @@
+/**
+ *  \file
+ */
 /*
  *  anytun
  *
@@ -32,35 +35,36 @@
 #ifndef ANYTUN_syncTcpConnection_h_INCLUDED
 #define ANYTUN_syncTcpConnection_h_INCLUDED
 
+#include <string>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/function.hpp>
 #include <boost/asio.hpp>
 
-#include <string>
 
+// TODO enable_shared_from_this necessary?.
 class SyncTcpConnection
-  : public boost::enable_shared_from_this<SyncTcpConnection>
-{
+  : public boost::enable_shared_from_this<SyncTcpConnection> {
 public:
   typedef boost::shared_ptr<SyncTcpConnection> pointer;
   typedef boost::asio::ip::tcp proto;
 
   static pointer create(boost::asio::io_service& io_service)
-	{
-	   return pointer(new SyncTcpConnection(io_service));
-	};
+  {
+    return pointer(new SyncTcpConnection(io_service));
+  };
 
-	boost::function<void(SyncTcpConnection *)> onConnect;
+  boost::function<void(SyncTcpConnection *)> onConnect;
   proto::socket& socket();
 
   void start();
-	void Send(std::string message);
+  void Send(std::string message);
+  
 private:
   SyncTcpConnection(boost::asio::io_service& io_service);
 
   void handle_write(const boost::system::error_code & /*error*/,
-      size_t /*bytes_transferred*/);
+    size_t /*bytes_transferred*/);
   proto::socket socket_;
 };
 

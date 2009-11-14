@@ -1,3 +1,19 @@
+/**
+ *  \file
+ *  \brief Contains classes for handling the sequence number windows.
+ *
+ *  \page seq-nr-windows Sequence Number Windows
+ *
+ *  Sequence numbers are handled per client, and are used to detect
+ *  replay attacks.  To handle the case that packets may be received
+ *  out-of-order or multiple times, without having to treat all
+ *  transmission issues as replay attacks, a sliding window of sequence
+ *  numbers are considered valid.
+ * 
+ *  The class SeqWindow stores (through SeqWindowElement
+ *  instances) the state of the sequence window per sender.  Sequence
+ *  number information is sync'd between Anytun servers.
+ */
 /*
  *  anytun
  *
@@ -29,7 +45,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_seqWindow_h_INCLUDED
 #define ANYTUN_seqWindow_h_INCLUDED
 
@@ -42,6 +57,8 @@
 
 class SeqWindow;
 
+/// Stores the sliding sequence number window state for one sender.
+/** @see seq-nr-windows. */
 class SeqWindowElement {
 public:
   SeqWindowElement();
@@ -54,16 +71,22 @@ public:
   u_int8_t* window_;
 };
 
-class SeqWindow
-{
+/// Stores the sequence-number window information map and provides sequence number verification.
+/** @see seq-nr-windows. */
+class SeqWindow {
 public:
   typedef std::map<sender_id_t, SeqWindowElement> SenderMap;
 
   SeqWindow(window_size_t w);
   ~SeqWindow();
 
+  /// Checks whether the sequence number \a seq_nr is valid for the sender and updates the state info for \a sender.
   bool checkAndAdd(sender_id_t sender, seq_nr_t seq_nr);
+
+  // TODO removes sender from map?
   void clear(sender_id_t sender);
+
+  // TODO removes all senders from map?
   void clear();
 
 private:
@@ -71,22 +94,20 @@ private:
   Mutex mutex_;
   SenderMap sender_;
 
-  SeqWindow(const SeqWindow &s);
-  void operator=(const SeqWindow &s);
+  SeqWindow(const SeqWindow &s); // = delete;
+  void operator=(const SeqWindow &s); // = delete;
 
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
-		Lock lock(mutex_);
-		//unsigned int serial = (unsigned int) window_size_;
-		//window_size_t serial = (window_size_t) window_size_;
-  	ar & window_size_;
-  	//TODO: Do not sync complete Sender Map!
-  	// ar & sender_;
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+    Lock lock(mutex_);
+    //unsigned int serial = (unsigned int) window_size_;
+    //window_size_t serial = (window_size_t) window_size_;
+    ar & window_size_;
+    //TODO: Do not sync complete Sender Map!
+    // ar & sender_;
   }
- 
-
 };
 
 #endif

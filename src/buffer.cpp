@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of Buffer.
+ */
 /*
  *  anytun
  *
@@ -40,12 +44,14 @@
 #include "datatypes.h"
 #include "buffer.h"
 
-Buffer::Buffer(bool allow_realloc) : buf_(0), length_(0), real_length_(0), allow_realloc_(allow_realloc)
+Buffer::Buffer(bool allow_realloc)
+  : buf_(0), length_(0), real_length_(0), allow_realloc_(allow_realloc)
 {  
 }
 
-Buffer::Buffer(u_int32_t length, bool allow_realloc) : length_(length), real_length_(length_ + Buffer::OVER_SIZE_), 
-                                                       allow_realloc_(allow_realloc)
+Buffer::Buffer(u_int32_t length, bool allow_realloc)
+  : length_(length), real_length_(length_ + Buffer::OVER_SIZE_), 
+    allow_realloc_(allow_realloc)
 {
   buf_ = new u_int8_t[real_length_];
   if(!buf_) {
@@ -56,8 +62,9 @@ Buffer::Buffer(u_int32_t length, bool allow_realloc) : length_(length), real_len
   std::memset(buf_, 0, real_length_);
 }
 
-Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc) : length_(length), real_length_(length + Buffer::OVER_SIZE_), 
-                                                                       allow_realloc_(allow_realloc)
+Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc)
+  : length_(length), real_length_(length + Buffer::OVER_SIZE_), 
+    allow_realloc_(allow_realloc)
 {
   if(!data) {
     length_ = 0;
@@ -74,9 +81,10 @@ Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc) : length_(l
   std::memcpy(buf_, data, length_);
 }
 
-Buffer::Buffer(std::string hex_data, bool allow_realloc) : length_(static_cast<u_int32_t>(hex_data.size())/2), 
-                                                           real_length_(length_ + Buffer::OVER_SIZE_),
-                                                           allow_realloc_(allow_realloc)
+Buffer::Buffer(std::string hex_data, bool allow_realloc)
+  : length_(static_cast<u_int32_t>(hex_data.size())/2), 
+    real_length_(length_ + Buffer::OVER_SIZE_),
+    allow_realloc_(allow_realloc)
 {
   buf_ = new u_int8_t[real_length_];
   if(!buf_) {

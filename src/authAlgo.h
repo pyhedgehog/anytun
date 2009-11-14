@@ -1,3 +1,8 @@
+/**
+ *  \file
+ *  \brief Contains declarations of the authentication algorithm
+ *  interface- and implementation classes.
+ */ 
 /*
  *  anytun
  *
@@ -45,22 +50,22 @@
 #endif
 #include "keyDerivation.h"
 
-class AuthAlgo
-{
+/// Interface specification for authentication algorithms.
+class AuthAlgo {
 public:
   AuthAlgo() : dir_(KD_INBOUND) {};
   AuthAlgo(kd_dir_t d) : dir_(d) {};
   virtual ~AuthAlgo() {};
 
-  /**
-   * generate the mac
-   * @param packet the packet to be authenticated
+  /// generate the mac
+  /** \param kd     the used key-derivation
+   *  \param packet the packet to be authenticated
    */
   virtual void generate(KeyDerivation& kd, EncryptedPacket& packet) = 0;
 
-  /**
-   * check the mac
-   * @param packet the packet to be authenticated
+  /// check the mac
+  /** \param kd     the used key-derivation
+   *  \param packet the packet to be authenticated
    */
   virtual bool checkTag(KeyDerivation& kd, EncryptedPacket& packet) = 0;
 
@@ -68,10 +73,9 @@ protected:
   kd_dir_t dir_;
 };
 
-//****** NullAuthAlgo ******
 
-class NullAuthAlgo : public AuthAlgo
-{
+/// Authentication algorithm which does not authenticate.
+class NullAuthAlgo : public AuthAlgo {
 public:
   void generate(KeyDerivation& kd, EncryptedPacket& packet);
   bool checkTag(KeyDerivation& kd, EncryptedPacket& packet);
@@ -80,9 +84,9 @@ public:
 };
 
 #ifndef NO_CRYPT
-//****** Sha1AuthAlgo ******
-//* HMAC SHA1 Auth Tag Generator Class
 
+
+/// HMAC SHA1 Auth Tag Generator Class
 class Sha1AuthAlgo : public AuthAlgo
 {
 public:

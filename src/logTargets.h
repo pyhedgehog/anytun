@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definitions for classes used to receive and process log-messages.
+ */
 /*
  *  anytun
  *
@@ -29,7 +33,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_logTargets_h_INCLUDED
 #define ANYTUN_logTargets_h_INCLUDED
 
@@ -46,8 +49,8 @@
 
 #include "datatypes.h"
 
-class LogTarget
-{
+/// Abstract implementation for a logging target.
+class LogTarget {
 public:
   LogTarget();
   LogTarget(int prio);
@@ -72,8 +75,7 @@ protected:
   int max_prio;
 };
 
-class LogTargetList 
-{
+class LogTargetList {
 public:
   typedef enum { TARGET_UNKNOWN, TARGET_SYSLOG, TARGET_FILE, 
                  TARGET_STDOUT, TARGET_STDERR, TARGET_WINEVENTLOG } target_type_t;
@@ -95,8 +97,8 @@ private:
 
 
 #ifdef LOG_SYSLOG
-class LogTargetSyslog : public LogTarget
-{
+/// Logging target for SysLog.
+class LogTargetSyslog : public LogTarget {
 public:
   static const int FAC_USER = LOG_USER;
   static const int FAC_MAIL = LOG_MAIL;
@@ -141,8 +143,8 @@ private:
 #endif
 
 #ifdef LOG_FILE
-class LogTargetFile : public LogTarget
-{
+/// Logging target for a log-file.
+class LogTargetFile : public LogTarget {
 public:
   LogTargetFile(int prio, std::string conf);
   ~LogTargetFile();
@@ -162,8 +164,8 @@ private:
 #endif
 
 #ifdef LOG_STDOUT
-class LogTargetStdout : public LogTarget
-{
+/// Logging target for standard-output.
+class LogTargetStdout : public LogTarget {
 public:
   LogTargetStdout(int prio, std::ostream& s);
   ~LogTargetStdout();
@@ -179,8 +181,8 @@ private:
 #endif
 
 #ifdef LOG_WINEVENTLOG
-class LogTargetWinEventlog : public LogTarget
-{
+/// Logging target for Windows EventLog. Yeah, Windows really is a primary platform. Yeah.
+class LogTargetWinEventlog : public LogTarget {
 public:
   static WORD prioToEventLogType(int prio);
 

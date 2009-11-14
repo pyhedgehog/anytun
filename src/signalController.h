@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains the definitions of the various SignalHandler implementations and the SignalController.
+ */
 /*
  *  anytun
  *
@@ -29,23 +33,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_signalController_h_INCLUDED
 #define ANYTUN_signalController_h_INCLUDED
 
 #include <map>
 #include <queue>
 
-#include "threadUtils.hpp"
-
 #ifndef _MSC_VER
 #include <csignal>
 #endif
 
+#include "threadUtils.hpp"
+
 #define SIGERROR -1
 
-class SignalHandler
-{
+/// Interface for classes handling signals.
+/**
+ *  @see SignalController
+ */
+class SignalHandler {
 public:
   virtual ~SignalHandler() {}
 
@@ -60,51 +66,45 @@ private:
   friend class SignalController;
 };
 
-class SigErrorHandler : public SignalHandler
-{
+/// Handler which is triggered when Anytun itself detects an unrecoverable error.
+class SigErrorHandler : public SignalHandler {
 public:
   SigErrorHandler() : SignalHandler(SIGERROR) {}
   int handle(const std::string& msg);
 };
 
 #ifndef _MSC_VER
-class SigIntHandler : public SignalHandler
-{
+class SigIntHandler : public SignalHandler {
 public:
   SigIntHandler() : SignalHandler(SIGINT) {}
   int handle();
 };
 
-class SigQuitHandler : public SignalHandler
-{
+class SigQuitHandler : public SignalHandler {
 public:
   SigQuitHandler() : SignalHandler(SIGQUIT) {}
   int handle();
 };
 
-class SigHupHandler : public SignalHandler
-{
+class SigHupHandler : public SignalHandler {
 public:
   SigHupHandler() : SignalHandler(SIGHUP) {}
   int handle();
 };
 
-class SigUsr1Handler : public SignalHandler
-{
+class SigUsr1Handler : public SignalHandler {
 public:
   SigUsr1Handler() : SignalHandler(SIGUSR1) {}
   int handle();
 };
 
-class SigUsr2Handler : public SignalHandler
-{
+class SigUsr2Handler : public SignalHandler {
 public:
   SigUsr2Handler() : SignalHandler(SIGUSR2) {}
   int handle();
 };
 
-class SigTermHandler : public SignalHandler
-{
+class SigTermHandler : public SignalHandler {
 public:
   SigTermHandler() : SignalHandler(SIGTERM) {}
   int handle();
@@ -112,44 +112,39 @@ public:
 
 #else
 
-class CtrlCHandler : public SignalHandler
-{
+class CtrlCHandler : public SignalHandler {
 public:
   CtrlCHandler() : SignalHandler(CTRL_C_EVENT) {}
   int handle();
 };
 
-class CtrlBreakHandler : public SignalHandler
-{
+class CtrlBreakHandler : public SignalHandler {
 public:
   CtrlBreakHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
   int handle();
 };
 
-class CtrlCloseHandler : public SignalHandler
-{
+class CtrlCloseHandler : public SignalHandler {
 public:
   CtrlCloseHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
   int handle();
 };
 
-class CtrlLogoffHandler : public SignalHandler
-{
+class CtrlLogoffHandler : public SignalHandler {
 public:
   CtrlLogoffHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
   int handle();
 };
 
-class CtrlShutdownHandler : public SignalHandler
-{
+class CtrlShutdownHandler : public SignalHandler {
 public:
   CtrlShutdownHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
   int handle();
 };
 #endif
 
-class SignalController
-{
+/// Handles unix signals/windows break-signal.
+class SignalController {
 public:
   static SignalController& instance();
 #ifndef _MSC_VER
@@ -167,8 +162,8 @@ private:
 
   SignalController() {};
   ~SignalController();
-  SignalController(const SignalController &s);
-  void operator=(const SignalController &s);
+  SignalController(const SignalController &s); // = delete
+  void operator=(const SignalController &s); // = delete
 
   static SignalController* inst;
   static Mutex instMutex;

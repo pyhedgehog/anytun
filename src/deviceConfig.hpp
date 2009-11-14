@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief TODO write file description
+ */
 /*
  *  anytun
  *
@@ -29,20 +33,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_deviceConfig_hpp_INCLUDED
 #define ANYTUN_deviceConfig_hpp_INCLUDED
 
-#include "networkAddress.h"
 #include <boost/asio.hpp>
+#include "networkAddress.h"
 #include "anytunError.h"
 
 class TunDevice;
 
 enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
 
-class DeviceConfig 
-{
+
+class DeviceConfig {
 public:
   DeviceConfig(std::string dev_name ,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix, u_int16_t mtu)
   {

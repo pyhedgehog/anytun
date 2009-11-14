@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief Implementation of SyncServer.
+ */
 /*
  *  anytun
  *
@@ -56,7 +60,7 @@ void SyncServer::onResolve(const SyncTcpConnection::proto::endpoint& e)
 void SyncServer::onResolvError(const std::runtime_error& e)
 {
   cLog.msg(Log::PRIO_ERROR) << "sync server bind/listen failed: " << e.what();
-      // TODO: stop daemon??
+  // TODO stop daemon if resolving failed?
 }
 
 void SyncServer::run()
@@ -78,7 +82,7 @@ void SyncServer::start_accept()
   SyncTcpConnection::pointer new_connection = SyncTcpConnection::create(acceptor_.io_service());
   conns_.push_back(new_connection);
   acceptor_.async_accept(new_connection->socket(),
-                         boost::bind(&SyncServer::handle_accept, this, new_connection, boost::asio::placeholders::error));
+    boost::bind(&SyncServer::handle_accept, this, new_connection, boost::asio::placeholders::error));
 }
 
 void SyncServer::handle_accept(SyncTcpConnection::pointer new_connection, const boost::system::error_code& error)

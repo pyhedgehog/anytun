@@ -1,3 +1,6 @@
+/**
+ *  \file
+ */
 /*
  *  anytun
  *
@@ -29,44 +32,41 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_syncQueue_h_INCLUDED
 #define ANYTUN_syncQueue_h_INCLUDED
 
 #include <deque>
 #include <queue>
-
 #include "syncCommand.h"
-
 #include "threadUtils.hpp"
 #include "datatypes.h"
 #include "syncServer.h"
 
-class SyncQueue
-{
+// TODO used for?
+class SyncQueue {
 public:
-	SyncQueue():syncServer_(NULL) {};
-	~SyncQueue() {};
+  SyncQueue():syncServer_(NULL) {};
+  ~SyncQueue() {};
   static SyncQueue& instance();
-	void setSyncServerPtr(SyncServer *);
-	void push(const std::string & );
-	void push(const SyncCommand & );
-	std::string pop();
-	bool empty();
+  void setSyncServerPtr(SyncServer *);
+  void push(const std::string & );
+  void push(const SyncCommand & );
+  std::string pop();
+  bool empty();
 
 private:
   static Mutex instMutex;
-	static SyncQueue* inst;
+  static SyncQueue* inst;
   class instanceCleaner {
     public: ~instanceCleaner() {
      if(SyncQueue::inst != 0)
        delete SyncQueue::inst;
    }
   };
-  SyncQueue(const SyncQueue &s);
-  void operator=(const SyncQueue &s);
+  SyncQueue(const SyncQueue &s); // = delete;
+  void operator=(const SyncQueue &s); // = delete;
   Mutex mutex_;
-	SyncServer * syncServer_;
+  SyncServer * syncServer_;
 };
 
 extern SyncQueue& gSyncQueue;

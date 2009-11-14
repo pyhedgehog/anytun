@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definition of class RoutingTreeNode.
+ */ 
 /*
  *  anytun
  *
@@ -29,7 +33,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_routingTreeNode_h_INCLUDED
 #define ANYTUN_routingTreeNode_h_INCLUDED
 
@@ -40,18 +43,18 @@
 
 class RoutingTree;
 
-class RoutingTreeNode
-{
+/// Part of a routing tree, which does something.
+class RoutingTreeNode {
 public:
-	RoutingTreeNode();
-	~RoutingTreeNode();
-	void print(int) const;
+  RoutingTreeNode();
+  ~RoutingTreeNode();
+  
+  void print(int) const;
 
 private:
-//  Mutex mutex_;
-	u_int16_t mux_;
-	bool valid_;
-	boost::array<RoutingTreeNode *,256> nodes_;
+  u_int16_t mux_;
+  bool valid_;
+  boost::array<RoutingTreeNode *,256> nodes_; // TODO 256 seems nice, but why?
 
   friend class RoutingTree;
 };

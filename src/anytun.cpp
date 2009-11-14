@@ -1,5 +1,10 @@
-/*
- *  anytun
+/**
+ *  \file
+ *  \brief The main entry point, initialization and shutdown is done here.
+ *
+ *  \mainpage
+ *
+ *  \section introduction Introduction into SATP
  *
  *  The secure anycast tunneling protocol (satp) defines a protocol used
  *  for communication between any combination of unicast and anycast
@@ -9,7 +14,22 @@
  *  message authentication based on the methodes used by SRTP.  It is
  *  intended to deliver a generic, scaleable and secure solution for
  *  tunneling and relaying of packets of any protocol.
+ * 
+ *  \section implementation Intro into Anytun, a SATP implementation.
+ * 
+ *  To understand the Anytun implementation, start reading at main(int,char* []).
+ * 
+ *  Uh, this helps a lot.
  *
+ *  Other pages which could be of interest:
+ *  \li \ref seq-nr-windows
+ *  \li \ref anytun-controld
+ *  \li \ref anytun-config
+ *  \li \ref anytun-showtables
+ *
+ *  \section license License
+ *  \verbatim
+ *  anytun
  *
  *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
  *                          Christian Pointner <satp@wirdorange.org>
@@ -28,16 +48,17 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
+ *  \endverbatim
  */
+
+#include <iostream>
+#include <fstream>
 
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
 #include <boost/assign.hpp>
-#include <iostream>
-#include <fstream>
 
 #include "datatypes.h"
-
 #include "log.h"
 #include "resolver.h"
 #include "buffer.h"
@@ -63,7 +84,6 @@
 #include "networkAddress.h"
 #endif
 
-
 #ifndef ANYTUN_NOSYNC
 #include "syncQueue.h"
 #include "syncCommand.h"
@@ -82,18 +102,18 @@ bool disableRouting = false;
 
 void createConnection(const PacketSourceEndpoint& remote_end, window_size_t seqSize, mux_t mux)
 {
-	SeqWindow* seq = new SeqWindow(seqSize);
-	seq_nr_t seq_nr_=0;
+  SeqWindow* seq = new SeqWindow(seqSize);
+  seq_nr_t seq_nr_=0;
   KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(gOpt.getKey(), gOpt.getSalt(), gOpt.getPassphrase());
   kd->setRole(gOpt.getRole());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
 
-	ConnectionParam connparam ((*kd), (*seq), seq_nr_, remote_end);
- 	gConnectionList.addConnection(connparam,mux);
+  ConnectionParam connparam ((*kd), (*seq), seq_nr_, remote_end);
+  gConnectionList.addConnection(connparam,mux);
 #ifndef ANYTUN_NOSYNC
-  SyncCommand sc (gConnectionList,mux);
-	gSyncQueue.push(sc);
+  SyncCommand sc(gConnectionList, mux);
+  gSyncQueue.push(sc);
 #endif
 }
 
@@ -111,8 +131,7 @@ void syncConnector(const OptionHost& connto)
 
 void syncListener()
 {
-  try
-  {
+  try {
     SyncServer server(gOpt.getLocalSyncAddr(), gOpt.getLocalSyncPort(), boost::bind(syncOnConnect, _1));
     gSyncQueue.setSyncServerPtr(&server);
     server.run();
@@ -133,8 +152,7 @@ void sender(TunDevice* dev, PacketSource* src)
     return;
   }
 
-  try 
-  {
+  try {
     std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_OUTBOUND));
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_OUTBOUND) );
     
@@ -166,22 +184,24 @@ void sender(TunDevice* dev, PacketSource* src)
       
       if(gConnectionList.empty())
         continue;
-          //std::cout << "got Packet for plain "<<plain_packet.getDstAddr().toString();
-			ConnectionMap::iterator cit;
+          
+      //std::cout << "got Packet for plain "<<plain_packet.getDstAddr().toString();
+      ConnectionMap::iterator cit;
 #ifndef NO_ROUTING
-			if (!disableRouting)
-				try {
-					mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
-							//std::cout << " -> "<<mux << std::endl;
-					cit = gConnectionList.getConnection(mux);
-				} catch (std::exception&) { continue; } // no route
-			else
-				cit = gConnectionList.getBegin();
+      if (!disableRouting) {
+        try {
+            mux = gRoutingTable.getRoute(plain_packet.getDstAddr());
+                    //std::cout << " -> "<<mux << std::endl;
+            cit = gConnectionList.getConnection(mux);
+        }
+        catch (std::exception&) { continue; } // no route
+      } else
+        cit = gConnectionList.getBegin();
 #else
-				cit = gConnectionList.getBegin();
+        cit = gConnectionList.getBegin();
 #endif
 
-      if(cit==gConnectionList.getEnd())
+      if (cit == gConnectionList.getEnd())
         continue; //no connection
       ConnectionParam & conn = cit->second;
       
@@ -190,21 +210,22 @@ void sender(TunDevice* dev, PacketSource* src)
         continue;
       }
 
-          // encrypt packet
+      // encrypt packet
       c->encrypt(conn.kd_, plain_packet, encrypted_packet, conn.seq_nr_, gOpt.getSenderId(), mux);
       
       encrypted_packet.setHeader(conn.seq_nr_, gOpt.getSenderId(), mux);
       conn.seq_nr_++;
       
-          // add authentication tag
+      // add authentication tag
       a->generate(conn.kd_, encrypted_packet);
 
       try {
         src->send(encrypted_packet.getBuf(), encrypted_packet.getLength(), conn.remote_end_);
-      } catch (std::exception& /*e*/) {
-				//TODO: do something here
-		  	//cLog.msg(Log::PRIO_ERROR) << "could not send data: " << e.what();
-	  	} 
+      }
+      catch (std::exception& /*e*/) {
+        //TODO: do something here
+        //cLog.msg(Log::PRIO_ERROR) << "could not send data: " << e.what();
+      } 
     }
   }
   catch(std::runtime_error& e) {
@@ -242,10 +263,10 @@ void receiver(TunDevice* dev, PacketSource* src)
       try {
         len = src->recv(encrypted_packet.getBuf(), encrypted_packet.getLength(), remote_end);
       } catch (std::exception& /*e*/) { 
-				//TODO: do something here
-		  	//cLog.msg(Log::PRIO_ERROR) << "could not recive packet "<< e.what();
-		  	continue; 
-	  	}
+        //TODO: do something here
+        //cLog.msg(Log::PRIO_ERROR) << "could not recive packet "<< e.what();
+        continue; 
+      }
       if(len < 0)
         continue; // silently ignore socket recv errors, this is probably no good idea...
 
@@ -265,21 +286,21 @@ void receiver(TunDevice* dev, PacketSource* src)
         continue;
       ConnectionParam & conn = cit->second;
       
-          // check whether auth tag is ok or not
+      // check whether auth tag is ok or not
       if(!a->checkTag(conn.kd_, encrypted_packet)) {
         cLog.msg(Log::PRIO_NOTICE) << "wrong Authentication Tag!" << std::endl;
         continue;
       }        
 
-          // Replay Protection
+      // Replay Protection
       if(conn.seq_window_.checkAndAdd(encrypted_packet.getSenderId(), encrypted_packet.getSeqNr())) {
         cLog.msg(Log::PRIO_NOTICE) << "Replay attack from " << conn.remote_end_ 
                                    << " seq:"<< encrypted_packet.getSeqNr() << " sid: "<< encrypted_packet.getSenderId();
         continue;
       }
       
-          //Allow dynamic IP changes 
-          //TODO: add command line option to turn this off
+      //Allow dynamic IP changes 
+      //TODO: add command line option to turn this off
       if (remote_end != conn.remote_end_) {
         cLog.msg(Log::PRIO_NOTICE) << "connection "<< mux << " autodetected remote host ip changed " << remote_end;
         conn.remote_end_=remote_end;
@@ -288,20 +309,23 @@ void receiver(TunDevice* dev, PacketSource* src)
         gSyncQueue.push(sc);
 #endif
       }	
-         // ignore zero length packets
+
+      // ignore zero length packets
       if(encrypted_packet.getPayloadLength() <= PlainPacket::getHeaderLength())
         continue;
 
-          // decrypt packet
+
+      // decrypt packet
       c->decrypt(conn.kd_, encrypted_packet, plain_packet);
       
-          // check payload_type
+
+      // check payload_type
       if((dev->getType() == TYPE_TUN && plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN4 && 
                                               plain_packet.getPayloadType() != PAYLOAD_TYPE_TUN6) ||
          (dev->getType() == TYPE_TAP && plain_packet.getPayloadType() != PAYLOAD_TYPE_TAP))
         continue;
       
-          // write it on the device
+      // write it on the device
       dev->write(plain_packet.getPayload(), plain_packet.getLength());
     }
   }
@@ -358,12 +382,10 @@ int main(int argc, char* argv[])
     WinService::start();
     return 0;
   }
-  catch(std::runtime_error& e)
-  {
+  catch(std::runtime_error& e) {
     std::cout << "caught runtime error, exiting: " << e.what() << std::endl;
   }
-  catch(std::exception& e)
-  {
+  catch(std::exception& e) {
     std::cout << "caught exception, exiting: " << e.what() << std::endl;
   }
 }
@@ -378,10 +400,8 @@ int main(int argc, char* argv[])
 #else
   bool daemonized=false;
 #endif  
-  try 
-  {
-    try 
-    {
+  try {
+    try {
       bool result = gOpt.parse(argc, argv);
       if(!result) {
         gOpt.printUsage();
@@ -398,15 +418,13 @@ int main(int argc, char* argv[])
         cLog.addTarget("stdout:3");
  #endif
 #endif
-      }
-      else {
+      } else {
         StringList::const_iterator it;
         for(it = targets.begin();it != targets.end(); ++it)
           cLog.addTarget(*it);
       }
     }
-    catch(syntax_error& e)
-    {
+    catch(syntax_error& e) {
       std::cerr << e << std::endl;
       gOpt.printUsage();
       exit(-1);
@@ -459,16 +477,16 @@ int main(int argc, char* argv[])
     HostList connect_to = gOpt.getRemoteSyncHosts();
 #ifndef NO_ROUTING
     NetworkList routes = gOpt.getRoutes();
-		NetworkList::const_iterator rit;
-		for(rit = routes.begin(); rit != routes.end(); ++rit) {
-			NetworkAddress addr( rit->net_addr );
-			NetworkPrefix prefix( addr, static_cast<u_int8_t>(rit->prefix_length));
-			gRoutingTable.addRoute( prefix, gOpt.getMux() );
-		}
-		if (connect_to.begin() == connect_to.end() || gOpt.getDevType()!="tun") {
-    	cLog.msg(Log::PRIO_NOTICE) << "No sync/control host defined or not a tun device. Disabling multi connection support (routing)";
-			disableRouting=true;
-		}
+    NetworkList::const_iterator rit;
+    for (rit = routes.begin(); rit != routes.end(); ++rit) {
+      NetworkAddress addr( rit->net_addr );
+      NetworkPrefix prefix( addr, static_cast<u_int8_t>(rit->prefix_length));
+      gRoutingTable.addRoute( prefix, gOpt.getMux() );
+    }
+    if (connect_to.begin() == connect_to.end() || gOpt.getDevType() != "tun") {
+      cLog.msg(Log::PRIO_NOTICE) << "No sync/control host defined or not a tun device. Disabling multi connection support (routing)";
+      disableRouting=true;
+    }
 #endif
 
 #ifndef ANYTUN_NOSYNC
@@ -481,8 +499,8 @@ int main(int argc, char* argv[])
       connectThreads.create_thread(boost::bind(syncConnector, *it));
 #endif
 
-        // wait for packet source to finish in a seperate thread in order
-        // to be still able to process signals while waiting
+    // wait for packet source to finish in a seperate thread in order
+    // to be still able to process signals while waiting
 #ifndef NO_DAEMON
     boost::thread(boost::bind(startSendRecvThreads, privs, &dev, src));
 #else
@@ -508,14 +526,12 @@ int main(int argc, char* argv[])
 #endif
     return ret; 
   }
-  catch(std::runtime_error& e)
-  {
+  catch(std::runtime_error& e) {
     cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error, exiting: " << e.what();
     if(!daemonized)
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
-  catch(std::exception& e)
-  {
+  catch(std::exception& e) {
     cLog.msg(Log::PRIO_ERROR) << "uncaught exception, exiting: " << e.what();
     if(!daemonized)
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
@@ -525,5 +541,3 @@ int main(int argc, char* argv[])
 #endif
   return -1;
 }
-  
-  

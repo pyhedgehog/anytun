@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definitions of types used for resolving host:port specs to usable endpoints.
+ */
 /*
  *  anytun
  *
@@ -29,14 +33,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_resolver_h_INCLUDED
 #define ANYTUN_resolver_h_INCLUDED
 
 #include <queue>
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
-
 #include "datatypes.h"
 #include "threadUtils.hpp"
 
@@ -44,9 +46,11 @@ typedef boost::function<void (boost::asio::ip::udp::endpoint)> UdpResolveCallbac
 typedef boost::function<void (boost::asio::ip::tcp::endpoint)> TcpResolveCallback;
 typedef boost::function<void (std::runtime_error const&)> ErrorCallback;
 
+/// Generic implementation for handling the resolve-callback.
+// TODO is this really required, rather than just a forward declaration of UdpResolveHandler/TcpResolveHandler below?
+// TODO if not, to make this really correct, the implementation of this template class belongs here.
 template<class Proto>
-class ResolveHandler
-{
+class ResolveHandler {
 public:
   ResolveHandler(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r = ANY);
   void operator()(const boost::system::error_code& e, const boost::asio::ip::basic_resolver_iterator<Proto>);
@@ -62,8 +66,8 @@ private:
 typedef ResolveHandler<boost::asio::ip::udp> UdpResolveHandler;
 typedef ResolveHandler<boost::asio::ip::tcp> TcpResolveHandler;
 
-class Resolver 
-{
+/// Used for resolving some host- and port-specification to an usable end-point.
+class Resolver  {
 public:
   static Resolver& instance();
 

@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief Implementation of SyncCommand.
+ */
 /*
  *  anytun
  *
@@ -29,28 +33,29 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "syncCommand.h"
 
 SyncCommand::SyncCommand(ConnectionList & cl )
-{	
-	scc_ = new SyncConnectionCommand(cl);
-	src_ = new SyncRouteCommand();
+{
+  scc_ = new SyncConnectionCommand(cl);
+  src_ = new SyncRouteCommand();
 }
 
 SyncCommand::SyncCommand(ConnectionList & cl, u_int16_t mux )
-{	
-	scc_ = new SyncConnectionCommand(cl,mux);
-	src_=NULL;
+{
+  scc_ = new SyncConnectionCommand(cl,mux);
+  src_=NULL;
 }
 
 SyncCommand::SyncCommand(NetworkPrefix np )
-{	
-	scc_ = NULL;
-	src_ = new SyncRouteCommand(np);
+{
+  scc_ = NULL;
+  src_ = new SyncRouteCommand(np);
 }
 
 SyncCommand::~SyncCommand()
 {
-	delete scc_;
-	delete src_;
+  delete scc_;
+  delete src_;
 }

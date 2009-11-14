@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of EncryptedPacket.
+ */
 /*
  *  anytun
  *
@@ -46,8 +50,7 @@ EncryptedPacket::EncryptedPacket(u_int32_t payload_length, u_int32_t auth_tag_le
   header_ = reinterpret_cast<struct HeaderStruct*>(buf_);
   payload_ = buf_ + sizeof(struct HeaderStruct);
   auth_tag_ = NULL;
-  if(header_)
-  {
+  if(header_) {
     header_->seq_nr = 0;
     header_->sender_id = 0;
     header_->mux = 0;
@@ -175,11 +178,10 @@ u_int32_t EncryptedPacket::getAuthenticatedPortionLength()
 
 void EncryptedPacket::withAuthTag(bool b)
 {
-  if((b && auth_tag_) || (!b && !auth_tag_))
+  if ((b && auth_tag_) || (!b && !auth_tag_))
     return;
   
-  if(b)
-  {
+  if (b) {
     if(length_ < (sizeof(struct HeaderStruct) + auth_tag_length_))
       AnytunError::throwErr() << "auth-tag can't be enabled, buffer is too small";
     

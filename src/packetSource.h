@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Defines packet-producing classes, i.e. the receiving side of Anytun's UDP port.
+ */
 /*
  *  anytun
  *
@@ -29,20 +33,18 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_packetSource_h_INCLUDED
 #define ANYTUN_packetSource_h_INCLUDED
 
 #include <boost/asio.hpp>
-
 #include "datatypes.h"
 #include "threadUtils.hpp"
 
 // TODO: fix this when other packetSource types are introduced
 typedef boost::asio::ip::udp::endpoint PacketSourceEndpoint;
 
-class PacketSource
-{
+/// A PacketSource is a source of packets.
+class PacketSource {
 public:
   virtual ~PacketSource() {}
 
@@ -55,10 +57,10 @@ protected:
   Semaphore ready_sem_;
 };
 
-class UDPPacketSource : public PacketSource
-{  
+/// Implementation for retrieving packets via UDP.
+class UDPPacketSource : public PacketSource {
 public:
-  typedef boost::asio::ip::udp proto;
+  typedef boost::asio::ip::udp proto; // TODO proto looks like a very bad name for me.
 
   UDPPacketSource(std::string localaddr, std::string port);
 
@@ -69,7 +71,6 @@ public:
   void onError(const std::runtime_error& e);
 
 private:
-
   boost::asio::io_service io_service_;
   proto::socket sock_;
 };

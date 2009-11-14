@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief Implementation of the command-line option parser.
+ */
 /*
  *  anytun
  *

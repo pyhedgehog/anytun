@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains declaration of functions for executing external processes.
+ */
 /*
  *  anytun
  *
@@ -29,7 +33,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_sysExec_h_INCLUDED
 #define ANYTUN_sysExec_h_INCLUDED
 

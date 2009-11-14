@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Cipher interface and implementation definitions.
+ */
 /*
  *  anytun
  *
@@ -32,12 +36,6 @@
 #ifndef ANYTUN_cipher_h_INCLUDED
 #define ANYTUN_cipher_h_INCLUDED
 
-#include "datatypes.h"
-#include "buffer.h"
-#include "encryptedPacket.h"
-#include "plainPacket.h"
-#include "keyDerivation.h"
-
 #ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
 #include <gcrypt.h>
@@ -46,37 +44,44 @@
 #endif
 #endif
 
-class Cipher
-{
+#include "datatypes.h"
+#include "buffer.h"
+#include "encryptedPacket.h"
+#include "plainPacket.h"
+#include "keyDerivation.h"
+
+
+/// Interface class for cipher implementations.
+class Cipher {
 public:
   Cipher() : dir_(KD_INBOUND) {};
   Cipher(kd_dir_t d) : dir_(d) {};
   virtual ~Cipher() {};
 
-	void encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-	void decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out);
+  // TODO could those two be const?
+  void encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  void decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out);
   
 protected:
+  // TODO could those two be const?
   virtual u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
   virtual u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0; 
 
   kd_dir_t dir_;
 };
 
-//****** NullCipher ******
 
-class NullCipher : public Cipher
-{
+/// Test-only non-encrypting encryption.
+class NullCipher : public Cipher {
 protected:
-  u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  virtual u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  virtual u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 };
 
-#ifndef NO_CRYPT
-//****** AesIcmCipher ******
 
-class AesIcmCipher : public Cipher
-{
+#ifndef NO_CRYPT
+/// En-/Decryption based on AES Integer Counter Mode.
+class AesIcmCipher : public Cipher {
 public:
   AesIcmCipher(kd_dir_t d);
   AesIcmCipher(kd_dir_t d, u_int16_t key_length);
@@ -87,8 +92,9 @@ public:
   static const u_int16_t SALT_LENGTH = 14;
 
 protected:
-  u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  // TODO could those be const?
+  virtual u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  virtual u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
 private:
   void init(u_int16_t key_length = DEFAULT_KEY_LENGTH);

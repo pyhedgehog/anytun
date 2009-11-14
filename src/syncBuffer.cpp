@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief unnecessary file, to-be-killed
+ */
 /*
  *  anytun
  *
@@ -31,4 +35,3 @@
  */
 
 #include "syncBuffer.h"
-

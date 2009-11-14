@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Definition of CipherFactory.
+ */
 /*
  *  anytun
  *
@@ -33,20 +37,18 @@
 #define ANYTUN_cipherFactory_h_INCLUDED
 
 #include <string>
-
 #include "datatypes.h"
 #include "cipher.h"
 
-class CipherFactory
-{
+/// Factory for cipher implementations.
+class CipherFactory {
 public:
   static Cipher* create(std::string const& type, kd_dir_t dir);
 
 private:
-  CipherFactory();
-  CipherFactory(const CipherFactory& src);
-  void operator=(const CipherFactory& src);
-  ~CipherFactory();
+  CipherFactory(); // = delete;
+  CipherFactory(const CipherFactory& src); // = delete;
+  void operator=(const CipherFactory& src); // = delete;
 };
 
 #endif

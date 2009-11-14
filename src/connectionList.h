@@ -1,3 +1,6 @@
+/**
+ *  \file
+ */
 /*
  *  anytun
  *
@@ -29,48 +32,48 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_connectionList_h_INCLUDED
 #define ANYTUN_connectionList_h_INCLUDED
 
 #include <map>
 #include <deque>
-
 #include "threadUtils.hpp"
 #include "datatypes.h"
 #include "connectionParam.h"
 #include "networkAddress.h"
+
+/// Maps between mux-id and connection-state.
 typedef std::map<u_int16_t, ConnectionParam> ConnectionMap;
 
-class ConnectionList
-{
+/// Used to store client connections.
+class ConnectionList {
 public:
-	ConnectionList();
-	~ConnectionList();
-	static ConnectionList& instance();
-	void addConnection(ConnectionParam &conn, u_int16_t mux);
-	const ConnectionMap::iterator getConnection(u_int16_t mux);
-	const ConnectionMap::iterator getEnd();
-	ConnectionMap::iterator getEndUnlocked();
-	ConnectionMap::iterator getBeginUnlocked();	
-	const ConnectionMap::iterator getBegin();
-	ConnectionParam & getOrNewConnectionUnlocked(u_int16_t mux);
-	bool empty();
-	void clear();
+  ConnectionList();
+  ~ConnectionList();
+  static ConnectionList& instance();
+  void addConnection(ConnectionParam &conn, u_int16_t mux);
+  const ConnectionMap::iterator getConnection(u_int16_t mux);
+  const ConnectionMap::iterator getEnd();
+  ConnectionMap::iterator getEndUnlocked();
+  ConnectionMap::iterator getBeginUnlocked();	
+  const ConnectionMap::iterator getBegin();
+  ConnectionParam & getOrNewConnectionUnlocked(u_int16_t mux);
+  bool empty();
+  void clear();
   Mutex& getMutex();
 
 private:
   static Mutex instMutex;
-	static ConnectionList* inst;
+  static ConnectionList* inst;
   class instanceCleaner {
     public: ~instanceCleaner() {
      if(ConnectionList::inst != 0)
        delete ConnectionList::inst;
    }
   };
-	ConnectionList(const ConnectionList &s);
+  ConnectionList(const ConnectionList &s);
   void operator=(const ConnectionList &s);
-	ConnectionMap connections_;
+  ConnectionMap connections_;
   Mutex mutex_;
 };
 

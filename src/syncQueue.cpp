@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief Implementation of SyncQueue.
+ */
 /*
  *  anytun
  *
@@ -30,9 +34,6 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "threadUtils.hpp"
-#include "datatypes.h"
-
 #include <sstream>
 #include <iostream>
 #include <string>
@@ -40,13 +41,13 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
-
+#include "threadUtils.hpp"
+#include "datatypes.h"
 #include "syncQueue.h"
 
 SyncQueue* SyncQueue::inst = NULL;
 Mutex SyncQueue::instMutex;
 SyncQueue& gSyncQueue = SyncQueue::instance();
-
 
 SyncQueue& SyncQueue::instance()
 {
@@ -58,33 +59,33 @@ SyncQueue& SyncQueue::instance()
   return *inst;
 }
 
-void SyncQueue::push(const SyncCommand & scom )
+void SyncQueue::push(const SyncCommand& scom )
 {
-	std::ostringstream sout;
-	boost::archive::text_oarchive oa(sout);
-	oa << scom;
+  std::ostringstream sout;
+  boost::archive::text_oarchive oa(sout);
+  oa << scom;
 
   std::stringstream lengthout;
   lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
-	push(lengthout.str()+sout.str());
+  push(lengthout.str()+sout.str());
 }
 
-void SyncQueue::push(const std::string & str )
+void SyncQueue::push(const std::string& str )
 {
   Lock lock(mutex_);
-//	std::cout << "Debug" << std:endl;
-	if( syncServer_)
-	  syncServer_->send(str);
+  //	std::cout << "Debug" << std:endl;
+  if (syncServer_)
+    syncServer_->send(str);
 }
 
-void SyncQueue::setSyncServerPtr(SyncServer * ptr)
+void SyncQueue::setSyncServerPtr(SyncServer* ptr)
 {
   Lock lock(mutex_);
-	syncServer_=ptr;
+  syncServer_=ptr;
 }
 
 bool SyncQueue::empty()
 {
   Lock lock(mutex_);
-	return 1;
+  return 1;
 }

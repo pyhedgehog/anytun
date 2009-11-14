@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of the various logging back-ends.
+ */
 /*
  *  anytun
  *
@@ -31,21 +35,18 @@
  */
 
 #include <sstream>
-
-#include "datatypes.h"
-
-#include "logTargets.h"
-#include "log.h"
-#include "anytunError.h"
-
-#include "options.h"
-
+#include <boost/date_time/posix_time/posix_time.hpp>
 #ifdef LOG_WINEVENTLOG
 #include <windows.h>
 #include <strsafe.h>
 #endif
 
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include "datatypes.h"
+#include "logTargets.h"
+#include "log.h"
+#include "anytunError.h"
+#include "options.h"
+
 
 LogTarget::LogTarget() : opened(false), enabled(false), max_prio(Log::PRIO_NOTICE)
 {

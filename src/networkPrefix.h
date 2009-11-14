@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief TODO write file description
+ */
 /*
  *  anytun
  *
@@ -29,39 +33,41 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_networkPrefix_h_INCLUDED
 #define ANYTUN_networkPrefix_h_INCLUDED
 
-#include "threadUtils.hpp"
-#include "datatypes.h"
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
+#include "threadUtils.hpp"
+#include "datatypes.h"
 #include "networkAddress.h"
 
-class NetworkPrefix : public NetworkAddress
-{
+/// Does something with Network prefixes.
+class NetworkPrefix : public NetworkAddress {
 public:
-	NetworkPrefix();
-	NetworkPrefix(const NetworkAddress &, u_int8_t length);
-	NetworkPrefix(const NetworkPrefix &);
-	void setNetworkPrefixLength(u_int8_t length );
-	u_int8_t getNetworkPrefixLength() const;
+  NetworkPrefix();
+  NetworkPrefix(const NetworkAddress &, u_int8_t length);
+  NetworkPrefix(const NetworkPrefix &);
+  void setNetworkPrefixLength(u_int8_t length );
+  u_int8_t getNetworkPrefixLength() const;
   bool operator<(const NetworkPrefix &s) const;
 
 private:
-	operator NetworkAddress();
-  void operator=(const NetworkPrefix &s);
-	u_int8_t length_;
+  // TODO what does this do in private?
+  operator NetworkAddress();
+  void operator=(const NetworkPrefix &s); // = delete
+  
+  u_int8_t length_;
+  
   friend class boost::serialization::access;
+  
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version)
   {
     ar & length_;
-		ar & boost::serialization::base_object<NetworkAddress>(*this);
+    ar & boost::serialization::base_object<NetworkAddress>(*this);
   };
-
 };
 
 #endif

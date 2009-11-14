@@ -1,3 +1,11 @@
+/**
+ *  \file
+ *  \brief Entry point for \ref anytun-controld.
+ *
+ *  \page anytun-controld Tool anytun-controld
+ * 
+ *  TODO describe what anytun-controld is.
+ */
 /*
  *  anytun
  *
@@ -139,15 +147,13 @@ int main(int argc, char* argv[])
     
     return ret;
   }
-  catch(std::runtime_error& e)
-  {
+  catch(std::runtime_error& e) {
     if(daemonized)
       cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error, exiting: " << e.what();
     else
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
-  catch(std::exception& e)
-  {
+  catch(std::exception& e) {
     if(daemonized)
       cLog.msg(Log::PRIO_ERROR) << "uncaught exception, exiting: " << e.what();
     else

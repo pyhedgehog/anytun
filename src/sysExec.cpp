@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief Implementations of utility functions for external process execution.
+ */
 /*
  *  anytun
  *
@@ -84,7 +88,7 @@ void anytun_exec(std::string const& script, StringVector const& args, StringList
     return;
   }
 
-// child code
+  // child code
   int fd;
   for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
     if(fd != pipefd[1]) close(fd);

@@ -1,3 +1,11 @@
+/**
+ *  \file
+ *  \brief Entry point for \ref anytun-config.
+ *
+ *  \page anytun-config Tool anytun-config
+ * 
+ *  TODO describe what anytun-config does.
+ */
 /*
  *  anytun
  *
@@ -50,7 +58,6 @@
 #include "syncCommand.h"
 
 
-
 void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux, Semaphore& sem)
 {
   SeqWindow * seq = new SeqWindow(seqSize);
@@ -71,8 +78,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
 
   NetworkList routes = gOpt.getRoutes();
   NetworkList::const_iterator rit;
-  for(rit = routes.begin(); rit != routes.end(); ++rit)
-  {
+  for(rit = routes.begin(); rit != routes.end(); ++rit) {
     NetworkAddress addr(rit->net_addr.c_str());
     NetworkPrefix prefix(addr, rit->prefix_length);
     
@@ -97,8 +103,7 @@ void createConnectionError(const std::exception& e, Semaphore& sem, int& ret)
 
 int main(int argc, char* argv[])
 {
-  try 
-  {
+  try {
     bool result = gOpt.parse(argc, argv);
     if(!result) {
       gOpt.printUsage();
@@ -114,8 +119,7 @@ int main(int argc, char* argv[])
         cLog.addTarget(*it);
     }
   }
-  catch(syntax_error& e)
-  {
+  catch(syntax_error& e) {
     std::cerr << e << std::endl;
     gOpt.printUsage();
     exit(-1);
@@ -125,18 +129,18 @@ int main(int argc, char* argv[])
 
   gResolver.init();
 
-	ConnectionList cl;
-	SyncQueue queue;
+  ConnectionList cl;
+  SyncQueue queue;
 
   Semaphore sem;
   int ret = 0;
-	UDPPacketSource::proto::endpoint endpoint;
-	// allow emtpy endpoint!!!
-	gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), 
-											 boost::bind(createConnection, _1, boost::ref(cl), gOpt.getSeqWindowSize(), boost::ref(queue), gOpt.getMux(), boost::ref(sem)),
-											 boost::bind(createConnectionError, _1, boost::ref(sem), boost::ref(ret)), 
-											 gOpt.getResolvAddrType());
-	sem.down();
+  UDPPacketSource::proto::endpoint endpoint;
+  // allow emtpy endpoint!!!
+  gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), 
+    boost::bind(createConnection, _1, boost::ref(cl), gOpt.getSeqWindowSize(), boost::ref(queue), gOpt.getMux(), boost::ref(sem)),
+    boost::bind(createConnectionError, _1, boost::ref(sem), boost::ref(ret)), 
+    gOpt.getResolvAddrType());
+  
+  sem.down();
   return ret;
 }
-

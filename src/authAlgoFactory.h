@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains factory for authentication algorithm objects.
+ */ 
 /*
  *  anytun
  *
@@ -29,26 +33,23 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_authAlgoFactory_h_INCLUDED
 #define ANYTUN_authAlgoFactory_h_INCLUDED
 
 #include <string>
-
 #include "datatypes.h"
 #include "authAlgo.h"
 
-class AuthAlgoFactory
-{
+/// Authentication algorithm instance factory.
+class AuthAlgoFactory {
 public:
   static AuthAlgo* create(std::string const& type, kd_dir_t dir);
   static u_int32_t getDigestLength(std::string const& type);
 
 private:
-  AuthAlgoFactory();
-  AuthAlgoFactory(const AuthAlgoFactory& src);
-  void operator=(const AuthAlgoFactory& src);
-  ~AuthAlgoFactory();
+  AuthAlgoFactory(); // = delete
+  AuthAlgoFactory(const AuthAlgoFactory& src); // = delete
+  void operator=(const AuthAlgoFactory& src); // = delete
 };
 
 #endif

@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definitions of key-derivation interfaces and implementations.
+ */
 /*
  *  anytun
  *
@@ -29,7 +33,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_keyDerivation_h_INCLUDED
 #define ANYTUN_keyDerivation_h_INCLUDED
 
@@ -61,8 +64,11 @@
 #define LABEL_LEFT_AUTH 0xAC3478D6
 #define LABEL_RIGHT_AUTH 0xC1DFD96E
 
+/// Key derivation direction.
+// TODO read up on what this does.
 typedef enum { KD_INBOUND, KD_OUTBOUND } kd_dir_t;
 
+/// Interface class for the key-derivation algorithm implementations.
 class KeyDerivation
 {
 public:
@@ -73,6 +79,8 @@ public:
   void setRole(const role_t role);
 
   virtual void init(Buffer key, Buffer salt, std::string passphrase = "") = 0;
+  
+  // TODO could this be const? I assume all the relevant state should be fixed after init, as we pass the seq_nr.
   virtual bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key) = 0;
 
   virtual std::string printType() { return "GenericKeyDerivation"; };
@@ -87,18 +95,18 @@ protected:
   void calcMasterSalt(std::string passphrase, u_int16_t length);
 #endif
 
-	KeyDerivation(const KeyDerivation & src);
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
- 		WritersLock lock(mutex_);
+  KeyDerivation(const KeyDerivation & src);
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+    WritersLock lock(mutex_);
     ar & role_;
     ar & key_length_;
     ar & master_salt_;
     ar & master_key_;
     updateMasterKey();
-	}
+  }
 
   bool is_initialized_;
   role_t role_;
@@ -117,6 +125,7 @@ BOOST_SERIALIZATION_ASSUME_ABSTRACT(KeyDerivation);
 
 //****** NullKeyDerivation ******
 
+/// Derives null keys.
 class NullKeyDerivation : public KeyDerivation
 {
 public:
@@ -131,18 +140,17 @@ public:
 private:
   void updateMasterKey() {};
 
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
     ar & boost::serialization::base_object<KeyDerivation>(*this);
-	}
+  }
 
 };
 
 #ifndef NO_CRYPT
-//****** AesIcmKeyDerivation ******
-
+/// Implementation of AES Integer Counter Mode for Key Derivation.
 class AesIcmKeyDerivation : public KeyDerivation
 {
 public:
@@ -164,12 +172,12 @@ private:
 
   bool calcCtr(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr);
 
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
     ar & boost::serialization::base_object<KeyDerivation>(*this);
-	}
+  }
 
 #ifndef USE_SSL_CRYPTO
   gcry_cipher_hd_t handle_[2];

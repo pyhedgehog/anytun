@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains class definitions used for logging throughout Anytun.
+ */
 /*
  *  anytun
  *
@@ -29,22 +33,20 @@
  *  You should have received a copy of the GNU General Public License
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef ANYTUN_log_h_INCLUDED
 #define ANYTUN_log_h_INCLUDED
 
 #include <string>
 #include <sstream>
-
 #include "logTargets.h"
 #include "threadUtils.hpp"
 
 class Log;
 
-class LogStringBuilder 
-{
+/// Allows ostream-use for log-message building and automtically sends the message upon destruction.
+class LogStringBuilder  {
 public:
-  LogStringBuilder(LogStringBuilder const& src);
+  LogStringBuilder(LogStringBuilder const& src); // TODO not really sure why we need this.
   LogStringBuilder(Log& l, int p);
   ~LogStringBuilder();
 
@@ -57,8 +59,9 @@ private:
   std::stringstream stream;
 };
 
-class Log
-{
+/// Implementation of a logger, i.e. the class the collects and dispatches log-messages.
+/** Intended to be a singleton.  In Anytun the singleton is \a gLog. */
+class Log {
 public:
   static const int PRIO_ERROR = 1;
   static const int PRIO_WARNING = 2;
@@ -77,13 +80,14 @@ public:
 private:
   Log() {};
   ~Log() {};
-  Log(const Log &l);
-  void operator=(const Log &l);
+  Log(const Log &l); // = delete
+  void operator=(const Log &l); // = delete
 
   static Log* inst;
   static Mutex instMutex;
   class instanceCleaner {
-    public: ~instanceCleaner() {
+    public: ~instanceCleaner()
+    {
       if(Log::inst != 0)
         delete Log::inst;
     }

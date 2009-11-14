@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of AuthAlgoFactory.
+ */
 /*
  *  anytun
  *
@@ -36,7 +40,6 @@
 #include "authAlgoFactory.h"
 #include "authAlgo.h"
 
-
 AuthAlgo* AuthAlgoFactory::create(std::string const& type, kd_dir_t dir)
 {
   if(type == "null")
@@ -60,4 +63,3 @@ u_int32_t AuthAlgoFactory::getDigestLength(std::string const& type)
   else
     throw std::invalid_argument("auth algo not available");
 }
-

@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of CipherFactory.
+ */
 /*
  *  anytun
  *
@@ -36,7 +40,6 @@
 #include "cipherFactory.h"
 #include "cipher.h"
 
-
 Cipher* CipherFactory::create(std::string const& type, kd_dir_t dir)
 {
   if(type == "null")
@@ -54,4 +57,3 @@ Cipher* CipherFactory::create(std::string const& type, kd_dir_t dir)
   else
     throw std::invalid_argument("cipher not available");
 }
-

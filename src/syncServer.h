@@ -1,3 +1,6 @@
+/**
+ *  \file
+ */
 /*
  *  anytun
  *
@@ -33,30 +36,39 @@
 #ifndef ANYTUN_syncServer_h_INCLUDED
 #define ANYTUN_syncServer_h_INCLUDED
 
+#include <list>
+#include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/function.hpp>
 #include "threadUtils.hpp"
-
-
-#include <boost/asio.hpp>
-#include <list>
 #include "syncTcpConnection.h"
 
 typedef boost::function<void (SyncTcpConnection *)> ConnectCallback;
 
-class SyncServer
-{
+/// Serves locally generated sync-info to all interested remote parties.
+class SyncServer {
 public:
+  // TODO
+  /**
+   * \param[in] localaddr   local (unicast) address to bind to
+   * \param[in] port        local port for binding
+   * \param[in] onConnect   event-listener called whenever something connects
+   */
   SyncServer(std::string localaddr, std::string port, ConnectCallback onConnect);
+
   void onResolve(const SyncTcpConnection::proto::endpoint& e);
   void onResolvError(const std::runtime_error& e);
   
   void run();
   void send(std::string message);
-  
-  std::list<SyncTcpConnection::pointer> conns_;
+
+  /// Does something.
+  /**
+   * \see mutex_.
+   */
+  std::list<SyncTcpConnection::pointer> conns_; // TODO very public.
   
 private:
   void start_accept();

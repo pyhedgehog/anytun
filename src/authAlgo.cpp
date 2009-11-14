@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of NullAuthAlgo and Sha1AuthAlgo.
+ */
 /*
  *  anytun
  *
@@ -39,7 +43,7 @@
 #include <iostream>
 #include <cstring>
 
-//****** NullAuthAlgo ******
+
 void NullAuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 {
 }
@@ -50,8 +54,6 @@ bool NullAuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 }
 
 #ifndef NO_CRYPT
-//****** Sha1AuthAlgo ******
-
 Sha1AuthAlgo::Sha1AuthAlgo(kd_dir_t d) : AuthAlgo(d), key_(DIGEST_LENGTH)
 {
 #ifndef USE_SSL_CRYPTO
@@ -163,6 +165,4 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
   return true;
 
 }
-
 #endif
-

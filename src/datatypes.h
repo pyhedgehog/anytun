@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains definitions for cross-platform byte-exact data-types.
+ */
 /*
  *  anytun
  *

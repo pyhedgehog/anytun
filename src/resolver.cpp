@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Implementation of the host resolving functions.
+ */
 /*
  *  anytun
  *

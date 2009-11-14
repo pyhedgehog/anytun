@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief Implementation of SignalController.
+ */
 /*
  *  anytun
  *
@@ -51,12 +55,12 @@ SignalController& gSignalController = SignalController::instance();
 
 SignalController& SignalController::instance()
 {
-	Lock lock(instMutex);
-	static instanceCleaner c;
-	if(!inst)
-		inst = new SignalController();
+  Lock lock(instMutex);
+  static instanceCleaner c;
+  if(!inst)
+    inst = new SignalController();
 
-	return *inst;
+  return *inst;
 }
 
 int SigErrorHandler::handle(const std::string& msg)
@@ -249,4 +253,3 @@ int SignalController::run()
   }
   return 0;
 }
-

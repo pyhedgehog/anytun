@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief Implementation of the sliding sequence number window handling.
+ */
 /*
  *  anytun
  *
@@ -30,9 +34,9 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstring>
 #include "threadUtils.hpp"
 #include "datatypes.h"
-#include <cstring>
 #include "seqWindow.h"
 
 SeqWindowElement::SeqWindowElement()

@@ -1,3 +1,7 @@
+/**
+ *  \file
+ *  \brief Contains type definitions for multi-threading utilities.
+ */
 /*
  *  anytun
  *
@@ -36,7 +40,6 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/thread/condition.hpp>
-
 #include "datatypes.h"
 
 typedef boost::mutex::scoped_lock Lock;
@@ -46,8 +49,8 @@ typedef boost::shared_mutex SharedMutex;
 typedef boost::shared_lock<SharedMutex> ReadersLock;
 typedef boost::unique_lock<SharedMutex> WritersLock;
 
-class Semaphore
-{
+/// Our beloved semaphore synchronization primitive.
+class Semaphore {
 public:
   Semaphore(unsigned int initVal=0)
     :count_(initVal){};

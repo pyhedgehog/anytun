@@ -1,3 +1,7 @@
+/**
+ *  \file 
+ *  \brief Implementation of NetworkPrefix.
+ */
 /*
  *  anytun
  *
@@ -36,35 +40,36 @@
 #include "networkPrefix.h"
 
 
-NetworkPrefix::NetworkPrefix(): NetworkAddress(),length_(0)
+NetworkPrefix::NetworkPrefix(): NetworkAddress(), length_(0)
 {
 }
 
-NetworkPrefix::NetworkPrefix(const NetworkAddress & src,u_int8_t length): NetworkAddress(src),length_(length)
+NetworkPrefix::NetworkPrefix(const NetworkAddress& src, u_int8_t length)
+  : NetworkAddress(src), length_(length)
 {
 }
 
-NetworkPrefix::NetworkPrefix(const NetworkPrefix & src): NetworkAddress(src),length_(src.length_)
+NetworkPrefix::NetworkPrefix(const NetworkPrefix& src)
+  : NetworkAddress(src), length_(src.length_)
 {
 }
 
 void NetworkPrefix::setNetworkPrefixLength(u_int8_t length )
 {
-	length_ = length;
+  length_ = length;
 }
 
 u_int8_t NetworkPrefix::getNetworkPrefixLength() const
 {
-	return length_;
+  return length_;
 }
 
 
 bool NetworkPrefix::operator<(const NetworkPrefix &right) const
 {
-	if (network_address_type_!=right.network_address_type_)
-		return false;
-	if (right.length_!=length_)
-		return (length_<right.length_);
-	return static_cast<NetworkAddress>(*this)<static_cast<NetworkAddress>(right);
+  if (network_address_type_!=right.network_address_type_)
+    return false;
+  if (right.length_!=length_)
+    return (length_<right.length_);
+  return static_cast<NetworkAddress>(*this)<static_cast<NetworkAddress>(right);
 }
-
