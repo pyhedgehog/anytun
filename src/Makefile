@@ -198,12 +198,18 @@ clean:
 manpage:
 	@cd man ; $(MAKE)
 
+
+INSTALL_TARGETS := install-bin install-etc
+REMOVE_TARGETS := remove-bin remove-etc
+
+ifdef MANDIR
+INSTALL_TARGETS += install-man
+REMOVE_TARGETS += remove-man
+endif
+
 ifdef EXAMPLESDIR
-INSTALL_TARGETS := install-bin install-etc install-examples install-man
-REMOVE_TARGETS := remove-examples
-else
-INSTALL_TARGETS := install-bin install-etc install-man
-REMOVE_TARGETS := 
+INSTALL_TARGETS += install-examples
+REMOVE_TARGETS += remove-examples
 endif
 
 install: all $(INSTALL_TARGETS)
@@ -220,11 +226,12 @@ install-etc:
 	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/anytun
 	@ echo "example configurations can be found at $(EXAMPLESDIR)/anytun" > $(DESTDIR)$(ETCDIR)/anytun/README
 	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/init.d
-	$(INSTALL) -m 755 ../etc/init.d/anytun $(DESTDIR)$(ETCDIR)/init.d/anytun
-	@ sed -i 's#DAEMON=/usr/sbin/anytun#DAEMON=$(SBINDIR)/anytun#' $(DESTDIR)$(ETCDIR)/init.d/anytun
-	@ sed -i 's#ANYTUNCONFIG=/usr/bin/anytun-config#ANYTUNCONFIG=$(BINDIR)/anytun-config#' $(DESTDIR)$(ETCDIR)/init.d/anytun
-	@ sed -i 's#CONTROLDAEMON=/usr/bin/anytun-controld#CONTROLDAEMON=$(BINDIR)/anytun-controld#' $(DESTDIR)$(ETCDIR)/init.d/anytun
-	@ sed -i 's#CONFIG_DIR=/etc/anytun#CONFIG_DIR=$(ETCDIR)/anytun#' $(DESTDIR)$(ETCDIR)/init.d/anytun
+	@ sed -e 's#DAEMON=/usr/sbin/anytun#DAEMON=$(SBINDIR)/anytun#'                               \
+        -e 's#ANYTUNCONFIG=/usr/bin/anytun-config#ANYTUNCONFIG=$(BINDIR)/anytun-config#'       \
+        -e 's#CONTROLDAEMON=/usr/bin/anytun-controld#CONTROLDAEMON=$(BINDIR)/anytun-controld#' \
+        -e 's#CONFIG_DIR=/etc/anytun#CONFIG_DIR=$(ETCDIR)/anytun#' ../etc/init.d/anytun > ../etc/init.d/anytun.bak
+	$(INSTALL) -m 755 ../etc/init.d/anytun.bak $(DESTDIR)$(ETCDIR)/init.d/anytun
+	rm -f ../etc/init.d/anytun.bak
 
 install-examples:
 	$(INSTALL) -d $(DESTDIR)$(EXAMPLESDIR)/anytun
@@ -263,19 +270,26 @@ install-man: manpage
 
 uninstall: remove
 
+
 remove: $(REMOVE_TARGETS)
+
+remove-bin:
 	rm -f $(DESTDIR)$(SBINDIR)/anytun
 	rm -f $(DESTDIR)$(BINDIR)/anytun-config
 	rm -f $(DESTDIR)$(BINDIR)/anytun-controld
 	rm -f $(DESTDIR)$(BINDIR)/anytun-showtables
-	rm -f $(DESTDIR)$(MANDIR)/man8/anytun.8
-	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-config.8
-	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-controld.8
-	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-showtables.8
+
+remove-etc:
 	rm -f $(DESTDIR)$(ETCDIR)/init.d/anytun
 
 remove-examples:
 	rm -rf $(DESTDIR)$(EXAMPLESDIR)/anytun/
+
+remove-man:
+	rm -f $(DESTDIR)$(MANDIR)/man8/anytun.8
+	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-config.8
+	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-controld.8
+	rm -f $(DESTDIR)$(MANDIR)/man8/anytun-showtables.8
 
 purge: remove
 	rm -rf $(DESTDIR)$(ETCDIR)/anytun/
