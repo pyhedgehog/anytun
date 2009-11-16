@@ -20,7 +20,9 @@ common:
   libboost-thread1.35-dev
   libboost-system1.35-dev
   libboost-regex1.35-dev
-  asciidoc (only for manpage)
+
+only for manpage:
+  asciidoc
 
 
 Freebsd
@@ -35,6 +37,15 @@ using ssl crypto lib:
 common:
    devel/boost
    devel/gmake
+
+only for manpage:
+
+ textproc/asciidoc
+ textproc/libxslt
+ textproc/docbook-xsl
+ sysutils/readlink
+ misc/getopt 
+
 
 
 Windows
