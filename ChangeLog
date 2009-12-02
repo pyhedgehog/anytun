@@ -1,5 +1,6 @@
-200?.??.?? -- Version ?
+2009.12.02 -- Version 0.3.2
 
+* added 64bit build target to windows build system
 * added install target to build system
 * cleaned up manpages
 * moved to new svn location
