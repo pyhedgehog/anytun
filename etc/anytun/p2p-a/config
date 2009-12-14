@@ -75,7 +75,7 @@ log syslog:3,anytun-p2p-a,daemon
 #kd-prf aes-ctr-256
 
 ## Device name
-#dev uanytun0
+#dev anytun0
 
 ## Manually set encryption key and salt
 ## (this replaces the passphrase)

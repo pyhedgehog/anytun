@@ -251,7 +251,7 @@ install-examples:
            cd conf.d ;                                                                       \
            for file in `ls`; do                                                              \
              if [ -f $$file ]; then                                                          \
-               $(INSTALL) -m 644 $$file $(DESTDIR)$(EXAMPLESDIR)/anytun/$$dir/conf.d ;       \
+               $(INSTALL) -m 600 $$file $(DESTDIR)$(EXAMPLESDIR)/anytun/$$dir/conf.d ;       \
              fi ;                                                                            \
            done ;                                                                            \
            cd .. ;                                                                           \
