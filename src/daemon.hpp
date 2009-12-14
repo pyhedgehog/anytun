@@ -59,7 +59,7 @@ public:
 
     pw_ = getpwnam(username.c_str());
     if(!pw_)
-      AnytunError::throwErr() << "unkown user " << username;
+      AnytunError::throwErr() << "unknown user " << username;
     
     if(groupname != "")
       gr_ = getgrnam(groupname.c_str());
@@ -67,7 +67,7 @@ public:
       gr_ = getgrgid(pw_->pw_gid);
     
     if(!gr_)
-      AnytunError::throwErr() << "unkown group " << groupname;
+      AnytunError::throwErr() << "unknown group " << groupname;
   }
 
   void drop()

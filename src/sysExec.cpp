@@ -151,7 +151,7 @@ void waitForScript(std::string const& script, pid_t pid, int pipefd)
   else if(WIFSIGNALED(status))
     cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' terminated after signal " << WTERMSIG(status);
   else
-    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script << "': unkown error";
+    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script << "': unknown error";
 
   close(pipefd);
 }
