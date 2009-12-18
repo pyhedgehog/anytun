@@ -148,7 +148,7 @@ case $TARGET in
 		ln -sf linux/tunDevice.cpp 
     echo "loading Linux specific TUN Device"
 	;;
-	OpenBSD|FreeBSD|NetBSD)
+	OpenBSD|FreeBSD|NetBSD|GNU/kFreeBSD)
 		rm -rf tunDevice.cpp
 		ln -sf bsd/tunDevice.cpp 
     echo "loading BSD specific TUN Device"

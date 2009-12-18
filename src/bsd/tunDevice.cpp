@@ -149,7 +149,7 @@ void TunDevice::init_post()
   }
 }
 
-#elif defined(__GNUC__) && defined(__FreeBSD__)
+#elif defined(__GNUC__) && (defined(__FreeBSD__) || defined(__FreeBSD_kernel__))
 
 void TunDevice::init_post()
 {
@@ -262,7 +262,7 @@ void TunDevice::do_ifconfig()
   else {
 #if defined(__GNUC__) && defined(__OpenBSD__)
     args.push_back("link0");
-#elif defined(__GNUC__) && defined(__FreeBSD__)
+#elif defined(__GNUC__) && (defined(__FreeBSD__) || defined(__FreeBSD_kernel__))
     args.push_back("up");
 #elif defined(__GNUC__) && defined(__NetBSD__)
         // nothing to be done here
