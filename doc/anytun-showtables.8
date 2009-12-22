@@ -1,0 +1,73 @@
+'\" t
+.\"     Title: anytun-showtables
+.\"    Author: [see the "AUTHORS" section]
+.\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
+.\"      Date: 12/22/2009
+.\"    Manual: anytun-showtables user manual
+.\"    Source: anytun trunk
+.\"  Language: English
+.\"
+.TH "ANYTUN\-SHOWTABLES" "8" "12/22/2009" "anytun trunk" "anytun-showtables user manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+anytun-showtables \- anycast tunneling routing table visualization utility
+.SH "SYNOPSIS"
+.sp
+.nf
+\fBanytun\-showtables\fR
+.fi
+.SH "DESCRIPTION"
+.sp
+\fBanytun\-showtables\fR displays routing and connection tables used by \fBAnytun\fR\&. It can be used to display a saved routing/connection table used by \fBanytun\-controld\fR or to connect to a the sync port of \fBAnytun\fR\&.
+.SH "OPTIONS"
+.sp
+This Tool does not take any options\&. It takes the sync information from the standard input and prints the routing table to the standard output\&.
+.SH "EXAMPLES"
+.sp
+Print routing table stored in local file
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# perl \-ne \'chomp; print\' < routingtable | \&./anytun\-showtables
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Print current routing table and watch changes
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# nc unicast1\&.anycast\&.anytun\&.org 23 | \&./anytun\-showtables
+.fi
+.if n \{\
+.RE
+.\}
+.SH "BUGS"
+.sp
+Most likely there are some bugs in \fBAnytun\fR\&. If you find a bug, please let the developers know at satp@anytun\&.org\&. Of course, patches are preferred\&.
+.SH "SEE ALSO"
+.sp
+anytun(8), anytun\-controld(8), anytun\-config(8)
+.SH "AUTHORS"
+.sp
+Othmar Gsenger <otti@anytun\&.org> Erwin Nindl <nine@anytun\&.org> Christian Pointner <equinox@anytun\&.org>
+.SH "RESOURCES"
+.sp
+Main web site: http://www\&.anytun\&.org/
+.SH "COPYING"
+.sp
+Copyright (C) 2007\-2009 Othmar Gsenger, Erwin Nindl and Christian Pointner\&. This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version\&.

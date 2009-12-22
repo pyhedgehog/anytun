@@ -16,7 +16,7 @@ NAME=anytun
 DESC=anytun
 CONFIG_DIR=/etc/anytun
 VARCONFIG_DIR=/var/run/anytun-controld
-VARRUN_DIR=/var/run/anytun
+VARRUN_DIR=/var/run/$NAME/
 
 test -x $DAEMON || exit 0
 

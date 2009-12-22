@@ -182,7 +182,7 @@ distclean: cleanall
 	rm -f include.mk
 
 cleanall: clean
-	$(MAKE) --directory=$(CURDIR)/man clean
+	$(MAKE) --directory="../doc" clean
 
 clean:
 	rm -f *.o
@@ -196,7 +196,7 @@ clean:
 	$(MAKE) --directory=$(CURDIR)/anyrtpproxy clean
 
 manpage:
-	@cd man ; $(MAKE)
+	$(MAKE) --directory="../doc" manpage
 
 
 INSTALL_TARGETS := install-bin install-etc
@@ -263,10 +263,10 @@ install-examples:
 
 install-man: manpage
 	$(INSTALL) -d $(DESTDIR)$(MANDIR)/man8/
-	$(INSTALL) -m 644 man/anytun.8 $(DESTDIR)$(MANDIR)/man8/
-	$(INSTALL) -m 644 man/anytun-config.8 $(DESTDIR)$(MANDIR)/man8/
-	$(INSTALL) -m 644 man/anytun-controld.8 $(DESTDIR)$(MANDIR)/man8/
-	$(INSTALL) -m 644 man/anytun-showtables.8 $(DESTDIR)$(MANDIR)/man8/
+	$(INSTALL) -m 644 ../doc/anytun.8 $(DESTDIR)$(MANDIR)/man8/
+	$(INSTALL) -m 644 ../doc/anytun-config.8 $(DESTDIR)$(MANDIR)/man8/
+	$(INSTALL) -m 644 ../doc/anytun-controld.8 $(DESTDIR)$(MANDIR)/man8/
+	$(INSTALL) -m 644 ../doc/anytun-showtables.8 $(DESTDIR)$(MANDIR)/man8/
 
 uninstall: remove
 

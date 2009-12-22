@@ -30,12 +30,12 @@
 ##  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-VERSION=$(shell cat ../../version)
+VERSION=$(shell cat ../version)
 
 MANPAGES := anytun.8 anytun-controld.8 anytun-config.8 anytun-showtables.8 #anyrtpproxy.8
 XML := $(MANPAGES:%.8=%.8.xml) 
 
-.PHONY: clean
+.PHONY: clean realclean
 
 all: manpage
 
@@ -53,5 +53,7 @@ endef
 manpage: $(MANPAGES)
 
 clean:
-	rm -f $(MANPAGES)
 	rm -f $(XML)
+
+realclean:
+	rm -f $(MANPAGES)
