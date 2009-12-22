@@ -21,7 +21,7 @@ common:
   libboost-system1.35-dev
   libboost-regex1.35-dev
 
-only for manpage:
+if you want to rebuild the manpage:
   asciidoc
 
 
@@ -38,8 +38,7 @@ common:
    devel/boost
    devel/gmake
 
-only for manpage:
-
+if you want to rebuild the manpage:
  textproc/asciidoc
  textproc/libxslt
  textproc/docbook-xsl
