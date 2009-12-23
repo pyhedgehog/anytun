@@ -427,7 +427,9 @@ int main(int argc, char* argv[])
 #endif
 
         // this has to be called before the first thread is started
+#if !( defined(__FreeBSD__) || defined(__FreeBSD_kernel__))
     gSignalController.init();
+#endif
     gResolver.init();
    
 #ifndef NO_CRYPT
