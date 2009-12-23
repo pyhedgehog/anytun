@@ -157,11 +157,13 @@ void SignalController::handle()
 {
   sigset_t signal_set;
   int sigNum;
-
+  int err = 0;
   while(1) 
   {
     sigfillset(&signal_set);
-    sigwait(&signal_set, &sigNum);
+    err = sigwait(&signal_set, &sigNum);
+    if (err)
+      break;
     inject(sigNum);
   }
 }
