@@ -163,8 +163,15 @@ void SignalController::handle()
     sigfillset(&signal_set);
     err = sigwait(&signal_set, &sigNum);
     if (err)
-      break;
-    inject(sigNum);
+    {
+      if (err != EINTR && errno != EINTR )
+      {
+      	cLog.msg(Log::PRIO_ERROR) << "sigwait failed with error: \"" << AnytunErrno(errno) << "\" SignalHandling will be disabled";
+      	break;
+      }
+    } else {
+      inject(sigNum);
+    }
   }
 }
 #else
