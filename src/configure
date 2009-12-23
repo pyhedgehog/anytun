@@ -156,7 +156,7 @@ case $TARGET in
     LDFLAGS=$LDFLAGS' -L/usr/local/lib'
 	;;
 	*)
-		echo "Plattform not supported"
+		echo "platform not supported"
     exit 1
 	;;
 esac

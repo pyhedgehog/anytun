@@ -91,7 +91,7 @@ int SigHupHandler::handle()
 
 int SigTermHandler::handle()
 {
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Term caughtm, exiting";
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Term caught, exiting";
 
   return 1;
 }
