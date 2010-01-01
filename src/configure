@@ -36,11 +36,15 @@ TARGET=`uname -s`
 EBUILD_COMPAT=0
 
 CXXFLAGS='-g -Wall -O2 -DLOG_SYSLOG -DLOG_FILE -DLOG_STDOUT'
-LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system -lboost_date_time'
+LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system -lboost_date_time -lm'
 
 CRYPTO_LIB='gcrypt'
 PASSPHRASE=1
 ROUTING=1
+USE_LUA=1
+LUA_DIR=''
+LUA=''
+LUAC=''
 
 PREFIX='/usr/local'
 BINDIR=''
@@ -68,6 +72,9 @@ print_usage() {
   echo "          --enable-passphrase       enable master key and salt passphrase"
   echo "          --disable-routing         disable built-in routing capability"
   echo "          --enable-routing          enable built-in routing capability"
+  echo "          --disable-lua             disable lua integration"
+  echo "          --enable-lua             enable lua integration"
+  echo "          --with-lua=<DIR>          use this lua tree instead of system default"
 }
 
 for arg
@@ -118,6 +125,15 @@ do
   --disable-routing)
     ROUTING=0
   ;;
+  --enable-lua)
+    USE_LUA=1
+  ;;
+  --disable-lua)
+    USE_LUA=0
+  ;;
+  --with-lua=*)
+    LUA_DIR=${arg#--with-lua=}
+  ;;
   --ebuild-compat)
     EBUILD_COMPAT=1
   ;;
@@ -147,6 +163,7 @@ case $TARGET in
 		rm -rf tunDevice.cpp
 		ln -sf linux/tunDevice.cpp 
     echo "loading Linux specific TUN Device"
+    LDFLAGS=$LDFLAGS' -ldl'
 	;;
 	OpenBSD|FreeBSD|NetBSD|GNU/kFreeBSD)
 		rm -rf tunDevice.cpp
@@ -173,10 +190,79 @@ case $CRYPTO_LIB in
   ;;
   none)
     CXXFLAGS=$CXXFLAGS' -DNO_CRYPT'
-    echo "NO_CRYPT_OBJ = 1" >> include.mk
     echo "disabling crypto"
   ;;
 esac
+
+test_lua_version()
+{
+  LUA_VERSION=`cat $1 | grep "#define LUA_VERSION[ 	]" | cut -f2- | tr -d '"' | sed -e 's/Lua \([0-9][0-9.]*\)/\1/'`
+  LUA_VERSION_NUM=`cat $1 | grep "#define LUA_VERSION_NUM" | awk '{ print $3 }'`
+  LUA_RELEASE=`cat $1 | grep "#define LUA_RELEASE[ 	]" | cut -f2-`
+
+  if [ $LUA_VERSION_NUM -ge 501 ]; then
+    return 1;
+  else
+    return 0;
+  fi
+}
+
+if [ $USE_LUA -eq 1 ]; then
+  if [ -z "$LUA_DIR" ]; then
+    for prefix in /usr /usr/local; do
+      if [ -e $prefix/include/lua.h ]; then
+        test_lua_version $prefix/include/lua.h
+        if [ $? -eq 1 ]; then
+          echo "using Lua $LUA_VERSION ($LUA_RELEASE) found at $prefix/include"
+          CXXFLAGS="$CXXFLAGS -I$prefix/include"
+          LDFLAGS="$LDFLAGS -L$prefix/lib -llua"
+          LUA=$prefix/lua
+          LUAC=$prefix/luac
+          break
+        fi
+      else
+        for dir in `ls -d $prefix/include/lua* 2> /dev/null`; do
+          if [ -e $dir/lua.h ]; then
+            test_lua_version $dir/lua.h
+            if [ $? -eq 1 ]; then
+              echo "using Lua $LUA_VERSION ($LUA_RELEASE) found at $dir"
+              CXXFLAGS="$CXXFLAGS -I$dir"
+              if [ -x "$prefix/bin/lua$LUA_VERSION" ]; then
+                LDFLAGS="$LDFLAGS -L$prefix/lib -llua$LUA_VERSION"
+                LUA=$prefix/bin/lua$LUA_VERSION
+                LUAC=$prefix/bin/luac$LUA_VERSION
+              elif [ -x "$prefix/bin/lua-$LUA_VERSION" ]; then
+                LDFLAGS="$LDFLAGS -L$prefix/lib -llua-$LUA_VERSION"
+                LUA=$prefix/bin/lua-$LUA_VERSION
+                LUAC=$prefix/bin/luac-$LUA_VERSION
+              else
+                echo "ERROR: found lua.h at $dir/lua.h but no matching lua and luac"
+                return 1
+              fi
+              break
+            fi
+          fi
+        done
+        if [ -n "$LUAC" ]; then
+          break
+        fi
+      fi
+    done
+
+    if [ -z "$LUAC" ]; then
+      echo "ERROR: no suitable lua found .. please install lua 5.1 or higher or use --with-lua"
+      return 1
+    fi
+
+  else
+    CXXFLAGS="$CXXFLAGS -I$LUA_DIR/include"
+    LDFLAGS="$LDFLAGS $LUA_DIR/lib/liblua.a"
+    LUA=$LUA_DIR/bin/lua
+    LUAC=$LUA_DIR/bin/luac
+  fi
+else
+  CXXFLAGS=$CXXFLAGS' -DNO_LUA'
+fi
 
 if [ $PASSPHRASE -eq 0 ]; then
   CXXFLAGS=$CXXFLAGS' -DNO_PASSPHRASE'
@@ -239,6 +325,20 @@ if [ $INSTALLEXAMPLES -eq 1 ]; then
   echo "installing example files"
 else
   echo "not installing example files"
+fi
+
+echo "" >> include.mk
+
+if [ $CRYPTO_LIB = "none" ]; then
+  echo "NO_CRYPT_OBJ = 1" >> include.mk
+fi
+
+if [ $USE_LUA -eq 1 ]; then
+  echo "LUA := $LUA" >> include.mk
+  echo "LUAC := $LUAC" >> include.mk
+else
+  echo "NO_LUA_OBJ = 1" >> include.mk
+  echo "disabling lua integration"
 fi
 
 exit 0

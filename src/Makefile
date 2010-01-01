@@ -111,9 +111,15 @@ ANYCTRSRCS := $(ANYCTROBJS:%.o=%.cpp)
 ANYCONFSRCS := $(ANYCONFOBJS:%.o=%.cpp)
 EXESRCS := $(EXEOBJS:%.o=%.cpp)
 
+LUA_OBJ := lua/anytun.lc
+LUA_OBJ_INCLUDE := lua/anytun_lua_bytecode.h
+LUA_SRCS := lua/test.lua
+
 .PHONY: distclean cleanall clean manpage install install-bin install-etc install-man uninstall remove purge
 
 all: $(EXECUTABLES) #libAnysync.a 
+
+anytun.d: $(LUA_OBJ_INCLUDE)
 
 %.d: %.cpp
 	@set -e; rm -f $@;                                    \
@@ -166,6 +172,11 @@ anyConfOptions.o: options.cpp
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c
 
+$(LUA_OBJ): $(LUA_SRCS)
+	$(LUAC) -o $@ $(LUA_SRCS)
+
+$(LUA_OBJ_INCLUDE): $(LUA_OBJ)
+	$(LUA) ../tools/bin2c.lua $(LUA_OBJ) anytun_lua_bytecode > $@
 
 libAnysync.a: $(OBJS)
 	ar cru $@ $(OBJS)
@@ -193,6 +204,8 @@ clean:
 	rm -f -r doc/html/*
 	rm -f -r doc/latex/*
 	rm -f libAnysync.a
+	rm -f $(LUA_OBJ)
+	rm -f $(LUA_OBJ_INCLUDE)
 	$(MAKE) --directory=$(CURDIR)/anyrtpproxy clean
 
 manpage:

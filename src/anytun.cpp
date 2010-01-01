@@ -77,6 +77,7 @@
 #include "cryptinit.hpp"
 #include "daemon.hpp"
 #include "sysExec.h"
+#include "lua/initLua.hpp"
 
 bool disableRouting = false;
 
@@ -480,6 +481,10 @@ int main(int argc, char* argv[])
     boost::thread_group connectThreads;
     for(HostList::const_iterator it = connect_to.begin() ;it != connect_to.end(); ++it)
       connectThreads.create_thread(boost::bind(syncConnector, *it));
+#endif
+
+#ifndef NO_LUA
+    boost::thread(boost::bind(luaThread));
 #endif
 
         // wait for packet source to finish in a seperate thread in order
