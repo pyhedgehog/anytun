@@ -44,7 +44,8 @@ extern "C" {
 
 #include "luaLog.h"
 
-#include "anytun_lua_bytecode.h"
+extern const char anytun_lua_bytecode[];
+extern const int anytun_lua_bytecode_len;
 
 #define LUA_MAIN_FUNC "test"
 
@@ -67,7 +68,7 @@ void initLua(lua_State* L)
     lua_call(L, 1, 0);
   }
 
-  int ret = luaL_loadbuffer(L, anytun_lua_bytecode, sizeof(anytun_lua_bytecode), "anytun-lua");
+  int ret = luaL_loadbuffer(L, anytun_lua_bytecode, anytun_lua_bytecode_len, "anytun-lua");
   if(ret) {
     std::string err_str = luaL_checkstring(L, -1);
     switch(ret) {

@@ -102,8 +102,6 @@ ANYCONFOBJS := log.o \
                syncConnectionCommand.o \
                resolver.o
 
-LUAOBJS := lua/luaLog.o
-
 EXECUTABLES := anytun anytun-config anytun-controld anytun-showtables anytun-nosync
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
 
@@ -113,15 +111,19 @@ ANYCTRSRCS := $(ANYCTROBJS:%.o=%.cpp)
 ANYCONFSRCS := $(ANYCONFOBJS:%.o=%.cpp)
 EXESRCS := $(EXEOBJS:%.o=%.cpp)
 
-LUABYTECODE := lua/anytun.lc
-LUABYTECODE_INCLUDE := lua/anytun_lua_bytecode.h
 LUASRCS := lua/test.lua
+LUABYTECODE := lua/anytun.lc
+LUABYTECODE_OBJ := lua/anytun_lua_bytecode.o
+
+ifndef NO_LUA_OBJ
+LUAOBJS := $(LUABYTECODE_OBJ) \
+           lua/luaLog.o
+endif
+
 
 .PHONY: distclean cleanall clean manpage install install-bin install-etc install-man uninstall remove purge
 
 all: $(EXECUTABLES) #libAnysync.a 
-
-anytun.d: $(LUABYTECODE_INCLUDE)
 
 %.d: %.cpp
 	@set -e; rm -f $@;                                    \
@@ -177,8 +179,9 @@ anyConfOptions.o: options.cpp
 $(LUABYTECODE): $(LUASRCS)
 	$(LUAC) -o $@ $(LUASRCS)
 
-$(LUABYTECODE_INCLUDE): $(LUABYTECODE)
-	$(LUA) ../tools/bin2c.lua $(LUABYTECODE) anytun_lua_bytecode > $@
+$(LUABYTECODE_OBJ): $(LUABYTECODE)
+	$(LUA) ../tools/bin2c.lua $(LUABYTECODE) anytun_lua_bytecode > $(@:%.o=%.cpp)
+	$(CXX) $(@:%.o=%.cpp) -c -o $@
 
 libAnysync.a: $(OBJS)
 	ar cru $@ $(OBJS)
@@ -207,7 +210,8 @@ clean:
 	rm -f -r doc/latex/*
 	rm -f libAnysync.a
 	rm -f $(LUABYTECODE)
-	rm -f $(LUABYTECODE_INCLUDE)
+	rm -f $(LUABYTECODE_OBJ)
+	rm -f $(LUABYTECODE_OBJ:%.o=%.cpp)
 	$(MAKE) --directory=$(CURDIR)/anyrtpproxy clean
 
 manpage:
