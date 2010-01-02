@@ -31,7 +31,7 @@
 --
 
 function test() 
-   -- log.printf(log.NOTICE, "lua test started")
+   log.printf(log.DEBUG, "lua test started")
 
    return "hello", "world", 42
 end

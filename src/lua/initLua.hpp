@@ -42,6 +42,8 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "luaLog.h"
+
 #include "anytun_lua_bytecode.h"
 
 #define LUA_MAIN_FUNC "test"
@@ -52,7 +54,7 @@ static const luaL_Reg anytun_lualibs[] = {
   {LUA_TABLIBNAME, luaopen_table},
   {LUA_STRLIBNAME, luaopen_string},
   {LUA_MATHLIBNAME, luaopen_math},
-//  {LUA_LOGLIBNAME, luaopen_log},
+  {LUA_LOGLIBNAME, luaopen_log},
   {NULL, NULL}
 };
 
@@ -117,25 +119,20 @@ void luaThread()
     return;
   }
 
-  bool err = false;
   try
   {
     initLua(L);
     cLog.msg(Log::PRIO_DEBUG) << "Lua initialization finished";
     runLua(L);
+    cLog.msg(Log::PRIO_NOTICE) << "Lua thread stops now";
   }
   catch(std::runtime_error& e) {
     cLog.msg(Log::PRIO_ERROR) << "Lua thread died due to an uncaught runtime_error: " << e.what();
-    err = true;
   }
   catch(std::exception& e) {
     cLog.msg(Log::PRIO_ERROR) << "Lua thread died due to an uncaught exception: " << e.what();
-    err = true;
   }
  
-  if(!err)
-    cLog.msg(Log::PRIO_NOTICE) << "Lua thread stops now";
-
   lua_close(L);
 }
 
