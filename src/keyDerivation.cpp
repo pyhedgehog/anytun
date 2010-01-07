@@ -79,7 +79,7 @@ void KeyDerivation::calcMasterKey(std::string passphrase, u_int16_t length)
   }
 
 #ifndef USE_SSL_CRYPTO
-  Buffer digest(gcry_md_get_algo_dlen(GCRY_MD_SHA256));
+  Buffer digest(static_cast<u_int32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA256)));
   gcry_md_hash_buffer(GCRY_MD_SHA256, digest.getBuf(), passphrase.c_str(), passphrase.length());
 #else
   Buffer digest(u_int32_t(SHA256_DIGEST_LENGTH));
@@ -108,7 +108,7 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
   }
 
 #ifndef USE_SSL_CRYPTO
-  Buffer digest(gcry_md_get_algo_dlen(GCRY_MD_SHA1));
+  Buffer digest(static_cast<u_int32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA1)));
   gcry_md_hash_buffer(GCRY_MD_SHA1, digest.getBuf(), passphrase.c_str(), passphrase.length());
 #else
   Buffer digest(u_int32_t(SHA_DIGEST_LENGTH));
