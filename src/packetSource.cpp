@@ -50,8 +50,10 @@ UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port) : sock
   gResolver.resolveUdp(localaddr, port, boost::bind(&UDPPacketSource::onResolve, this, _1), boost::bind(&UDPPacketSource::onError, this, _1), gOpt.getResolvAddrType());
 }
 
-void UDPPacketSource::onResolve(const boost::asio::ip::udp::endpoint& e)
+void UDPPacketSource::onResolve(const PacketSourceResolverIt& it)
 {
+  PacketSourceEndpoint e = *it;
+
   cLog.msg(Log::PRIO_NOTICE) << "opening socket: " << e;
   sock_.open(e.protocol());
   sock_.bind(e);

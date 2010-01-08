@@ -40,20 +40,20 @@ using ::boost::asio::ip::udp;
 using ::boost::asio::ip::tcp;
 
 template<class Proto>
-void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
+void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(const boost::asio::ip::basic_resolver_iterator<Proto>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
 {
   cLog.msg(Log::PRIO_ERROR) << "the resolver only supports udp and tcp";
 }
 
 template<>
-void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<udp>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
+void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(const boost::asio::ip::basic_resolver_iterator<udp>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
 {
   boost::this_thread::sleep(boost::posix_time::milliseconds(s * 1000));
   gResolver.resolveUdp(addr, port, onResolve, onError, r);
 }
 
 template<>
-void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<tcp>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
+void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& port, boost::function<void(const boost::asio::ip::basic_resolver_iterator<tcp>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r)
 {
   boost::this_thread::sleep(boost::posix_time::milliseconds(s * 1000));
   gResolver.resolveTcp(addr, port, onResolve, onError, r);
@@ -61,7 +61,7 @@ void waitAndEnqueue(u_int32_t s, const std::string& addr, const std::string& por
 
 
 template<class Proto>
-ResolveHandler<Proto>::ResolveHandler(const std::string& addr, const std::string& port, boost::function<void(boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r) : addr_(addr), port_(port), onResolve_(onResolve), onError_(onError), resolv_addr_type_(r)
+ResolveHandler<Proto>::ResolveHandler(const std::string& addr, const std::string& port, boost::function<void(const boost::asio::ip::basic_resolver_iterator<Proto>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r) : addr_(addr), port_(port), onResolve_(onResolve), onError_(onError), resolv_addr_type_(r)
 {
 }
 
@@ -70,7 +70,7 @@ void ResolveHandler<Proto>::operator()(const boost::system::error_code& e, const
 {
   if(boost::system::posix_error::success == e) {
     try {
-      onResolve_(*endpointIt);
+      onResolve_(endpointIt);
     }
     catch(const std::runtime_error& e)
     {

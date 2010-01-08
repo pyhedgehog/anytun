@@ -97,6 +97,11 @@ void createConnection(const PacketSourceEndpoint& remote_end, window_size_t seqS
 #endif
 }
 
+void createConnectionResolver(const PacketSourceResolverIt& it, window_size_t seqSize, mux_t mux)
+{
+  createConnection(*it, seqSize, mux);
+}
+
 void createConnectionError(const std::exception& e)
 {
   gSignalController.inject(SIGERROR, e.what());
@@ -455,7 +460,7 @@ int main(int argc, char* argv[])
     PacketSource* src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
     if(gOpt.getRemoteAddr() != "")
-      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnection, _1, gOpt.getSeqWindowSize(), gOpt.getMux()), boost::bind(createConnectionError, _1), gOpt.getResolvAddrType());
+      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnectionResolver, _1, gOpt.getSeqWindowSize(), gOpt.getMux()), boost::bind(createConnectionError, _1), gOpt.getResolvAddrType());
 
     HostList connect_to = gOpt.getRemoteSyncHosts();
 #ifndef NO_ROUTING

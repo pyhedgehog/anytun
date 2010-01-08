@@ -40,21 +40,21 @@
 #include "datatypes.h"
 #include "threadUtils.hpp"
 
-typedef boost::function<void (boost::asio::ip::udp::endpoint)> UdpResolveCallback;
-typedef boost::function<void (boost::asio::ip::tcp::endpoint)> TcpResolveCallback;
+typedef boost::function<void (const boost::asio::ip::udp::resolver::iterator)> UdpResolveCallback;
+typedef boost::function<void (const boost::asio::ip::tcp::resolver::iterator)> TcpResolveCallback;
 typedef boost::function<void (std::runtime_error const&)> ErrorCallback;
 
 template<class Proto>
 class ResolveHandler
 {
 public:
-  ResolveHandler(const std::string& addr, const std::string& port, boost::function<void (boost::asio::ip::basic_endpoint<Proto>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r = ANY);
+  ResolveHandler(const std::string& addr, const std::string& port, boost::function<void (const boost::asio::ip::basic_resolver_iterator<Proto>)> const& onResolve, ErrorCallback const& onError, ResolvAddrType r = ANY);
   void operator()(const boost::system::error_code& e, const boost::asio::ip::basic_resolver_iterator<Proto>);
 
 private:
   std::string addr_;
   std::string port_;
-  boost::function<void (boost::asio::ip::basic_endpoint<Proto>)> onResolve_;
+  boost::function<void (const boost::asio::ip::basic_resolver_iterator<Proto>)> onResolve_;
   ErrorCallback onError_;
   ResolvAddrType resolv_addr_type_;
 };

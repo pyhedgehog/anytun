@@ -88,6 +88,11 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
   sem.up();
 }
 
+void createConnectionResolver(const PacketSourceResolverIt& it, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux, Semaphore& sem)
+{
+  createConnection(*it, cl, seqSize, queue, mux, sem);
+}
+
 void createConnectionError(const std::exception& e, Semaphore& sem, int& ret)
 {
   cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error: " << e.what();
@@ -133,7 +138,7 @@ int main(int argc, char* argv[])
 	UDPPacketSource::proto::endpoint endpoint;
 	// allow emtpy endpoint!!!
 	gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), 
-											 boost::bind(createConnection, _1, boost::ref(cl), gOpt.getSeqWindowSize(), boost::ref(queue), gOpt.getMux(), boost::ref(sem)),
+											 boost::bind(createConnectionResolver, _1, boost::ref(cl), gOpt.getSeqWindowSize(), boost::ref(queue), gOpt.getMux(), boost::ref(sem)),
 											 boost::bind(createConnectionError, _1, boost::ref(sem), boost::ref(ret)), 
 											 gOpt.getResolvAddrType());
 	sem.down();

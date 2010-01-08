@@ -40,6 +40,7 @@
 
 // TODO: fix this when other packetSource types are introduced
 typedef boost::asio::ip::udp::endpoint PacketSourceEndpoint;
+typedef boost::asio::ip::udp::resolver::iterator PacketSourceResolverIt;
 
 class PacketSource
 {
@@ -65,7 +66,7 @@ public:
   u_int32_t recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote);
   void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote);
 
-  void onResolve(const boost::asio::ip::udp::endpoint& e);
+  void onResolve(const PacketSourceResolverIt& it);
   void onError(const std::runtime_error& e);
 
 private:
