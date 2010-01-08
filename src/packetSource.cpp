@@ -90,6 +90,13 @@ u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoi
 
 void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote)
 {
-  sockets_.front()->send_to(boost::asio::buffer(buf, len), remote);
+  std::list<proto::socket*>::iterator it = sockets_.begin();
+  for(;it != sockets_.end(); ++it) {
+    if((*it)->local_endpoint().protocol() == remote.protocol()) {
+      (*it)->send_to(boost::asio::buffer(buf, len), remote);
+      return;
+    }
+  }
+  cLog.msg(Log::PRIO_WARNING) << "no suitable socket found for remote endpoint protocol: " << remote;
 }
 
