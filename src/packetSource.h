@@ -34,6 +34,7 @@
 #define ANYTUN_packetSource_h_INCLUDED
 
 #include <boost/asio.hpp>
+#include <list>
 
 #include "datatypes.h"
 #include "threadUtils.hpp"
@@ -62,17 +63,18 @@ public:
   typedef boost::asio::ip::udp proto;
 
   UDPPacketSource(std::string localaddr, std::string port);
+  ~UDPPacketSource();
 
   u_int32_t recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote);
   void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote);
 
-  void onResolve(const PacketSourceResolverIt& it);
+  void onResolve(PacketSourceResolverIt& it);
   void onError(const std::runtime_error& e);
 
 private:
 
   boost::asio::io_service io_service_;
-  proto::socket sock_;
+  std::list<proto::socket*> sockets_;
 };
 
 #endif

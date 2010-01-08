@@ -97,7 +97,7 @@ void createConnection(const PacketSourceEndpoint& remote_end, window_size_t seqS
 #endif
 }
 
-void createConnectionResolver(const PacketSourceResolverIt& it, window_size_t seqSize, mux_t mux)
+void createConnectionResolver(PacketSourceResolverIt& it, window_size_t seqSize, mux_t mux)
 {
   createConnection(*it, seqSize, mux);
 }

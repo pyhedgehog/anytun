@@ -88,7 +88,7 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
   sem.up();
 }
 
-void createConnectionResolver(const PacketSourceResolverIt& it, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux, Semaphore& sem)
+void createConnectionResolver(PacketSourceResolverIt& it, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux, Semaphore& sem)
 {
   createConnection(*it, cl, seqSize, queue, mux, sem);
 }

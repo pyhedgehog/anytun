@@ -45,18 +45,36 @@ void PacketSource::waitUntilReady()
   ready_sem_.down();
 }
 
-UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port) : sock_(io_service_)
+UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port)
 {
   gResolver.resolveUdp(localaddr, port, boost::bind(&UDPPacketSource::onResolve, this, _1), boost::bind(&UDPPacketSource::onError, this, _1), gOpt.getResolvAddrType());
 }
 
-void UDPPacketSource::onResolve(const PacketSourceResolverIt& it)
+UDPPacketSource::~UDPPacketSource()
 {
-  PacketSourceEndpoint e = *it;
+  std::list<proto::socket*>::iterator it = sockets_.begin();
+  for(;it != sockets_.end(); ++it)
+    delete *it;
+}
 
-  cLog.msg(Log::PRIO_NOTICE) << "opening socket: " << e;
-  sock_.open(e.protocol());
-  sock_.bind(e);
+void UDPPacketSource::onResolve(PacketSourceResolverIt& it)
+{
+  while(it != PacketSourceResolverIt()) {
+    PacketSourceEndpoint e = *it;
+    cLog.msg(Log::PRIO_NOTICE) << "opening socket: " << e;
+
+    proto::socket* sock = new proto::socket(io_service_);
+    sock->open(e.protocol());
+    if(e.protocol() == proto::v6()) {
+      boost::asio::ip::v6_only option(true);
+      sock->set_option(option);
+    }
+    sock->bind(e);
+    sockets_.push_back(sock);
+
+    it++;
+  }
+
   ready_sem_.up();
 }
 
@@ -67,11 +85,11 @@ void UDPPacketSource::onError(const std::runtime_error& e)
 
 u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote)
 {
-  return static_cast<u_int32_t>(sock_.receive_from(boost::asio::buffer(buf, len), remote));
+  return static_cast<u_int32_t>(sockets_.front()->receive_from(boost::asio::buffer(buf, len), remote));
 }
 
 void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote)
 {
-  sock_.send_to(boost::asio::buffer(buf, len), remote);
+  sockets_.front()->send_to(boost::asio::buffer(buf, len), remote);
 }
 
