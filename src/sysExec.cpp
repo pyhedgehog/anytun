@@ -50,20 +50,25 @@
 
 SysExec::SysExec(std::string const& script) : script_(script),closed_(false)
 {
-  SysExec(script, StringVector(), StringList());
+  doExec(script, StringVector(), StringList());
 }
 
 SysExec::SysExec(std::string const& script, StringVector const& args) : script_(script),closed_(false)
 {
-  SysExec(script, args, StringList());
+  doExec(script, args, StringList());
 }
 
 SysExec::SysExec(std::string const& script, StringList const& env) : script_(script),closed_(false)
 {
-  SysExec(script, StringVector(), env);
+  doExec( script, StringVector(), env);
 }
 
 SysExec::SysExec(std::string const& script, StringVector const& args, StringList const& env) : script_(script),closed_(false)
+{
+  doExec( script, args, env);
+}
+
+void SysExec::doExec(std::string const& script, StringVector const& args, StringList const& env)
 {
   int pipefd[2];
   if(pipe(pipefd) == -1) {
@@ -71,19 +76,18 @@ SysExec::SysExec(std::string const& script, StringVector const& args, StringList
     return;
   }
 
-  pid_t pid;
-  pid = fork();
-  if(pid == -1) {
+  pid_ = fork();
+  if(pid_ == -1) {
     cLog.msg(Log::PRIO_ERROR) << "executing script '" << script << "' fork() error: " << AnytunErrno(errno);
     return;
   }
 
-  if(pid) {
+  if(pid_) {
     close(pipefd[1]);
+		pipefd_=pipefd[0];
     //boost::thread(boost::bind(waitForScript, script, pid, pipefd[0]));
     return;
   }
-
 // child code
   int fd;
   for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors

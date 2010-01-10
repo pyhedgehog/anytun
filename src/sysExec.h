@@ -52,6 +52,7 @@ class SysExec
     void waitForScript();
     ~SysExec();
   private:
+		void doExec(std::string const& script, StringVector const& args, StringList const& env);
     std::string script_;
     pid_t pid_;
     int pipefd_;
