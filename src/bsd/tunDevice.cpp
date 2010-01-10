@@ -54,7 +54,7 @@
 
 #define DEVICE_FILE_MAX 255
 
-TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400)
+TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400),sys_exec_(NULL)
 {
   std::string device_file = "/dev/";
   bool dynamic = true;
@@ -253,6 +253,7 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
 
 void TunDevice::do_ifconfig()
 {
+#ifndef NO_EXEC
   std::ostringstream mtu_ss;
   mtu_ss << conf_.mtu_;
   StringVector args = boost::assign::list_of(actual_name_)(conf_.addr_.toString())("netmask")(conf_.netmask_.toString())("mtu")(mtu_ss.str());
@@ -270,6 +271,13 @@ void TunDevice::do_ifconfig()
  #error This Device works just for OpenBSD, FreeBSD or NetBSD
 #endif
   }
-
-  anytun_exec("/sbin/ifconfig", args);
+  sys_exec_ = new SysExec("/sbin/ifconfig", args);
+#endif
 }
+
+void TunDevice::waitForPostUpScript()
+{
+  if (sys_exec_)
+    sys_exec_->waitForScript();
+}
+

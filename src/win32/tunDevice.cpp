@@ -270,3 +270,7 @@ void TunDevice::do_ifconfig()
 	}
   conf_.mtu_ = static_cast<u_int16_t>(mtu);
 }
+
+void TunDevice::waitForPostUpScript()
+{
+}

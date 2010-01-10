@@ -36,9 +36,10 @@
 #include "buffer.h"
 #include "deviceConfig.hpp"
 #include "threadUtils.hpp"
-
 #ifdef _MSC_VER
 #include <windows.h>
+#else
+#include "sysExec.h"
 #endif
 
 class TunDevice
@@ -53,6 +54,7 @@ public:
   const char* getActualName() const { return actual_name_.c_str(); }
   const char* getActualNode() const { return actual_node_.c_str(); }
   device_type_t getType() const { return conf_.type_; } 
+  void waitForPostUpScript();
   const char* getTypeString() const
   {
 #ifndef _MSC_VER
@@ -70,7 +72,6 @@ public:
     }
     return "";
   }
-
 
 private:
   void operator=(const TunDevice &src);
@@ -91,6 +92,9 @@ private:
 #endif
 
   DeviceConfig conf_;
+#ifndef _MSC_VER
+  SysExec * sys_exec_;
+#endif
   bool with_pi_;
   std::string actual_name_;
   std::string actual_node_;

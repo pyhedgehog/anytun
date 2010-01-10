@@ -326,19 +326,6 @@ void startSendRecvThreads(TunDevice* dev, PacketSource* src)
 {
   src->waitUntilReady();
   
-#ifndef NO_DAEMON
-  if(gOpt.getChrootDir() != "") {
-    try {
-      do_chroot(gOpt.getChrootDir());
-    }
-    catch(const std::runtime_error& e) {
-      cLog.msg(Log::PRIO_WARNING) << "ignoring chroot error: " << e.what();
-    }
-  }
-#ifndef NO_PRIVDROP
-  privs.drop();
-#endif
-#endif
   
   boost::thread(boost::bind(sender, dev, src));
   boost::thread(boost::bind(receiver, dev, src)); 
@@ -431,30 +418,48 @@ int main(int argc, char* argv[])
     }
 #endif
 
-        // this has to be called before the first thread is started
-#if !( defined(__FreeBSD__) || defined(__FreeBSD_kernel__))
-    gSignalController.init();
-#endif
-    gResolver.init();
-   
-#ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
-// this must be called before any other libgcrypt call
-    if(!initLibGCrypt())
-      return -1;
-#endif
-#endif
 
     OptionNetwork net = gOpt.getIfconfigParam();
     TunDevice dev(gOpt.getDevName(), gOpt.getDevType(), net.net_addr, net.prefix_length);
     cLog.msg(Log::PRIO_NOTICE) << "dev opened - name '" << dev.getActualName() << "', node '" << dev.getActualNode() << "'";
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
 #ifndef NO_EXEC
+    SysExec * postup_script = NULL;
     if(gOpt.getPostUpScript() != "") {
       cLog.msg(Log::PRIO_NOTICE) << "executing post-up script '" << gOpt.getPostUpScript() << "'";
       StringVector args = boost::assign::list_of(dev.getActualName())(dev.getActualNode());
-      anytun_exec(gOpt.getPostUpScript(), args);
+      postup_script = new SysExec(gOpt.getPostUpScript(), args);
     }
+#endif
+        // this has to be called before the first thread is started
+#if !( defined(__FreeBSD__) || defined(__FreeBSD_kernel__))
+    gSignalController.init();
+#endif
+#ifndef NO_DAEMON
+  if(gOpt.getChrootDir() != "") {
+    try {
+      do_chroot(gOpt.getChrootDir());
+    }
+    catch(const std::runtime_error& e) {
+      cLog.msg(Log::PRIO_WARNING) << "ignoring chroot error: " << e.what();
+    }
+  }
+#ifndef NO_PRIVDROP
+  privs.drop();
+#endif
+#endif
+    gResolver.init();
+#ifndef NO_EXEC
+   boost::thread(boost::bind(&TunDevice::waitForPostUpScript,&dev));
+   if (postup_script)
+     boost::thread(boost::bind(&SysExec::waitForScript,postup_script));
+#endif   
+#ifndef NO_CRYPT
+#ifndef USE_SSL_CRYPTO
+// this must be called before any other libgcrypt call
+    if(!initLibGCrypt())
+      return -1;
+#endif
 #endif
     
     PacketSource* src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());

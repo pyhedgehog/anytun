@@ -48,22 +48,22 @@
 #include <string.h>
 #include <cstring>
 
-void anytun_exec(std::string const& script)
+SysExec::SysExec(std::string const& script) : script_(script),closed_(false)
 {
-  anytun_exec(script, StringVector(), StringList());
+  SysExec(script, StringVector(), StringList());
 }
 
-void anytun_exec(std::string const& script, StringVector const& args)
+SysExec::SysExec(std::string const& script, StringVector const& args) : script_(script),closed_(false)
 {
-  anytun_exec(script, args, StringList());
+  SysExec(script, args, StringList());
 }
 
-void anytun_exec(std::string const& script, StringList const& env)
+SysExec::SysExec(std::string const& script, StringList const& env) : script_(script),closed_(false)
 {
-  anytun_exec(script, StringVector(), env);
+  SysExec(script, StringVector(), env);
 }
 
-void anytun_exec(std::string const& script, StringVector const& args, StringList const& env)
+SysExec::SysExec(std::string const& script, StringVector const& args, StringList const& env) : script_(script),closed_(false)
 {
   int pipefd[2];
   if(pipe(pipefd) == -1) {
@@ -80,7 +80,7 @@ void anytun_exec(std::string const& script, StringVector const& args, StringList
 
   if(pid) {
     close(pipefd[1]);
-    boost::thread(boost::bind(waitForScript, script, pid, pipefd[0]));
+    //boost::thread(boost::bind(waitForScript, script, pid, pipefd[0]));
     return;
   }
 
@@ -129,29 +129,35 @@ void anytun_exec(std::string const& script, StringVector const& args, StringList
   exit(-1);
 }
 
-void waitForScript(std::string const& script, pid_t pid, int pipefd)
+void SysExec::waitForScript()
 {
   int status = 0;
-  waitpid(pid, &status, 0);
+  waitpid(pid_, &status, 0);
 
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET(pipefd, &rfds);
+  FD_SET(pipefd_, &rfds);
   struct timeval tv = { 0 , 0 };
-  if(select(pipefd+1, &rfds, NULL, NULL, &tv) == 1) {
+  if(select(pipefd_+1, &rfds, NULL, NULL, &tv) == 1) {
     int err = 0;
-    if(read(pipefd, (void*)(&err), sizeof(err)) >= static_cast<int>(sizeof(err))) {
-      cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' exec() error: " << AnytunErrno(err);
-      close(pipefd);
+    if(read(pipefd_, (void*)(&err), sizeof(err)) >= static_cast<int>(sizeof(err))) {
+      cLog.msg(Log::PRIO_NOTICE) << "script '" << script_ << "' exec() error: " << AnytunErrno(err);
+      close(pipefd_);
       return;
     }
   }
   if(WIFEXITED(status))
-    cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' returned " << WEXITSTATUS(status);  
+    cLog.msg(Log::PRIO_NOTICE) << "script '" << script_ << "' returned " << WEXITSTATUS(status);  
   else if(WIFSIGNALED(status))
-    cLog.msg(Log::PRIO_NOTICE) << "script '" << script << "' terminated after signal " << WTERMSIG(status);
+    cLog.msg(Log::PRIO_NOTICE) << "script '" << script_ << "' terminated after signal " << WTERMSIG(status);
   else
-    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script << "': unknown error";
+    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script_ << "': unknown error";
 
-  close(pipefd);
+  close(pipefd_);
+}
+
+SysExec::~SysExec()
+{
+  if(!closed_)
+    close(pipefd_);
 }

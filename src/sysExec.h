@@ -42,11 +42,21 @@
 typedef std::vector<std::string> StringVector;
 typedef std::list<std::string> StringList;
 
-void anytun_exec(std::string const& script);
-void anytun_exec(std::string const& script, StringVector const& args);
-void anytun_exec(std::string const& script, StringList const& env);
-void anytun_exec(std::string const& script, StringVector const& args, StringList const& env);
-void waitForScript(std::string const& script, pid_t pid, int pipefd);
+class SysExec
+{
+  public:
+    SysExec(std::string const& script);
+    SysExec(std::string const& script, StringVector const& args);
+    SysExec(std::string const& script, StringList const& env);
+    SysExec(std::string const& script, StringVector const& args, StringList const& env);
+    void waitForScript();
+    ~SysExec();
+  private:
+    std::string script_;
+    pid_t pid_;
+    int pipefd_;
+    bool closed_;
+};
 
 #endif
 #endif
