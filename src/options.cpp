@@ -548,6 +548,7 @@ void Options::printUsage()
   std::cout << "   [-L|--log] <target>:<level>[,<param1>[,<param2>..]]" << std::endl;
   std::cout << "                                       add a log target, can be invoked several times" << std::endl;
   std::cout << "                                       i.e.: stdout:5" << std::endl;
+  std::cout << "   [-U|--debug]                        don't daemonize and log to stdout with maximum log level" << std::endl;
 
 #if defined(ANYCTR_OPTIONS)
 
