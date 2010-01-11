@@ -486,7 +486,7 @@ bool Options::parse(int argc, char* argv[])
  #endif
 #else
  #ifdef WIN_SERVICE
-    log_targets_.push_back("eventlog:3,".append(progname_));
+    log_targets_.push_back(std::string("eventlog:3,").append(progname_));
  #else
     log_targets_.push_back("stdout:3");
  #endif
