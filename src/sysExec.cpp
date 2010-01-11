@@ -158,6 +158,7 @@ void SysExec::waitForScript()
     cLog.msg(Log::PRIO_ERROR) << "executing script '" << script_ << "': unknown error";
 
   close(pipefd_);
+	closed_=true;
 }
 
 SysExec::~SysExec()
