@@ -362,6 +362,7 @@ bool Options::parse(int argc, char* argv[])
 
   progname_ = argv[0];
   argc--;
+  bool debug = false; 
   bool ipv4_only = false, ipv6_only = false;
   std::string role = "";
   for(int i=1; argc > 0; ++i)
@@ -385,6 +386,7 @@ bool Options::parse(int argc, char* argv[])
 #endif
 
     PARSE_STRING_LIST("-L","--log", log_targets_, NOTHING)
+    PARSE_BOOL_PARAM("-U","--debug", debug, NOTHING)
 
 #if defined(ANYCTR_OPTIONS)
 
@@ -468,6 +470,11 @@ bool Options::parse(int argc, char* argv[])
       role_ = ROLE_RIGHT;
     else
       throw syntax_error("unknown role name: " + role, -1); 
+  }
+
+  if(debug) {
+    log_targets_.push_back("stdout:5");
+    daemonize_ = false; 
   }
 
   if(log_targets_.empty()) {

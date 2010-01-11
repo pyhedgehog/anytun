@@ -318,19 +318,13 @@ void receiver(TunDevice* dev, PacketSource* src)
   }
 }
 
-#ifndef NO_DAEMON
-void startSendRecvThreads(PrivInfo& privs, TunDevice* dev, PacketSource* src)
-#else
 void startSendRecvThreads(TunDevice* dev, PacketSource* src)
-#endif
 {
   src->waitUntilReady();
-  
   
   boost::thread(boost::bind(sender, dev, src));
   boost::thread(boost::bind(receiver, dev, src)); 
 }
-
 
 
 #ifdef WIN_SERVICE
@@ -472,13 +466,9 @@ int main(int argc, char* argv[])
       connectThreads.create_thread(boost::bind(syncConnector, *it));
 #endif
 
-        // wait for packet source to finish in a seperate thread in order
-        // to be still able to process signals while waiting
-#ifndef NO_DAEMON
-    boost::thread(boost::bind(startSendRecvThreads, privs, &dev, src));
-#else
+    // wait for packet source to finish in a seperate thread in order
+    // to be still able to process signals while waiting
     boost::thread(boost::bind(startSendRecvThreads, &dev, src));
-#endif
 
 #if defined(WIN_SERVICE)
     int ret = 0;
