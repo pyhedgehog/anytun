@@ -110,14 +110,8 @@ int main(int argc, char* argv[])
       exit(0);
     }
     StringList targets = gOpt.getLogTargets();
-    if(targets.empty()) {
-      cLog.addTarget("stderr:2");
-    }
-    else {
-      StringList::const_iterator it;
-      for(it = targets.begin();it != targets.end(); ++it)
-        cLog.addTarget(*it);
-    }
+    for(StringList::const_iterator it = targets.begin();it != targets.end(); ++it)
+      cLog.addTarget(*it);
   }
   catch(syntax_error& e)
   {

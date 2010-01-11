@@ -470,6 +470,22 @@ bool Options::parse(int argc, char* argv[])
       throw syntax_error("unknown role name: " + role, -1); 
   }
 
+  if(log_targets_.empty()) {
+#ifndef _MSC_VER
+ #if !defined(ANYCONF_OPTIONS)
+    log_targets_.push_back(std::string("syslog:3,").append(progname_).append(",daemon"));
+ #else
+    log_targets_.push_back("stderr:2");
+ #endif
+#else
+ #ifdef WIN_SERVICE
+    log_targets_.push_back("eventlog:3,".append(progname_));
+ #else
+    log_targets_.push_back("stdout:3");
+ #endif
+#endif
+  }
+
   return true;
 }
 
@@ -524,6 +540,7 @@ void Options::printUsage()
 
   std::cout << "   [-L|--log] <target>:<level>[,<param1>[,<param2>..]]" << std::endl;
   std::cout << "                                       add a log target, can be invoked several times" << std::endl;
+  std::cout << "                                       i.e.: stdout:5" << std::endl;
 
 #if defined(ANYCTR_OPTIONS)
 

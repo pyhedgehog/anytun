@@ -380,22 +380,8 @@ int main(int argc, char* argv[])
         exit(0);
       }
       StringList targets = gOpt.getLogTargets();
-      if(targets.empty()) {
-#ifndef _MSC_VER
-        cLog.addTarget("syslog:3,anytun,daemon");
-#else
- #ifdef WIN_SERVICE
-        cLog.addTarget("eventlog:3,anytun");
- #else
-        cLog.addTarget("stdout:3");
- #endif
-#endif
-      }
-      else {
-        StringList::const_iterator it;
-        for(it = targets.begin();it != targets.end(); ++it)
-          cLog.addTarget(*it);
-      }
+      for(StringList::const_iterator it = targets.begin();it != targets.end(); ++it)
+        cLog.addTarget(*it);
     }
     catch(syntax_error& e)
     {
@@ -454,14 +440,8 @@ int main(int argc, char* argv[])
     if (postup_script)
       boost::thread(boost::bind(&SysExec::waitForScript,postup_script));
 #endif   
-#ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
-// this must be called before any other libgcrypt call
-    if(!initLibGCrypt())
-      return -1;
-#endif
-#endif
-    
+    initCrypto();   
+ 
     PacketSource* src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
     if(gOpt.getRemoteAddr() != "")

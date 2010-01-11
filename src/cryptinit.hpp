@@ -104,4 +104,17 @@ bool initLibGCrypt()
 #endif
 #endif
 
+bool initCrypto()
+{
+#ifndef NO_CRYPT
+#ifndef USE_SSL_CRYPTO
+  return initLibGCrypt();
+#else
+  return true;
+#endif
+#else
+  return true;
+#endif
+}
+
 #endif
