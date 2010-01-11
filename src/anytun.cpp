@@ -410,7 +410,7 @@ int main(int argc, char* argv[])
         // daemonizing has to done before any thread gets started
 #ifndef NO_DAEMON
 #ifndef NO_PRIVDROP
-		PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
+  	PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
 #endif
     if(gOpt.getDaemonize()) {
       daemonize();
@@ -431,28 +431,28 @@ int main(int argc, char* argv[])
       postup_script = new SysExec(gOpt.getPostUpScript(), args);
     }
 #endif
-        // this has to be called before the first thread is started
-#if !( defined(__FreeBSD__) || defined(__FreeBSD_kernel__))
-    gSignalController.init();
-#endif
 #ifndef NO_DAEMON
-  if(gOpt.getChrootDir() != "") {
-    try {
-      do_chroot(gOpt.getChrootDir());
+    if(gOpt.getChrootDir() != "") {
+      try {
+        do_chroot(gOpt.getChrootDir());
+      }
+      catch(const std::runtime_error& e) {
+        cLog.msg(Log::PRIO_WARNING) << "ignoring chroot error: " << e.what();
+      }
     }
-    catch(const std::runtime_error& e) {
-      cLog.msg(Log::PRIO_WARNING) << "ignoring chroot error: " << e.what();
-    }
-  }
 #ifndef NO_PRIVDROP
-  privs.drop();
+    privs.drop();
 #endif
+#endif
+#if !( defined(__FreeBSD__) || defined(__FreeBSD_kernel__))
+    // this has to be called before the first thread is started
+    gSignalController.init();
 #endif
     gResolver.init();
 #ifndef NO_EXEC
-   boost::thread(boost::bind(&TunDevice::waitForPostUpScript,&dev));
-   if (postup_script)
-     boost::thread(boost::bind(&SysExec::waitForScript,postup_script));
+    boost::thread(boost::bind(&TunDevice::waitForPostUpScript,&dev));
+    if (postup_script)
+      boost::thread(boost::bind(&SysExec::waitForScript,postup_script));
 #endif   
 #ifndef NO_CRYPT
 #ifndef USE_SSL_CRYPTO
