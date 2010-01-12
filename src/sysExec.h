@@ -54,7 +54,7 @@ class SysExec
     int waitForScript();
     int getReturnCode() const;
 
-    static void waitAndDestroy(SysExec** s);
+    static void waitAndDestroy(SysExec*& s);
 
   private:
 		void doExec(std::string const& script, StringVector const& args, StringList const& env);

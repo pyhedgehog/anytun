@@ -176,12 +176,12 @@ int SysExec::getReturnCode() const
   return return_code_;
 }
 
-void SysExec::waitAndDestroy(SysExec** s)
+void SysExec::waitAndDestroy(SysExec*& s)
 {
-  if(!s && !(*s))
+  if(!s)
     return;
 
-  (*s)->waitForScript();
-  delete(*s);
-  *s = NULL;
+  s->waitForScript();
+  delete(s);
+  s = NULL;
 }

@@ -432,7 +432,7 @@ int main(int argc, char* argv[])
 #ifndef NO_EXEC
     boost::thread(boost::bind(&TunDevice::waitUntilReady,&dev));
     if (postup_script)
-      boost::thread(boost::bind(&SysExec::waitAndDestroy,&postup_script));
+      boost::thread(boost::bind(&SysExec::waitAndDestroy,postup_script));
 #endif   
     initCrypto();   
  

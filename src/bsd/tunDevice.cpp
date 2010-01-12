@@ -278,6 +278,6 @@ void TunDevice::do_ifconfig()
 void TunDevice::waitUntilReady()
 {
   if(sys_exec_)
-    SysExec::waitAndDestroy(&sys_exec_);
+    SysExec::waitAndDestroy(sys_exec_);
 }
 
