@@ -49,14 +49,21 @@ class SysExec
     SysExec(std::string const& script, StringVector const& args);
     SysExec(std::string const& script, StringList const& env);
     SysExec(std::string const& script, StringVector const& args, StringList const& env);
-    void waitForScript();
     ~SysExec();
+
+    int waitForScript();
+    int getReturnCode() const;
+
+    static void waitAndDestroy(SysExec** s);
+
   private:
 		void doExec(std::string const& script, StringVector const& args, StringList const& env);
+
     std::string script_;
     pid_t pid_;
     int pipefd_;
     bool closed_;
+    int return_code_;
 };
 
 #endif

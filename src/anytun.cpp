@@ -430,9 +430,9 @@ int main(int argc, char* argv[])
 #endif
     gResolver.init();
 #ifndef NO_EXEC
-    boost::thread(boost::bind(&TunDevice::waitForPostUpScript,&dev));
+    boost::thread(boost::bind(&TunDevice::waitUntilReady,&dev));
     if (postup_script)
-      boost::thread(boost::bind(&SysExec::waitForScript,postup_script));
+      boost::thread(boost::bind(&SysExec::waitAndDestroy,&postup_script));
 #endif   
     initCrypto();   
  

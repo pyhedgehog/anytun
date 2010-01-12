@@ -48,24 +48,30 @@
 #include <string.h>
 #include <cstring>
 
-SysExec::SysExec(std::string const& script) : script_(script),closed_(false)
+SysExec::SysExec(std::string const& script) : script_(script),closed_(false),return_code_(0)
 {
   doExec(script, StringVector(), StringList());
 }
 
-SysExec::SysExec(std::string const& script, StringVector const& args) : script_(script),closed_(false)
+SysExec::SysExec(std::string const& script, StringVector const& args) : script_(script),closed_(false),return_code_(0)
 {
   doExec(script, args, StringList());
 }
 
-SysExec::SysExec(std::string const& script, StringList const& env) : script_(script),closed_(false)
+SysExec::SysExec(std::string const& script, StringList const& env) : script_(script),closed_(false),return_code_(0)
 {
   doExec( script, StringVector(), env);
 }
 
-SysExec::SysExec(std::string const& script, StringVector const& args, StringList const& env) : script_(script),closed_(false)
+SysExec::SysExec(std::string const& script, StringVector const& args, StringList const& env) : script_(script),closed_(false),return_code_(0)
 {
   doExec( script, args, env);
+}
+
+SysExec::~SysExec()
+{
+  if(!closed_)
+    close(pipefd_);
 }
 
 void SysExec::doExec(std::string const& script, StringVector const& args, StringList const& env)
@@ -133,7 +139,7 @@ void SysExec::doExec(std::string const& script, StringVector const& args, String
   exit(-1);
 }
 
-void SysExec::waitForScript()
+int SysExec::waitForScript()
 {
   int status = 0;
   waitpid(pid_, &status, 0);
@@ -147,7 +153,7 @@ void SysExec::waitForScript()
     if(read(pipefd_, (void*)(&err), sizeof(err)) >= static_cast<int>(sizeof(err))) {
       cLog.msg(Log::PRIO_NOTICE) << "script '" << script_ << "' exec() error: " << AnytunErrno(err);
       close(pipefd_);
-      return;
+      return -1;
     }
   }
   if(WIFEXITED(status))
@@ -159,10 +165,23 @@ void SysExec::waitForScript()
 
   close(pipefd_);
 	closed_=true;
+
+  return_code_ = status;
+
+  return status;
 }
 
-SysExec::~SysExec()
+int SysExec::getReturnCode() const 
 {
-  if(!closed_)
-    close(pipefd_);
+  return return_code_;
+}
+
+void SysExec::waitAndDestroy(SysExec** s)
+{
+  if(!s && !(*s))
+    return;
+
+  (*s)->waitForScript();
+  delete(*s);
+  *s = NULL;
 }

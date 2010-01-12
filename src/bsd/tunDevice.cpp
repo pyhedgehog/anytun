@@ -275,9 +275,9 @@ void TunDevice::do_ifconfig()
 #endif
 }
 
-void TunDevice::waitForPostUpScript()
+void TunDevice::waitUntilReady()
 {
-  if (sys_exec_)
-    sys_exec_->waitForScript();
+  if(sys_exec_)
+    SysExec::waitAndDestroy(&sys_exec_);
 }
 

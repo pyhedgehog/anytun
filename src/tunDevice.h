@@ -54,7 +54,7 @@ public:
   const char* getActualName() const { return actual_name_.c_str(); }
   const char* getActualNode() const { return actual_node_.c_str(); }
   device_type_t getType() const { return conf_.type_; } 
-  void waitForPostUpScript();
+  void waitUntilReady();
   const char* getTypeString() const
   {
 #ifndef _MSC_VER
