@@ -91,10 +91,10 @@ void SysExec::doExec(std::string const& script, StringVector const& args, String
   if(pid_) {
     close(pipefd[1]);
 		pipefd_=pipefd[0];
-    //boost::thread(boost::bind(waitForScript, script, pid, pipefd[0]));
+    // parent exits here, call waitForScript to cleanup up zombie
     return;
   }
-// child code
+  // child code, exec the script
   int fd;
   for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
     if(fd != pipefd[1]) close(fd);
@@ -153,22 +153,16 @@ int SysExec::waitForScript()
     if(read(pipefd_, (void*)(&err), sizeof(err)) >= static_cast<int>(sizeof(err))) {
       cLog.msg(Log::PRIO_NOTICE) << "script '" << script_ << "' exec() error: " << AnytunErrno(err);
       close(pipefd_);
-      return -1;
+      return_code_ = -1;
+      return return_code_;
     }
   }
-  if(WIFEXITED(status))
-    cLog.msg(Log::PRIO_NOTICE) << "script '" << script_ << "' returned " << WEXITSTATUS(status);  
-  else if(WIFSIGNALED(status))
-    cLog.msg(Log::PRIO_NOTICE) << "script '" << script_ << "' terminated after signal " << WTERMSIG(status);
-  else
-    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script_ << "': unknown error";
 
   close(pipefd_);
-	closed_=true;
-
+  closed_ = true;
   return_code_ = status;
 
-  return status;
+  return return_code_;
 }
 
 int SysExec::getReturnCode() const 
@@ -182,6 +176,13 @@ void SysExec::waitAndDestroy(SysExec*& s)
     return;
 
   s->waitForScript();
+  if(WIFEXITED(s->return_code_))
+    cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' returned " << WEXITSTATUS(s->return_code_);  
+  else if(WIFSIGNALED(s->return_code_))
+    cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' terminated after signal " << WTERMSIG(s->return_code_);
+  else
+    cLog.msg(Log::PRIO_ERROR) << "executing script '" << s->script_ << "': unknown error";
+
   delete(s);
   s = NULL;
 }
