@@ -72,8 +72,6 @@
 #include "syncOnConnect.hpp"
 #endif
 
-#define MAX_PACKET_LENGTH 1600
-
 #include "cryptinit.hpp"
 #include "daemon.hpp"
 #include "sysExec.h"

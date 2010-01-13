@@ -94,7 +94,7 @@ void UDPPacketSource::onResolve(PacketSourceResolverIt& it)
   if(sockets_.size() > 1) {
     std::list<sockets_element_t>::iterator it = sockets_.begin();
     for(;it != sockets_.end(); ++it) {
-      it->len_ = 1600; // TODO packet size
+      it->len_ = MAX_PACKET_LENGTH;
       it->buf_ = new u_int8_t[it->len_];
       if(!it->buf_)
         AnytunError::throwErr() << "memory error";
@@ -127,9 +127,6 @@ void UDPPacketSource::recv_thread(std::list<sockets_element_t>::iterator it)
   result.it_ = it;
   for(;;) {
     it->sem_->down();
-
-    cLog.msg(Log::PRIO_DEBUG) << "calling recv() for " << it->sock_->local_endpoint();
-
     result.len_ = static_cast<u_int32_t>(it->sock_->receive_from(boost::asio::buffer(it->buf_, it->len_), result.remote_));
     {
       Lock lock(thread_result_mutex_);

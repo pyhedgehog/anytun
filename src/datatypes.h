@@ -65,4 +65,6 @@ typedef int system_error_t;
 typedef DWORD system_error_t;
 #endif	  
 
+#define MAX_PACKET_LENGTH 1600
+
 #endif
