@@ -1,5 +1,9 @@
 20**.**.** -- Version ?
 
+* Security fix: packet length check errors
+* fixed droping of priveleges on FreeBSD
+* added multi socket support for better handling of simultanous
+  handling of IPv6 and IPv4
 * added prebuilt manpage to release tarball (less build deps)
 	
 2009.12.02 -- Version 0.3.2
