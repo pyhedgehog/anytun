@@ -35,6 +35,7 @@
 
 #include <boost/asio.hpp>
 #include <list>
+#include <queue>
 
 #include "datatypes.h"
 #include "threadUtils.hpp"
@@ -72,9 +73,27 @@ public:
   void onError(const std::runtime_error& e);
 
 private:
-
   boost::asio::io_service io_service_;
-  std::list<proto::socket*> sockets_;
+  
+  typedef struct {
+    u_int8_t* buf_;
+    u_int32_t len_;
+    proto::socket* sock_;
+  } sockets_element_t;
+  std::list<sockets_element_t> sockets_;
+
+  typedef struct {
+    u_int8_t* buf_;
+    u_int32_t len_;
+    proto::socket* sock_;
+    PacketSourceEndpoint remote_;
+  } thread_result_t;
+  std::queue<thread_result_t> thread_result_queue_;
+  Mutex thread_result_mutex_;
+  Semaphore thread_result_sem_;
+  sockets_element_t last_recv_sock_;
+
+  void recv_thread(thread_result_t result);
 };
 
 #endif
