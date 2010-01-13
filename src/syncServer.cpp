@@ -33,26 +33,54 @@
 #include "syncServer.h"
 #include "resolver.h"
 #include "log.h"
+#include "anytunError.h"
 
 //using asio::ip::tcp;
 
 SyncServer::SyncServer(std::string localaddr, std::string port, ConnectCallback onConnect) 
-  : acceptor_(io_service_), onConnect_(onConnect)
+  : onConnect_(onConnect)
 {
   gResolver.resolveTcp(localaddr, port, boost::bind(&SyncServer::onResolve, this, _1), boost::bind(&SyncServer::onResolvError, this, _1));
 }
 
+SyncServer::~SyncServer() 
+{
+  std::list<AcceptorsElement>::iterator it = acceptors_.begin();
+  for(;it != acceptors_.end(); ++it) {
+/// this might be a needed by a running thread, TODO cleanup
+    delete(it->acceptor_);
+  }
+}
+
 void SyncServer::onResolve(SyncTcpConnection::proto::resolver::iterator& it)
 {
-  SyncTcpConnection::proto::endpoint e = *it;
+  while(it != SyncTcpConnection::proto::resolver::iterator()) {
+    SyncTcpConnection::proto::endpoint e = *it;
+    
+    AcceptorsElement acceptor;
+    acceptor.acceptor_ = new SyncTcpConnection::proto::acceptor(io_service_);
+    if(!acceptor.acceptor_)
+      AnytunError::throwErr() << "memory error";
 
-  acceptor_.open(e.protocol());
-  acceptor_.set_option(boost::asio::socket_base::reuse_address(true));
-  acceptor_.bind(e);
-  acceptor_.listen();
+    acceptor.acceptor_->open(e.protocol());
+#ifndef _MSC_VER
+    if(e.protocol() == boost::asio::ip::tcp::v6())
+      acceptor.acceptor_->set_option(boost::asio::ip::v6_only(true));
+#endif
+    acceptor.acceptor_->set_option(boost::asio::socket_base::reuse_address(true));
+    acceptor.acceptor_->bind(e);
+    acceptor.acceptor_->listen();
+    acceptor.started_ = false;
+
+    acceptors_.push_back(acceptor);
+
+    cLog.msg(Log::PRIO_NOTICE) << "sync server listening on " << e;
+
+    it++;
+  }
+
   start_accept();
   ready_sem_.up();
-  cLog.msg(Log::PRIO_NOTICE) << "sync server listening on " << e;
 }
 
 void SyncServer::onResolvError(const std::runtime_error& e)
@@ -77,17 +105,27 @@ void SyncServer::send(std::string message)
 void SyncServer::start_accept()
 {
   Lock lock(mutex_);
-  SyncTcpConnection::pointer new_connection = SyncTcpConnection::create(acceptor_.io_service());
-  conns_.push_back(new_connection);
-  acceptor_.async_accept(new_connection->socket(),
-                         boost::bind(&SyncServer::handle_accept, this, new_connection, boost::asio::placeholders::error));
+
+  std::list<AcceptorsElement>::iterator it = acceptors_.begin();
+  for(;it != acceptors_.end(); ++it) {
+    if(!it->started_) {
+      SyncTcpConnection::pointer new_connection = SyncTcpConnection::create(it->acceptor_->io_service());
+      conns_.push_back(new_connection);
+      it->acceptor_->async_accept(new_connection->socket(),
+                             boost::bind(&SyncServer::handle_accept, this, new_connection, boost::asio::placeholders::error, it));
+      it->started_ = true;
+    }
+  }
 }
 
-void SyncServer::handle_accept(SyncTcpConnection::pointer new_connection, const boost::system::error_code& error)
+void SyncServer::handle_accept(SyncTcpConnection::pointer new_connection, const boost::system::error_code& error, std::list<AcceptorsElement>::iterator it)
 {
   if (!error) {
+    cLog.msg(Log::PRIO_INFO) << "new sync client connected from " << new_connection->socket().remote_endpoint();
+
     new_connection->onConnect = onConnect_;
     new_connection->start();
+    it->started_ = false;
     start_accept();
   }
 }

@@ -48,10 +48,10 @@ void SyncTcpConnection::start()
 
 void SyncTcpConnection::Send(std::string message)
 {
-    boost::asio::async_write(socket_, boost::asio::buffer(message),
-        boost::bind(&SyncTcpConnection::handle_write, shared_from_this(),
-          boost::asio::placeholders::error,
-          boost::asio::placeholders::bytes_transferred));
+  boost::asio::async_write(socket_, boost::asio::buffer(message),
+                           boost::bind(&SyncTcpConnection::handle_write, shared_from_this(),
+                                       boost::asio::placeholders::error,
+                                       boost::asio::placeholders::bytes_transferred));
 }
 SyncTcpConnection::SyncTcpConnection(boost::asio::io_service& io_service)
 	: socket_(io_service)

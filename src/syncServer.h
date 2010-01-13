@@ -50,6 +50,7 @@ class SyncServer
 {
 public:
   SyncServer(std::string localaddr, std::string port, ConnectCallback onConnect);
+  ~SyncServer();
   void onResolve(SyncTcpConnection::proto::resolver::iterator& it);
   void onResolvError(const std::runtime_error& e);
   
@@ -59,14 +60,18 @@ public:
   std::list<SyncTcpConnection::pointer> conns_;
   
 private:
-  void start_accept();
-  void handle_accept(SyncTcpConnection::pointer new_connection, const boost::system::error_code& error);
-  
   Mutex mutex_; //Mutex for list conns_
   boost::asio::io_service io_service_;
-  SyncTcpConnection::proto::acceptor acceptor_;
+  typedef struct {
+    SyncTcpConnection::proto::acceptor* acceptor_;
+    bool started_;
+  } AcceptorsElement;
+  std::list<AcceptorsElement> acceptors_;
   ConnectCallback onConnect_;
   Semaphore ready_sem_;
+
+  void start_accept();
+  void handle_accept(SyncTcpConnection::pointer new_connection, const boost::system::error_code& error, std::list<AcceptorsElement>::iterator it);
 };
 
 #endif

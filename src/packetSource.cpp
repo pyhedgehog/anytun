@@ -79,10 +79,8 @@ void UDPPacketSource::onResolve(PacketSourceResolverIt& it)
 
     sock.sock_->open(e.protocol());
 #ifndef _MSC_VER
-    if(e.protocol() == proto::v6()) {
-      boost::asio::ip::v6_only option(true);
-      sock.sock_->set_option(option);
-    }
+    if(e.protocol() == proto::v6())
+      sock.sock_->set_option(boost::asio::ip::v6_only(true));
 #endif
     sock.sock_->bind(e);
     sockets_.push_back(sock);
