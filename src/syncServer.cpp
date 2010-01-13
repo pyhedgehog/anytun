@@ -48,7 +48,7 @@ SyncServer::~SyncServer()
   std::list<AcceptorsElement>::iterator it = acceptors_.begin();
   for(;it != acceptors_.end(); ++it) {
 /// this might be a needed by a running thread, TODO cleanup
-    delete(it->acceptor_);
+//    delete(it->acceptor_);
   }
 }
 
