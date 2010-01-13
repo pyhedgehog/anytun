@@ -1,3 +1,7 @@
+2010.01.13 
+
+* Security fix: packet length check errors
+
 2009.12.02 -- Version 0.3.2
 
 * added 64bit build target to windows build system

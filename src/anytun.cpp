@@ -227,7 +227,8 @@ void receiver(TunDevice* dev, PacketSource* src)
     std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_INBOUND));
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_INBOUND));
     
-    EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, gOpt.getAuthTagLength());
+    u_int32_t auth_tag_length = gOpt.getAuthTagLength();
+    EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, auth_tag_length);
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     
     while(1) {
@@ -249,7 +250,7 @@ void receiver(TunDevice* dev, PacketSource* src)
       if(len < 0)
         continue; // silently ignore socket recv errors, this is probably no good idea...
 
-      if(static_cast<u_int32_t>(len) < EncryptedPacket::getHeaderLength())
+      if(static_cast<u_int32_t>(len) < (EncryptedPacket::getHeaderLength() + auth_tag_length))
         continue; // ignore short packets
       encrypted_packet.setLength(len);
       
