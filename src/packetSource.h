@@ -81,16 +81,16 @@ private:
     u_int32_t len_;
     proto::socket* sock_;
     Semaphore* sem_;
-  } sockets_element_t;
-  std::list<sockets_element_t> sockets_;
+  } SocketsElement;
+  std::list<SocketsElement> sockets_;
 
-  void recv_thread(std::list<sockets_element_t>::iterator it);
+  void recv_thread(std::list<SocketsElement>::iterator it);
   typedef struct {
     u_int32_t len_;
     PacketSourceEndpoint remote_;
-    std::list<sockets_element_t>::iterator it_;
-  } thread_result_t;
-  std::queue<thread_result_t> thread_result_queue_;
+    std::list<SocketsElement>::iterator it_;
+  } ThreadResult;
+  std::queue<ThreadResult> thread_result_queue_;
   Mutex thread_result_mutex_;
   Semaphore thread_result_sem_;
 };

@@ -54,7 +54,7 @@ UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port)
 
 UDPPacketSource::~UDPPacketSource()
 {
-  std::list<sockets_element_t>::iterator it = sockets_.begin();
+  std::list<SocketsElement>::iterator it = sockets_.begin();
   for(;it != sockets_.end(); ++it) {
 /// this might be a needed by the receiver thread, TODO cleanup
 //    delete[](it->buf_);
@@ -69,7 +69,7 @@ void UDPPacketSource::onResolve(PacketSourceResolverIt& it)
     PacketSourceEndpoint e = *it;
     cLog.msg(Log::PRIO_NOTICE) << "opening socket: " << e;
 
-    sockets_element_t sock;
+    SocketsElement sock;
     sock.buf_ = NULL;
     sock.len_ = 0;
     sock.sem_ = NULL;
@@ -90,7 +90,7 @@ void UDPPacketSource::onResolve(PacketSourceResolverIt& it)
 
       // prepare multi-socket recv
   if(sockets_.size() > 1) {
-    std::list<sockets_element_t>::iterator it = sockets_.begin();
+    std::list<SocketsElement>::iterator it = sockets_.begin();
     for(;it != sockets_.end(); ++it) {
       it->len_ = MAX_PACKET_LENGTH;
       it->buf_ = new u_int8_t[it->len_];
@@ -117,11 +117,11 @@ void UDPPacketSource::onError(const std::runtime_error& e)
   gSignalController.inject(SIGERROR, e.what());
 }
 
-void UDPPacketSource::recv_thread(std::list<sockets_element_t>::iterator it)
+void UDPPacketSource::recv_thread(std::list<SocketsElement>::iterator it)
 {
-  cLog.msg(Log::PRIO_DEBUG) << "started receiver thread for " << it->sock_->local_endpoint();
+  cLog.msg(Log::PRIO_INFO) << "started receiver thread for " << it->sock_->local_endpoint();
 
-  thread_result_t result;
+  ThreadResult result;
   result.it_ = it;
   for(;;) {
     it->sem_->down();
@@ -140,7 +140,7 @@ u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoi
     return static_cast<u_int32_t>(sockets_.front().sock_->receive_from(boost::asio::buffer(buf, len), remote));
 
   thread_result_sem_.down();
-  thread_result_t result;
+  ThreadResult result;
   {
     Lock lock(thread_result_mutex_);
     result = thread_result_queue_.front();
@@ -156,7 +156,7 @@ u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoi
 
 void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote)
 {
-  std::list<sockets_element_t>::iterator it = sockets_.begin();
+  std::list<SocketsElement>::iterator it = sockets_.begin();
   for(;it != sockets_.end(); ++it) {
     if(it->sock_->local_endpoint().protocol() == remote.protocol()) {
       it->sock_->send_to(boost::asio::buffer(buf, len), remote);
