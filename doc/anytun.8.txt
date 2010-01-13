@@ -161,7 +161,7 @@ passed to the daemon:
    comprise the anycast tunnel endpoint. By default synchronisation is
    disabled and therefore this is empty. Mind that the port can be
    omitted in which case port 2323 is used. If you want to specify an
-   ipv6 address and a port you have to use [ and ] to seperate the address
+   ipv6 address and a port you have to use [ and ] to separate the address
    from the port, eg.: [::1]:1234. If you want to use the default port 
    [ and ] can be omitted.
 
@@ -169,7 +169,7 @@ passed to the daemon:
    fetch the config from this host. The default is not to use a control
    host and therefore this is empty. Mind that the port can be omitted 
    in which case port 2323 is used. If you want to specify an
-   ipv6 address and a port you have to use [ and ] to seperate the address
+   ipv6 address and a port you have to use [ and ] to separate the address
    from the port, eg.: [::1]:1234. If you want to use the default port 
    [ and ] can be omitted.
 
