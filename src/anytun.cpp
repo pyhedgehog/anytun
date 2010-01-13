@@ -272,7 +272,7 @@ void receiver(TunDevice* dev, PacketSource* src)
       
           // check whether auth tag is ok or not
       if(!a->checkTag(conn.kd_, encrypted_packet)) {
-        cLog.msg(Log::PRIO_NOTICE) << "wrong Authentication Tag!" << std::endl;
+        cLog.msg(Log::PRIO_NOTICE) << "wrong Authentication Tag!";
         continue;
       }        
 

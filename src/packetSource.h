@@ -34,6 +34,7 @@
 #define ANYTUN_packetSource_h_INCLUDED
 
 #include <boost/asio.hpp>
+#include <boost/thread.hpp>
 #include <list>
 #include <queue>
 
@@ -79,21 +80,19 @@ private:
     u_int8_t* buf_;
     u_int32_t len_;
     proto::socket* sock_;
+    Semaphore* sem_;
   } sockets_element_t;
   std::list<sockets_element_t> sockets_;
 
+  void recv_thread(std::list<sockets_element_t>::iterator it);
   typedef struct {
-    u_int8_t* buf_;
     u_int32_t len_;
-    proto::socket* sock_;
     PacketSourceEndpoint remote_;
+    std::list<sockets_element_t>::iterator it_;
   } thread_result_t;
   std::queue<thread_result_t> thread_result_queue_;
   Mutex thread_result_mutex_;
   Semaphore thread_result_sem_;
-  sockets_element_t last_recv_sock_;
-
-  void recv_thread(thread_result_t result);
 };
 
 #endif
