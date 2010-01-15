@@ -2,12 +2,12 @@
 .\"     Title: anytun-config
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
-.\"      Date: 12/22/2009
+.\"      Date: 01/15/2010
 .\"    Manual: anytun-config user manual
 .\"    Source: anytun trunk
 .\"  Language: English
 .\"
-.TH "ANYTUN\-CONFIG" "8" "12/22/2009" "anytun trunk" "anytun-config user manual"
+.TH "ANYTUN\-CONFIG" "8" "01/15/2010" "anytun trunk" "anytun-config user manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -26,6 +26,7 @@ anytun-config \- anycast tunneling configuration utility
 \fBanytun\-config\fR
   [ \fB\-h|\-\-help\fR ]
   [ \fB\-L|\-\-log\fR <target>:<level>[,<param1>[,<param2>[\&.\&.]]]
+  [ \fB\-U|\-\-debug\fR ]
   [ \fB\-r|\-\-remote\-host\fR <hostname|ip> ]
   [ \fB\-o|\-\-remote\-port\fR <port> ]
   [ \fB\-4|\-\-ipv4\-only\fR ]
@@ -73,6 +74,17 @@ log to standard output, parameters <level>
 .RS 4
 log to standard error, parameters <level>
 .RE
+.RE
+.PP
+\fB\-U, \-\-debug\fR
+.RS 4
+This option instructs
+\fBAnytun\fR
+to run in debug mode\&. It implicits
+\fB\-D\fR
+(don\(cqt daemonize) and adds a log target with the configuration
+\fBstdout:5\fR
+(logging with maximum level)\&. In future releases there might be additional output when this option is supplied\&.
 .RE
 .PP
 \fB\-r, \-\-remote\-host <hostname|ip>\fR

@@ -17,6 +17,7 @@ anytun
   [ -C|--chroot <path> ]
   [ -P|--write-pid <filename> ]
   [ -L|--log <target>:<level>[,<param1>[,<param2>[..]]] ]
+  [ -U|--debug ]
   [ -i|--interface <ip-address> ]
   [ -p|--port <port> ]
   [ -r|--remote-host <hostname|ip> ]
@@ -95,6 +96,12 @@ passed to the daemon:
    *file*;; log to file, parameters <level>[,<path>]
    *stdout*;; log to standard output, parameters <level>
    *stderr*;; log to standard error, parameters <level> 
+
+*-U, --debug*::
+   This option instructs *Anytun* to run in debug mode. It implicits *-D* 
+   (don't daemonize) and adds a log target with the configuration
+   *stdout:5* (logging with maximum level). In future releases there might
+   be additional output when this option is supplied.
 
 *-i, --interface <ip address>*::
    This IP address is used as the sender address for outgoing

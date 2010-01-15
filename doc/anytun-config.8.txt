@@ -12,6 +12,7 @@ SYNOPSIS
 anytun-config
   [ -h|--help ]
   [ -L|--log <target>:<level>[,<param1>[,<param2>[..]]]
+  [ -U|--debug ]
   [ -r|--remote-host <hostname|ip> ]
   [ -o|--remote-port <port> ]
   [ -4|--ipv4-only ]
@@ -48,6 +49,12 @@ OPTIONS
    *file*;; log to file, parameters <level>[,<path>]
    *stdout*;; log to standard output, parameters <level>
    *stderr*;; log to standard error, parameters <level> 
+
+*-U, --debug*::
+   This option instructs *Anytun* to run in debug mode. It implicits *-D* 
+   (don't daemonize) and adds a log target with the configuration
+   *stdout:5* (logging with maximum level). In future releases there might
+   be additional output when this option is supplied.
 
 *-r, --remote-host <hostname|ip>*::
    This option can be used to specify the remote tunnel

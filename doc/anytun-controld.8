@@ -2,12 +2,12 @@
 .\"     Title: anytun-controld
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
-.\"      Date: 01/13/2010
+.\"      Date: 01/15/2010
 .\"    Manual: anytun-controld user manual
 .\"    Source: anytun trunk
 .\"  Language: English
 .\"
-.TH "ANYTUN\-CONTROLD" "8" "01/13/2010" "anytun trunk" "anytun-controld user manual"
+.TH "ANYTUN\-CONTROLD" "8" "01/15/2010" "anytun trunk" "anytun-controld user manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -31,6 +31,7 @@ anytun-controld \- anycast tunneling control daemon
   [ \fB\-C|\-\-chroot\fR <path> ]
   [ \fB\-P|\-\-write\-pid\fR <filename> ]
   [ \fB\-L|\-\-log\fR <target>:<level>[,<param1>[,<param2>[\&.\&.]]] ]
+  [ \fB\-U|\-\-debug\fR ]
   [ \fB\-f|\-\-file\fR <path> ]
   [ \fB\-X|\-\-control\-host\fR < <host>[:port>] | :<port> > ]
 .fi
@@ -99,6 +100,17 @@ log to standard output, parameters <level>
 .RS 4
 log to standard error, parameters <level>
 .RE
+.RE
+.PP
+\fB\-U, \-\-debug\fR
+.RS 4
+This option instructs
+\fBAnytun\fR
+to run in debug mode\&. It implicits
+\fB\-D\fR
+(don\(cqt daemonize) and adds a log target with the configuration
+\fBstdout:5\fR
+(logging with maximum level)\&. In future releases there might be additional output when this option is supplied\&.
 .RE
 .PP
 \fB\-f, \-\-file <path>\fR
