@@ -105,6 +105,8 @@ public:
   Options& setPidFile(std::string p);
 
   StringList getLogTargets();
+  bool getDebug();
+  Options& setDebug(bool d);
 
   std::string getFileName();
   Options& setFileName(std::string f);
@@ -195,6 +197,7 @@ private:
   std::string pid_file_;
 
   StringList log_targets_;
+  bool debug_;
 
   std::string file_name_;
   OptionHost bind_to_;

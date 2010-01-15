@@ -172,6 +172,8 @@ Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
   chroot_dir_ = "";
   pid_file_ = "";
 
+  debug_ = false;
+
   file_name_ = "";
   bind_to_.addr = "127.0.0.1";
   bind_to_.port = "2323";
@@ -362,7 +364,6 @@ bool Options::parse(int argc, char* argv[])
 
   progname_ = argv[0];
   argc--;
-  bool debug = false; 
   bool ipv4_only = false, ipv6_only = false;
   std::string role = "";
   for(int i=1; argc > 0; ++i)
@@ -386,7 +387,7 @@ bool Options::parse(int argc, char* argv[])
 #endif
 
     PARSE_STRING_LIST("-L","--log", log_targets_, NOTHING)
-    PARSE_BOOL_PARAM("-U","--debug", debug, NOTHING)
+    PARSE_BOOL_PARAM("-U","--debug", debug_, NOTHING)
 
 #if defined(ANYCTR_OPTIONS)
 
@@ -472,7 +473,7 @@ bool Options::parse(int argc, char* argv[])
       throw syntax_error("unknown role name: " + role, -1); 
   }
 
-  if(debug) {
+  if(debug_) {
     log_targets_.push_back("stdout:5");
     daemonize_ = false; 
   }
@@ -636,7 +637,9 @@ void Options::printOptions()
   StringList::const_iterator lit = log_targets_.begin();
   for(; lit != log_targets_.end(); ++lit)
     std::cout << " '" << *lit << "',";
-  std::cout << std::endl << std::endl;
+  std::cout << std::endl;
+  std::cout << "debug = " << debug_ << std::endl;
+  std::cout << std::endl;
   std::cout << "file_name = '" << file_name_ << "'" << std::endl;
   std::cout << "bind_to.addr = '" << bind_to_.addr << "'" << std::endl;
   std::cout << "bind_to.port = '" << bind_to_.port << "'" << std::endl;
@@ -769,13 +772,24 @@ Options& Options::setPidFile(std::string p)
 }
 
 
-
 StringList Options::getLogTargets()
 {
   ReadersLock lock(mutex);
   return log_targets_;
 }
 
+bool Options::getDebug()
+{
+  ReadersLock lock(mutex);
+  return debug_;
+}
+
+Options& Options::setDebug(bool d)
+{
+  WritersLock lock(mutex);
+  debug_ = d;
+  return *this;
+}
 
 
 std::string Options::getFileName()
