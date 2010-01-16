@@ -35,7 +35,7 @@ using ssl crypto lib:
    <nothing here>
 
 common:
-   devel/boost
+   devel/boost (boost-libs on newer versions of the ports tree)
    devel/gmake
 
 if you want to rebuild the manpage:
