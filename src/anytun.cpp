@@ -423,7 +423,7 @@ int main(int argc, char* argv[])
     privs.drop();
 #endif
 #endif
-#if !( defined(__FreeBSD__) || defined(__FreeBSD_kernel__))
+#if !defined(__FreeBSD_kernel__)
     // this has to be called before the first thread is started
     gSignalController.init();
 #endif
