@@ -101,11 +101,11 @@ void registerSignalHandler(SignalController& ctrl)
   if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)handle, true))
     AnytunError::throwErr() << "Error on SetConsoleCtrlhandler: " << AnytunErrno(GetLastError());
 
-  handler[CTRL_C_EVENT] = new CtrlCHandler;
-  handler[CTRL_BREAK_EVENT] = new CtrlBreakHandler;
-  handler[CTRL_CLOSE_EVENT] = new CtrlCloseHandler;
-  handler[CTRL_LOGOFF_EVENT] = new CtrlLogoffHandler;
-  handler[CTRL_SHUTDOWN_EVENT] = new CtrlShutdownHandler;
+  ctrl.handler[CTRL_C_EVENT] = new CtrlCHandler;
+  ctrl.handler[CTRL_BREAK_EVENT] = new CtrlBreakHandler;
+  ctrl.handler[CTRL_CLOSE_EVENT] = new CtrlCloseHandler;
+  ctrl.handler[CTRL_LOGOFF_EVENT] = new CtrlLogoffHandler;
+  ctrl.handler[CTRL_SHUTDOWN_EVENT] = new CtrlShutdownHandler;
 }
 
 #endif

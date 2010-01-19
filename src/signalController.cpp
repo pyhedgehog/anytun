@@ -61,7 +61,11 @@ int SigErrorHandler::handle(const std::string& msg)
 }
 
 // use system specific signal handler
+#ifndef _MSC_VER
 #include "signalHandler.hpp"
+#else
+#include "win32/signalHandler.hpp"
+#endif
 
 SignalController::~SignalController() 
 {
