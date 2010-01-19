@@ -178,6 +178,7 @@ anyrtpproxy: anytun
 distclean: cleanall
 	find . -name *.o -exec rm -f {} \;
 	rm -f config.sub config.guess
+	rm -f signalHandler.hpp
 	rm -f tunDevice.cpp
 	rm -f include.mk
 

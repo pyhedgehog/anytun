@@ -38,12 +38,6 @@
 #include "anytunError.h"
 #include "threadUtils.hpp"
 
-#ifndef _MSC_VER
-#include <csignal>
-#include <boost/bind.hpp>
-#else
-#include <windows.h>
-#endif
 
 SignalController* SignalController::inst = NULL;
 Mutex SignalController::instMutex;
@@ -66,85 +60,8 @@ int SigErrorHandler::handle(const std::string& msg)
   return 0;
 }
 
-#ifndef _MSC_VER
-
-int SigIntHandler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Int caught, exiting";
-
-  return 1;
-}
-
-int SigQuitHandler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Quit caught, exiting";
-
-  return 1;
-}
-
-int SigHupHandler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Hup caught";
-
-  return 0;
-}
-
-int SigTermHandler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Term caught, exiting";
-
-  return 1;
-}
-
-int SigUsr1Handler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr1 caught";
-
-  return 0;
-}
-
-int SigUsr2Handler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr2 caught";
-
-  return 0;
-}
-#else
-int CtrlCHandler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "CTRL-C Event received, exitting";
-
-  return 1;
-}
-
-int CtrlBreakHandler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "CTRL-Break Event received, ignoring";
-
-  return 0;
-}
-
-int CtrlCloseHandler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "Close Event received, exitting";
-
-  return 1;
-}
-
-int CtrlLogoffHandler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "LogOff Event received, exitting";
-
-  return 1;
-}
-
-int CtrlShutdownHandler::handle()
-{
-  cLog.msg(Log::PRIO_NOTICE) << "Shutdown Event received, exitting";
-
-  return 1;
-}
-#endif
+// use system specific signal handler
+#include "signalHandler.hpp"
 
 SignalController::~SignalController() 
 {
@@ -152,72 +69,9 @@ SignalController::~SignalController()
     delete it->second;
 }
 
-#ifndef _MSC_VER
-void SignalController::handle()
-{
-  sigset_t signal_set;
-  int sigNum;
-  int err = 0;
-  while(1) 
-  {
-    sigfillset(&signal_set);
-    err = sigwait(&signal_set, &sigNum);
-    if (err)
-    {
-      if (err != EINTR && errno != EINTR )
-      {
-      	cLog.msg(Log::PRIO_ERROR) << "sigwait failed with error: \"" << AnytunErrno(errno) << "\" SignalHandling will be disabled";
-      	break;
-      }
-    } else {
-      inject(sigNum);
-    }
-  }
-}
-#else
-bool SignalController::handle(DWORD ctrlType)
-{
-  gSignalController.inject(ctrlType);
-  return true;
-}
-#endif
-
 void SignalController::init()
 {
-#ifndef _MSC_VER
-  sigset_t signal_set;
-  
-  sigfillset(&signal_set);        
-  sigdelset(&signal_set, SIGCHLD);
-  sigdelset(&signal_set, SIGSEGV);
-  sigdelset(&signal_set, SIGBUS);
-  sigdelset(&signal_set, SIGFPE);
-
-#if defined(BOOST_HAS_PTHREADS)
-  pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
-#else
-#error The signalhandler works only with pthreads
-#endif
-  
-  boost::thread(boost::bind(&SignalController::handle, this));
-
-  handler[SIGINT] = new SigIntHandler;
-  handler[SIGQUIT] = new SigQuitHandler;
-  handler[SIGHUP] = new SigHupHandler;
-  handler[SIGTERM] = new SigTermHandler;
-  handler[SIGUSR1] = new SigUsr1Handler;
-  handler[SIGUSR2] = new SigUsr2Handler;
-#else
-  if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)SignalController::handle, true))
-    AnytunError::throwErr() << "Error on SetConsoleCtrlhandler: " << AnytunErrno(GetLastError());
-
-  handler[CTRL_C_EVENT] = new CtrlCHandler;
-  handler[CTRL_BREAK_EVENT] = new CtrlBreakHandler;
-  handler[CTRL_CLOSE_EVENT] = new CtrlCloseHandler;
-  handler[CTRL_LOGOFF_EVENT] = new CtrlLogoffHandler;
-  handler[CTRL_SHUTDOWN_EVENT] = new CtrlShutdownHandler;
-#endif
-
+  registerSignalHandler(*this);
   handler[SIGERROR] = new SigErrorHandler;
 }
 

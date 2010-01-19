@@ -38,10 +38,6 @@
 
 #include "threadUtils.hpp"
 
-#ifndef _MSC_VER
-#include <csignal>
-#endif
-
 #define SIGERROR -1
 
 class SignalHandler
@@ -67,96 +63,10 @@ public:
   int handle(const std::string& msg);
 };
 
-#ifndef _MSC_VER
-class SigIntHandler : public SignalHandler
-{
-public:
-  SigIntHandler() : SignalHandler(SIGINT) {}
-  int handle();
-};
-
-class SigQuitHandler : public SignalHandler
-{
-public:
-  SigQuitHandler() : SignalHandler(SIGQUIT) {}
-  int handle();
-};
-
-class SigHupHandler : public SignalHandler
-{
-public:
-  SigHupHandler() : SignalHandler(SIGHUP) {}
-  int handle();
-};
-
-class SigUsr1Handler : public SignalHandler
-{
-public:
-  SigUsr1Handler() : SignalHandler(SIGUSR1) {}
-  int handle();
-};
-
-class SigUsr2Handler : public SignalHandler
-{
-public:
-  SigUsr2Handler() : SignalHandler(SIGUSR2) {}
-  int handle();
-};
-
-class SigTermHandler : public SignalHandler
-{
-public:
-  SigTermHandler() : SignalHandler(SIGTERM) {}
-  int handle();
-};
-
-#else
-
-class CtrlCHandler : public SignalHandler
-{
-public:
-  CtrlCHandler() : SignalHandler(CTRL_C_EVENT) {}
-  int handle();
-};
-
-class CtrlBreakHandler : public SignalHandler
-{
-public:
-  CtrlBreakHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
-  int handle();
-};
-
-class CtrlCloseHandler : public SignalHandler
-{
-public:
-  CtrlCloseHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
-  int handle();
-};
-
-class CtrlLogoffHandler : public SignalHandler
-{
-public:
-  CtrlLogoffHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
-  int handle();
-};
-
-class CtrlShutdownHandler : public SignalHandler
-{
-public:
-  CtrlShutdownHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
-  int handle();
-};
-#endif
-
 class SignalController
 {
 public:
   static SignalController& instance();
-#ifndef _MSC_VER
-  void handle();
-#else
-  static bool handle(DWORD ctrlType);
-#endif
 
   void init();
   int run();
@@ -186,6 +96,8 @@ private:
   Semaphore sigQueueSem;
 
   HandlerMap handler;
+  
+  friend void registerSignalHandler(SignalController& ctrl);
 };
 
 extern SignalController& gSignalController;
