@@ -42,7 +42,7 @@
 #include "win32/winService.h"
 typedef class WinService DaemonService;
 #else
-typedef int DaemonService;
+typedef void DaemonService;
 #endif
 
 #define SIGERROR -1
