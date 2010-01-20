@@ -32,12 +32,12 @@
 
 #include <map>
 #include <iostream>
+#include <boost/bind.hpp>
 
 #include "signalController.h"
 #include "log.h"
 #include "anytunError.h"
 #include "threadUtils.hpp"
-
 
 SignalController* SignalController::inst = NULL;
 Mutex SignalController::instMutex;
@@ -53,30 +53,24 @@ SignalController& SignalController::instance()
 	return *inst;
 }
 
-int SigErrorHandler::handle(const std::string& msg)
+int SigErrorHandler(const SigNum& /*sig*/, const std::string& msg)
 {
   AnytunError::throwErr() << msg;
 
   return 0;
 }
 
-// use system specific signal handler
+//use system specific signal handler
 #ifndef _MSC_VER
 #include "signalHandler.hpp"
 #else
 #include "win32/signalHandler.hpp"
 #endif
 
-SignalController::~SignalController() 
-{
-  for(HandlerMap::iterator it = handler.begin(); it != handler.end(); ++it)
-    delete it->second;
-}
-
 void SignalController::init()
 {
   registerSignalHandler(*this);
-  handler[SIGERROR] = new SigErrorHandler;
+  handler[SIGERROR] = boost::bind(SigErrorHandler, _1, _2);
 }
 
 void SignalController::inject(int sig, const std::string& msg)
@@ -90,6 +84,11 @@ void SignalController::inject(int sig, const std::string& msg)
 
 int SignalController::run()
 {
+  for(CallbackMap::iterator it = callbacks.begin(); it != callbacks.end(); ++it)
+    if(it->first == CALLB_RUNNING)
+      it->second(CALLB_RUNNING);
+
+  int ret = 0;
   while(1) {
     sigQueueSem.down();
     SigPair sig;
@@ -102,18 +101,19 @@ int SignalController::run()
     HandlerMap::iterator it = handler.find(sig.first);
     if(it != handler.end())
     {
-      int ret;
-      if(sig.second == "")
-        ret = it->second->handle();
-      else
-        ret = it->second->handle(sig.second);
+      ret = it->second(sig.first, sig.second);
 
       if(ret)
-        return ret;
+        break;
     }
     else
       cLog.msg(Log::PRIO_NOTICE) << "SIG " << sig.first << " caught with message '" << sig.second << "' - ignoring";
   }
-  return 0;
+
+  for(CallbackMap::iterator it = callbacks.begin(); it != callbacks.end(); ++it)
+    if(it->first == CALLB_STOPPING)
+      it->second(CALLB_STOPPING);
+
+  return ret;
 }
 

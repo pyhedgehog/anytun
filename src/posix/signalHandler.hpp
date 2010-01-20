@@ -37,73 +37,43 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
-class SigIntHandler : public SignalHandler
+int SigIntHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  SigIntHandler() : SignalHandler(SIGINT) {}
-  int handle() 
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "SIG-Int caught, exiting";
-    return 1;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Int caught, exiting";
+  return 1;
+}
 
-class SigQuitHandler : public SignalHandler
+int SigQuitHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  SigQuitHandler() : SignalHandler(SIGQUIT) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "SIG-Quit caught, exiting";
-    return 1;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Quit caught, exiting";
+  return 1;
+}
 
-class SigHupHandler : public SignalHandler
+int SigHupHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  SigHupHandler() : SignalHandler(SIGHUP) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "SIG-Hup caught"; 
-    return 0;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Hup caught"; 
+  return 0;
+}
 
-class SigUsr1Handler : public SignalHandler
+int SigTermHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  SigUsr1Handler() : SignalHandler(SIGUSR1) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "SIG-Term caught, exiting";
-    return 1;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Term caught, exiting";
+  return 1;
+}
 
-class SigUsr2Handler : public SignalHandler
+int SigUsr1Handler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  SigUsr2Handler() : SignalHandler(SIGUSR2) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr1 caught";
-    return 0;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr1 caught";
+  return 0;
+}
 
-class SigTermHandler : public SignalHandler
+int SigUsr2Handler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  SigTermHandler() : SignalHandler(SIGTERM) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr2 caught";
-    return 0;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr2 caught";
+  return 0;
+}
 
-void handle()
+void handleSignal()
 {
   sigset_t signal_set;
   int sigNum;
@@ -138,14 +108,14 @@ void registerSignalHandler(SignalController& ctrl)
 #error The signalhandler works only with pthreads
 #endif
   
-  boost::thread(boost::bind(handle));
+  boost::thread(boost::bind(handleSignal));
 
-  ctrl.handler[SIGINT] = new SigIntHandler;
-  ctrl.handler[SIGQUIT] = new SigQuitHandler;
-  ctrl.handler[SIGHUP] = new SigHupHandler;
-  ctrl.handler[SIGTERM] = new SigTermHandler;
-  ctrl.handler[SIGUSR1] = new SigUsr1Handler;
-  ctrl.handler[SIGUSR2] = new SigUsr2Handler;
+  ctrl.handler[SIGINT] = boost::bind(SigIntHandler, _1, _2);
+  ctrl.handler[SIGQUIT] = boost::bind(SigQuitHandler, _1, _2);
+  ctrl.handler[SIGHUP] = boost::bind(SigHupHandler, _1, _2);
+  ctrl.handler[SIGTERM] = boost::bind(SigTermHandler, _1, _2);
+  ctrl.handler[SIGUSR1] = boost::bind(SigUsr1Handler, _1, _2);
+  ctrl.handler[SIGUSR2] = boost::bind(SigUsr2Handler, _1, _2);
 
   cLog.msg(Log::PRIO_DEBUG) << "signal handlers are now registered";
 }

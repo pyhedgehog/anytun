@@ -35,33 +35,16 @@
 
 #include <map>
 #include <queue>
+#include <boost/function.hpp>
 
 #include "threadUtils.hpp"
 
 #define SIGERROR -1
 
-class SignalHandler
-{
-public:
-  virtual ~SignalHandler() {}
-
-  virtual int handle() { return 0; }
-  virtual int handle(const std::string& msg) { return 0; }
-
-protected:
-  SignalHandler(int s) : sigNum(s) {}
-
-private:
-  int sigNum;
-  friend class SignalController;
-};
-
-class SigErrorHandler : public SignalHandler
-{
-public:
-  SigErrorHandler() : SignalHandler(SIGERROR) {}
-  int handle(const std::string& msg);
-};
+typedef int SigNum;
+typedef boost::function<int (SigNum const&, std::string const&)> SignalHandler;
+typedef enum { CALLB_RUNNING, CALLB_STOPPING } CallbackType;
+typedef boost::function<void (CallbackType const&)> ServiceCallback;
 
 class SignalController
 {
@@ -73,10 +56,8 @@ public:
   void inject(int sig, const std::string& msg = "");
 
 private:
-  typedef std::map<int, SignalHandler*> HandlerMap;
-
   SignalController() {};
-  ~SignalController();
+  ~SignalController() {};
   SignalController(const SignalController &s);
   void operator=(const SignalController &s);
 
@@ -95,8 +76,11 @@ private:
   Mutex sigQueueMutex;
   Semaphore sigQueueSem;
 
+  typedef std::map<SigNum, SignalHandler> HandlerMap;
   HandlerMap handler;
-  
+  typedef std::map<CallbackType, ServiceCallback> CallbackMap;
+  CallbackMap callbacks;
+
   friend void registerSignalHandler(SignalController& ctrl);
 };
 
