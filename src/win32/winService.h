@@ -50,7 +50,7 @@ public:
   static VOID WINAPI ctrlHandler(DWORD dwCtrl);
 
   void reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode);
-  int handleCtrlSignal(const int& sig, const std::string& msg);
+  int handleCtrlSignal(int sig, const std::string& msg);
 
 private:
   WinService() {};
