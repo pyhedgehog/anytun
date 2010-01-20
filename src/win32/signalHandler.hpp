@@ -35,62 +35,37 @@
 
 #include <windows.h>
 
-class CtrlCHandler : public SignalHandler
+int CtrlCHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  CtrlCHandler() : SignalHandler(CTRL_C_EVENT) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "CTRL-C Event received, exitting";
-    return 1;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "CTRL-C Event received, exitting";
+  return 1;
+}
 
-class CtrlBreakHandler : public SignalHandler
+int CtrlBreakHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  CtrlBreakHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "CTRL-Break Event received, ignoring";
-    return 0;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "CTRL-Break Event received, ignoring";
+  return 0;
+}
 
-class CtrlCloseHandler : public SignalHandler
+int CtrlCloseHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  CtrlCloseHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "Close Event received, exitting";
-    return 1;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "Close Event received, exitting";
+  return 1;
+}
 
-class CtrlLogoffHandler : public SignalHandler
+int CtrlLogoffHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  CtrlLogoffHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "LogOff Event received, exitting";
-    return 1;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "LogOff Event received, exitting";
+  return 1;
+}
 
-class CtrlShutdownHandler : public SignalHandler
+int CtrlShutdownHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
 {
-public:
-  CtrlShutdownHandler() : SignalHandler(CTRL_BREAK_EVENT) {}
-  int handle()
-  {
-    cLog.msg(Log::PRIO_NOTICE) << "Shutdown Event received, exitting";
-    return 1;
-  }
-};
+  cLog.msg(Log::PRIO_NOTICE) << "Shutdown Event received, exitting";
+  return 1;
+}
 
-bool handle(DWORD ctrlType)
+bool handleSignal(DWORD ctrlType)
 {
   gSignalController.inject(ctrlType);
   return true;
@@ -98,14 +73,14 @@ bool handle(DWORD ctrlType)
 
 void registerSignalHandler(SignalController& ctrl)
 {
-  if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)handle, true))
+  if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)handleSignal, true))
     AnytunError::throwErr() << "Error on SetConsoleCtrlhandler: " << AnytunErrno(GetLastError());
 
-  ctrl.handler[CTRL_C_EVENT] = new CtrlCHandler;
-  ctrl.handler[CTRL_BREAK_EVENT] = new CtrlBreakHandler;
-  ctrl.handler[CTRL_CLOSE_EVENT] = new CtrlCloseHandler;
-  ctrl.handler[CTRL_LOGOFF_EVENT] = new CtrlLogoffHandler;
-  ctrl.handler[CTRL_SHUTDOWN_EVENT] = new CtrlShutdownHandler;
+  ctrl.handler[CTRL_C_EVENT] = boost::bind(CtrlCHandler, _1, _2);
+  ctrl.handler[CTRL_BREAK_EVENT] = boost::bind(CtrlBreakHandler, _1, _2);
+  ctrl.handler[CTRL_CLOSE_EVENT] = boost::bind(CtrlCloseHandler, _1, _2);
+  ctrl.handler[CTRL_LOGOFF_EVENT] = boost::bind(CtrlLogoffHandler, _1, _2);
+  ctrl.handler[CTRL_SHUTDOWN_EVENT] = boost::bind(CtrlShutdownHandler, _1, _2);
 }
 
 #endif
