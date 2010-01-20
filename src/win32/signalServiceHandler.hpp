@@ -30,39 +30,18 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ANYTUN_win32_winService_h_INCLUDED
-#define ANYTUN_win32_winService_h_INCLUDED
+#ifndef ANYTUN_signalServiceHandler_h_INCLUDED
+#define ANYTUN_signalServiceHandler_h_INCLUDED
 
-#ifdef WIN_SERVICE
+#include "winService.h"
 
-#include "../threadUtils.hpp"
-
-class WinService
+void registerSignalHandler(SignalController& ctrl, WinService& service)
 {
-public:
-  #define SVC_NAME "anytun"
-  static void install();
-  static void uninstall();
-  static void start();
+  ctrl.handler[SERVICE_CONTROL_STOP] = boost::bind(WinService::handleCtrlSignal, &service, _1, _2);
+  ctrl.handler[SERVICE_CONTROL_INTERROGATE] = boost::bind(WinService::handleCtrlSignal, &service, _1, _2);
 
-  static VOID WINAPI main(DWORD dwArgc, LPTSTR *lpszArgv);
-  static VOID WINAPI ctrlHandler(DWORD dwCtrl);
-
-  void reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode);
-  int handleCtrlSignal(const SigNum& sig, const std::string& msg);
-
-private:
-  WinService() : started_(false) {};
-  ~WinService();
-  WinService(const WinService &w);
-  void operator=(const WinService &w);
-
-  SERVICE_STATUS status_;
-  SERVICE_STATUS_HANDLE status_handle_;
-};
-
-extern WinService& gWinService;
-
-#endif
+  ctrl.callbacks.insert(SignalController::CallbackMap::value_type(CALLB_RUNNING, boost::bind(&WinService::reportStatus, &service, SERVICE_RUNNING, NO_ERROR)));
+  ctrl.callbacks.insert(SignalController::CallbackMap::value_type(CALLB_STOPPING, boost::bind(&WinService::reportStatus, &service, SERVICE_STOP_PENDING, NO_ERROR)));
+}
 
 #endif

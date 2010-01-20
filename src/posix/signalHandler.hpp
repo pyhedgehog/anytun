@@ -92,7 +92,7 @@ void handleSignal()
   }
 }
 
-void registerSignalHandler(SignalController& ctrl)
+void registerSignalHandler(SignalController& ctrl, DaemonService& /*service*/)
 {
   sigset_t signal_set;
   

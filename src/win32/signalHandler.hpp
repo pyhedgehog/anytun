@@ -71,7 +71,7 @@ bool handleSignal(DWORD ctrlType)
   return true;
 }
 
-void registerSignalHandler(SignalController& ctrl)
+void registerSignalHandler(SignalController& ctrl, DaemonService& /*service*/)
 {
   if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)handleSignal, true))
     AnytunError::throwErr() << "Error on SetConsoleCtrlhandler: " << AnytunErrno(GetLastError());

@@ -353,14 +353,13 @@ int main(int argc, char* argv[])
   }
 }
 
-int real_main(int argc, char* argv[])
-#else
-int main(int argc, char* argv[])
-#endif
+int real_main(int argc, char* argv[], WinService& service)
 {
-#ifdef WIN_SERVICE
   bool daemonized=true;
 #else
+int main(int argc, char* argv[])
+{
+  DaemonService service;
   bool daemonized=false;
 #endif  
   try 
@@ -425,7 +424,7 @@ int main(int argc, char* argv[])
 #endif
 #if !defined(__FreeBSD_kernel__)
     // this has to be called before the first thread is started
-    gSignalController.init();
+    gSignalController.init(service);
 #endif
     gResolver.init();
 #ifndef NO_EXEC
@@ -469,12 +468,7 @@ int main(int argc, char* argv[])
     // to be still able to process signals while waiting
     boost::thread(boost::bind(startSendRecvThreads, &dev, src));
 
-#if defined(WIN_SERVICE)
-    int ret = 0;
-    gWinService.waitForStop();
-#else
     int ret = gSignalController.run();  
-#endif
 
 // TODO: stop all threads and cleanup
 // 
@@ -483,9 +477,6 @@ int main(int argc, char* argv[])
 //     if(connTo)
 //       delete connTo;
 
-#if defined(WIN_SERVICE)
-    gWinService.stop();
-#endif
     return ret; 
   }
   catch(std::runtime_error& e)
@@ -500,9 +491,6 @@ int main(int argc, char* argv[])
     if(!daemonized)
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
   }
-#if defined(WIN_SERVICE)
-  gWinService.stop();
-#endif
   return -1;
 }
   

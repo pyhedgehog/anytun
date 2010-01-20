@@ -41,26 +41,6 @@
 #include "../anytunError.h"
 #include "../threadUtils.hpp"
 
-WinService* WinService::inst = NULL;
-Mutex WinService::instMutex;
-WinService& gWinService = WinService::instance();
-
-WinService& WinService::instance()
-{
-	Lock lock(instMutex);
-	static instanceCleaner c;
-	if(!inst)
-		inst = new WinService();
-	
-	return *inst;
-}
-
-WinService::~WinService()
-{
-  if(started_)
-    CloseHandle(stop_event_);
-}
-
 void WinService::install()
 {
   SC_HANDLE schSCManager;
@@ -125,75 +105,61 @@ void WinService::start()
     AnytunError::throwErr() << "Error on StartServiceCtrlDispatcher: " << AnytunErrno(GetLastError());
 }
 
-void WinService::waitForStop()
-{
-  if(!started_)
-    AnytunError::throwErr() << "Service not started correctly";
-  
-  reportStatus(SERVICE_RUNNING, NO_ERROR);
-  WaitForSingleObject(stop_event_, INFINITE);
-  reportStatus(SERVICE_STOP_PENDING, NO_ERROR);
-  cLog.msg(Log::PRIO_NOTICE) << "WinService received stop signal, exitting";
-}
-
-void WinService::stop()
-{
-  if(!started_)
-    AnytunError::throwErr() << "Service not started correctly";
-
-  reportStatus(SERVICE_STOPPED, NO_ERROR);
-}
-
-int real_main(int argc, char* argv[]);
+int real_main(int argc, char* argv[], WinService& service);
 
 VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
 {
-  if(gWinService.started_) {
-    cLog.msg(Log::PRIO_ERROR) << "Service is already running";
-    return;
-  }
+  WinService service;
 
-  gWinService.status_handle_ = RegisterServiceCtrlHandlerA(SVC_NAME, WinService::ctrlHandler);
-  if(!gWinService.status_handle_) { 
+  service.status_handle_ = RegisterServiceCtrlHandlerA(SVC_NAME, WinService::ctrlHandler);
+  if(!service.status_handle_) { 
     cLog.msg(Log::PRIO_ERROR) << "Error on RegisterServiceCtrlHandler: " << AnytunErrno(GetLastError());
     return;
   }
-  gWinService.status_.dwServiceType = SERVICE_WIN32_OWN_PROCESS; 
-  gWinService.status_.dwServiceSpecificExitCode = 0;    
-  gWinService.reportStatus(SERVICE_START_PENDING, NO_ERROR);
-  gWinService.started_ = true;
+  service.status_.dwServiceType = SERVICE_WIN32_OWN_PROCESS; 
+  service.status_.dwServiceSpecificExitCode = 0;    
+  service.reportStatus(SERVICE_START_PENDING, NO_ERROR);
   
-  gWinService.stop_event_ = CreateEvent(NULL, true, false, NULL);
-  if(!gWinService.stop_event_) {
+  service.stop_event_ = CreateEvent(NULL, true, false, NULL);
+  if(!service.stop_event_) {
     cLog.msg(Log::PRIO_ERROR) << "WinService Error on CreateEvent: " << AnytunErrno(GetLastError());
-    gWinService.reportStatus(SERVICE_STOPPED, -1);
+    service.reportStatus(SERVICE_STOPPED, -1);
     return;
   }
 
-  real_main(dwArgc, lpszArgv);
+  real_main(dwArgc, lpszArgv, service);
+  
+  service.reportStatus(SERVICE_STOPPED, NO_ERROR);
 }
 
 VOID WINAPI WinService::ctrlHandler(DWORD dwCtrl)
 {
-  switch(dwCtrl) {
+  gSignalController.inject(ctrlType);
+  return true;
+}
+
+int handleCtrlSignal(const SigNum& sig, const std::string& msg)
+{
+  switch(sig) {
     case SERVICE_CONTROL_STOP: {
-      gWinService.reportStatus(SERVICE_STOP_PENDING, NO_ERROR);
-      SetEvent(gWinService.stop_event_);
-      return;
+      reportStatus(SERVICE_STOP_PENDING, NO_ERROR);
+      return 1;
     }
     case SERVICE_CONTROL_INTERROGATE: break;
     default: break;
   }
-  gWinService.reportStatus(gWinService.status_.dwCurrentState, NO_ERROR);
+  reportStatus(gWinService.status_.dwCurrentState, NO_ERROR);
+
+  return 0;
 }
 
-void WinService::reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint)
+void WinService::reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode)
 {
   static DWORD dwCheckPoint = 1;
 
   status_.dwCurrentState = dwCurrentState;
   status_.dwWin32ExitCode = dwWin32ExitCode;
-  status_.dwWaitHint = dwWaitHint;
+  status_.dwWaitHint = 0;
 
   if((dwCurrentState == SERVICE_START_PENDING) ||
      (dwCurrentState == SERVICE_STOP_PENDING))

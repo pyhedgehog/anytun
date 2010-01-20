@@ -38,13 +38,19 @@
 #include <boost/function.hpp>
 
 #include "threadUtils.hpp"
+#ifdef WIN_SERVICE
+#include "win32/winService.h"
+typedef WinService DaemonService;
+#else
+typedef int DaemonService;
+#endif
 
 #define SIGERROR -1
 
 typedef int SigNum;
 typedef boost::function<int (SigNum const&, std::string const&)> SignalHandler;
 typedef enum { CALLB_RUNNING, CALLB_STOPPING } CallbackType;
-typedef boost::function<void (CallbackType const&)> ServiceCallback;
+typedef boost::function<void ()> ServiceCallback;
 
 class SignalController
 {
@@ -52,6 +58,7 @@ public:
   static SignalController& instance();
 
   void init();
+  void init(DaemonService& service);
   int run();
   void inject(int sig, const std::string& msg = "");
 
@@ -81,7 +88,7 @@ private:
   typedef std::map<CallbackType, ServiceCallback> CallbackMap;
   CallbackMap callbacks;
 
-  friend void registerSignalHandler(SignalController& ctrl);
+  friend void registerSignalHandler(SignalController& ctrl, DaemonService& service);
 };
 
 extern SignalController& gSignalController;

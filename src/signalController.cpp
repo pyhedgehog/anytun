@@ -64,12 +64,23 @@ int SigErrorHandler(const SigNum& /*sig*/, const std::string& msg)
 #ifndef _MSC_VER
 #include "signalHandler.hpp"
 #else
-#include "win32/signalHandler.hpp"
+ #ifdef WIN_SERVICE
+ #include "win32/signalServiceHandler.hpp"
+ #else
+ #include "win32/signalHandler.hpp"
+ #endif
 #endif
 
 void SignalController::init()
 {
-  registerSignalHandler(*this);
+  DaemonService service;
+  registerSignalHandler(*this, service);
+  handler[SIGERROR] = boost::bind(SigErrorHandler, _1, _2);
+}
+
+void SignalController::init(DaemonService& service)
+{
+  registerSignalHandler(*this, service);
   handler[SIGERROR] = boost::bind(SigErrorHandler, _1, _2);
 }
 
@@ -86,7 +97,7 @@ int SignalController::run()
 {
   for(CallbackMap::iterator it = callbacks.begin(); it != callbacks.end(); ++it)
     if(it->first == CALLB_RUNNING)
-      it->second(CALLB_RUNNING);
+      it->second();
 
   int ret = 0;
   while(1) {
@@ -112,7 +123,7 @@ int SignalController::run()
 
   for(CallbackMap::iterator it = callbacks.begin(); it != callbacks.end(); ++it)
     if(it->first == CALLB_STOPPING)
-      it->second(CALLB_STOPPING);
+      it->second();
 
   return ret;
 }
