@@ -117,8 +117,13 @@ int SignalController::run()
       if(ret)
         break;
     }
-    else
-      cLog.msg(Log::PRIO_NOTICE) << "SIG " << sig.first << " caught with message '" << sig.second << "' - ignoring";
+    else {
+      it = handler.find(SIGUNKNOWN);
+      if(it != handler.end())
+        it->second(sig.first, sig.second);
+      else
+        cLog.msg(Log::PRIO_NOTICE) << "SIG " << sig.first << " caught with message '" << sig.second << "' - ignoring";
+    }
   }
 
   for(CallbackMap::iterator it = callbacks.begin(); it != callbacks.end(); ++it)

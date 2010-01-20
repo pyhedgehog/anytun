@@ -46,6 +46,7 @@ typedef int DaemonService;
 #endif
 
 #define SIGERROR -1
+#define SIGUNKNOWN -2
 
 typedef int SigNum;
 typedef boost::function<int (SigNum const&, std::string const&)> SignalHandler;

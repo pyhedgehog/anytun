@@ -42,6 +42,7 @@ void registerSignalHandler(SignalController& ctrl, WinService* service)
 
   ctrl.handler[SERVICE_CONTROL_STOP] = boost::bind(&WinService::handleCtrlSignal, service, _1, _2);
   ctrl.handler[SERVICE_CONTROL_INTERROGATE] = boost::bind(&WinService::handleCtrlSignal, service, _1, _2);
+  ctrl.handler[SIGUNKNOWN] = boost::bind(&WinService::handleCtrlSignal, service, _1, _2);
 
   ctrl.callbacks.insert(SignalController::CallbackMap::value_type(CALLB_RUNNING, boost::bind(&WinService::reportStatus, service, SERVICE_RUNNING, NO_ERROR)));
   ctrl.callbacks.insert(SignalController::CallbackMap::value_type(CALLB_STOPPING, boost::bind(&WinService::reportStatus, service, SERVICE_STOP_PENDING, NO_ERROR)));
