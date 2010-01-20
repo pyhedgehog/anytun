@@ -73,12 +73,12 @@ int SigErrorHandler(const SigNum& /*sig*/, const std::string& msg)
 
 void SignalController::init()
 {
-  DaemonService service;
+  DaemonService* service = NULL;
   registerSignalHandler(*this, service);
   handler[SIGERROR] = boost::bind(SigErrorHandler, _1, _2);
 }
 
-void SignalController::init(DaemonService& service)
+void SignalController::init(DaemonService* service)
 {
   registerSignalHandler(*this, service);
   handler[SIGERROR] = boost::bind(SigErrorHandler, _1, _2);

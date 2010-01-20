@@ -40,7 +40,7 @@
 #include "threadUtils.hpp"
 #ifdef WIN_SERVICE
 #include "win32/winService.h"
-typedef WinService DaemonService;
+typedef class WinService DaemonService;
 #else
 typedef int DaemonService;
 #endif
@@ -58,7 +58,7 @@ public:
   static SignalController& instance();
 
   void init();
-  void init(DaemonService& service);
+  void init(DaemonService* service);
   int run();
   void inject(int sig, const std::string& msg = "");
 
@@ -88,7 +88,7 @@ private:
   typedef std::map<CallbackType, ServiceCallback> CallbackMap;
   CallbackMap callbacks;
 
-  friend void registerSignalHandler(SignalController& ctrl, DaemonService& service);
+  friend void registerSignalHandler(SignalController& ctrl, DaemonService* service);
 };
 
 extern SignalController& gSignalController;

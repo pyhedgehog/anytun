@@ -36,6 +36,7 @@
 #ifdef WIN_SERVICE
 
 #include "../threadUtils.hpp"
+#include "../signalController.h"
 
 class WinService
 {
@@ -49,19 +50,17 @@ public:
   static VOID WINAPI ctrlHandler(DWORD dwCtrl);
 
   void reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode);
-  int handleCtrlSignal(const SigNum& sig, const std::string& msg);
+  int handleCtrlSignal(const int& sig, const std::string& msg);
 
 private:
-  WinService() : started_(false) {};
-  ~WinService();
+  WinService() {};
+  ~WinService() {};
   WinService(const WinService &w);
   void operator=(const WinService &w);
 
   SERVICE_STATUS status_;
   SERVICE_STATUS_HANDLE status_handle_;
 };
-
-extern WinService& gWinService;
 
 #endif
 

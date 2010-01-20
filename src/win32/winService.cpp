@@ -105,7 +105,7 @@ void WinService::start()
     AnytunError::throwErr() << "Error on StartServiceCtrlDispatcher: " << AnytunErrno(GetLastError());
 }
 
-int real_main(int argc, char* argv[], WinService& service);
+int real_main(int argc, char* argv[], WinService* service);
 
 VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
 {
@@ -120,35 +120,28 @@ VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
   service.status_.dwServiceSpecificExitCode = 0;    
   service.reportStatus(SERVICE_START_PENDING, NO_ERROR);
   
-  service.stop_event_ = CreateEvent(NULL, true, false, NULL);
-  if(!service.stop_event_) {
-    cLog.msg(Log::PRIO_ERROR) << "WinService Error on CreateEvent: " << AnytunErrno(GetLastError());
-    service.reportStatus(SERVICE_STOPPED, -1);
-    return;
-  }
-
-  real_main(dwArgc, lpszArgv, service);
+  real_main(dwArgc, lpszArgv, &service);
   
   service.reportStatus(SERVICE_STOPPED, NO_ERROR);
 }
 
 VOID WINAPI WinService::ctrlHandler(DWORD dwCtrl)
 {
-  gSignalController.inject(ctrlType);
-  return true;
+  gSignalController.inject(dwCtrl);
 }
 
-int handleCtrlSignal(const SigNum& sig, const std::string& msg)
+int WinService::handleCtrlSignal(const SigNum& sig, const std::string& msg)
 {
   switch(sig) {
     case SERVICE_CONTROL_STOP: {
       reportStatus(SERVICE_STOP_PENDING, NO_ERROR);
+      cLog.msg(Log::PRIO_NOTICE) << "received service stop signal, exitting";
       return 1;
     }
     case SERVICE_CONTROL_INTERROGATE: break;
     default: break;
   }
-  reportStatus(gWinService.status_.dwCurrentState, NO_ERROR);
+  reportStatus(status_.dwCurrentState, NO_ERROR);
 
   return 0;
 }

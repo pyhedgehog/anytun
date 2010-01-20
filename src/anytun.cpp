@@ -353,13 +353,13 @@ int main(int argc, char* argv[])
   }
 }
 
-int real_main(int argc, char* argv[], WinService& service)
+int real_main(int argc, char* argv[], WinService* service)
 {
   bool daemonized=true;
 #else
 int main(int argc, char* argv[])
 {
-  DaemonService service;
+  DaemonService* service = NULL;
   bool daemonized=false;
 #endif  
   try 
