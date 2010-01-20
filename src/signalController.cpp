@@ -53,7 +53,7 @@ SignalController& SignalController::instance()
 	return *inst;
 }
 
-int SigErrorHandler(const SigNum& /*sig*/, const std::string& msg)
+int SigErrorHandler(int /*sig*/, const std::string& msg)
 {
   AnytunError::throwErr() << msg;
 

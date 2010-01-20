@@ -48,8 +48,7 @@ typedef void DaemonService;
 #define SIGERROR -1
 #define SIGUNKNOWN -2
 
-typedef int SigNum;
-typedef boost::function<int (SigNum const&, std::string const&)> SignalHandler;
+typedef boost::function<int (int, std::string const&)> SignalHandler;
 typedef enum { CALLB_RUNNING, CALLB_STOPPING } CallbackType;
 typedef boost::function<void ()> ServiceCallback;
 
@@ -84,7 +83,7 @@ private:
   Mutex sigQueueMutex;
   Semaphore sigQueueSem;
 
-  typedef std::map<SigNum, SignalHandler> HandlerMap;
+  typedef std::map<int, SignalHandler> HandlerMap;
   HandlerMap handler;
   typedef std::map<CallbackType, ServiceCallback> CallbackMap;
   CallbackMap callbacks;

@@ -37,37 +37,37 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
-int SigIntHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int SigIntHandler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "SIG-Int caught, exiting";
   return 1;
 }
 
-int SigQuitHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int SigQuitHandler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "SIG-Quit caught, exiting";
   return 1;
 }
 
-int SigHupHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int SigHupHandler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "SIG-Hup caught"; 
   return 0;
 }
 
-int SigTermHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int SigTermHandler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "SIG-Term caught, exiting";
   return 1;
 }
 
-int SigUsr1Handler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int SigUsr1Handler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr1 caught";
   return 0;
 }
 
-int SigUsr2Handler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int SigUsr2Handler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "SIG-Usr2 caught";
   return 0;

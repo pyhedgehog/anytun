@@ -130,7 +130,7 @@ VOID WINAPI WinService::ctrlHandler(DWORD dwCtrl)
   gSignalController.inject(dwCtrl);
 }
 
-int WinService::handleCtrlSignal(const SigNum& sig, const std::string& msg)
+int WinService::handleCtrlSignal(int sig, const std::string& msg)
 {
   switch(sig) {
     case SERVICE_CONTROL_STOP: {

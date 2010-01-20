@@ -35,31 +35,31 @@
 
 #include <windows.h>
 
-int CtrlCHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int CtrlCHandler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "CTRL-C Event received, exitting";
   return 1;
 }
 
-int CtrlBreakHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int CtrlBreakHandler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "CTRL-Break Event received, ignoring";
   return 0;
 }
 
-int CtrlCloseHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int CtrlCloseHandler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "Close Event received, exitting";
   return 1;
 }
 
-int CtrlLogoffHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int CtrlLogoffHandler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "LogOff Event received, exitting";
   return 1;
 }
 
-int CtrlShutdownHandler(const SigNum& /*sig*/, const std::string& /*msg*/)
+int CtrlShutdownHandler(int /*sig*/, const std::string& /*msg*/)
 {
   cLog.msg(Log::PRIO_NOTICE) << "Shutdown Event received, exitting";
   return 1;
