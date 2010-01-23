@@ -422,10 +422,8 @@ int main(int argc, char* argv[])
     privs.drop();
 #endif
 #endif
-#if !defined(__FreeBSD_kernel__)
     // this has to be called before the first thread is started
     gSignalController.init(service);
-#endif
     gResolver.init();
 #ifndef NO_EXEC
     boost::thread(boost::bind(&TunDevice::waitUntilReady,&dev));

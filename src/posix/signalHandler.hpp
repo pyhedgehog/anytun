@@ -75,14 +75,22 @@ int SigUsr2Handler(int /*sig*/, const std::string& /*msg*/)
 
 void handleSignal()
 {
+  struct timespec timeout;
   sigset_t signal_set;
   int sigNum;
-  int err = 0;
   while(1) {
-    sigfillset(&signal_set);
-    err = sigwait(&signal_set, &sigNum);
-    if (err) {
-      if (err != EINTR && errno != EINTR ) {
+    sigemptyset(&signal_set);
+    sigaddset(&signal_set, SIGINT);
+    sigaddset(&signal_set, SIGQUIT);
+    sigaddset(&signal_set, SIGHUP);
+    sigaddset(&signal_set, SIGTERM);
+    sigaddset(&signal_set, SIGUSR1);
+    sigaddset(&signal_set, SIGUSR2);
+    timeout.tv_sec = 1;
+    timeout.tv_nsec = 0;
+    sigNum = sigtimedwait(&signal_set, NULL, &timeout);
+    if (sigNum == -1) {
+      if (errno != EINTR && errno != EAGAIN) {
       	cLog.msg(Log::PRIO_ERROR) << "sigwait failed with error: \"" << AnytunErrno(errno) << "\" SignalHandling will be disabled";
       	break;
       }
@@ -96,11 +104,13 @@ void registerSignalHandler(SignalController& ctrl, DaemonService* /*service*/)
 {
   sigset_t signal_set;
   
-  sigfillset(&signal_set);        
-  sigdelset(&signal_set, SIGCHLD);
-  sigdelset(&signal_set, SIGSEGV);
-  sigdelset(&signal_set, SIGBUS);
-  sigdelset(&signal_set, SIGFPE);
+  sigemptyset(&signal_set);
+  sigaddset(&signal_set, SIGINT);
+  sigaddset(&signal_set, SIGQUIT);
+  sigaddset(&signal_set, SIGHUP);
+  sigaddset(&signal_set, SIGTERM);
+  sigaddset(&signal_set, SIGUSR1);
+  sigaddset(&signal_set, SIGUSR2);
   
 #if defined(BOOST_HAS_PTHREADS)
   pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
