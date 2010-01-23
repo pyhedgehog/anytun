@@ -47,17 +47,15 @@
 
 #include "syncServer.h"
 #include "daemon.hpp"
+#include <vector>
+
+std::list<std::string> config_;
 
 void syncOnConnect(SyncTcpConnection * connptr)
 {
-  std::ifstream file(gOpt.getFileName().c_str());
-  if(file.is_open()) {
-    std::string line;
-    while (!file.eof()) {
-      getline (file,line);
-      connptr->Send(line);
-    }
-    file.close();
+	for(std::list<std::string>::const_iterator it=config_.begin(); it!=config_.end();++it)
+	{
+    connptr->Send(*it);
   }
 }
 
@@ -106,8 +104,14 @@ int main(int argc, char* argv[])
 
     std::ifstream file( gOpt.getFileName().c_str() );
     if( file.is_open() )
+    {
+    	std::string line;
+    	while (!file.eof()) {
+      	getline (file,line);
+        config_.push_back(line);
+			}
       file.close();
-    else {
+    } else {
       std::cout << "ERROR: unable to open file!" << std::endl;
       exit(-1);
     }
@@ -118,13 +122,11 @@ int main(int argc, char* argv[])
       daemonized = true;
     }
 
-    gSignalController.init();
-    gResolver.init();
-    
     if(gOpt.getChrootDir() != "")
       do_chroot(gOpt.getChrootDir());
-    
     privs.drop();
+    gSignalController.init();
+    gResolver.init();
 
     boost::thread * syncListenerThread;
     syncListenerThread = new boost::thread(boost::bind(syncListener));
