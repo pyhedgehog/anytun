@@ -160,6 +160,8 @@ void daemonize()
     pidFile << pid;
     pidFile.close();
   }
+
+  setpgid(0, 0);
 }
 #endif
 #endif
