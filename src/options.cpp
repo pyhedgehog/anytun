@@ -37,6 +37,8 @@
 #include <sstream>
 
 #include "datatypes.h"
+#include "version.h"
+
 #include "options.h"
 #include "log.h"
 #include "authAlgoFactory.h"
@@ -371,8 +373,14 @@ bool Options::parse(int argc, char* argv[])
     std::string str(argv[i]);
     argc--;
 
-    if(str == "-h" || str == "--help")
+    if(str == "-h" || str == "--help") {
+      printUsage();
       return false;
+    }
+    else if(str == "-v" || str == "--version") {
+      printVersion();
+      return false;
+    }
 
 #if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
 
@@ -520,6 +528,19 @@ void Options::parse_post()
     dev_type_ = "tun";
 }
 
+void Options::printVersion()
+{
+#if defined(ANYCTR_OPTIONS)
+  std::cout << "anytun-controld";
+#elif defined(ANYCONF_OPTIONS)
+  std::cout << "anytun-config";
+#else
+  std::cout << "anytun";
+#endif
+  std::cout << VERSION_STRING_0 << std::endl;
+  std::cout << VERSION_STRING_1 << std::endl;
+}
+
 void Options::printUsage()
 {
   std::cout << "USAGE:" << std::endl;
@@ -533,6 +554,7 @@ void Options::printUsage()
 #endif
 
   std::cout << "   [-h|--help]                         prints this..." << std::endl;
+  std::cout << "   [-v|--version]                      print version info and exit" << std::endl;
 
 #if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
 

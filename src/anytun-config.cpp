@@ -104,11 +104,9 @@ int main(int argc, char* argv[])
 {
   try 
   {
-    bool result = gOpt.parse(argc, argv);
-    if(!result) {
-      gOpt.printUsage();
+    if(!gOpt.parse(argc, argv))
       exit(0);
-    }
+
     StringList targets = gOpt.getLogTargets();
     for(StringList::const_iterator it = targets.begin();it != targets.end(); ++it)
       cLog.addTarget(*it);

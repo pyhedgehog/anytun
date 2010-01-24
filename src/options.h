@@ -88,6 +88,7 @@ public:
 
   bool parse(int argc, char* argv[]);
   void parse_post();
+  void printVersion();
   void printUsage();
   void printOptions();
 
