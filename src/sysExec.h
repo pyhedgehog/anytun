@@ -60,7 +60,7 @@ class SysExec
     void doExec(std::string const& script, StringVector const& args, StringList const& env);
 
     std::string script_;
-    
+    bool closed_;    
 #ifdef _MSC_VER
     PROCESS_INFORMATION process_info_;
     DWORD return_code_;
@@ -69,7 +69,7 @@ class SysExec
     int pipefd_;
     int return_code_;
 #endif
-    bool closed_;
+
     
 };
 

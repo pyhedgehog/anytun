@@ -2,6 +2,7 @@
 
 * Security fix: packet length check errors
 * fixed droping of priveleges on FreeBSD
+* added sysExec for Windows
 * added multi socket support which allows simultanous usage
   of IPv4 and IPv6 even on operating systems without V4_MAPPED
   address support
