@@ -38,32 +38,32 @@
 #include "log.h"
 #include "anytunError.h"
 
-//use system specific signal handler
+//use system specific sys exec
 #ifndef _MSC_VER
 #include "sysExec.hpp"
 #else
- #include "win32/sysExec.hpp"
+#include "win32/sysExec.hpp"
 #endif
 
 
 SysExec::SysExec(std::string const& script) : script_(script),closed_(false),return_code_(0)
 {
-  doExec(script, StringVector(), StringList());
+  doExec(StringVector(), StringList());
 }
 
 SysExec::SysExec(std::string const& script, StringVector const& args) : script_(script),closed_(false),return_code_(0)
 {
-  doExec(script, args, StringList());
+  doExec(args, StringList());
 }
 
 SysExec::SysExec(std::string const& script, StringList const& env) : script_(script),closed_(false),return_code_(0)
 {
-  doExec( script, StringVector(), env);
+  doExec(StringVector(), env);
 }
 
 SysExec::SysExec(std::string const& script, StringVector const& args, StringList const& env) : script_(script),closed_(false),return_code_(0)
 {
-  doExec( script, args, env);
+  doExec(args, env);
 }
 
 int SysExec::getReturnCode() const 

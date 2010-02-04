@@ -57,7 +57,7 @@ class SysExec
     static void waitAndDestroy(SysExec*& s);
 
   private:
-    void doExec(std::string const& script, StringVector const& args, StringList const& env);
+    void doExec(StringVector const& args, StringList const& env);
 
     std::string script_;
     bool closed_;    

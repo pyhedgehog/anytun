@@ -63,17 +63,17 @@ char** dupEnv(StringList const& env)
   return evp;
 }
 
-void SysExec::doExec(std::string const& script, StringVector const& args, StringList const& env)
+void SysExec::doExec(StringVector const& args, StringList const& env)
 {
   int pipefd[2];
   if(pipe(pipefd) == -1) {
-    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script << "' pipe() error: " << AnytunErrno(errno);
+    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script_ << "' pipe() error: " << AnytunErrno(errno);
     return;
   }
 
   pid_ = fork();
   if(pid_ == -1) {
-    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script << "' fork() error: " << AnytunErrno(errno);
+    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script_ << "' fork() error: " << AnytunErrno(errno);
     return;
   }
 
@@ -99,8 +99,8 @@ void SysExec::doExec(std::string const& script, StringVector const& args, String
   }
   
   char** argv = new char*[args.size() + 2];
-  argv[0] = new char[script.size() + 1];
-  std::strcpy(argv[0], script.c_str());
+  argv[0] = new char[script_.size() + 1];
+  std::strcpy(argv[0], script_.c_str());
   for(unsigned int i=0; i<args.size(); ++i) {
     argv[i+1] = new char[args[i].size() + 1];
     std::strcpy(argv[i+1], args[i].c_str());
@@ -109,7 +109,7 @@ void SysExec::doExec(std::string const& script, StringVector const& args, String
 
   char** evp = dupEnv(env);
   
-  execve(script.c_str(), argv, evp);
+  execve(script_.c_str(), argv, evp);
       // if execve returns, an error occurred, but logging doesn't work 
       // because we closed all file descriptors, so just write errno to
       // pipe and call exit
@@ -132,7 +132,7 @@ int SysExec::waitForScript()
   if(select(pipefd_+1, &rfds, NULL, NULL, &tv) == 1) {
     int err = 0;
     if(read(pipefd_, (void*)(&err), sizeof(err)) >= static_cast<int>(sizeof(err))) {
-      cLog.msg(Log::PRIO_NOTICE) << "script '" << script_ << "' exec() error: " << AnytunErrno(err);
+      cLog.msg(Log::PRIO_ERROR) << "script '" << script_ << "' exec() error: " << AnytunErrno(err);
       close(pipefd_);
       return_code_ = -1;
       return return_code_;

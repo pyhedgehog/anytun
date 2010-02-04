@@ -67,13 +67,13 @@ bool endsWith(std::string const& string, std::string const& suffix) {
   return string.find(suffix, string.size() - suffix.size()) != std::string::npos;
 }
 
-void SysExec::doExec(std::string const& script, StringVector const& args, StringList const& env)
+void SysExec::doExec(StringVector const& args, StringList const& env)
 {
   std::vector<char> arguments;
   
   bool isBatchFile = false;
   for(int i = 0; i < BATCH_FILE_EXTS_COUNT; ++i) {
-    if(endsWith(script, BATCH_FILE_EXTS[i])) {
+    if(endsWith(script_, BATCH_FILE_EXTS[i])) {
       isBatchFile = true;
       break;
     }
@@ -84,7 +84,7 @@ void SysExec::doExec(std::string const& script, StringVector const& args, String
     arguments.insert(arguments.end(), BATCH_INTERPRETER.begin(), BATCH_INTERPRETER.end());
   }
   arguments.push_back('\"');
-  arguments.insert(arguments.end(), script.begin(), script.end());
+  arguments.insert(arguments.end(), script_.begin(), script_.end());
   arguments.push_back('\"');
   arguments.push_back(' ');
   
@@ -126,7 +126,7 @@ void SysExec::doExec(std::string const& script, StringVector const& args, String
                    &process_info_
                    ))
   {
-    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script << "' CreateProcess() error: " << GetLastError();
+    cLog.msg(Log::PRIO_ERROR) << "executing script '" << script_ << "' CreateProcess() error: " << GetLastError();
     return;
   }
 }
