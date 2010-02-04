@@ -57,13 +57,20 @@ class SysExec
     static void waitAndDestroy(SysExec*& s);
 
   private:
-		void doExec(std::string const& script, StringVector const& args, StringList const& env);
+    void doExec(std::string const& script, StringVector const& args, StringList const& env);
 
     std::string script_;
+    
+#ifdef _MSC_VER
+    PROCESS_INFORMATION process_info_;
+    DWORD return_code_;
+#else
     pid_t pid_;
     int pipefd_;
-    bool closed_;
     int return_code_;
+#endif
+    bool closed_;
+    
 };
 
 #endif
