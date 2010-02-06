@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -120,7 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -195,7 +195,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -271,7 +271,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -347,7 +347,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -421,7 +421,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -496,7 +496,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -572,7 +572,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -649,7 +649,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -724,7 +724,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -800,7 +800,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -877,7 +877,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -954,7 +954,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -1029,7 +1029,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -1105,7 +1105,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -1182,7 +1182,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;NO_DAEMON;NO_EXEC;WIN32_LEAN_AND_MEAN;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;NO_DAEMON;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"

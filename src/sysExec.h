@@ -33,8 +33,6 @@
 #ifndef ANYTUN_sysExec_h_INCLUDED
 #define ANYTUN_sysExec_h_INCLUDED
 
-#ifndef NO_EXEC
-
 #include <vector>
 #include <list>
 #include <string>
@@ -73,5 +71,4 @@ class SysExec
     
 };
 
-#endif
 #endif

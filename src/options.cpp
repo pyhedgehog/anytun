@@ -428,9 +428,7 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-d","--dev", dev_name_, NOTHING)
     PARSE_SCALAR_PARAM("-t","--type", dev_type_, NOTHING)
     PARSE_SCALAR_PARAM("-n","--ifconfig", ifconfig_param_, NOTHING)
-  #ifndef NO_EXEC
     PARSE_SCALAR_PARAM("-x","--post-up-script", post_up_script_, NOTHING)
-  #endif
 
 #endif
 #if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
@@ -607,9 +605,7 @@ void Options::printUsage()
   std::cout << "   [-d|--dev] <name>                   device name" << std::endl;
   std::cout << "   [-t|--type] <tun|tap>               device type" << std::endl;
   std::cout << "   [-n|--ifconfig] <local>/<prefix>    the local address for the tun/tap device and the used prefix length" << std::endl;
- #ifndef NO_EXEC
   std::cout << "   [-x|--post-up-script] <script>      script gets called after interface is created" << std::endl;
- #endif
 
 #endif
 #if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)

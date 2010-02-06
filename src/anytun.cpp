@@ -399,14 +399,14 @@ int main(int argc, char* argv[])
     TunDevice dev(gOpt.getDevName(), gOpt.getDevType(), net.net_addr, net.prefix_length);
     cLog.msg(Log::PRIO_NOTICE) << "dev opened - name '" << dev.getActualName() << "', node '" << dev.getActualNode() << "'";
     cLog.msg(Log::PRIO_NOTICE) << "dev type is '" << dev.getTypeString() << "'";
-#ifndef NO_EXEC
+
     SysExec * postup_script = NULL;
     if(gOpt.getPostUpScript() != "") {
       cLog.msg(Log::PRIO_NOTICE) << "executing post-up script '" << gOpt.getPostUpScript() << "'";
       StringVector args = boost::assign::list_of(dev.getActualName())(dev.getActualNode());
       postup_script = new SysExec(gOpt.getPostUpScript(), args);
     }
-#endif
+
 #ifndef NO_DAEMON
     if(gOpt.getChrootDir() != "") {
       try {
@@ -423,11 +423,10 @@ int main(int argc, char* argv[])
     // this has to be called before the first thread is started
     gSignalController.init(service);
     gResolver.init();
-#ifndef NO_EXEC
     boost::thread(boost::bind(&TunDevice::waitUntilReady,&dev));
     if (postup_script)
       boost::thread(boost::bind(&SysExec::waitAndDestroy,postup_script));
-#endif   
+
     initCrypto();   
  
     PacketSource* src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());

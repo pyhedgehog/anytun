@@ -253,7 +253,6 @@ int TunDevice::write(u_int8_t* buf, u_int32_t len)
 
 void TunDevice::do_ifconfig()
 {
-#ifndef NO_EXEC
   std::ostringstream mtu_ss;
   mtu_ss << conf_.mtu_;
   StringVector args = boost::assign::list_of(actual_name_)(conf_.addr_.toString())("netmask")(conf_.netmask_.toString())("mtu")(mtu_ss.str());
@@ -272,7 +271,6 @@ void TunDevice::do_ifconfig()
 #endif
   }
   sys_exec_ = new SysExec("/sbin/ifconfig", args);
-#endif
 }
 
 void TunDevice::waitUntilReady()
