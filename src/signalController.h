@@ -38,11 +38,15 @@
 #include <boost/function.hpp>
 
 #include "threadUtils.hpp"
+
+#ifndef _MSC_VER
+#include "daemonService.h"
+#else
 #ifdef WIN_SERVICE
 #include "win32/winService.h"
-typedef class WinService DaemonService;
 #else
-typedef void DaemonService;
+#include "nullDaemon.h"
+#endif
 #endif
 
 #define SIGERROR -1

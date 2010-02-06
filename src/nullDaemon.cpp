@@ -30,46 +30,29 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ANYTUN_win32_winService_h_INCLUDED
-#define ANYTUN_win32_winService_h_INCLUDED
+#include "nullDaemon.h"
 
-#ifdef WIN_SERVICE
-
-#include "../threadUtils.hpp"
-#include "../signalController.h"
-
-class WinService
+void DaemonService::initPrivs(std::string const& username, std::string const& groupname)
 {
-public:
-  #define SVC_NAME "anytun"
-  static void install();
-  static void uninstall();
-  static void start();
+// nothing here
+}
 
-  static VOID WINAPI main(DWORD dwArgc, LPTSTR *lpszArgv);
-  static VOID WINAPI ctrlHandler(DWORD dwCtrl);
+void DaemonService::dropPrivs()
+{
+// nothing here
+}
 
-  void reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode);
-  int handleCtrlSignal(int sig, const std::string& msg);
+void DaemonService::chroot(std::string const& chrootdir)
+{
+// nothing here
+}
 
-  void initPrivs(std::string const& username, std::string const& groupname);
-  void dropPrivs();
-  void chroot(std::string const& dir);
-  void daemonize();
-  bool isDaemonized();
+void DaemonService::daemonize()
+{
+// nothing here
+}
 
-private:
-  WinService() {};
-  ~WinService() {};
-  WinService(const WinService &w);
-  void operator=(const WinService &w);
-
-  SERVICE_STATUS status_;
-  SERVICE_STATUS_HANDLE status_handle_;
-};
-
-typedef class WinService DaemonService;
-
-#endif
-
-#endif
+bool DaemonService::isDaemonized()
+{
+  return false;
+}

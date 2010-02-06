@@ -46,7 +46,7 @@
 #include "resolver.h"
 
 #include "syncServer.h"
-#include "daemon.hpp"
+#include "daemonService.h"
 #include <vector>
 
 std::list<std::string> config_;
@@ -77,7 +77,7 @@ void syncListener()
 
 int main(int argc, char* argv[])
 {
-  bool daemonized=false;
+  DaemonService daemon;
   try 
   {
     try 
@@ -114,15 +114,14 @@ int main(int argc, char* argv[])
       exit(-1);
     }
     
-    PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
-    if(gOpt.getDaemonize()) {
-      daemonize();
-      daemonized = true;
-    }
+    daemon.initPrivs(gOpt.getUsername(), gOpt.getGroupname());
+    if(gOpt.getDaemonize())
+      daemon.daemonize();
 
     if(gOpt.getChrootDir() != "")
-      do_chroot(gOpt.getChrootDir());
-    privs.drop();
+      daemon.chroot(gOpt.getChrootDir());
+    daemon.dropPrivs();
+
     gSignalController.init();
     gResolver.init();
 
@@ -135,14 +134,14 @@ int main(int argc, char* argv[])
   }
   catch(std::runtime_error& e)
   {
-    if(daemonized)
+    if(daemon.isDaemonized())
       cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error, exiting: " << e.what();
     else
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
   catch(std::exception& e)
   {
-    if(daemonized)
+    if(daemon.isDaemonized())
       cLog.msg(Log::PRIO_ERROR) << "uncaught exception, exiting: " << e.what();
     else
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;

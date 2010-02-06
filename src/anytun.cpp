@@ -50,8 +50,14 @@
 #include "authAlgoFactory.h"
 #include "keyDerivationFactory.h"
 #include "signalController.h"
+#ifndef _MSC_VER
+#include "daemonService.h"
+#else
 #ifdef WIN_SERVICE
 #include "win32/winService.h"
+#else
+#include "nullDaemon.h"
+#endif
 #endif
 #include "packetSource.h"
 #include "tunDevice.h"
@@ -73,7 +79,6 @@
 #endif
 
 #include "cryptinit.hpp"
-#include "daemon.hpp"
 #include "sysExec.h"
 
 bool disableRouting = false;
@@ -359,7 +364,8 @@ int real_main(int argc, char* argv[], WinService* service)
 #else
 int main(int argc, char* argv[])
 {
-  DaemonService* service = NULL;
+  DaemonService daemon;
+  DaemonService* service = &daemon;
   bool daemonized=false;
 #endif  
   try 
@@ -384,16 +390,11 @@ int main(int argc, char* argv[])
     gOpt.parse_post(); // print warnings
 
         // daemonizing has to done before any thread gets started
-#ifndef NO_DAEMON
-#ifndef NO_PRIVDROP
-  	PrivInfo privs(gOpt.getUsername(), gOpt.getGroupname());
-#endif
+    service->initPrivs(gOpt.getUsername(), gOpt.getGroupname());
     if(gOpt.getDaemonize()) {
-      daemonize();
+      service->daemonize();
       daemonized = true;
     }
-#endif
-
 
     OptionNetwork net = gOpt.getIfconfigParam();
     TunDevice dev(gOpt.getDevName(), gOpt.getDevType(), net.net_addr, net.prefix_length);
@@ -407,19 +408,16 @@ int main(int argc, char* argv[])
       postup_script = new SysExec(gOpt.getPostUpScript(), args);
     }
 
-#ifndef NO_DAEMON
     if(gOpt.getChrootDir() != "") {
       try {
-        do_chroot(gOpt.getChrootDir());
+        service->chroot(gOpt.getChrootDir());
       }
       catch(const std::runtime_error& e) {
         cLog.msg(Log::PRIO_WARNING) << "ignoring chroot error: " << e.what();
       }
     }
-#ifndef NO_PRIVDROP
-    privs.drop();
-#endif
-#endif
+    service->dropPrivs();
+
     // this has to be called before the first thread is started
     gSignalController.init(service);
     gResolver.init();

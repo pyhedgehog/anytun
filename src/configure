@@ -150,6 +150,9 @@ case $TARGET in
     ln -sf posix/signalHandler.hpp
     rm -f sysExec.hpp
     ln -sf posix/sysExec.hpp
+    rm -f daemonService.h daemonService.cpp
+    ln -sf posix/posixDaemon.h daemonService.h
+    ln -sf posix/posixDaemon.cpp daemonService.cpp
     echo "loading Linux specific TUN Device"
   ;;
   OpenBSD|FreeBSD|NetBSD|GNU/kFreeBSD)
@@ -159,6 +162,9 @@ case $TARGET in
     ln -sf posix/signalHandler.hpp
     rm -f sysExec.hpp
     ln -sf posix/sysExec.hpp
+    rm -f daemonService.h daemonService.cpp
+    ln -sf posix/posixDaemon.h daemonService.h
+    ln -sf posix/posixDaemon.cpp daemonService.cpp
     echo "loading BSD specific TUN Device"
     CXXFLAGS=$CXXFLAGS' -I/usr/local/include'
     LDFLAGS=$LDFLAGS' -L/usr/local/lib'

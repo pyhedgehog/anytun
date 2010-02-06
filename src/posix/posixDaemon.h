@@ -30,27 +30,15 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ANYTUN_win32_winService_h_INCLUDED
-#define ANYTUN_win32_winService_h_INCLUDED
+#ifndef ANYTUN_posixDaemon_h_INCLUDED
+#define ANYTUN_posixDaemon_h_INCLUDED
 
-#ifdef WIN_SERVICE
+#include <string>
 
-#include "../threadUtils.hpp"
-#include "../signalController.h"
-
-class WinService
+class DaemonService
 {
 public:
-  #define SVC_NAME "anytun"
-  static void install();
-  static void uninstall();
-  static void start();
-
-  static VOID WINAPI main(DWORD dwArgc, LPTSTR *lpszArgv);
-  static VOID WINAPI ctrlHandler(DWORD dwCtrl);
-
-  void reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode);
-  int handleCtrlSignal(int sig, const std::string& msg);
+  DaemonService();
 
   void initPrivs(std::string const& username, std::string const& groupname);
   void dropPrivs();
@@ -59,17 +47,9 @@ public:
   bool isDaemonized();
 
 private:
-  WinService() {};
-  ~WinService() {};
-  WinService(const WinService &w);
-  void operator=(const WinService &w);
-
-  SERVICE_STATUS status_;
-  SERVICE_STATUS_HANDLE status_handle_;
+  struct passwd* pw_;
+  struct group* gr_;
+  bool daemonized_;
 };
-
-typedef class WinService DaemonService;
-
-#endif
 
 #endif

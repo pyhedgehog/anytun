@@ -384,7 +384,7 @@ bool Options::parse(int argc, char* argv[])
 
 #if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
 
-  #ifndef NO_DAEMON
+  #ifndef _MSC_VER
     PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_, NOTHING)
     PARSE_SCALAR_PARAM("-u","--username", username_, NOTHING)
     PARSE_SCALAR_PARAM("-g","--groupname", groupname_, NOTHING)
@@ -556,7 +556,7 @@ void Options::printUsage()
 
 #if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
 
- #ifndef NO_DAEMON
+ #ifndef _MSC_VER
   std::cout << "   [-D|--nodaemonize]                  don't run in background" << std::endl;
   std::cout << "   [-u|--username] <username>          change to this user" << std::endl;
   std::cout << "   [-g|--groupname] <groupname>        change to this group" << std::endl;

@@ -169,4 +169,29 @@ void WinService::reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode)
   SetServiceStatus(status_handle_, &status_);
 }
 
+void WinService::initPrivs(std::string const& username, std::string const& groupname)
+{
+// nothing here
+}
+
+void WinService::dropPrivs()
+{
+// nothing here
+}
+
+void WinService::chroot(std::string const& dir)
+{
+// nothing here
+}
+
+void WinService::daemonize()
+{
+// nothing here
+}
+
+bool WinService::isDaemonized()
+{
+  return true;
+}
+
 #endif

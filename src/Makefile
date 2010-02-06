@@ -34,9 +34,7 @@ ifneq ($(MAKECMDGOALS),distclean)
 include include.mk
 endif
 
-OBJS := tunDevice.o \
-        packetSource.o \
-        buffer.o \
+OBJS := buffer.o \
         syncBuffer.o \
         plainPacket.o \
         encryptedPacket.o \
@@ -51,7 +49,6 @@ OBJS := tunDevice.o \
         networkAddress.o \
         networkPrefix.o \
         routingTable.o \
-        signalController.o \
         log.o \
         logTargets.o \
         sysExec.o \
@@ -60,6 +57,11 @@ OBJS := tunDevice.o \
         seqWindow.o \
         routingTreeNode.o \
         resolver.o
+
+ANYTUNOBJS := tunDevice.o \
+              packetSource.o \
+              signalController.o \
+              daemonService.o
 
 SYNCOBJS := syncServer.o \
             syncClient.o \
@@ -70,6 +72,7 @@ SYNCOBJS := syncServer.o \
             syncTcpConnection.o
 
 ANYCTROBJS := signalController.o \
+              daemonService.o \
               anyCtrOptions.o \
               buffer.o \
               log.o \
@@ -107,6 +110,7 @@ EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
 
 SRCS := $(OBJS:%.o=%.cpp)
 SYNCSRCS := $(SYNCOBJS:%.o=%.cpp)
+ANYTUNSRCS := $(ANYTUNOBJS:%.o=%.cpp)
 ANYCTRSRCS := $(ANYCTROBJS:%.o=%.cpp)
 ANYCONFSRCS := $(ANYCONFOBJS:%.o=%.cpp)
 EXESRCS := $(EXEOBJS:%.o=%.cpp)
@@ -122,21 +126,21 @@ all: $(EXECUTABLES) #libAnysync.a
    rm -f $@.$$$$; echo '(re)building $@'
 
 ifneq ($(MAKECMDGOALS),distclean)
--include $(SRCS:%.cpp=%.d) $(SYNCSRCS:%.cpp=%.d) $(ANYCTRSRCS:%.cpp=%.d) $(ANYCONFSRCS:%.cpp=%.d) $(EXESRCS:%.cpp=%.d)
+-include $(SRCS:%.cpp=%.d) $(SYNCSRCS:%.cpp=%.d) $(ANYTUNSRCS:%.cpp=%.d) $(ANYCTRSRCS:%.cpp=%.d) $(ANYCONFSRCS:%.cpp=%.d) $(EXESRCS:%.cpp=%.d)
 endif
 
 strip: $(EXECUTABLES)
 	$(STRIP) -s $(EXECUTABLES) 
 
-anytun: $(OBJS) $(SYNCOBJS) anytun.o
-	$(LD) $(OBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
+anytun: $(OBJS) $(ANYTUNOBJS) $(SYNCOBJS) anytun.o
+	$(LD) $(OBJS) $(ANYTUNOBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
 
-anytun-static: $(OBJS) $(SYNCOBJS) anytun-noprivdrop.o
-	$(LD) $(OBJS) $(SYNCOBJS) anytun-noprivdrop.o -o $@ -Bstatic -lstdc++ -static $(LDFLAGS) -lpthread
+anytun-static: $(OBJS) $(ANYTUNOBJS) $(SYNCOBJS) anytun-noprivdrop.o
+	$(LD) $(OBJS) $(ANYTUNOBJS) $(SYNCOBJS) anytun-noprivdrop.o -o $@ -Bstatic -lstdc++ -static $(LDFLAGS) -lpthread
 	$(STRIP) -s anytun-static
 
-anytun-nosync: $(OBJS) anytun-nosync.o
-	$(LD) $(OBJS) anytun-nosync.o -o $@ $(LDFLAGS)
+anytun-nosync: $(OBJS) $(ANYTUNOBJS) anytun-nosync.o
+	$(LD) $(OBJS) $(ANYTUNOBJS) anytun-nosync.o -o $@ $(LDFLAGS)
 
 anytun-nosync.o: anytun.cpp
 	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o

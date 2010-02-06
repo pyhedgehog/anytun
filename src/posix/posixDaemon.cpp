@@ -30,10 +30,6 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ANYTUN_daemon_hpp_INCLUDED
-#define ANYTUN_daemon_hpp_INCLUDED
-#ifndef NO_DAEMON
-
 #include <poll.h>
 #include <fcntl.h>
 #include <pwd.h>
@@ -42,65 +38,58 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "daemonService.h"
 #include "log.h"
+#include "options.h"
 #include "anytunError.h"
 
-#ifndef NO_PRIVDROP
-class PrivInfo
+DaemonService::DaemonService() : pw_(NULL), gr_(NULL), daemonized_(false)
 {
-public:
-  PrivInfo(std::string const& username, std::string const& groupname)
-  {
-    pw_ = NULL;
-    gr_ = NULL;
-    
-    if(username == "")
-      return;
+}
 
-    pw_ = getpwnam(username.c_str());
-    if(!pw_)
-      AnytunError::throwErr() << "unknown user " << username;
-    
-    if(groupname != "")
-      gr_ = getgrnam(groupname.c_str());
-    else
-      gr_ = getgrgid(pw_->pw_gid);
-    
-    if(!gr_)
-      AnytunError::throwErr() << "unknown group " << groupname;
-  }
+void DaemonService::initPrivs(std::string const& username, std::string const& groupname)
+{
+  if(username == "")
+    return;
+  
+  pw_ = getpwnam(username.c_str());
+  if(!pw_)
+    AnytunError::throwErr() << "unknown user " << username;
+  
+  if(groupname != "")
+    gr_ = getgrnam(groupname.c_str());
+  else
+    gr_ = getgrgid(pw_->pw_gid);
+  
+  if(!gr_)
+    AnytunError::throwErr() << "unknown group " << groupname;
+}
 
-  void drop()
-  {
-    if(!pw_ || !gr_)
-      return;
+void DaemonService::dropPrivs()
+{
+  if(!pw_ || !gr_)
+    return;
+  
+  if(setgid(gr_->gr_gid))
+    AnytunError::throwErr() << "setgid('" << gr_->gr_name << "') failed: " << AnytunErrno(errno);
+  
+  gid_t gr_list[1];
+  gr_list[0] = gr_->gr_gid;
+  if(setgroups (1, gr_list))
+    AnytunError::throwErr() << "setgroups(['" << gr_->gr_name << "']) failed: " << AnytunErrno(errno);
+  
+  if(setuid(pw_->pw_uid))
+    AnytunError::throwErr() << "setuid('" << pw_->pw_name << "') failed: " << AnytunErrno(errno);
+  
+  cLog.msg(Log::PRIO_NOTICE) << "dropped privileges to " << pw_->pw_name << ":" << gr_->gr_name;
+}
 
-    if(setgid(gr_->gr_gid))
-      AnytunError::throwErr() << "setgid('" << gr_->gr_name << "') failed: " << AnytunErrno(errno);
-    
-    gid_t gr_list[1];
-    gr_list[0] = gr_->gr_gid;
-    if(setgroups (1, gr_list))
-      AnytunError::throwErr() << "setgroups(['" << gr_->gr_name << "']) failed: " << AnytunErrno(errno);
-    
-    if(setuid(pw_->pw_uid))
-      AnytunError::throwErr() << "setuid('" << pw_->pw_name << "') failed: " << AnytunErrno(errno);
-    
-    cLog.msg(Log::PRIO_NOTICE) << "dropped privileges to " << pw_->pw_name << ":" << gr_->gr_name;
-  }
-
-private:
-  struct passwd* pw_;
-  struct group* gr_;
-};
-#endif
-
-void do_chroot(std::string const& chrootdir)
+void DaemonService::chroot(std::string const& chrootdir)
 {
   if (getuid() != 0)
     AnytunError::throwErr() << "this program has to be run as root in order to run in a chroot";
 
-  if(chroot(chrootdir.c_str()))
+  if(::chroot(chrootdir.c_str()))
     AnytunError::throwErr() << "can't chroot to " << chrootdir;
 
   cLog.msg(Log::PRIO_NOTICE) << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
@@ -108,7 +97,7 @@ void do_chroot(std::string const& chrootdir)
     AnytunError::throwErr() << "can't change to /";
 }
 
-void daemonize()
+void DaemonService::daemonize()
 {
   std::ofstream pidFile;
   if(gOpt.getPidFile() != "") {
@@ -162,6 +151,10 @@ void daemonize()
   }
 
   setpgid(0, 0);
+  daemonized_ = true;
 }
-#endif
-#endif
+
+bool DaemonService::isDaemonized()
+{
+  return daemonized_;
+}
