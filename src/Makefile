@@ -34,34 +34,51 @@ ifneq ($(MAKECMDGOALS),distclean)
 include include.mk
 endif
 
-OBJS := buffer.o \
-        syncBuffer.o \
-        plainPacket.o \
-        encryptedPacket.o \
-        cipher.o \
-        authAlgo.o \
-        keyDerivation.o \
-        cipherFactory.o \
-        authAlgoFactory.o \
-        keyDerivationFactory.o \
-        connectionList.o \
-        connectionParam.o \
-        networkAddress.o \
-        networkPrefix.o \
-        routingTable.o \
-        log.o \
-        logTargets.o \
-        sysExec.o \
-        anytunError.o \
-        options.o \
-        seqWindow.o \
-        routingTreeNode.o \
-        resolver.o
 
 ANYTUNOBJS := tunDevice.o \
               packetSource.o \
+              authAlgo.o \
+              authAlgoFactory.o \
+              cipher.o \
+              cipherFactory.o \
+              plainPacket.o \
+              encryptedPacket.o \
+              options.o \
               signalController.o \
-              daemonService.o
+              daemonService.o \
+              sysExec.o \
+              resolver.o \
+              buffer.o \
+              syncBuffer.o \
+              keyDerivation.o \
+              keyDerivationFactory.o \
+              connectionList.o \
+              connectionParam.o \
+              networkAddress.o \
+              networkPrefix.o \
+              routingTable.o \
+              routingTreeNode.o \
+              log.o \
+              logTargets.o \
+              anytunError.o \
+              seqWindow.o
+
+ANYSHOWOBJS := buffer.o \
+               syncBuffer.o \
+               keyDerivation.o \
+               keyDerivationFactory.o \
+               connectionList.o \
+               connectionParam.o \
+               networkAddress.o \
+               networkPrefix.o \
+               routingTable.o \
+               routingTreeNode.o \
+               log.o \
+               logTargets.o \
+               anytunError.o \
+               seqWindow.o \
+               nullOptions.o \
+               resolver.o
 
 SYNCOBJS := syncServer.o \
             syncClient.o \
@@ -108,9 +125,9 @@ ANYCONFOBJS := log.o \
 EXECUTABLES := anytun anytun-config anytun-controld anytun-showtables anytun-nosync
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
 
-SRCS := $(OBJS:%.o=%.cpp)
-SYNCSRCS := $(SYNCOBJS:%.o=%.cpp)
 ANYTUNSRCS := $(ANYTUNOBJS:%.o=%.cpp)
+ANYSHOWSRCS := $(ANYSHOWOBJS:%.o=%.cpp)
+SYNCSRCS := $(SYNCOBJS:%.o=%.cpp)
 ANYCTRSRCS := $(ANYCTROBJS:%.o=%.cpp)
 ANYCONFSRCS := $(ANYCONFOBJS:%.o=%.cpp)
 EXESRCS := $(EXEOBJS:%.o=%.cpp)
@@ -126,30 +143,27 @@ all: $(EXECUTABLES) #libAnysync.a
    rm -f $@.$$$$; echo '(re)building $@'
 
 ifneq ($(MAKECMDGOALS),distclean)
--include $(SRCS:%.cpp=%.d) $(SYNCSRCS:%.cpp=%.d) $(ANYTUNSRCS:%.cpp=%.d) $(ANYCTRSRCS:%.cpp=%.d) $(ANYCONFSRCS:%.cpp=%.d) $(EXESRCS:%.cpp=%.d)
+-include $(ANYTUNSRCS:%.cpp=%.d) $(ANYSHOWSRCS:%.cpp=%.d) $(SYNCSRCS:%.cpp=%.d) $(ANYCTRSRCS:%.cpp=%.d) $(ANYCONFSRCS:%.cpp=%.d) $(EXESRCS:%.cpp=%.d)
 endif
 
 strip: $(EXECUTABLES)
 	$(STRIP) -s $(EXECUTABLES) 
 
-anytun: $(OBJS) $(ANYTUNOBJS) $(SYNCOBJS) anytun.o
-	$(LD) $(OBJS) $(ANYTUNOBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
+anytun: $(ANYTUNOBJS) $(SYNCOBJS) anytun.o
+	$(LD) $(ANYTUNOBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
 
-anytun-static: $(OBJS) $(ANYTUNOBJS) $(SYNCOBJS) anytun-noprivdrop.o
-	$(LD) $(OBJS) $(ANYTUNOBJS) $(SYNCOBJS) anytun-noprivdrop.o -o $@ -Bstatic -lstdc++ -static $(LDFLAGS) -lpthread
+anytun-static: $(ANYTUNOBJS) $(SYNCOBJS) anytun-noprivdrop.o
+	$(LD) $(ANYTUNOBJS) $(SYNCOBJS) anytun-noprivdrop.o -o $@ -Bstatic -lstdc++ -static $(LDFLAGS) -lpthread
 	$(STRIP) -s anytun-static
 
-anytun-nosync: $(OBJS) $(ANYTUNOBJS) anytun-nosync.o
-	$(LD) $(OBJS) $(ANYTUNOBJS) anytun-nosync.o -o $@ $(LDFLAGS)
+anytun-nosync: $(ANYTUNOBJS) anytun-nosync.o
+	$(LD) $(ANYTUNOBJS) anytun-nosync.o -o $@ $(LDFLAGS)
 
 anytun-nosync.o: anytun.cpp
 	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
 
-anytun-noprivdrop.o: anytun.cpp
-	$(CXX) $(CXXFLAGS) -DNO_PRIVDROP $< -c -o anytun-noprivdrop.o
-
-anytun-showtables: $(OBJS) $(SYNCOBJS) anytun-showtables.o
-	$(LD) $(OBJS) $(SYNCOBJS) anytun-showtables.o -o $@ $(LDFLAGS)
+anytun-showtables: $(ANYSHOWOBJS) $(SYNCOBJS) anytun-showtables.o
+	$(LD) $(ANYSHOWOBJS) $(SYNCOBJS) anytun-showtables.o -o $@ $(LDFLAGS)
 
 anytun-config: $(ANYCONFOBJS) anytun-config.o
 	$(LD) $(ANYCONFOBJS) anytun-config.o -o $@ $(LDFLAGS)
@@ -166,6 +180,9 @@ anyCtrOptions.o: options.cpp
 
 anyConfOptions.o: options.cpp 
 	$(CXX) $(CXXFLAGS) -DANYCONF_OPTIONS $< -c -o $@
+
+nullOptions.o: options.cpp
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c
