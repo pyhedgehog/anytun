@@ -199,6 +199,8 @@ anyrtpproxy: anytun
 distclean: cleanall
 	find . -name *.o -exec rm -f {} \;
 	rm -f config.sub config.guess
+	rm -f daemonService.h
+	rm -f daemonService.cpp
 	rm -f signalHandler.hpp
 	rm -f sysExec.hpp
 	rm -f version.h
