@@ -3,6 +3,7 @@ anytun-config(8)
 
 NAME
 ----
+
 anytun-config - anycast tunneling configuration utility
 
 SYNOPSIS
@@ -35,35 +36,35 @@ DESCRIPTION
 OPTIONS
 -------
 
-*-L, --log <target>:<level>[,<param1>[,<param2>[..]]]*::
+*-L, --log '<target>:<level>[,<param1>[,<param2>[..]]]'*::
    add log target to logging system. This can be invoked several times
    in order to log to different targets at the same time. Every target 
    hast its own log level which is a number between 0 and 5. Where 0 means
    disabling log and 5 means debug messages are enabled. +
    The file target can be used more the once with different levels.
    If no target is provided at the command line a single target with the 
-   config *syslog:3,anytun-config,daemon* is added. +
+   config 'syslog:3,anytun-config,daemon' is added. +
    The following targets are supported:
 
-   *syslog*;; log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
-   *file*;; log to file, parameters <level>[,<path>]
-   *stdout*;; log to standard output, parameters <level>
-   *stderr*;; log to standard error, parameters <level> 
+   'syslog';; log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
+   'file';; log to file, parameters <level>[,<path>]
+   'stdout';; log to standard output, parameters <level>
+   'stderr';; log to standard error, parameters <level> 
 
 *-U, --debug*::
    This option instructs *Anytun* to run in debug mode. It implicits *-D* 
    (don't daemonize) and adds a log target with the configuration
-   *stdout:5* (logging with maximum level). In future releases there might
+   'stdout:5' (logging with maximum level). In future releases there might
    be additional output when this option is supplied.
 
-*-r, --remote-host <hostname|ip>*::
+*-r, --remote-host '<hostname|ip>'*::
    This option can be used to specify the remote tunnel
    endpoint. In case of anycast tunnel endpoints, the
    anycast IP address has to be used. If you do not specify
    an address, it is automatically determined after receiving
    the first data packet.
 
-*-o, --remote-port <port>*::
+*-o, --remote-port '<port>'*::
    The UDP port used for payload data by the remote host
    (specified with -p on the remote host). If you do not specify
    a port, it is automatically determined after receiving
@@ -77,13 +78,13 @@ OPTIONS
    Resolv to IPv6 addresses only. The default is to resolv both
    IPv4 and IPv6 addresses.
 
-*-R, --route <net>/<prefix length>*::
+*-R, --route '<net>/<prefix length>'*::
    add a route to connection. This can be invoked several times.
 
-*-m, --mux <mux-id>*::
+*-m, --mux '<mux-id>'*::
    the multiplex id to use. default: 0
 
-*-w, --window-size <window size>*::
+*-w, --window-size '<window size>'*::
    seqence window size +
    Sometimes, packets arrive out of order on the receiver
    side. This option defines the size of a list of received
@@ -97,19 +98,19 @@ OPTIONS
    By default the sequence window is disabled and therefore a
    window size of 0 is used.
 
-*-k, --kd--prf <kd-prf type>*::
+*-k, --kd--prf '<kd-prf type>'*::
    key derivation pseudo random function +
    The pseudo random function which is used for calculating the 
    session keys and session salt. +
    Possible values:
 
-   *null*;; no random function, keys and salt are set to 0..00
-   *aes-ctr*;; AES in counter mode with 128 Bits, default value
-   *aes-ctr-128*;; AES in counter mode with 128 Bits
-   *aes-ctr-192*;; AES in counter mode with 192 Bits
-   *aes-ctr-256*;; AES in counter mode with 256 Bits
+   'null';; no random function, keys and salt are set to 0..00
+   'aes-ctr';; AES in counter mode with 128 Bits, default value
+   'aes-ctr-128';; AES in counter mode with 128 Bits
+   'aes-ctr-192';; AES in counter mode with 192 Bits
+   'aes-ctr-256';; AES in counter mode with 256 Bits
 
-*-e, --role <role>*::
+*-e, --role '<role>'*::
    SATP uses different session keys for inbound and outbound traffic. The
    role parameter is used to determine which keys to use for outbound or
    inbound packets. On both sides of a vpn connection different roles have 
@@ -117,20 +118,20 @@ OPTIONS
    *alice* or *server* as a replacement for *left* and *bob* or *client* as 
    a replacement for *right*. By default *left* is used.
 
-*-E, --passphrase <pass phrase>*::
+*-E, --passphrase '<pass phrase>'*::
    This passphrase is used to generate the master key and master salt.
    For the master key the last n bits of the SHA256 digest of the 
    passphrase (where n is the length of the master key in bits) is used. 
    The master salt gets generated with the SHA1 digest. 
    You may force a specific key and or salt by using *--key* and *--salt*.
 
-*-K, --key <master key>*::
+*-K, --key '<master key>'*::
    master key to use for key derivation +
    Master key in hexadecimal notation, e.g.
    01a2b3c4d5e6f708a9b0cadbecfd0fa1, with a mandatory length
    of 32, 48 or 64 characters (128, 192 or 256 bits).
 
-*-A, --salt <master salt>*::
+*-A, --salt '<master salt>'*::
    master salt to use for key derivation +
    Master salt in hexadecimal notation, e.g.
    01a2b3c4d5e6f708a9b0cadbecfd, with a mandatory length
