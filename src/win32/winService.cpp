@@ -105,7 +105,7 @@ void WinService::start()
     AnytunError::throwErr() << "Error on StartServiceCtrlDispatcher: " << AnytunErrno(GetLastError());
 }
 
-int real_main(int argc, char* argv[], WinService* service);
+int real_main(int argc, char* argv[], WinService& service);
 
 VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
 {
@@ -120,7 +120,7 @@ VOID WINAPI WinService::main(DWORD dwArgc, LPTSTR *lpszArgv)
   service.status_.dwServiceSpecificExitCode = 0;    
   service.reportStatus(SERVICE_START_PENDING, NO_ERROR);
   
-  real_main(dwArgc, lpszArgv, &service);
+  real_main(dwArgc, lpszArgv, service);
   
   service.reportStatus(SERVICE_STOPPED, NO_ERROR);
 }

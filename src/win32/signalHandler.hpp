@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ANYTUN_signalHandler_h_INCLUDED
-#define ANYTUN_signalHandler_h_INCLUDED
+#ifndef ANYTUN_signalHandler_hpp_INCLUDED
+#define ANYTUN_signalHandler_hpp_INCLUDED
 
 #include <windows.h>
 
@@ -71,7 +71,7 @@ bool handleSignal(DWORD ctrlType)
   return true;
 }
 
-void registerSignalHandler(SignalController& ctrl, DaemonService* /*service*/)
+void registerSignalHandler(SignalController& ctrl, DaemonService& /*service*/)
 {
   if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)handleSignal, true))
     AnytunError::throwErr() << "Error on SetConsoleCtrlhandler: " << AnytunErrno(GetLastError());

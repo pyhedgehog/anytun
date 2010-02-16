@@ -39,14 +39,12 @@
 
 #include "threadUtils.hpp"
 
-#ifndef _MSC_VER
-#include "daemonService.h"
-#else
 #ifdef WIN_SERVICE
-#include "win32/winService.h"
+//#include "win32/winService.h"
+class WinService;
+typedef WinService DaemonService;
 #else
-#include "nullDaemon.h"
-#endif
+class DaemonService;
 #endif
 
 #define SIGERROR -1
@@ -61,8 +59,7 @@ class SignalController
 public:
   static SignalController& instance();
 
-  void init();
-  void init(DaemonService* service);
+  void init(DaemonService& service);
   int run();
   void inject(int sig, const std::string& msg = "");
 
@@ -92,7 +89,7 @@ private:
   typedef std::map<CallbackType, ServiceCallback> CallbackMap;
   CallbackMap callbacks;
 
-  friend void registerSignalHandler(SignalController& ctrl, DaemonService* service);
+  friend void registerSignalHandler(SignalController& ctrl, DaemonService& service);
 };
 
 extern SignalController& gSignalController;

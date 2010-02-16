@@ -30,8 +30,8 @@
  *  along with anytun.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ANYTUN_signalHandler_h_INCLUDED
-#define ANYTUN_signalHandler_h_INCLUDED
+#ifndef ANYTUN_signalHandler_hpp_INCLUDED
+#define ANYTUN_signalHandler_hpp_INCLUDED
 
 #include <csignal>
 #include <boost/thread.hpp>
@@ -100,7 +100,7 @@ void handleSignal()
   }
 }
 
-void registerSignalHandler(SignalController& ctrl, DaemonService* /*service*/)
+void registerSignalHandler(SignalController& ctrl, DaemonService& /*service*/)
 {
   sigset_t signal_set;
   

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
@@ -6,7 +6,6 @@
 	ProjectGUID="{12460D00-D78A-4C68-BDE2-9E3B2F9CD0F3}"
 	RootNamespace="anytun"
 	Keyword="Win32Proj"
-	AssemblyReferenceSearchPaths="&quot;..\..\..\..\Program Files\boost\boost_1_35_0&quot;"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -44,9 +43,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -72,532 +70,6 @@
 				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
 				SubSystem="1"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="win32/make_version_h.bat"			
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="libeay32MD.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories=""
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Service Debug|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="win32/make_version_h.bat"			
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
-				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="4"
-				ForcedIncludeFiles=""
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="libeay32MDd.lib"
-				OutputFile="$(OutDir)\$(ProjectName)svc.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories=""
-				IgnoreAllDefaultLibraries="false"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Service Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="win32/make_version_h.bat"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="libeay32MD.lib"
-				OutputFile="$(OutDir)\$(ProjectName)svc.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories=""
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debug with gcrypt|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="win32/make_version_h.bat"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
-				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="4"
-				ForcedIncludeFiles=""
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="libgcrypt.lib libgpg-error.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories=""
-				IgnoreAllDefaultLibraries="false"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release with gcrypt|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="win32/make_version_h.bat"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="libgcrypt.lib libgpg-error.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories=""
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Service Debug with gcrypt|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="win32/make_version_h.bat"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
-				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="4"
-				ForcedIncludeFiles=""
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="libgcrypt.lib libgpg-error.lib"
-				OutputFile="$(OutDir)\$(ProjectName)svc.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories=""
-				IgnoreAllDefaultLibraries="false"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Service Release with gcrypt|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="win32/make_version_h.bat"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="libgcrypt.lib libgpg-error.lib"
-				OutputFile="$(OutDir)\$(ProjectName)svc.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories=""
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -647,9 +119,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -676,6 +147,79 @@
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="win32/make_version_h.bat"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="libeay32MD.lib"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -724,7 +268,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -774,6 +318,83 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Service Debug|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="win32/make_version_h.bat"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				ForcedIncludeFiles=""
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="libeay32MDd.lib"
+				OutputFile="$(OutDir)\$(ProjectName)svc.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
+				IgnoreAllDefaultLibraries="false"
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Service Debug|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -798,9 +419,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -853,6 +473,80 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Service Release|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="win32/make_version_h.bat"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="libeay32MD.lib"
+				OutputFile="$(OutDir)\$(ProjectName)svc.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Service Release|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -877,7 +571,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;USE_SSL_CRYPTO;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -928,6 +622,81 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Debug with gcrypt|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="win32/make_version_h.bat"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="4"
+				ForcedIncludeFiles=""
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="libgcrypt.lib libgpg-error.lib"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
+				IgnoreAllDefaultLibraries="false"
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Debug with gcrypt|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -952,9 +721,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -1005,6 +773,79 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Release with gcrypt|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="win32/make_version_h.bat"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="libgcrypt.lib libgpg-error.lib"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Release with gcrypt|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -1029,7 +870,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -1079,6 +920,83 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Service Debug with gcrypt|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="win32/make_version_h.bat"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				ForcedIncludeFiles=""
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="libgcrypt.lib libgpg-error.lib"
+				OutputFile="$(OutDir)\$(ProjectName)svc.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
+				IgnoreAllDefaultLibraries="false"
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Service Debug with gcrypt|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -1103,9 +1021,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/I &quot;C:\Program Files\boost\boost_1_35_0\&quot;"
 				Optimization="0"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -1158,6 +1075,80 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Service Release with gcrypt|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="win32/make_version_h.bat"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="libgcrypt.lib libgpg-error.lib"
+				OutputFile="$(OutDir)\$(ProjectName)svc.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Service Release with gcrypt|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -1182,7 +1173,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;LOG_FILE;LOG_STDOUT;LOG_WINEVENTLOG;WIN_SERVICE;WIN32_LEAN_AND_MEAN;NOMINMAX;BOOST_ALL_DYN_LINK;ssize_t=long"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -1318,6 +1309,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\nullDaemon.h"
+				>
+			</File>
+			<File
 				RelativePath=".\options.h"
 				>
 			</File>
@@ -1399,6 +1394,10 @@
 			</File>
 			<File
 				RelativePath=".\syncTcpConnection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\sysExec.h"
 				>
 			</File>
 			<File
@@ -1490,66 +1489,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\nullDaemon.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\options.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="ANYTUN_OPTIONS"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="ANYTUN_OPTIONS"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Service Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="ANYTUN_OPTIONS"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Service Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="ANYTUN_OPTIONS"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug with gcrypt|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="ANYTUN_OPTIONS"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release with gcrypt|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="ANYTUN_OPTIONS"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Service Debug with gcrypt|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="ANYTUN_OPTIONS"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Service Release with gcrypt|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1565,7 +1512,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="ANYTUN_OPTIONS"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="ANYTUN_OPTIONS"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Service Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1581,7 +1544,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Service Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="ANYTUN_OPTIONS"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Service Release|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="ANYTUN_OPTIONS"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug with gcrypt|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1597,6 +1576,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release with gcrypt|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="ANYTUN_OPTIONS"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release with gcrypt|x64"
 					>
 					<Tool
@@ -1605,7 +1592,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Service Debug with gcrypt|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="ANYTUN_OPTIONS"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Service Debug with gcrypt|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="ANYTUN_OPTIONS"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Service Release with gcrypt|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1683,6 +1686,10 @@
 			</File>
 			<File
 				RelativePath=".\syncTcpConnection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\sysExec.cpp"
 				>
 			</File>
 			<File

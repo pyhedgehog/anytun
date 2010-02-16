@@ -51,13 +51,13 @@
 #include "keyDerivationFactory.h"
 #include "signalController.h"
 #ifndef _MSC_VER
-#include "daemonService.h"
+# include "daemonService.h"
 #else
-#ifdef WIN_SERVICE
-#include "win32/winService.h"
-#else
-#include "nullDaemon.h"
-#endif
+# ifdef WIN_SERVICE
+#  include "win32/winService.h"
+# else
+#  include "nullDaemon.h"
+# endif
 #endif
 #include "packetSource.h"
 #include "tunDevice.h"
@@ -68,7 +68,6 @@
 #include "routingTable.h"
 #include "networkAddress.h"
 #endif
-
 
 #ifndef ANYTUN_NOSYNC
 #include "syncQueue.h"
@@ -358,14 +357,13 @@ int main(int argc, char* argv[])
   }
 }
 
-int real_main(int argc, char* argv[], WinService* service)
+int real_main(int argc, char* argv[], WinService& service)
 {
   bool daemonized=true;
 #else
 int main(int argc, char* argv[])
 {
-  DaemonService daemon;
-  DaemonService* service = &daemon;
+  DaemonService service;
   bool daemonized=false;
 #endif  
   try 
@@ -390,9 +388,9 @@ int main(int argc, char* argv[])
     gOpt.parse_post(); // print warnings
 
         // daemonizing has to done before any thread gets started
-    service->initPrivs(gOpt.getUsername(), gOpt.getGroupname());
+    service.initPrivs(gOpt.getUsername(), gOpt.getGroupname());
     if(gOpt.getDaemonize()) {
-      service->daemonize();
+      service.daemonize();
       daemonized = true;
     }
 
@@ -410,13 +408,13 @@ int main(int argc, char* argv[])
 
     if(gOpt.getChrootDir() != "") {
       try {
-        service->chroot(gOpt.getChrootDir());
+        service.chroot(gOpt.getChrootDir());
       }
       catch(const std::runtime_error& e) {
         cLog.msg(Log::PRIO_WARNING) << "ignoring chroot error: " << e.what();
       }
     }
-    service->dropPrivs();
+    service.dropPrivs();
 
     // this has to be called before the first thread is started
     gSignalController.init(service);

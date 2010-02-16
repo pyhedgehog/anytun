@@ -68,7 +68,7 @@ private:
   SERVICE_STATUS_HANDLE status_handle_;
 };
 
-typedef class WinService DaemonService;
+typedef WinService DaemonService;
 
 #endif
 
