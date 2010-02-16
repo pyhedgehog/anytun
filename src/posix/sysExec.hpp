@@ -49,21 +49,42 @@ SysExec::~SysExec()
     close(pipefd_);
 }
 
-char** dupEnv(StringList const& env)
+
+template<class T>
+char** dupSysStringArray(T const& array)
 {
-  char** evp;
-  evp = new char*[env.size() + 1];
+  char** new_array;
+  new_array = static_cast<char**>(malloc((array.size() + 1)*sizeof(char*)));
+  if(!new_array)
+    return NULL;
+
   unsigned int i = 0;
-  for(StringList::const_iterator it = env.begin(); it != env.end(); ++it) {
-    evp[i] = new char[it->size() + 1];
-    std::strcpy(evp[i], it->c_str());
+  for(typename T::const_iterator it = array.begin(); it != array.end(); ++it) {
+    new_array[i] = strdup(it->c_str());
+    if(!new_array) {
+      while(i--)
+        free(new_array[i]);
+      free(new_array);
+      return NULL;
+    }
     ++i;
   }
-  evp[env.size()] = NULL;
-  return evp;
+  new_array[array.size()] = NULL;
+  return new_array;
 }
 
-void SysExec::doExec(StringVector const& args, StringList const& env)
+void freeSysStringArray(char** array)
+{
+  if(!array)
+    return;
+
+  for(int i=0; array[i] ; ++i)
+    free(array[i]);
+
+  free(array);
+}
+
+void SysExec::doExec(StringVector args, StringList env)
 {
   int pipefd[2];
   if(pipe(pipefd) == -1) {
@@ -98,21 +119,18 @@ void SysExec::doExec(StringVector const& args, StringList const& env)
       cLog.msg(Log::PRIO_WARNING) << "can't open stderr";
   }
   
-  char** argv = new char*[args.size() + 2];
-  argv[0] = new char[script_.size() + 1];
-  std::strcpy(argv[0], script_.c_str());
-  for(unsigned int i=0; i<args.size(); ++i) {
-    argv[i+1] = new char[args[i].size() + 1];
-    std::strcpy(argv[i+1], args[i].c_str());
-  }
-  argv[args.size() + 1] = NULL;
-
-  char** evp = dupEnv(env);
+  args.insert(args.begin(), script_);
+  char** argv = dupSysStringArray(args);
+  char** evp = dupSysStringArray(env);
   
   execve(script_.c_str(), argv, evp);
       // if execve returns, an error occurred, but logging doesn't work 
       // because we closed all file descriptors, so just write errno to
       // pipe and call exit
+  
+  freeSysStringArray(argv);
+  freeSysStringArray(evp);
+
   int err = errno;
   int ret = write(pipefd[1], (void*)(&err), sizeof(err));
   if(ret != sizeof(errno))
@@ -156,8 +174,10 @@ void SysExec::waitAndDestroy(SysExec*& s)
     cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' returned " << WEXITSTATUS(s->return_code_);  
   else if(WIFSIGNALED(s->return_code_))
     cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' terminated after signal " << WTERMSIG(s->return_code_);
-  else
-    cLog.msg(Log::PRIO_ERROR) << "executing script '" << s->script_ << "': unknown error";
+  else if(WIFSTOPPED(s->return_code_))
+    cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' stopped after signal " << WSTOPSIG(s->return_code_);
+  else if(WIFCONTINUED(s->return_code_))
+    cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' continued after SIGCONT";
 
   delete(s);
   s = NULL;

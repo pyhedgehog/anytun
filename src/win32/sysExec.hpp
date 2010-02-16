@@ -67,7 +67,7 @@ bool endsWith(std::string const& string, std::string const& suffix) {
   return string.find(suffix, string.size() - suffix.size()) != std::string::npos;
 }
 
-void SysExec::doExec(StringVector const& args, StringList const& env)
+void SysExec::doExec(StringVector args, StringList env)
 {
   std::vector<char> arguments;
   

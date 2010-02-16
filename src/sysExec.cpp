@@ -51,17 +51,17 @@ SysExec::SysExec(std::string const& script) : script_(script),closed_(false),ret
   doExec(StringVector(), StringList());
 }
 
-SysExec::SysExec(std::string const& script, StringVector const& args) : script_(script),closed_(false),return_code_(0)
+SysExec::SysExec(std::string const& script, StringVector args) : script_(script),closed_(false),return_code_(0)
 {
   doExec(args, StringList());
 }
 
-SysExec::SysExec(std::string const& script, StringList const& env) : script_(script),closed_(false),return_code_(0)
+SysExec::SysExec(std::string const& script, StringList env) : script_(script),closed_(false),return_code_(0)
 {
   doExec(StringVector(), env);
 }
 
-SysExec::SysExec(std::string const& script, StringVector const& args, StringList const& env) : script_(script),closed_(false),return_code_(0)
+SysExec::SysExec(std::string const& script, StringVector args, StringList env) : script_(script),closed_(false),return_code_(0)
 {
   doExec(args, env);
 }

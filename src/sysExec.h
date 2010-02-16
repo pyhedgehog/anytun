@@ -44,9 +44,9 @@ class SysExec
 {
   public:
     SysExec(std::string const& script);
-    SysExec(std::string const& script, StringVector const& args);
-    SysExec(std::string const& script, StringList const& env);
-    SysExec(std::string const& script, StringVector const& args, StringList const& env);
+    SysExec(std::string const& script, StringVector args);
+    SysExec(std::string const& script, StringList env);
+    SysExec(std::string const& script, StringVector args, StringList env);
     ~SysExec();
 
     int waitForScript();
@@ -55,7 +55,7 @@ class SysExec
     static void waitAndDestroy(SysExec*& s);
 
   private:
-    void doExec(StringVector const& args, StringList const& env);
+    void doExec(StringVector args, StringList env);
 
     std::string script_;
     bool closed_;    
