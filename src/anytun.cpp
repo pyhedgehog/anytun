@@ -359,12 +359,10 @@ int main(int argc, char* argv[])
 
 int real_main(int argc, char* argv[], WinService& service)
 {
-  bool daemonized=true;
 #else
 int main(int argc, char* argv[])
 {
   DaemonService service;
-  bool daemonized=false;
 #endif  
   try 
   {
@@ -389,10 +387,8 @@ int main(int argc, char* argv[])
 
         // daemonizing has to done before any thread gets started
     service.initPrivs(gOpt.getUsername(), gOpt.getGroupname());
-    if(gOpt.getDaemonize()) {
+    if(gOpt.getDaemonize())
       service.daemonize();
-      daemonized = true;
-    }
 
     OptionNetwork net = gOpt.getIfconfigParam();
     TunDevice dev(gOpt.getDevName(), gOpt.getDevType(), net.net_addr, net.prefix_length);
@@ -467,19 +463,18 @@ int main(int argc, char* argv[])
 //       delete src;
 //     if(connTo)
 //       delete connTo;
-
     return ret; 
   }
   catch(std::runtime_error& e)
   {
     cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error, exiting: " << e.what();
-    if(!daemonized)
+    if(!service.isDaemonized())
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
   catch(std::exception& e)
   {
     cLog.msg(Log::PRIO_ERROR) << "uncaught exception, exiting: " << e.what();
-    if(!daemonized)
+    if(!service.isDaemonized())
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
   }
   return -1;

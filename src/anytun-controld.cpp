@@ -77,7 +77,7 @@ void syncListener()
 
 int main(int argc, char* argv[])
 {
-  DaemonService daemon;
+  DaemonService service;
   try 
   {
     try 
@@ -114,15 +114,15 @@ int main(int argc, char* argv[])
       exit(-1);
     }
     
-    daemon.initPrivs(gOpt.getUsername(), gOpt.getGroupname());
+    service.initPrivs(gOpt.getUsername(), gOpt.getGroupname());
     if(gOpt.getDaemonize())
-      daemon.daemonize();
+      service.daemonize();
 
     if(gOpt.getChrootDir() != "")
-      daemon.chroot(gOpt.getChrootDir());
-    daemon.dropPrivs();
+      service.chroot(gOpt.getChrootDir());
+    service.dropPrivs();
 
-    gSignalController.init();
+    gSignalController.init(service);
     gResolver.init();
 
     boost::thread * syncListenerThread;
@@ -134,14 +134,14 @@ int main(int argc, char* argv[])
   }
   catch(std::runtime_error& e)
   {
-    if(daemon.isDaemonized())
+    if(service.isDaemonized())
       cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error, exiting: " << e.what();
     else
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
   }
   catch(std::exception& e)
   {
-    if(daemon.isDaemonized())
+    if(service.isDaemonized())
       cLog.msg(Log::PRIO_ERROR) << "uncaught exception, exiting: " << e.what();
     else
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
