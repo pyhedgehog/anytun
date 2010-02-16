@@ -73,8 +73,17 @@ int SigUsr2Handler(int /*sig*/, const std::string& /*msg*/)
   return 0;
 }
 
+/// TODO: this outstandignly ugly please and i really can't stress the please fix it asap!!!!!!!
+extern std::ofstream pidFile;
+
 void handleSignal()
 {
+  if(pidFile.is_open()) {
+    pid_t pid = getpid();
+    pidFile << pid;
+    pidFile.close();
+  }
+
   struct timespec timeout;
   sigset_t signal_set;
   int sigNum;

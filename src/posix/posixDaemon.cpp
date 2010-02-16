@@ -97,9 +97,13 @@ void DaemonService::chroot(std::string const& chrootdir)
     AnytunError::throwErr() << "can't change to /";
 }
 
+/// TODO: this outstandignly ugly please and i really can't stress the please fix it asap!!!!!!!
+
+std::ofstream pidFile; // FIXXXME no global variable 
+
 void DaemonService::daemonize()
 {
-  std::ofstream pidFile;
+//  std::ofstream pidFile;
   if(gOpt.getPidFile() != "") {
     pidFile.open(gOpt.getPidFile().c_str());
     if(!pidFile.is_open())
@@ -143,14 +147,15 @@ void DaemonService::daemonize()
     if(dup(fd) == -1)   // stderr
       cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stderr";
   }
+  
+// FIXXXXME: write this pid to file (currently pid from posix/signhandler.hpp:77 is used)
+// 
+//   if(pidFile.is_open()) {
+//     pid_t pid = getpid();
+//     pidFile << pid;
+//     pidFile.close();
+//   }
 
-  if(pidFile.is_open()) {
-    pid_t pid = getpid();
-    pidFile << pid;
-    pidFile.close();
-  }
-
-  setpgid(0, 0);
   daemonized_ = true;
 }
 
