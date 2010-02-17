@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -45,8 +45,9 @@
 
 SysExec::~SysExec()
 {
-  if(!closed_)
+  if(!closed_) {
     close(pipefd_);
+  }
 }
 
 
@@ -55,15 +56,17 @@ char** dupSysStringArray(T const& array)
 {
   char** new_array;
   new_array = static_cast<char**>(malloc((array.size() + 1)*sizeof(char*)));
-  if(!new_array)
+  if(!new_array) {
     return NULL;
+  }
 
   unsigned int i = 0;
   for(typename T::const_iterator it = array.begin(); it != array.end(); ++it) {
     new_array[i] = strdup(it->c_str());
     if(!new_array) {
-      while(i--)
+      while(i--) {
         free(new_array[i]);
+      }
       free(new_array);
       return NULL;
     }
@@ -75,11 +78,13 @@ char** dupSysStringArray(T const& array)
 
 void freeSysStringArray(char** array)
 {
-  if(!array)
+  if(!array) {
     return;
+  }
 
-  for(int i=0; array[i] ; ++i)
+  for(int i=0; array[i] ; ++i) {
     free(array[i]);
+  }
 
   free(array);
 }
@@ -106,35 +111,38 @@ void SysExec::doExec(StringVector args, StringList env)
   }
   // child code, exec the script
   int fd;
-  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
-    if(fd != pipefd[1]) close(fd);
-  
+  for(fd=getdtablesize(); fd>=0; --fd) // close all file descriptors
+    if(fd != pipefd[1]) { close(fd); }
+
   fd = open("/dev/null",O_RDWR);        // stdin
-  if(fd == -1)
+  if(fd == -1) {
     cLog.msg(Log::PRIO_WARNING) << "can't open stdin";
-  else {
-    if(dup(fd) == -1)   // stdout
+  } else {
+    if(dup(fd) == -1) { // stdout
       cLog.msg(Log::PRIO_WARNING) << "can't open stdout";
-    if(dup(fd) == -1)   // stderr
+    }
+    if(dup(fd) == -1) { // stderr
       cLog.msg(Log::PRIO_WARNING) << "can't open stderr";
+    }
   }
-  
+
   args.insert(args.begin(), script_);
   char** argv = dupSysStringArray(args);
   char** evp = dupSysStringArray(env);
-  
+
   execve(script_.c_str(), argv, evp);
-      // if execve returns, an error occurred, but logging doesn't work 
-      // because we closed all file descriptors, so just write errno to
-      // pipe and call exit
-  
+  // if execve returns, an error occurred, but logging doesn't work
+  // because we closed all file descriptors, so just write errno to
+  // pipe and call exit
+
   freeSysStringArray(argv);
   freeSysStringArray(evp);
 
   int err = errno;
   int ret = write(pipefd[1], (void*)(&err), sizeof(err));
-  if(ret != sizeof(errno))
+  if(ret != sizeof(errno)) {
     exit(-2);
+  }
   exit(-1);
 }
 
@@ -166,18 +174,20 @@ int SysExec::waitForScript()
 
 void SysExec::waitAndDestroy(SysExec*& s)
 {
-  if(!s)
+  if(!s) {
     return;
+  }
 
   s->waitForScript();
-  if(WIFEXITED(s->return_code_))
-    cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' returned " << WEXITSTATUS(s->return_code_);  
-  else if(WIFSIGNALED(s->return_code_))
+  if(WIFEXITED(s->return_code_)) {
+    cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' returned " << WEXITSTATUS(s->return_code_);
+  } else if(WIFSIGNALED(s->return_code_)) {
     cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' terminated after signal " << WTERMSIG(s->return_code_);
-  else if(WIFSTOPPED(s->return_code_))
+  } else if(WIFSTOPPED(s->return_code_)) {
     cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' stopped after signal " << WSTOPSIG(s->return_code_);
-  else if(WIFCONTINUED(s->return_code_))
+  } else if(WIFCONTINUED(s->return_code_)) {
     cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' continued after SIGCONT";
+  }
 
   delete(s);
   s = NULL;

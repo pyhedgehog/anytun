@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -39,19 +39,22 @@
 
 Cipher* CipherFactory::create(std::string const& type, kd_dir_t dir)
 {
-  if(type == "null")
+  if(type == "null") {
     return new NullCipher();
+  }
 #ifndef NO_CRYPT
-  else if(type == "aes-ctr")
+  else if(type == "aes-ctr") {
     return new AesIcmCipher(dir);
-  else if(type == "aes-ctr-128")
+  } else if(type == "aes-ctr-128") {
     return new AesIcmCipher(dir, 128);
-  else if(type == "aes-ctr-192")
+  } else if(type == "aes-ctr-192") {
     return new AesIcmCipher(dir, 192);
-  else if(type == "aes-ctr-256")
+  } else if(type == "aes-ctr-256") {
     return new AesIcmCipher(dir, 256);
+  }
 #endif
-  else
+  else {
     throw std::invalid_argument("cipher not available");
+  }
 }
 

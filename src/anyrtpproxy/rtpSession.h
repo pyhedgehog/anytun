@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -45,7 +45,7 @@ class RtpSession
 public:
   typedef boost::asio::ip::udp proto;
 
-	RtpSession(const std::string& call_id);
+  RtpSession(const std::string& call_id);
 
   bool isDead();
   bool isDead(bool d);
@@ -63,71 +63,71 @@ public:
   proto::endpoint getRemoteEnd2();
   RtpSession& setRemoteEnd2(proto::endpoint e);
 
-	RtpSession& setSeen1();
+  RtpSession& setSeen1();
   bool getSeen1();
 
-	RtpSession& setSeen2();
+  RtpSession& setSeen2();
   bool getSeen2();
 
 private:
-	RtpSession(const RtpSession & src);
-  
+  RtpSession(const RtpSession& src);
+
   void reinit();
 
   //TODO: check if this is ok
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version)
-	{    
+  void serialize(Archive& ar, const unsigned int version) {
     Lock lock(mutex_);
 
-        // address of local_end1 and local_end2 are always equal
-		std::string local_addr(local_end1_.address().to_string());
-		u_int16_t local_port1 = local_end1_.port();
-		u_int16_t local_port2 = local_end2_.port();
+    // address of local_end1 and local_end2 are always equal
+    std::string local_addr(local_end1_.address().to_string());
+    u_int16_t local_port1 = local_end1_.port();
+    u_int16_t local_port2 = local_end2_.port();
 
-		std::string remote_addr1(remote_end1_.address().to_string());
-		u_int16_t remote_port1 = remote_end1_.port();
-		std::string remote_addr2(remote_end2_.address().to_string());
-		u_int16_t remote_port2 = remote_end2_.port();
+    std::string remote_addr1(remote_end1_.address().to_string());
+    u_int16_t remote_port1 = remote_end1_.port();
+    std::string remote_addr2(remote_end2_.address().to_string());
+    u_int16_t remote_port2 = remote_end2_.port();
 
-    ar & dead_;
-    ar & complete_;
-    ar & local_addr;
-    ar & local_port1;
-    ar & local_port2;
-    ar & remote_addr1;
-    ar & remote_port1;
-    ar & remote_addr2;
-    ar & remote_port2;
-		ar & seen1_;
-		ar & seen2_;
+    ar& dead_;
+    ar& complete_;
+    ar& local_addr;
+    ar& local_port1;
+    ar& local_port2;
+    ar& remote_addr1;
+    ar& remote_port1;
+    ar& remote_addr2;
+    ar& remote_port2;
+    ar& seen1_;
+    ar& seen2_;
 
-		proto::endpoint local_end1(boost::asio::ip::address::from_string(local_addr), local_port1);
+    proto::endpoint local_end1(boost::asio::ip::address::from_string(local_addr), local_port1);
     local_end1_ = local_end1;
-		proto::endpoint local_end2(boost::asio::ip::address::from_string(local_addr), local_port2);
-		local_end2_ = local_end2;
+    proto::endpoint local_end2(boost::asio::ip::address::from_string(local_addr), local_port2);
+    local_end2_ = local_end2;
 
-		proto::endpoint remote_end1(boost::asio::ip::address::from_string(remote_addr1), remote_port1);
-		remote_end1_ = remote_end1;
-		proto::endpoint remote_end2(boost::asio::ip::address::from_string(remote_addr2), remote_port2);
-		remote_end2_ = remote_end2;
+    proto::endpoint remote_end1(boost::asio::ip::address::from_string(remote_addr1), remote_port1);
+    remote_end1_ = remote_end1;
+    proto::endpoint remote_end2(boost::asio::ip::address::from_string(remote_addr2), remote_port2);
+    remote_end2_ = remote_end2;
 
-    if(complete_ && !dead_)
+    if(complete_ && !dead_) {
       reinit();
+    }
 
     in_sync_ = true;
-	}
+  }
 
   bool in_sync_;
-	::Mutex mutex_;
+  ::Mutex mutex_;
 
   const std::string& call_id_;
   bool dead_;
   bool complete_;
   proto::endpoint local_end1_, local_end2_;
   proto::endpoint remote_end1_, remote_end2_;
-	bool seen1_,seen2_; //has at least 1 packet been recieved?
+  bool seen1_,seen2_; //has at least 1 packet been recieved?
 };
 
 

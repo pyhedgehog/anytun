@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -37,14 +37,14 @@
 class SyncClient
 {
 public:
-	SyncClient(std::string hostname,std::string port);
+  SyncClient(std::string hostname,std::string port);
 
-	void run();
+  void run();
 private:
-	void readAndProcess(SyncTcpConnection::proto::socket & socket);
-	void readExactly(SyncTcpConnection::proto::socket & socket,size_t toread, std::iostream &);
-	std::string hostname_;
-	std::string port_;
+  void readAndProcess(SyncTcpConnection::proto::socket& socket);
+  void readExactly(SyncTcpConnection::proto::socket& socket,size_t toread, std::iostream&);
+  std::string hostname_;
+  std::string port_;
 };
 
 

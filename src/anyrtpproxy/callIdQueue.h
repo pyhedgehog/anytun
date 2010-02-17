@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -41,8 +41,8 @@
 class CallIdQueue
 {
 public:
-  static CallIdQueue& instance(); 
-  
+  static CallIdQueue& instance();
+
   std::string& front();
   void push(std::string c);
   void pop();
@@ -51,15 +51,18 @@ private:
   CallIdQueue();
   ~CallIdQueue();
 
-  void operator=(const CallIdQueue &src);
-  CallIdQueue(const CallIdQueue &src);
+  void operator=(const CallIdQueue& src);
+  CallIdQueue(const CallIdQueue& src);
 
   static CallIdQueue* inst;
   static ::Mutex instMutex;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-      if(CallIdQueue::inst != 0)
+  class instanceCleaner
+  {
+  public:
+    ~instanceCleaner() {
+      if(CallIdQueue::inst != 0) {
         delete CallIdQueue::inst;
+      }
     }
   };
   friend class instanceCleaner;

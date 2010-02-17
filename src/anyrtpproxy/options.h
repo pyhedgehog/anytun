@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -37,8 +37,7 @@
 #include <list>
 #include <sstream>
 
-typedef struct OptionConnectTo
-{
+typedef struct OptionConnectTo {
   std::string host;
   std::string port;
 };
@@ -51,16 +50,15 @@ public:
   Host(std::string addr, std::string port) : addr_(addr), port_(port) {}
   Host(std::string addr_port) {
     splitAndSetAddrPort(addr_port);
-  } 
-  std::string toString() const
-  {
+  }
+  std::string toString() const {
     std::ostringstream oss;
     oss << addr_ << ":" << port_;
     return oss.str();
   }
-  
+
   std::string addr_;
-	std::string port_;
+  std::string port_;
 
 protected:
   void splitAndSetAddrPort(std::string addr_port);
@@ -89,28 +87,31 @@ public:
   std::string getLocalAddr();
   Options& setLocalAddr(std::string l);
   std::string getLocalSyncAddr();
-	Options& setLocalSyncAddr(std::string l);
+  Options& setLocalSyncAddr(std::string l);
   std::string getLocalSyncPort();
-	Options& setLocalSyncPort(std::string l);
+  Options& setLocalSyncPort(std::string l);
   u_int16_t getRtpStartPort();
-	Options& setRtpStartPort(u_int16_t l);
+  Options& setRtpStartPort(u_int16_t l);
   u_int16_t getRtpEndPort();
-	Options& setRtpEndPort(u_int16_t l);
+  Options& setRtpEndPort(u_int16_t l);
   ConnectToList getConnectTo();
 
 private:
   Options();
   ~Options();
-  Options(const Options &l);
-  void operator=(const Options &l);
+  Options(const Options& l);
+  void operator=(const Options& l);
   bool sanityCheck();
 
   static Options* inst;
   static ::Mutex instMutex;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-      if(Options::inst != 0)
+  class instanceCleaner
+  {
+  public:
+    ~instanceCleaner() {
+      if(Options::inst != 0) {
         delete Options::inst;
+      }
     }
   };
   friend class instanceCleaner;
@@ -125,12 +126,12 @@ private:
   std::string chroot_dir_;
   std::string pid_file_;
   bool daemonize_;
-	std::string local_sync_addr_;
-	std::string local_sync_port_;
+  std::string local_sync_addr_;
+  std::string local_sync_port_;
   std::string local_addr_;
-	u_int16_t rtp_start_port_;
-	u_int16_t rtp_end_port_;
-	ConnectToList connect_to_;
+  u_int16_t rtp_start_port_;
+  u_int16_t rtp_end_port_;
+  ConnectToList connect_to_;
   Host control_interface_;
 };
 

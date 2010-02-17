@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -45,32 +45,35 @@ typedef std::map<u_int16_t, ConnectionParam> ConnectionMap;
 class ConnectionList
 {
 public:
-	ConnectionList();
-	~ConnectionList();
-	static ConnectionList& instance();
-	void addConnection(ConnectionParam &conn, u_int16_t mux);
-	const ConnectionMap::iterator getConnection(u_int16_t mux);
-	const ConnectionMap::iterator getEnd();
-	ConnectionMap::iterator getEndUnlocked();
-	ConnectionMap::iterator getBeginUnlocked();	
-	const ConnectionMap::iterator getBegin();
-	ConnectionParam & getOrNewConnectionUnlocked(u_int16_t mux);
-	bool empty();
-	void clear();
+  ConnectionList();
+  ~ConnectionList();
+  static ConnectionList& instance();
+  void addConnection(ConnectionParam& conn, u_int16_t mux);
+  const ConnectionMap::iterator getConnection(u_int16_t mux);
+  const ConnectionMap::iterator getEnd();
+  ConnectionMap::iterator getEndUnlocked();
+  ConnectionMap::iterator getBeginUnlocked();
+  const ConnectionMap::iterator getBegin();
+  ConnectionParam& getOrNewConnectionUnlocked(u_int16_t mux);
+  bool empty();
+  void clear();
   Mutex& getMutex();
 
 private:
   static Mutex instMutex;
-	static ConnectionList* inst;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-     if(ConnectionList::inst != 0)
-       delete ConnectionList::inst;
-   }
+  static ConnectionList* inst;
+  class instanceCleaner
+  {
+  public:
+    ~instanceCleaner() {
+      if(ConnectionList::inst != 0) {
+        delete ConnectionList::inst;
+      }
+    }
   };
-	ConnectionList(const ConnectionList &s);
-  void operator=(const ConnectionList &s);
-	ConnectionMap connections_;
+  ConnectionList(const ConnectionList& s);
+  void operator=(const ConnectionList& s);
+  ConnectionMap connections_;
   Mutex mutex_;
 };
 

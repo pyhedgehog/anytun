@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -45,7 +45,8 @@ SysExec::~SysExec()
   }
 }
 
-STARTUPINFOA getStartupInfo() {
+STARTUPINFOA getStartupInfo()
+{
   STARTUPINFOA startup_info;
   startup_info.cb = sizeof(STARTUPINFOA);
   GetStartupInfoA(&startup_info);
@@ -56,21 +57,22 @@ STARTUPINFOA getStartupInfo() {
   //startup_info.hStdError = CreateFile("NUL", GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, 0, 0, 0); // INVALID_HANDLE_VALUE;
   startup_info.dwFlags |= STARTF_USESHOWWINDOW;
   startup_info.wShowWindow = SW_HIDE;
-  
+
   return startup_info;
 }
 
-char const * const BATCH_FILE_EXTS[] = { ".bat", ".cmd" };
+char const* const BATCH_FILE_EXTS[] = { ".bat", ".cmd" };
 int const BATCH_FILE_EXTS_COUNT = sizeof(BATCH_FILE_EXTS) / sizeof(BATCH_FILE_EXTS[0]);
 
-bool endsWith(std::string const& string, std::string const& suffix) {
+bool endsWith(std::string const& string, std::string const& suffix)
+{
   return string.find(suffix, string.size() - suffix.size()) != std::string::npos;
 }
 
 void SysExec::doExec(StringVector args, StringList env)
 {
   std::vector<char> arguments;
-  
+
   bool isBatchFile = false;
   for(int i = 0; i < BATCH_FILE_EXTS_COUNT; ++i) {
     if(endsWith(script_, BATCH_FILE_EXTS[i])) {
@@ -87,7 +89,7 @@ void SysExec::doExec(StringVector args, StringList env)
   arguments.insert(arguments.end(), script_.begin(), script_.end());
   arguments.push_back('\"');
   arguments.push_back(' ');
-  
+
   for(StringVector::const_iterator it = args.begin(); it != args.end(); ++it) {
     arguments.push_back('\"');
     arguments.insert(arguments.end(), it->begin(), it->end());
@@ -99,7 +101,7 @@ void SysExec::doExec(StringVector args, StringList env)
     arguments.push_back('\"');
   }
   arguments.push_back(0);
-  
+
   STARTUPINFOA startup_info = getStartupInfo();
 
   std::map<std::string, std::string> envDict;
@@ -115,17 +117,16 @@ void SysExec::doExec(StringVector args, StringList env)
   env.push_back(0);
 
   if(!CreateProcessA(NULL,
-                   &arguments[0],
-                   NULL,
-                   NULL,
-                   false,
-                   NULL,
-                   &env[0],
-                   NULL,
-                   &startup_info,
-                   &process_info_
-                   ))
-  {
+                     &arguments[0],
+                     NULL,
+                     NULL,
+                     false,
+                     NULL,
+                     &env[0],
+                     NULL,
+                     &startup_info,
+                     &process_info_
+                    )) {
     cLog.msg(Log::PRIO_ERROR) << "executing script '" << script_ << "' CreateProcess() error: " << GetLastError();
     return;
   }
@@ -147,8 +148,9 @@ int SysExec::waitForScript()
 
 void SysExec::waitAndDestroy(SysExec*& s)
 {
-  if(!s)
+  if(!s) {
     return;
+  }
 
   s->waitForScript();
   cLog.msg(Log::PRIO_NOTICE) << "script '" << s->script_ << "' returned " << s->return_code_;

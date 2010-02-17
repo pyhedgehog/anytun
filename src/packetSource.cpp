@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -55,11 +55,11 @@ UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port)
 UDPPacketSource::~UDPPacketSource()
 {
   std::list<SocketsElement>::iterator it = sockets_.begin();
-  for(;it != sockets_.end(); ++it) {
-/// this might be a needed by the receiver thread, TODO cleanup
-//    delete[](it->buf_);
-//    delete(it->sem_);
-//    delete(it->sock_);
+  for(; it != sockets_.end(); ++it) {
+    /// this might be a needed by the receiver thread, TODO cleanup
+    //    delete[](it->buf_);
+    //    delete(it->sem_);
+    //    delete(it->sock_);
   }
 }
 
@@ -74,13 +74,15 @@ void UDPPacketSource::onResolve(PacketSourceResolverIt& it)
     sock.len_ = 0;
     sock.sem_ = NULL;
     sock.sock_ = new proto::socket(io_service_);
-    if(!sock.sock_)
+    if(!sock.sock_) {
       AnytunError::throwErr() << "memory error";
+    }
 
     sock.sock_->open(e.protocol());
 #ifndef _MSC_VER
-    if(e.protocol() == proto::v6())
+    if(e.protocol() == proto::v6()) {
       sock.sock_->set_option(boost::asio::ip::v6_only(true));
+    }
 #endif
     sock.sock_->bind(e);
     sockets_.push_back(sock);
@@ -88,15 +90,16 @@ void UDPPacketSource::onResolve(PacketSourceResolverIt& it)
     it++;
   }
 
-      // prepare multi-socket recv
+  // prepare multi-socket recv
   if(sockets_.size() > 1) {
     std::list<SocketsElement>::iterator it = sockets_.begin();
-    for(;it != sockets_.end(); ++it) {
+    for(; it != sockets_.end(); ++it) {
       it->len_ = MAX_PACKET_LENGTH;
       it->buf_ = new u_int8_t[it->len_];
-      if(!it->buf_)
+      if(!it->buf_) {
         AnytunError::throwErr() << "memory error";
-      
+      }
+
       it->sem_ = new Semaphore();
       if(!it->sem_) {
         delete[](it->buf_);
@@ -136,8 +139,9 @@ void UDPPacketSource::recv_thread(std::list<SocketsElement>::iterator it)
 
 u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote)
 {
-  if(sockets_.size() == 1)
+  if(sockets_.size() == 1) {
     return static_cast<u_int32_t>(sockets_.front().sock_->receive_from(boost::asio::buffer(buf, len), remote));
+  }
 
   thread_result_sem_.down();
   ThreadResult result;
@@ -157,7 +161,7 @@ u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoi
 void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote)
 {
   std::list<SocketsElement>::iterator it = sockets_.begin();
-  for(;it != sockets_.end(); ++it) {
+  for(; it != sockets_.end(); ++it) {
     if(it->sock_->local_endpoint().protocol() == remote.protocol()) {
       it->sock_->send_to(boost::asio::buffer(buf, len), remote);
       return;

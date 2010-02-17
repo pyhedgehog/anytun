@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -71,9 +71,7 @@ void ResolveHandler<Proto>::operator()(const boost::system::error_code& e, boost
   if(boost::system::posix_error::success == e) {
     try {
       onResolve_(endpointIt);
-    }
-    catch(const std::runtime_error& e)
-    {
+    } catch(const std::runtime_error& e) {
       onError_(e);
     }
   } else {
@@ -90,9 +88,10 @@ Resolver& Resolver::instance()
 {
   Lock lock(instMutex);
   static instanceCleaner c;
-  if(!inst)
+  if(!inst) {
     inst = new Resolver();
-  
+  }
+
   return *inst;
 }
 
@@ -102,14 +101,16 @@ Resolver::Resolver() : udp_resolver_(io_service_), tcp_resolver_(io_service_), t
 
 Resolver::~Resolver()
 {
-  if(thread_)
+  if(thread_) {
     delete thread_;
+  }
 }
 
 void Resolver::init()
 {
-  if(!thread_)
-	  thread_ = new boost::thread(boost::bind(&Resolver::run, this));
+  if(!thread_) {
+    thread_ = new boost::thread(boost::bind(&Resolver::run, this));
+  }
 }
 
 void Resolver::run()
@@ -121,13 +122,9 @@ void Resolver::run()
       io_service_.run();
       io_service_.reset();
       boost::this_thread::sleep(boost::posix_time::milliseconds(250));
-    }
-    catch(const std::runtime_error& e)
-    {
+    } catch(const std::runtime_error& e) {
       cLog.msg(Log::PRIO_ERROR) << "resolver caught runtime error, restarting: " << e.what();
-    }
-    catch(const std::exception& e)
-    {
+    } catch(const std::exception& e) {
       cLog.msg(Log::PRIO_ERROR) << "resolver caught exception, restarting: " << e.what();
     }
   }
@@ -141,16 +138,27 @@ void Resolver::resolveUdp(const std::string& addr, const std::string& port, UdpR
   std::auto_ptr<udp::resolver::query> query;
   if(addr != "") {
     switch(r) {
-    case IPV4_ONLY: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), addr, port)); break;
-    case IPV6_ONLY: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), addr, port)); break;
-    default: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(addr, port)); break;
+    case IPV4_ONLY:
+      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), addr, port));
+      break;
+    case IPV6_ONLY:
+      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), addr, port));
+      break;
+    default:
+      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(addr, port));
+      break;
     }
-  }
-  else {
+  } else {
     switch(r) {
-    case IPV4_ONLY: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), port)); break;
-    case IPV6_ONLY: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), port)); break;
-    default: query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(port)); break;
+    case IPV4_ONLY:
+      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), port));
+      break;
+    case IPV6_ONLY:
+      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), port));
+      break;
+    default:
+      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(port));
+      break;
     }
   }
   UdpResolveHandler handler(addr, port, onResolve, onError, r);
@@ -164,18 +172,29 @@ void Resolver::resolveTcp(const std::string& addr, const std::string& port, TcpR
   std::auto_ptr<tcp::resolver::query> query;
   if(addr != "") {
     switch(r) {
-    case IPV4_ONLY: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), addr, port)); break;
-    case IPV6_ONLY: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), addr, port)); break;
-    default: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(addr, port)); break;
+    case IPV4_ONLY:
+      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), addr, port));
+      break;
+    case IPV6_ONLY:
+      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), addr, port));
+      break;
+    default:
+      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(addr, port));
+      break;
     }
-  }
-  else {
+  } else {
     switch(r) {
-    case IPV4_ONLY: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), port)); break;
-    case IPV6_ONLY: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), port)); break;
-    default: query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(port)); break;
+    case IPV4_ONLY:
+      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), port));
+      break;
+    case IPV6_ONLY:
+      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), port));
+      break;
+    default:
+      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(port));
+      break;
     }
   }
   TcpResolveHandler handler(addr, port, onResolve, onError, r);
-  tcp_resolver_.async_resolve(*query, handler); 
+  tcp_resolver_.async_resolve(*query, handler);
 }

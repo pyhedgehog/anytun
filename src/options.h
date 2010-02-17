@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -56,7 +56,7 @@ public:
   void init(std::string addrPort);
 
   std::string addr;
-	std::string port;
+  std::string port;
 };
 typedef std::list<OptionHost> HostList;
 std::istream& operator>>(std::istream& stream, OptionHost& host);
@@ -131,7 +131,7 @@ public:
   Options& setLocalSyncAddr(std::string l);
   std::string getLocalSyncPort();
   Options& setLocalSyncPort(std::string l);
-	HostList getRemoteSyncHosts();
+  HostList getRemoteSyncHosts();
 
   std::string getDevName();
   Options& setDevName(std::string d);
@@ -171,15 +171,18 @@ public:
 private:
   Options();
   ~Options();
-  Options(const Options &l);
-  void operator=(const Options &l);
+  Options(const Options& l);
+  void operator=(const Options& l);
 
   static Options* inst;
   static ::Mutex instMutex;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-      if(Options::inst != 0)
+  class instanceCleaner
+  {
+  public:
+    ~instanceCleaner() {
+      if(Options::inst != 0) {
         delete Options::inst;
+      }
     }
   };
   friend class instanceCleaner;
@@ -208,7 +211,7 @@ private:
   OptionHost remote_;
 
   OptionHost local_sync_;
-	HostList remote_sync_hosts_;
+  HostList remote_sync_hosts_;
 
   std::string dev_name_;
   std::string dev_type_;

@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -50,20 +50,19 @@ class Semaphore
 {
 public:
   Semaphore(unsigned int initVal=0)
-    :count_(initVal){};
-  void up()
-  {
-     boost::mutex::scoped_lock lock(mutex_);
-     count_++;
-     lock.unlock();
-     cond_.notify_one();
+    :count_(initVal) {};
+  void up() {
+    boost::mutex::scoped_lock lock(mutex_);
+    count_++;
+    lock.unlock();
+    cond_.notify_one();
   }
-  void down()
-  {
-     boost::mutex::scoped_lock lock(mutex_);
-     while (count_ <= 0)
-       cond_.wait(lock);
-     count_--;
+  void down() {
+    boost::mutex::scoped_lock lock(mutex_);
+    while(count_ <= 0) {
+      cond_.wait(lock);
+    }
+    count_--;
   }
 private:
   boost::mutex mutex_;

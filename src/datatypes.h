@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -63,7 +63,7 @@ typedef int system_error_t;
 #include <windows.h>
 #define ATTR_PACKED
 typedef DWORD system_error_t;
-#endif	  
+#endif
 
 #define MAX_PACKET_LENGTH 1600
 

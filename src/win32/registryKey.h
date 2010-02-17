@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -37,9 +37,9 @@
 
 class RegistryKey
 {
-public: 
-  #define NAME_LENGTH 256
-  #define STRING_VALUE_LENGTH 256
+public:
+#define NAME_LENGTH 256
+#define STRING_VALUE_LENGTH 256
 
   RegistryKey();
   RegistryKey(HKEY hkey, std::string subKey, REGSAM samDesired);

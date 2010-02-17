@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -41,41 +41,45 @@ class TunDevice;
 
 enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
 
-class DeviceConfig 
+class DeviceConfig
 {
 public:
-  DeviceConfig(std::string dev_name ,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix, u_int16_t mtu)
-  {
+  DeviceConfig(std::string dev_name ,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix, u_int16_t mtu) {
     mtu_ = mtu;
     type_ = TYPE_UNDEF;
 #ifndef _MSC_VER
     if(dev_type != "") {
-      if(!dev_type.compare(0,3,"tun"))
+      if(!dev_type.compare(0,3,"tun")) {
         type_ = TYPE_TUN;
-      else if (!dev_type.compare(0,3,"tap"))
+      } else if(!dev_type.compare(0,3,"tap")) {
         type_ = TYPE_TAP;
-    }
-    else if(dev_name != "") {
-      if(!dev_name.compare(0,3,"tun"))
+      }
+    } else if(dev_name != "") {
+      if(!dev_name.compare(0,3,"tun")) {
         type_ = TYPE_TUN;
-      else if(!dev_name.compare(0,3,"tap"))
+      } else if(!dev_name.compare(0,3,"tap")) {
         type_ = TYPE_TAP;
+      }
     }
 #else
-    if(dev_type == "")
+    if(dev_type == "") {
       AnytunError::throwErr() << "Device type must be specified on Windows";
-    
-    if(dev_type == "tun")
-      type_ = TYPE_TUN;
-    else if(dev_type == "tap")
-      type_ = TYPE_TAP;
+    }
 
-    if(type_ == TYPE_TUN && ifcfg_addr == "")
+    if(dev_type == "tun") {
+      type_ = TYPE_TUN;
+    } else if(dev_type == "tap") {
+      type_ = TYPE_TAP;
+    }
+
+    if(type_ == TYPE_TUN && ifcfg_addr == "") {
       AnytunError::throwErr() << "Device type tun requires ifconfig parameter (--ifconfig)";
+    }
 #endif
 
-    if(ifcfg_addr != "")
+    if(ifcfg_addr != "") {
       addr_.setNetworkAddress(ipv4, ifcfg_addr.c_str());
+    }
     prefix_ = ifcfg_prefix;
     u_int32_t mask = 0;
     for(u_int16_t i = 0; i < prefix_; ++i) {

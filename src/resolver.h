@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -62,7 +62,7 @@ private:
 typedef ResolveHandler<boost::asio::ip::udp> UdpResolveHandler;
 typedef ResolveHandler<boost::asio::ip::tcp> TcpResolveHandler;
 
-class Resolver 
+class Resolver
 {
 public:
   static Resolver& instance();
@@ -76,15 +76,18 @@ public:
 private:
   Resolver();
   ~Resolver();
-  Resolver(const Resolver &r);
-  void operator=(const Resolver &r);
+  Resolver(const Resolver& r);
+  void operator=(const Resolver& r);
 
   static Resolver* inst;
   static ::Mutex instMutex;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-      if(Resolver::inst != 0)
+  class instanceCleaner
+  {
+  public:
+    ~instanceCleaner() {
+      if(Resolver::inst != 0) {
         delete Resolver::inst;
+      }
     }
   };
   friend class instanceCleaner;

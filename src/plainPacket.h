@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -47,14 +47,14 @@ class Cipher;
 #define PAYLOAD_TYPE_TAP 0x6558
 #define PAYLOAD_TYPE_TUN 0x0000
 #define PAYLOAD_TYPE_TUN4 0x0800
-#define PAYLOAD_TYPE_TUN6 0x86DD 
+#define PAYLOAD_TYPE_TUN6 0x86DD
 
 class PlainPacket : public Buffer
 {
 public:
   /**
    * Packet constructor
-   * @param the length of the payload 
+   * @param the length of the payload
    * @param allow reallocation of buffer
    */
   PlainPacket(u_int32_t payload_length, bool allow_realloc = false);
@@ -72,7 +72,7 @@ public:
 
   /**
    * Get the payload type
-   * @return the id of the payload type 
+   * @return the id of the payload type
    */
   payload_type_t getPayloadType() const;
 
@@ -100,12 +100,12 @@ public:
    */
   u_int8_t* getPayload();
 
-//  NetworkAddress getSrcAddr() const;
+  //  NetworkAddress getSrcAddr() const;
   NetworkAddress getDstAddr() const;
 
 private:
   PlainPacket();
-  PlainPacket(const PlainPacket &src);
+  PlainPacket(const PlainPacket& src);
 
   void reinit();
 

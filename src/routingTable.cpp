@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -46,8 +46,9 @@ RoutingTable& RoutingTable::instance()
 {
   Lock lock(instMutex);
   static instanceCleaner c;
-  if(!inst)
+  if(!inst) {
     inst = new RoutingTable();
+  }
 
   return *inst;
 }
@@ -58,102 +59,104 @@ RoutingTable::RoutingTable()
 
 RoutingTable::~RoutingTable()
 {
-} 
+}
 
-void RoutingTable::updateRouteTreeUnlocked(const NetworkPrefix & pref)
+void RoutingTable::updateRouteTreeUnlocked(const NetworkPrefix& pref)
 {
   //Lock lock(mutex_); //deadlock
 
-	u_int8_t length=pref.getNetworkPrefixLength();
-	network_address_type_t type=pref.getNetworkAddressType();
-	u_int16_t mux = routes_[pref.getNetworkAddressType()].find(pref)->second;
-	RoutingTreeNode * node = &(root_[type]);
-	if (type==ipv4)
-	{
-		ipv4_bytes_type bytes(pref.to_bytes_v4());
-		if (length>32)
-			length=32;
-		RoutingTree::walk(bytes, node, length, mux);
-	} else if  (type==ipv6) {
-		ipv6_bytes_type bytes(pref.to_bytes_v6());
-		if (length>128)
-			length=128;
-		RoutingTree::walk(bytes, node, length, mux);
-	} else if (type==ethernet) {
-		ethernet_bytes_type bytes(pref.to_bytes_ethernet());
-		if (length>48)
-			length=48;
-		RoutingTree::walk(bytes, node, length, mux);
-	} else {
-		AnytunError::throwErr() << "illegal protocol type";	
-	}
-	//root_[type].print(0);
+  u_int8_t length=pref.getNetworkPrefixLength();
+  network_address_type_t type=pref.getNetworkAddressType();
+  u_int16_t mux = routes_[pref.getNetworkAddressType()].find(pref)->second;
+  RoutingTreeNode* node = &(root_[type]);
+  if(type==ipv4) {
+    ipv4_bytes_type bytes(pref.to_bytes_v4());
+    if(length>32) {
+      length=32;
+    }
+    RoutingTree::walk(bytes, node, length, mux);
+  } else if(type==ipv6) {
+    ipv6_bytes_type bytes(pref.to_bytes_v6());
+    if(length>128) {
+      length=128;
+    }
+    RoutingTree::walk(bytes, node, length, mux);
+  } else if(type==ethernet) {
+    ethernet_bytes_type bytes(pref.to_bytes_ethernet());
+    if(length>48) {
+      length=48;
+    }
+    RoutingTree::walk(bytes, node, length, mux);
+  } else {
+    AnytunError::throwErr() << "illegal protocol type";
+  }
+  //root_[type].print(0);
 }
 
-void RoutingTable::addRoute(const NetworkPrefix & pref, u_int16_t mux)
+void RoutingTable::addRoute(const NetworkPrefix& pref, u_int16_t mux)
 {
   Lock lock(mutex_);
-	
-	network_address_type_t type=pref.getNetworkAddressType();	
 
-	if (type==ipv4 || type==ipv6)
-	{
+  network_address_type_t type=pref.getNetworkAddressType();
+
+  if(type==ipv4 || type==ipv6) {
     std::pair<RoutingMap::iterator, bool> ret = routes_[type].insert(RoutingMap::value_type(pref,mux));
-    if(!ret.second)
-    {
+    if(!ret.second) {
       routes_[pref.getNetworkAddressType()].erase(ret.first);
       routes_[pref.getNetworkAddressType()].insert(RoutingMap::value_type(pref,mux));
     }
-		root_[pref.getNetworkAddressType()]=RoutingTreeNode();
-		RoutingMap::iterator it = routes_[type].begin();
-	  for (;it!=routes_[pref.getNetworkAddressType()].end();++it)
-			updateRouteTreeUnlocked(it->first);
-	} else if (type==ethernet) {
+    root_[pref.getNetworkAddressType()]=RoutingTreeNode();
+    RoutingMap::iterator it = routes_[type].begin();
+    for(; it!=routes_[pref.getNetworkAddressType()].end(); ++it) {
+      updateRouteTreeUnlocked(it->first);
+    }
+  } else if(type==ethernet) {
     return; // TODO: add support for ethernet
-	} else {
-		AnytunError::throwErr() << "illegal protocol type";	
-	}
+  } else {
+    AnytunError::throwErr() << "illegal protocol type";
+  }
 }
 
 
-void RoutingTable::delRoute(const NetworkPrefix & pref )
+void RoutingTable::delRoute(const NetworkPrefix& pref)
 {
   Lock lock(mutex_);
-	
-  routes_[pref.getNetworkAddressType()].erase(routes_[pref.getNetworkAddressType()].find(pref));	
+
+  routes_[pref.getNetworkAddressType()].erase(routes_[pref.getNetworkAddressType()].find(pref));
 }
 
-u_int16_t RoutingTable::getRoute(const NetworkAddress & addr)
+u_int16_t RoutingTable::getRoute(const NetworkAddress& addr)
 {
-	Lock lock(mutex_);
-	network_address_type_t type=addr.getNetworkAddressType();
-	
-	if (routes_[type].empty())
-  	AnytunError::throwErr() << "no route";
+  Lock lock(mutex_);
+  network_address_type_t type=addr.getNetworkAddressType();
 
-	if (type==ipv4)
-	{
-		ipv4_bytes_type bytes(addr.to_bytes_v4());
-		return RoutingTree::find(bytes, root_[type]);
-	} else if  (type==ipv6) {
-		ipv6_bytes_type bytes(addr.to_bytes_v6());
-		return RoutingTree::find(bytes, root_[type]);
-	} else if (type==ethernet) {
-		//TODO Our model wont fit to ethernet addresses well.
-		// maybe use hashmap or something like that instead
-		ethernet_bytes_type bytes(addr.to_bytes_ethernet());
-		return RoutingTree::find(bytes, root_[type]);
-	} else {
-		AnytunError::throwErr() << "illegal protocol type";	
-	}
+  if(routes_[type].empty()) {
+    AnytunError::throwErr() << "no route";
+  }
+
+  if(type==ipv4) {
+    ipv4_bytes_type bytes(addr.to_bytes_v4());
+    return RoutingTree::find(bytes, root_[type]);
+  } else if(type==ipv6) {
+    ipv6_bytes_type bytes(addr.to_bytes_v6());
+    return RoutingTree::find(bytes, root_[type]);
+  } else if(type==ethernet) {
+    //TODO Our model wont fit to ethernet addresses well.
+    // maybe use hashmap or something like that instead
+    ethernet_bytes_type bytes(addr.to_bytes_ethernet());
+    return RoutingTree::find(bytes, root_[type]);
+  } else {
+    AnytunError::throwErr() << "illegal protocol type";
+  }
   return 0;
 }
 
-u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix & addr)
+u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix& addr)
 {
   RoutingMap::iterator it = routes_[addr.getNetworkAddressType()].find(addr);
-  if(it!=routes_[addr.getNetworkAddressType()].end())
+  if(it!=routes_[addr.getNetworkAddressType()].end()) {
     return &(it->second);
+  }
 
   routes_[addr.getNetworkAddressType()].insert(RoutingMap::value_type(addr, 1));
   it = routes_[addr.getNetworkAddressType()].find(addr);
@@ -162,33 +165,34 @@ u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix & addr)
 
 u_int16_t RoutingTable::getCountUnlocked(network_address_type_t type)
 {
-	RoutingMap::iterator it = routes_[type].begin();
-	u_int16_t routes=0;
-	for (;it!=routes_[type].end();++it)
-		routes++;
-	return routes;
+  RoutingMap::iterator it = routes_[type].begin();
+  u_int16_t routes=0;
+  for(; it!=routes_[type].end(); ++it) {
+    routes++;
+  }
+  return routes;
 }
 
 RoutingMap::iterator RoutingTable::getBeginUnlocked(network_address_type_t type)
 {
-	return routes_[type].begin();
+  return routes_[type].begin();
 }
 
 RoutingMap::iterator RoutingTable::getEndUnlocked(network_address_type_t type)
 {
-	return routes_[type].end();
+  return routes_[type].end();
 }
 
 void RoutingTable::clear(network_address_type_t type)
 {
   Lock lock(mutex_);
-	routes_[type].clear();
+  routes_[type].clear();
 }
 
 bool RoutingTable::empty(network_address_type_t type)
 {
   Lock lock(mutex_);
-	return routes_[type].empty();
+  return routes_[type].empty();
 }
 
 Mutex& RoutingTable::getMutex()

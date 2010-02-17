@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -51,26 +51,22 @@
 
 std::list<std::string> config_;
 
-void syncOnConnect(SyncTcpConnection * connptr)
+void syncOnConnect(SyncTcpConnection* connptr)
 {
-	for(std::list<std::string>::const_iterator it=config_.begin(); it!=config_.end();++it)
-	{
+  for(std::list<std::string>::const_iterator it=config_.begin(); it!=config_.end(); ++it) {
     connptr->Send(*it);
   }
 }
 
 void syncListener()
 {
- boost::asio::io_service io_service;
-  try
-  {
+  boost::asio::io_service io_service;
+  try {
     SyncServer server(gOpt.getBindToAddr(), gOpt.getBindToPort(), boost::bind(syncOnConnect, _1));
     server.run();
-  }
-  catch(std::runtime_error& e) {
+  } catch(std::runtime_error& e) {
     cLog.msg(Log::PRIO_ERROR) << "sync listener thread died due to an uncaught runtime_error: " << e.what();
-  }
-  catch(std::exception& e) {
+  } catch(std::exception& e) {
     cLog.msg(Log::PRIO_ERROR) << "sync listener thread died due to an uncaught exception: " << e.what();
   }
 }
@@ -78,73 +74,70 @@ void syncListener()
 int main(int argc, char* argv[])
 {
   DaemonService service;
-  try 
-  {
-    try 
-    {
-      if(!gOpt.parse(argc, argv))
+  try {
+    try {
+      if(!gOpt.parse(argc, argv)) {
         exit(0);
+      }
 
       StringList targets = gOpt.getLogTargets();
-      for(StringList::const_iterator it = targets.begin();it != targets.end(); ++it)
+      for(StringList::const_iterator it = targets.begin(); it != targets.end(); ++it) {
         cLog.addTarget(*it);
-    }
-    catch(syntax_error& e)
-    {
+      }
+    } catch(syntax_error& e) {
       std::cerr << e << std::endl;
       gOpt.printUsage();
       exit(-1);
     }
-       
-    cLog.msg(Log::PRIO_NOTICE) << "anytun-controld started..."; 
+
+    cLog.msg(Log::PRIO_NOTICE) << "anytun-controld started...";
     gOpt.parse_post(); // print warnings
 
 
-    std::ifstream file( gOpt.getFileName().c_str() );
-    if( file.is_open() )
-    {
-    	std::string line;
-    	while (!file.eof()) {
-      	getline (file,line);
+    std::ifstream file(gOpt.getFileName().c_str());
+    if(file.is_open()) {
+      std::string line;
+      while(!file.eof()) {
+        getline(file,line);
         config_.push_back(line);
-			}
+      }
       file.close();
     } else {
       std::cout << "ERROR: unable to open file!" << std::endl;
       exit(-1);
     }
-    
-    service.initPrivs(gOpt.getUsername(), gOpt.getGroupname());
-    if(gOpt.getDaemonize())
-      service.daemonize();
 
-    if(gOpt.getChrootDir() != "")
+    service.initPrivs(gOpt.getUsername(), gOpt.getGroupname());
+    if(gOpt.getDaemonize()) {
+      service.daemonize();
+    }
+
+    if(gOpt.getChrootDir() != "") {
       service.chroot(gOpt.getChrootDir());
+    }
     service.dropPrivs();
 
     gSignalController.init(service);
     gResolver.init();
 
-    boost::thread * syncListenerThread;
+    boost::thread* syncListenerThread;
     syncListenerThread = new boost::thread(boost::bind(syncListener));
-    
+
     int ret = gSignalController.run();
-    
+
     return ret;
-  }
-  catch(std::runtime_error& e)
-  {
-    if(service.isDaemonized())
+  } catch(std::runtime_error& e) {
+    if(service.isDaemonized()) {
       cLog.msg(Log::PRIO_ERROR) << "uncaught runtime error, exiting: " << e.what();
-    else
+    } else {
       std::cout << "uncaught runtime error, exiting: " << e.what() << std::endl;
-  }
-  catch(std::exception& e)
-  {
-    if(service.isDaemonized())
+    }
+  } catch(std::exception& e) {
+    if(service.isDaemonized()) {
       cLog.msg(Log::PRIO_ERROR) << "uncaught exception, exiting: " << e.what();
-    else
+    } else {
       std::cout << "uncaught exception, exiting: " << e.what() << std::endl;
+    }
   }
 }
 

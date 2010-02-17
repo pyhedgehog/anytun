@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -34,22 +34,22 @@
 
 void DaemonService::initPrivs(std::string const& username, std::string const& groupname)
 {
-// nothing here
+  // nothing here
 }
 
 void DaemonService::dropPrivs()
 {
-// nothing here
+  // nothing here
 }
 
 void DaemonService::chroot(std::string const& chrootdir)
 {
-// nothing here
+  // nothing here
 }
 
 void DaemonService::daemonize()
 {
-// nothing here
+  // nothing here
 }
 
 bool DaemonService::isDaemonized()

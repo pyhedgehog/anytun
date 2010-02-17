@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -42,7 +42,8 @@
 
 class SeqWindow;
 
-class SeqWindowElement {
+class SeqWindowElement
+{
 public:
   SeqWindowElement();
   ~SeqWindowElement();
@@ -71,21 +72,20 @@ private:
   Mutex mutex_;
   SenderMap sender_;
 
-  SeqWindow(const SeqWindow &s);
-  void operator=(const SeqWindow &s);
+  SeqWindow(const SeqWindow& s);
+  void operator=(const SeqWindow& s);
 
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
-		Lock lock(mutex_);
-		//unsigned int serial = (unsigned int) window_size_;
-		//window_size_t serial = (window_size_t) window_size_;
-  	ar & window_size_;
-  	//TODO: Do not sync complete Sender Map!
-  	// ar & sender_;
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int version) {
+    Lock lock(mutex_);
+    //unsigned int serial = (unsigned int) window_size_;
+    //window_size_t serial = (window_size_t) window_size_;
+    ar& window_size_;
+    //TODO: Do not sync complete Sender Map!
+    // ar & sender_;
   }
- 
+
 
 };
 

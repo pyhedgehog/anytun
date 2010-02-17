@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -126,34 +126,31 @@ satp_prf_label_t KeyDerivation::convertLabel(kd_dir_t dir, satp_prf_label_t labe
   switch(label) {
   case LABEL_ENC: {
     if(dir == KD_OUTBOUND) {
-      if(role_ == ROLE_LEFT) return LABEL_LEFT_ENC;
-      if(role_ == ROLE_RIGHT) return LABEL_RIGHT_ENC;
-    }
-    else {
-      if(role_ == ROLE_LEFT) return LABEL_RIGHT_ENC;
-      if(role_ == ROLE_RIGHT) return LABEL_LEFT_ENC;
+      if(role_ == ROLE_LEFT) { return LABEL_LEFT_ENC; }
+      if(role_ == ROLE_RIGHT) { return LABEL_RIGHT_ENC; }
+    } else {
+      if(role_ == ROLE_LEFT) { return LABEL_RIGHT_ENC; }
+      if(role_ == ROLE_RIGHT) { return LABEL_LEFT_ENC; }
     }
     break;
   }
   case LABEL_SALT: {
     if(dir == KD_OUTBOUND) {
-      if(role_ == ROLE_LEFT) return LABEL_LEFT_SALT;
-      if(role_ == ROLE_RIGHT) return LABEL_RIGHT_SALT;
-    }
-    else {
-      if(role_ == ROLE_LEFT) return LABEL_RIGHT_SALT;
-      if(role_ == ROLE_RIGHT) return LABEL_LEFT_SALT;
+      if(role_ == ROLE_LEFT) { return LABEL_LEFT_SALT; }
+      if(role_ == ROLE_RIGHT) { return LABEL_RIGHT_SALT; }
+    } else {
+      if(role_ == ROLE_LEFT) { return LABEL_RIGHT_SALT; }
+      if(role_ == ROLE_RIGHT) { return LABEL_LEFT_SALT; }
     }
     break;
   }
   case LABEL_AUTH: {
     if(dir == KD_OUTBOUND) {
-      if(role_ == ROLE_LEFT) return LABEL_LEFT_AUTH;
-      if(role_ == ROLE_RIGHT) return LABEL_RIGHT_AUTH;
-    }
-    else {
-      if(role_ == ROLE_LEFT) return LABEL_RIGHT_AUTH;
-      if(role_ == ROLE_RIGHT) return LABEL_LEFT_AUTH;
+      if(role_ == ROLE_LEFT) { return LABEL_LEFT_AUTH; }
+      if(role_ == ROLE_RIGHT) { return LABEL_RIGHT_AUTH; }
+    } else {
+      if(role_ == ROLE_LEFT) { return LABEL_RIGHT_AUTH; }
+      if(role_ == ROLE_RIGHT) { return LABEL_LEFT_AUTH; }
     }
     break;
   }
@@ -173,19 +170,21 @@ bool NullKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t 
 #ifndef NO_CRYPT
 //****** AesIcmKeyDerivation ******
 
-AesIcmKeyDerivation::AesIcmKeyDerivation() : KeyDerivation(DEFAULT_KEY_LENGTH) 
+AesIcmKeyDerivation::AesIcmKeyDerivation() : KeyDerivation(DEFAULT_KEY_LENGTH)
 {
 #ifndef USE_SSL_CRYPTO
-  for(int i=0; i<2; i++)
+  for(int i=0; i<2; i++) {
     handle_[i] = NULL;
+  }
 #endif
 }
 
-AesIcmKeyDerivation::AesIcmKeyDerivation(u_int16_t key_length) : KeyDerivation(key_length) 
+AesIcmKeyDerivation::AesIcmKeyDerivation(u_int16_t key_length) : KeyDerivation(key_length)
 {
 #ifndef USE_SSL_CRYPTO
-  for(int i=0; i<2; i++)
+  for(int i=0; i<2; i++) {
     handle_[i] = NULL;
+  }
 #endif
 }
 
@@ -194,8 +193,9 @@ AesIcmKeyDerivation::~AesIcmKeyDerivation()
   WritersLock lock(mutex_);
 #ifndef USE_SSL_CRYPTO
   for(int i=0; i<2; i++)
-    if(handle_[i])
+    if(handle_[i]) {
       gcry_cipher_close(handle_[i]);
+    }
 #endif
 }
 
@@ -205,15 +205,17 @@ void AesIcmKeyDerivation::init(Buffer key, Buffer salt, std::string passphrase)
 
   is_initialized_ = false;
 #ifndef NO_PASSPHRASE
-  if(passphrase != "" && !key.getLength())
+  if(passphrase != "" && !key.getLength()) {
     calcMasterKey(passphrase, key_length_/8);
-  else
+  } else {
     master_key_ = SyncBuffer(key);
-  
-  if(passphrase != "" && !salt.getLength())
+  }
+
+  if(passphrase != "" && !salt.getLength()) {
     calcMasterSalt(passphrase, SALT_LENGTH);
-  else
+  } else {
     master_salt_ = SyncBuffer(salt);
+  }
 #else
   master_key_ = SyncBuffer(key);
   master_salt_ = SyncBuffer(salt);
@@ -237,9 +239,15 @@ void AesIcmKeyDerivation::updateMasterKey()
 #ifndef USE_SSL_CRYPTO
   int algo;
   switch(key_length_) {
-  case 128: algo = GCRY_CIPHER_AES128; break;
-  case 192: algo = GCRY_CIPHER_AES192; break;
-  case 256: algo = GCRY_CIPHER_AES256; break;
+  case 128:
+    algo = GCRY_CIPHER_AES128;
+    break;
+  case 192:
+    algo = GCRY_CIPHER_AES192;
+    break;
+  case 256:
+    algo = GCRY_CIPHER_AES256;
+    break;
   default: {
     cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: cipher key length of " << key_length_ << " Bits is not supported";
     return;
@@ -247,15 +255,16 @@ void AesIcmKeyDerivation::updateMasterKey()
   }
 
   for(int i=0; i<2; i++) {
-    if(handle_[i])
+    if(handle_[i]) {
       gcry_cipher_close(handle_[i]);
-    
+    }
+
     gcry_error_t err = gcry_cipher_open(&handle_[i], algo, GCRY_CIPHER_MODE_CTR, 0);
     if(err) {
       cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: Failed to open cipher: " << AnytunGpgError(err);
       return;
-    } 
-    
+    }
+
     err = gcry_cipher_setkey(handle_[i], master_key_.getBuf(), master_key_.getLength());
     if(err) {
       cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << AnytunGpgError(err);
@@ -274,7 +283,7 @@ void AesIcmKeyDerivation::updateMasterKey()
   is_initialized_ = true;
 }
 
-std::string AesIcmKeyDerivation::printType() 
+std::string AesIcmKeyDerivation::printType()
 {
   ReadersLock lock(mutex_);
 
@@ -297,17 +306,18 @@ bool AesIcmKeyDerivation::calcCtr(kd_dir_t dir, satp_prf_label_t label, seq_nr_t
   return true;
 }
 
-bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key) 
+bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key)
 {
   ReadersLock lock(mutex_);
 
-  if(!is_initialized_)
+  if(!is_initialized_) {
     return false;
+  }
 
   if(!calcCtr(dir, label, seq_nr)) {
     return false;
   }
- 
+
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {
@@ -335,7 +345,7 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
   std::memset(key.getBuf(), 0, key.getLength());
   AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);
 #endif
-  
+
   return true;
 }
 #endif

@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -45,36 +45,35 @@
 class SyncCommand
 {
 public:
-	SyncCommand(ConnectionList & cl );
-	SyncCommand(ConnectionList & cl ,u_int16_t mux);
-	SyncCommand(NetworkPrefix);
-	~SyncCommand();
+  SyncCommand(ConnectionList& cl);
+  SyncCommand(ConnectionList& cl ,u_int16_t mux);
+  SyncCommand(NetworkPrefix);
+  ~SyncCommand();
 
 private:
-	SyncCommand(const SyncCommand &);
-	SyncConnectionCommand * scc_;
-	SyncRouteCommand * src_;
+  SyncCommand(const SyncCommand&);
+  SyncConnectionCommand* scc_;
+  SyncRouteCommand* src_;
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version)
-  {
-		std::string syncstr;
-		if (scc_)
-		{
-			syncstr = "connection";
-		}
-		if ( src_)
-		{
-			syncstr = "route";
-		}
-    ar & syncstr;
-//		std::cout << "syncstr received " <<syncstr << std::endl;
-		if (syncstr == "connection")
-			ar & *scc_;
-		if (syncstr == "route")
-			ar & *src_;
-//		std::cout << "syncstr done " <<syncstr << std::endl;
-	}
+  void serialize(Archive& ar, const unsigned int version) {
+    std::string syncstr;
+    if(scc_) {
+      syncstr = "connection";
+    }
+    if(src_) {
+      syncstr = "route";
+    }
+    ar& syncstr;
+    //		std::cout << "syncstr received " <<syncstr << std::endl;
+    if(syncstr == "connection") {
+      ar & *scc_;
+    }
+    if(syncstr == "route") {
+      ar & *src_;
+    }
+    //		std::cout << "syncstr done " <<syncstr << std::endl;
+  }
 };
 
 

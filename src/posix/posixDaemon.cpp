@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -49,112 +49,131 @@ DaemonService::DaemonService() : pw_(NULL), gr_(NULL), daemonized_(false)
 
 void DaemonService::initPrivs(std::string const& username, std::string const& groupname)
 {
-  if(username == "")
+  if(username == "") {
     return;
-  
+  }
+
   pw_ = getpwnam(username.c_str());
-  if(!pw_)
+  if(!pw_) {
     AnytunError::throwErr() << "unknown user " << username;
-  
-  if(groupname != "")
+  }
+
+  if(groupname != "") {
     gr_ = getgrnam(groupname.c_str());
-  else
+  } else {
     gr_ = getgrgid(pw_->pw_gid);
-  
-  if(!gr_)
+  }
+
+  if(!gr_) {
     AnytunError::throwErr() << "unknown group " << groupname;
+  }
 }
 
 void DaemonService::dropPrivs()
 {
-  if(!pw_ || !gr_)
+  if(!pw_ || !gr_) {
     return;
-  
-  if(setgid(gr_->gr_gid))
+  }
+
+  if(setgid(gr_->gr_gid)) {
     AnytunError::throwErr() << "setgid('" << gr_->gr_name << "') failed: " << AnytunErrno(errno);
-  
+  }
+
   gid_t gr_list[1];
   gr_list[0] = gr_->gr_gid;
-  if(setgroups (1, gr_list))
+  if(setgroups(1, gr_list)) {
     AnytunError::throwErr() << "setgroups(['" << gr_->gr_name << "']) failed: " << AnytunErrno(errno);
-  
-  if(setuid(pw_->pw_uid))
+  }
+
+  if(setuid(pw_->pw_uid)) {
     AnytunError::throwErr() << "setuid('" << pw_->pw_name << "') failed: " << AnytunErrno(errno);
-  
+  }
+
   cLog.msg(Log::PRIO_NOTICE) << "dropped privileges to " << pw_->pw_name << ":" << gr_->gr_name;
 }
 
 void DaemonService::chroot(std::string const& chrootdir)
 {
-  if (getuid() != 0)
+  if(getuid() != 0) {
     AnytunError::throwErr() << "this program has to be run as root in order to run in a chroot";
+  }
 
-  if(::chroot(chrootdir.c_str()))
+  if(::chroot(chrootdir.c_str())) {
     AnytunError::throwErr() << "can't chroot to " << chrootdir;
+  }
 
   cLog.msg(Log::PRIO_NOTICE) << "we are in chroot jail (" << chrootdir << ") now" << std::endl;
-  if(chdir("/"))
+  if(chdir("/")) {
     AnytunError::throwErr() << "can't change to /";
+  }
 }
 
 /// TODO: this outstandignly ugly please and i really can't stress the please fix it asap!!!!!!!
 
-std::ofstream pidFile; // FIXXXME no global variable 
+std::ofstream pidFile; // FIXXXME no global variable
 
 void DaemonService::daemonize()
 {
-//  std::ofstream pidFile;
+  //  std::ofstream pidFile;
   if(gOpt.getPidFile() != "") {
     pidFile.open(gOpt.getPidFile().c_str());
-    if(!pidFile.is_open())
+    if(!pidFile.is_open()) {
       AnytunError::throwErr() << "can't open pid file (" << gOpt.getPidFile() << "): " << AnytunErrno(errno);
+    }
   }
 
   pid_t pid;
 
   pid = fork();
-  if(pid < 0)
+  if(pid < 0) {
     AnytunError::throwErr() << "daemonizing failed at fork(): " << AnytunErrno(errno) << ", exitting";
+  }
 
-  if(pid) exit(0);
+  if(pid) { exit(0); }
 
   umask(0);
 
-  if(setsid() < 0)
+  if(setsid() < 0) {
     AnytunError::throwErr() << "daemonizing failed at setsid(): " << AnytunErrno(errno) << ", exitting";
+  }
 
   pid = fork();
-  if(pid < 0)
+  if(pid < 0) {
     AnytunError::throwErr() << "daemonizing failed at fork(): " << AnytunErrno(errno) << ", exitting";
+  }
 
-  if(pid) exit(0);
+  if(pid) { exit(0); }
 
-  if ((chdir("/")) < 0)
+  if((chdir("/")) < 0) {
     AnytunError::throwErr() << "daemonizing failed at chdir(): " << AnytunErrno(errno) << ", exitting";
+  }
 
-//  std::cout << "running in background now..." << std::endl;
+  //  std::cout << "running in background now..." << std::endl;
 
   int fd;
-//  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
-  for (fd=0;fd<=2;fd++) // close all file descriptors
+  //  for (fd=getdtablesize();fd>=0;--fd) // close all file descriptors
+  for(fd=0; fd<=2; fd++) { // close all file descriptors
     close(fd);
-  fd = open("/dev/null",O_RDWR);        // stdin
-  if(fd == -1)
-    cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stdin";
-  else {
-    if(dup(fd) == -1)   // stdout
-      cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stdout";
-    if(dup(fd) == -1)   // stderr
-      cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stderr";
   }
-  
-// FIXXXXME: write this pid to file (currently pid from posix/signhandler.hpp:77 is used)
-// 
-//   if(pidFile.is_open()) {
-//     pid_t pid = getpid();
-//     pidFile << pid;
-//     pidFile.close();
-//   }
+  fd = open("/dev/null",O_RDWR);        // stdin
+  if(fd == -1) {
+    cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stdin";
+  } else {
+    if(dup(fd) == -1) { // stdout
+      cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stdout";
+    }
+    if(dup(fd) == -1) { // stderr
+      cLog.msg(Log::PRIO_WARNING) << "can't open /dev/null as stderr";
+    }
+  }
+
+  // FIXXXXME: write this pid to file (currently pid from posix/signhandler.hpp:77 is used)
+  //
+  //   if(pidFile.is_open()) {
+  //     pid_t pid = getpid();
+  //     pidFile << pid;
+  //     pidFile.close();
+  //   }
 
   daemonized_ = true;
 }

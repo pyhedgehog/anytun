@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -73,8 +73,9 @@ bool handleSignal(DWORD ctrlType)
 
 void registerSignalHandler(SignalController& ctrl, DaemonService& /*service*/)
 {
-  if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)handleSignal, true))
+  if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)handleSignal, true)) {
     AnytunError::throwErr() << "Error on SetConsoleCtrlhandler: " << AnytunErrno(GetLastError());
+  }
 
   ctrl.handler[CTRL_C_EVENT] = boost::bind(CtrlCHandler, _1, _2);
   ctrl.handler[CTRL_BREAK_EVENT] = boost::bind(CtrlBreakHandler, _1, _2);

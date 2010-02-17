@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -61,7 +61,7 @@ public:
 };
 std::ostream& operator<<(std::ostream& stream, AnytunErrno const& value);
 
-class ErrorStringBuilder 
+class ErrorStringBuilder
 {
 public:
   ErrorStringBuilder(ErrorStringBuilder const& src) { stream << src.stream.str(); };

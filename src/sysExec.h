@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -42,33 +42,33 @@ typedef std::list<std::string> StringList;
 
 class SysExec
 {
-  public:
-    SysExec(std::string const& script);
-    SysExec(std::string const& script, StringVector args);
-    SysExec(std::string const& script, StringList env);
-    SysExec(std::string const& script, StringVector args, StringList env);
-    ~SysExec();
+public:
+  SysExec(std::string const& script);
+  SysExec(std::string const& script, StringVector args);
+  SysExec(std::string const& script, StringList env);
+  SysExec(std::string const& script, StringVector args, StringList env);
+  ~SysExec();
 
-    int waitForScript();
-    int getReturnCode() const;
+  int waitForScript();
+  int getReturnCode() const;
 
-    static void waitAndDestroy(SysExec*& s);
+  static void waitAndDestroy(SysExec*& s);
 
-  private:
-    void doExec(StringVector args, StringList env);
+private:
+  void doExec(StringVector args, StringList env);
 
-    std::string script_;
-    bool closed_;    
+  std::string script_;
+  bool closed_;
 #ifdef _MSC_VER
-    PROCESS_INFORMATION process_info_;
-    DWORD return_code_;
+  PROCESS_INFORMATION process_info_;
+  DWORD return_code_;
 #else
-    pid_t pid_;
-    int pipefd_;
-    int return_code_;
+  pid_t pid_;
+  int pipefd_;
+  int return_code_;
 #endif
 
-    
+
 };
 
 #endif

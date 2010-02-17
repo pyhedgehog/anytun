@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -34,32 +34,32 @@
 
 RoutingTreeNode::RoutingTreeNode():mux_(0),valid_(false)
 {
-	for(int i=0; i<256; i++)
-		nodes_[i]=NULL;
+  for(int i=0; i<256; i++) {
+    nodes_[i]=NULL;
+  }
 }
 
 void RoutingTreeNode::print(int level) const
 {
-	if (valid_)
-	{	
-		std::cout << " -> " <<mux_ ;
-	}
-	std::cout  << std::endl;
-  for(int i=0; i<256; i++)
-	{
-		if ( nodes_[i])
-		{
-			for(int l=0;l<level;l++)
-				std::cout << " ";
-			std::cout << (int) i;
-			nodes_[i]->print(level+1);
-		}
-	}
+  if(valid_) {
+    std::cout << " -> " <<mux_ ;
+  }
+  std::cout  << std::endl;
+  for(int i=0; i<256; i++) {
+    if(nodes_[i]) {
+      for(int l=0; l<level; l++) {
+        std::cout << " ";
+      }
+      std::cout << (int) i;
+      nodes_[i]->print(level+1);
+    }
+  }
 }
 
 RoutingTreeNode::~RoutingTreeNode()
 {
-	for(int i=0; i<256; i++)
-		if(nodes_[i])
-			delete nodes_[i];
-} 
+  for(int i=0; i<256; i++)
+    if(nodes_[i]) {
+      delete nodes_[i];
+    }
+}

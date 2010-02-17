@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -44,36 +44,36 @@
 class ConnectionParam
 {
 public:
-	ConnectionParam(const ConnectionParam & src);
-	ConnectionParam( KeyDerivation& kd, SeqWindow& seq_window, seq_nr_t seq_nr_, PacketSourceEndpoint remote_end);
+  ConnectionParam(const ConnectionParam& src);
+  ConnectionParam(KeyDerivation& kd, SeqWindow& seq_window, seq_nr_t seq_nr_, PacketSourceEndpoint remote_end);
 
   KeyDerivation& kd_;
   SeqWindow& seq_window_;
-	seq_nr_t seq_nr_;
-	PacketSourceEndpoint remote_end_;
+  seq_nr_t seq_nr_;
+  PacketSourceEndpoint remote_end_;
 
 private:
   //TODO: check if this is ok
-	Mutex mutex_;
+  Mutex mutex_;
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version)
-	{
-		Lock lock(mutex_);
-		std::string remote_host(remote_end_.address().to_string());
-		u_int16_t remote_port = remote_end_.port();
-		ar & kd_;
-    ar & seq_window_;
-    ar & seq_nr_;
-    ar & remote_host;
-    ar & remote_port;
-		PacketSourceEndpoint emptyEndpoint;
-		UDPPacketSource::proto::endpoint endpoint(boost::asio::ip::address::from_string(remote_host), remote_port);
-		//This is a workarround, against race condition in sync process
-		//TODO: find a better solution
-		if (endpoint != emptyEndpoint && remote_host != "::" && remote_host != "[::]" && remote_host != "0.0.0.0")
-			remote_end_ = endpoint;
-	}
+  void serialize(Archive& ar, const unsigned int version) {
+    Lock lock(mutex_);
+    std::string remote_host(remote_end_.address().to_string());
+    u_int16_t remote_port = remote_end_.port();
+    ar& kd_;
+    ar& seq_window_;
+    ar& seq_nr_;
+    ar& remote_host;
+    ar& remote_port;
+    PacketSourceEndpoint emptyEndpoint;
+    UDPPacketSource::proto::endpoint endpoint(boost::asio::ip::address::from_string(remote_host), remote_port);
+    //This is a workarround, against race condition in sync process
+    //TODO: find a better solution
+    if(endpoint != emptyEndpoint && remote_host != "::" && remote_host != "[::]" && remote_host != "0.0.0.0") {
+      remote_end_ = endpoint;
+    }
+  }
 };
 
 #endif

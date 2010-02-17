@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -43,8 +43,9 @@ RtpSessionTable& RtpSessionTable::instance()
 {
   Lock lock(instMutex);
   static instanceCleaner c;
-  if(!inst)
+  if(!inst) {
     inst = new RtpSessionTable();
+  }
 
   return *inst;
 }
@@ -55,31 +56,33 @@ RtpSessionTable::RtpSessionTable()
 
 RtpSessionTable::~RtpSessionTable()
 {
-} 
+}
 
-void RtpSessionTable::delSession(const std::string & call_id)
+void RtpSessionTable::delSession(const std::string& call_id)
 {
   Lock lock(mutex_);
 
   RtpSessionMap::iterator it = map_.find(call_id);
-  if(it!=map_.end())
+  if(it!=map_.end()) {
     delete it->second;
+  }
 
   map_.erase(it);
 }
 
-RtpSession& RtpSessionTable::getOrNewSession(const std::string & call_id, bool& is_new)
+RtpSession& RtpSessionTable::getOrNewSession(const std::string& call_id, bool& is_new)
 {
   Lock lock(mutex_);
   return getOrNewSessionUnlocked(call_id, is_new);
 }
 
-RtpSession& RtpSessionTable::getOrNewSessionUnlocked(const std::string & call_id, bool& is_new)
+RtpSession& RtpSessionTable::getOrNewSessionUnlocked(const std::string& call_id, bool& is_new)
 {
   is_new = false;
   RtpSessionMap::iterator it = map_.find(call_id);
-  if(it!=map_.end())
+  if(it!=map_.end()) {
     return *(it->second);
+  }
 
   is_new = true;
   std::pair<RtpSessionMap::iterator, bool> ret = map_.insert(RtpSessionMap::value_type(call_id, NULL));
@@ -87,11 +90,12 @@ RtpSession& RtpSessionTable::getOrNewSessionUnlocked(const std::string & call_id
   return *(ret.first->second);
 }
 
-RtpSession& RtpSessionTable::getSession(const std::string & call_id)
+RtpSession& RtpSessionTable::getSession(const std::string& call_id)
 {
   RtpSessionMap::iterator it = map_.find(call_id);
-  if(it!=map_.end())
+  if(it!=map_.end()) {
     return *(it->second);
+  }
 
   throw std::runtime_error("session not found");
 }
@@ -109,13 +113,13 @@ RtpSessionMap::iterator RtpSessionTable::getEndUnlocked()
 void RtpSessionTable::clear()
 {
   Lock lock(mutex_);
-	map_.clear();
+  map_.clear();
 }
 
 bool RtpSessionTable::empty()
 {
   Lock lock(mutex_);
-	return map_.empty();
+  return map_.empty();
 }
 
 Mutex& RtpSessionTable::getMutex()

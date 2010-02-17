@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -71,14 +71,14 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   else if(conf_.type_ == TYPE_TUN) {
     device_file.append("tun");
     actual_name_ = "tun";
-  }
-  else if(conf_.type_ == TYPE_TAP) {
+  } else if(conf_.type_ == TYPE_TAP) {
     device_file.append("tap");
     actual_name_ = "tap";
   }
 #endif
-  else
+  else {
     AnytunError::throwErr() << "unable to recognize type of device (tun or tap)";
+  }
 
   u_int32_t dev_id=0;
   if(dynamic) {
@@ -87,18 +87,20 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
       ds << device_file;
       ds << dev_id;
       fd_ = ::open(ds.str().c_str(), O_RDWR);
-      if(fd_ >= 0)
+      if(fd_ >= 0) {
         break;
+      }
     }
-  }
-  else
+  } else {
     fd_ = ::open(device_file.c_str(), O_RDWR);
+  }
 
   if(fd_ < 0) {
-    if(dynamic)
+    if(dynamic) {
       AnytunError::throwErr() << "can't open device file dynamically: no unused node left";
-    else
+    } else {
       AnytunError::throwErr() << "can't open device file (" << device_file << "): " << AnytunErrno(errno);
+    }
   }
 
   if(dynamic) {
@@ -106,22 +108,24 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
     s << actual_name_;
     s << dev_id;
     actual_name_ = s.str();
-  }
-  else
+  } else {
     actual_name_ = dev_name;
-  
+  }
+
   actual_node_ = device_file;
 
   init_post();
 
-  if(ifcfg_addr != "")
+  if(ifcfg_addr != "") {
     do_ifconfig();
+  }
 }
 
 TunDevice::~TunDevice()
 {
-  if(fd_ > 0)
+  if(fd_ > 0) {
     ::close(fd_);
+  }
 }
 
 #if defined(__GNUC__) && defined(__OpenBSD__)
@@ -129,21 +133,23 @@ TunDevice::~TunDevice()
 void TunDevice::init_post()
 {
   with_pi_ = true;
-  if(conf_.type_ == TYPE_TAP)
+  if(conf_.type_ == TYPE_TAP) {
     with_pi_ = false;
-  
-  struct tuninfo ti;  
+  }
 
-  if (ioctl(fd_, TUNGIFINFO, &ti) < 0) {
+  struct tuninfo ti;
+
+  if(ioctl(fd_, TUNGIFINFO, &ti) < 0) {
     ::close(fd_);
     AnytunError::throwErr() << "can't enable multicast for interface: " << AnytunErrno(errno);
   }
-  
+
   ti.flags |= IFF_MULTICAST;
-  if(conf_.type_ == TYPE_TUN)
+  if(conf_.type_ == TYPE_TUN) {
     ti.flags &= ~IFF_POINTOPOINT;
-  
-  if (ioctl(fd_, TUNSIFINFO, &ti) < 0) {
+  }
+
+  if(ioctl(fd_, TUNSIFINFO, &ti) < 0) {
     ::close(fd_);
     AnytunError::throwErr() << "can't enable multicast for interface: " << AnytunErrno(errno);
   }
@@ -154,8 +160,9 @@ void TunDevice::init_post()
 void TunDevice::init_post()
 {
   with_pi_ = true;
-  if(conf_.type_ == TYPE_TAP)
+  if(conf_.type_ == TYPE_TAP) {
     with_pi_ = false;
+  }
 
   if(conf_.type_ == TYPE_TUN) {
     int arg = 0;
@@ -192,63 +199,68 @@ void TunDevice::init_post()
 }
 
 #else
- #error This Device works just for OpenBSD, FreeBSD or NetBSD
+#error This Device works just for OpenBSD, FreeBSD or NetBSD
 #endif
 
 int TunDevice::fix_return(int ret, size_t pi_length) const
 {
-  if(ret < 0)
+  if(ret < 0) {
     return ret;
+  }
 
   return (static_cast<size_t>(ret) > pi_length ? (ret - pi_length) : 0);
 }
 
 int TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
-  if(fd_ < 0)
+  if(fd_ < 0) {
     return -1;
-  
+  }
+
   if(with_pi_) {
     struct iovec iov[2];
     u_int32_t type;
-    
+
     iov[0].iov_base = &type;
     iov[0].iov_len = sizeof(type);
     iov[1].iov_base = buf;
     iov[1].iov_len = len;
     return(fix_return(::readv(fd_, iov, 2), sizeof(type)));
-  }
-  else
+  } else {
     return(::read(fd_, buf, len));
+  }
 }
 
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
-  if(fd_ < 0)
+  if(fd_ < 0) {
     return -1;
-  
-  if(!buf)
+  }
+
+  if(!buf) {
     return 0;
+  }
 
   if(with_pi_) {
     struct iovec iov[2];
     u_int32_t type;
-    struct ip *hdr = reinterpret_cast<struct ip*>(buf);
-    
+    struct ip* hdr = reinterpret_cast<struct ip*>(buf);
+
     type = 0;
-    if(hdr->ip_v == 4)
+    if(hdr->ip_v == 4) {
       type = htonl(AF_INET);
-    else
+    } else {
       type = htonl(AF_INET6);
-    
+    }
+
     iov[0].iov_base = &type;
     iov[0].iov_len = sizeof(type);
     iov[1].iov_base = buf;
     iov[1].iov_len = len;
     return(fix_return(::writev(fd_, iov, 2), sizeof(type)));
-  }
-  else
+  } else {
     return(::write(fd_, buf, len));
+  }
 }
 
 void TunDevice::do_ifconfig()
@@ -257,17 +269,17 @@ void TunDevice::do_ifconfig()
   mtu_ss << conf_.mtu_;
   StringVector args = boost::assign::list_of(actual_name_)(conf_.addr_.toString())("netmask")(conf_.netmask_.toString())("mtu")(mtu_ss.str());
 
-  if(conf_.type_ == TYPE_TUN)
+  if(conf_.type_ == TYPE_TUN) {
     args.push_back("up");
-  else {
+  } else {
 #if defined(__GNUC__) && defined(__OpenBSD__)
     args.push_back("link0");
 #elif defined(__GNUC__) && (defined(__FreeBSD__) || defined(__FreeBSD_kernel__))
     args.push_back("up");
 #elif defined(__GNUC__) && defined(__NetBSD__)
-        // nothing to be done here
+    // nothing to be done here
 #else
- #error This Device works just for OpenBSD, FreeBSD or NetBSD
+#error This Device works just for OpenBSD, FreeBSD or NetBSD
 #endif
   }
   sys_exec_ = new SysExec("/sbin/ifconfig", args);
@@ -275,7 +287,8 @@ void TunDevice::do_ifconfig()
 
 void TunDevice::waitUntilReady()
 {
-  if(sys_exec_)
+  if(sys_exec_) {
     SysExec::waitAndDestroy(sys_exec_);
+  }
 }
 

@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -51,8 +51,9 @@ bool PortWindow::hasPort(u_int16_t port)
   Lock lock(mutex_);
 
   PortSet::const_iterator it=ports_.find(port);
-  if(it == ports_.end())
+  if(it == ports_.end()) {
     return false;
+  }
   return true;
 }
 
@@ -61,22 +62,25 @@ bool PortWindow::freePort(u_int16_t port)
   Lock lock(mutex_);
 
   PortSet::iterator it=ports_.find(port);
-  if(it == ports_.end())
+  if(it == ports_.end()) {
     return false;
-	ports_.erase(it);
+  }
+  ports_.erase(it);
   return true;
 }
 
 u_int16_t PortWindow::newPort()
 {
   Lock lock(mutex_);
-	u_int16_t port= start_port_;
-	while (port<end_port_ && ports_.find(port) !=ports_.end())
-	  port++;
-  if (port>=end_port_)
-		return 0;
-	ports_.insert(port);
-	return port;
+  u_int16_t port= start_port_;
+  while(port<end_port_ && ports_.find(port) !=ports_.end()) {
+    port++;
+  }
+  if(port>=end_port_) {
+    return 0;
+  }
+  ports_.insert(port);
+  return port;
 }
 
 void PortWindow::clear()

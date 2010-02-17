@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -64,7 +64,7 @@ public:
   int getMaxPrio() { return max_prio; };
   void setMaxPrio(int p) { max_prio = p; };
 
-  virtual void log(std::string msg, int prio) = 0;  
+  virtual void log(std::string msg, int prio) = 0;
 
 protected:
   bool opened;
@@ -72,11 +72,12 @@ protected:
   int max_prio;
 };
 
-class LogTargetList 
+class LogTargetList
 {
 public:
-  typedef enum { TARGET_UNKNOWN, TARGET_SYSLOG, TARGET_FILE, 
-                 TARGET_STDOUT, TARGET_STDERR, TARGET_WINEVENTLOG } target_type_t;
+  typedef enum { TARGET_UNKNOWN, TARGET_SYSLOG, TARGET_FILE,
+                 TARGET_STDOUT, TARGET_STDERR, TARGET_WINEVENTLOG
+               } target_type_t;
 
   static target_type_t targetTypeFromString(std::string type);
   static std::string targetTypeToString(target_type_t type);
@@ -85,7 +86,7 @@ public:
   LogTarget* add(std::string conf);
   LogTarget* add(target_type_t type, int prio, std::string conf);
   void clear();
-  
+
   void log(std::string msg, int prio);
 
 private:
@@ -126,14 +127,14 @@ public:
 
   void open();
   void close();
-  void log(std::string msg, int prio);  
+  void log(std::string msg, int prio);
   static bool duplicateAllowed() { return false; };
 
-  LogTargetSyslog& setLogName(std::string l); 
+  LogTargetSyslog& setLogName(std::string l);
   std::string getLogName() const { return logname; }
   LogTargetSyslog& setFacility(int f);
   int getFacility() const { return facility; }
-  
+
 private:
   std::string logname;
   int facility;
@@ -149,12 +150,12 @@ public:
 
   void open();
   void close();
-  void log(std::string msg, int prio);  
+  void log(std::string msg, int prio);
   static bool duplicateAllowed() { return true; };
 
-  LogTargetFile& setLogFilename(std::string l); 
+  LogTargetFile& setLogFilename(std::string l);
   std::string getLogFilename() const { return logfilename; }
-  
+
 private:
   std::string logfilename;
   std::ofstream logfile;
@@ -170,7 +171,7 @@ public:
 
   void open();
   void close();
-  void log(std::string msg, int prio);  
+  void log(std::string msg, int prio);
   static bool duplicateAllowed() { return false; };
 
 private:
@@ -189,10 +190,10 @@ public:
 
   void open();
   void close();
-  void log(std::string msg, int prio);  
+  void log(std::string msg, int prio);
   static bool duplicateAllowed() { return false; };
 
-  LogTargetWinEventlog& setLogName(std::string l); 
+  LogTargetWinEventlog& setLogName(std::string l);
   std::string getLogName() const { return logname; };
 
 private:

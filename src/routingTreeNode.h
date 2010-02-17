@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -43,15 +43,15 @@ class RoutingTree;
 class RoutingTreeNode
 {
 public:
-	RoutingTreeNode();
-	~RoutingTreeNode();
-	void print(int) const;
+  RoutingTreeNode();
+  ~RoutingTreeNode();
+  void print(int) const;
 
 private:
-//  Mutex mutex_;
-	u_int16_t mux_;
-	bool valid_;
-	boost::array<RoutingTreeNode *,256> nodes_;
+  //  Mutex mutex_;
+  u_int16_t mux_;
+  bool valid_;
+  boost::array<RoutingTreeNode*,256> nodes_;
 
   friend class RoutingTree;
 };

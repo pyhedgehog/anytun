@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -40,17 +40,17 @@ Log* Log::inst = NULL;
 Mutex Log::instMutex;
 Log& cLog = Log::instance();
 
-LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), prio(src.prio) 
+LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), prio(src.prio)
 {
   stream << src.stream.str();
 }
 
-LogStringBuilder::LogStringBuilder(Log& l, int p) : log(l), prio(p) 
+LogStringBuilder::LogStringBuilder(Log& l, int p) : log(l), prio(p)
 {
-      // do something on the start of the line.
+  // do something on the start of the line.
 }
 
-LogStringBuilder::~LogStringBuilder() 
+LogStringBuilder::~LogStringBuilder()
 {
   log.log(stream.str(), prio);
 }
@@ -59,9 +59,10 @@ Log& Log::instance()
 {
   Lock lock(instMutex);
   static instanceCleaner c;
-  if(!inst)
+  if(!inst) {
     inst = new Log();
-  
+  }
+
   return *inst;
 }
 
@@ -70,8 +71,9 @@ void Log::addTarget(std::string conf)
   Lock lock(mutex);
   LogTarget* target = targets.add(conf);
   target->open();
-  if(target->getMaxPrio() > 0)
+  if(target->getMaxPrio() > 0) {
     target->enable();
+  }
 }
 
 void Log::addTarget(LogTargetList::target_type_t type, int prio, std::string conf)
@@ -79,8 +81,9 @@ void Log::addTarget(LogTargetList::target_type_t type, int prio, std::string con
   Lock lock(mutex);
   LogTarget* target = targets.add(type, prio, conf);
   target->open();
-  if(target->getMaxPrio() > 0)
+  if(target->getMaxPrio() > 0) {
     target->enable();
+  }
 }
 
 void Log::log(std::string msg, int prio)
@@ -92,11 +95,17 @@ void Log::log(std::string msg, int prio)
 std::string Log::prioToString(int prio)
 {
   switch(prio) {
-  case PRIO_ERROR: return "ERROR";
-  case PRIO_WARNING: return "WARNING";
-  case PRIO_NOTICE: return "NOTICE";
-  case PRIO_INFO: return "INFO";
-  case PRIO_DEBUG: return "DEBUG";
-  default: return "UNKNOWN";
+  case PRIO_ERROR:
+    return "ERROR";
+  case PRIO_WARNING:
+    return "WARNING";
+  case PRIO_NOTICE:
+    return "NOTICE";
+  case PRIO_INFO:
+    return "INFO";
+  case PRIO_DEBUG:
+    return "DEBUG";
+  default:
+    return "UNKNOWN";
   }
 }

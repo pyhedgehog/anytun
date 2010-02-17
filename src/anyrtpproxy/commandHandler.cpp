@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -50,23 +50,23 @@
 
 #define MAX_COMMAND_LENGTH 1000
 
-CommandHandler::CommandHandler(SyncQueue& q, std::string lp,PortWindow & pw) : thread_(boost::bind(run,this)), 
-                                                                               queue_(q), running_(true), control_sock_(io_service_), 
-                                                                               local_address_(""), local_port_(lp),port_window_(pw)
+CommandHandler::CommandHandler(SyncQueue& q, std::string lp,PortWindow& pw) : thread_(boost::bind(run,this)),
+  queue_(q), running_(true), control_sock_(io_service_),
+  local_address_(""), local_port_(lp),port_window_(pw)
 {
   proto::resolver resolver(io_service_);
-  proto::resolver::query query(local_port_);  
+  proto::resolver::query query(local_port_);
   proto::endpoint e = *resolver.resolve(query);
   control_sock_.open(e.protocol());
   control_sock_.bind(e);
 }
 
-CommandHandler::CommandHandler(SyncQueue& q, string la, std::string lp, PortWindow & pw) : thread_(boost::bind(run,this)), 
-                                                                                           queue_(q), running_(true), control_sock_(io_service_), 
-                                                                                           local_address_(la), local_port_(lp),port_window_(pw)
+CommandHandler::CommandHandler(SyncQueue& q, string la, std::string lp, PortWindow& pw) : thread_(boost::bind(run,this)),
+  queue_(q), running_(true), control_sock_(io_service_),
+  local_address_(la), local_port_(lp),port_window_(pw)
 {
   proto::resolver resolver(io_service_);
-  proto::resolver::query query(local_address_, local_port_);  
+  proto::resolver::query query(local_address_, local_port_);
   proto::endpoint e = *resolver.resolve(query);
   control_sock_.open(e.protocol());
   control_sock_.bind(e);
@@ -77,13 +77,11 @@ void CommandHandler::run(void* s)
   CommandHandler* self = reinterpret_cast<CommandHandler*>(s);
 
   Buffer buf(u_int32_t(MAX_COMMAND_LENGTH));
-  try
-  {
+  try {
     proto::endpoint remote_end;
 
     int len;
-    while(1)
-    {
+    while(1) {
       buf.setLength(MAX_COMMAND_LENGTH);
 
       len = self->control_sock_.receive_from(boost::asio::buffer(buf.getBuf(), buf.getLength()), remote_end);
@@ -95,9 +93,7 @@ void CommandHandler::run(void* s)
 
       self->control_sock_.send_to(boost::asio::buffer(ret.c_str(), ret.length()), remote_end);
     }
-  }
-  catch(std::exception& e)
-  {
+  } catch(std::exception& e) {
     self->running_ = false;
   }
   self->running_ = false;
@@ -133,8 +129,7 @@ std::string CommandHandler::handle(std::string command)
     params.push_back(tmp);
   }
 
-  switch(std::toupper(cmd[0]))
-  {
+  switch(std::toupper(cmd[0])) {
   case CMD_REQUEST:
     if(params.size() < 4) { oss << RET_ERR_SYNTAX; break; }
     oss << handleRequest(cmd.erase(0,1), params[0], params[1], params[2], params[3], (params.size() < 5) ? "" : params[4]);
@@ -168,24 +163,21 @@ std::string CommandHandler::handle(std::string command)
 
 string CommandHandler::handleRequest(string modifiers, string call_id, string addr, string port, string from_tag, string to_tag)
 {
-  std::cout << "received request[" << modifiers << "] command ('" << call_id << "','" << addr  << "','" << port 
+  std::cout << "received request[" << modifiers << "] command ('" << call_id << "','" << addr  << "','" << port
             << "','" << from_tag << "','" << to_tag << "')" << std::endl;
 
-  try 
-  {
+  try {
     RtpSession::proto::resolver resolver(io_service_);
     bool is_new;
     RtpSession& session = gRtpSessionTable.getOrNewSession(call_id, is_new);
-    if(is_new)
-    {
+    if(is_new) {
       u_int16_t port1 = port_window_.newPort(); // TODO: get next available port
       u_int16_t port2 = port_window_.newPort(); // TODO: get next available port
-			if( !port1 || !port2)
-			{
-				if( port1) port_window_.freePort(port1);
-				if( port2) port_window_.freePort(port2);
-				throw std::runtime_error("no free port found");
-			}
+      if(!port1 || !port2) {
+        if(port1) { port_window_.freePort(port1); }
+        if(port2) { port_window_.freePort(port2); }
+        throw std::runtime_error("no free port found");
+      }
       std::stringstream ps1, ps2;
       ps1 << port1;
       ps2 << port2;
@@ -196,8 +188,7 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
         e1 = *resolver.resolve(query1);
         RtpSession::proto::resolver::query query2(ps2.str());
         e2 = *resolver.resolve(query2);
-      }
-      else {
+      } else {
         RtpSession::proto::resolver::query query1(gOpt.getLocalAddr(),ps1.str());
         e1 = *resolver.resolve(query1);
         RtpSession::proto::resolver::query query2(gOpt.getLocalAddr(),ps2.str());
@@ -213,20 +204,17 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
     ostringstream oss;
     oss << session.getLocalEnd2().port();
     return oss.str();
-  }
-  catch(std::exception& e)
-  {
+  } catch(std::exception& e) {
     return RET_ERR_UNKNOWN; // TODO: change to corret error value
   }
 }
 
 string CommandHandler::handleResponse(string modifiers, string call_id, string addr, string port, string from_tag, string to_tag)
 {
-  std::cout << "received response[" << modifiers << "] command ('" << call_id << "','" << addr  << "','" << port 
+  std::cout << "received response[" << modifiers << "] command ('" << call_id << "','" << addr  << "','" << port
             << "','" << from_tag << "','" << to_tag << "')" << std::endl;
 
-  try
-  {
+  try {
     RtpSession& session = gRtpSessionTable.getSession(call_id);
     RtpSession::proto::resolver resolver(io_service_);
     RtpSession::proto::resolver::query query(addr,port);
@@ -238,9 +226,7 @@ string CommandHandler::handleResponse(string modifiers, string call_id, string a
     ostringstream oss;
     oss << session.getLocalEnd1().port();
     return oss.str();
-  }
-  catch(std::exception& e)
-  {
+  } catch(std::exception& e) {
     return RET_ERR_UNKNOWN; // TODO: change to corret error value
   }
 }
@@ -249,39 +235,37 @@ string CommandHandler::handleDelete(string call_id, string from_tag, string to_t
 {
   std::cout << "received delete command ('" << call_id << "','" << from_tag << "','" << to_tag << "')" << std::endl;
 
-  try
-  {
+  try {
     RtpSession& session = gRtpSessionTable.getSession(call_id);
     session.isDead(true);
     SyncRtpCommand sc(call_id);
     queue_.push(sc);
 
     return RET_OK;
-  }
-  catch(std::exception& e)
-  {
+  } catch(std::exception& e) {
     return RET_ERR_UNKNOWN; // TODO: change to corret error value
   }
 }
 
 string CommandHandler::handleVersion()
 {
-  std::cout << "received version command" << std::endl;  
+  std::cout << "received version command" << std::endl;
   return BASE_VERSION;
 }
 
 string CommandHandler::handleVersionF(string date_code)
 {
-  std::cout << "received version[F] command ('" << date_code << "')" << std::endl;  
-  if(!date_code.compare(SUP_VERSION))
+  std::cout << "received version[F] command ('" << date_code << "')" << std::endl;
+  if(!date_code.compare(SUP_VERSION)) {
     return "1";
-  
+  }
+
   return "0";
 }
 
 string CommandHandler::handleInfo()
 {
-  std::cout << "received info command, ignoring" << std::endl;  
+  std::cout << "received info command, ignoring" << std::endl;
   return RET_OK;
 }
 

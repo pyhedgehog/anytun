@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -45,9 +45,10 @@ Options& Options::instance()
 {
   Lock lock(instMutex);
   static instanceCleaner c;
-  if(!inst)
+  if(!inst) {
     inst = new Options();
-  
+  }
+
   return *inst;
 }
 
@@ -56,34 +57,37 @@ void Host::splitAndSetAddrPort(std::string addr_port)
   if(addr_port.length() >= 2 && addr_port[0] == ':' && addr_port[1] != ':') {
     addr_ = "";
     addr_port.erase(0,1);
-    std::stringstream tmp_stream(addr_port);    
+    std::stringstream tmp_stream(addr_port);
     tmp_stream >> port_;
     return;
   }
 
   size_t pos = addr_port.find_first_of("[");
 
-  if(pos != std::string::npos && pos != 0)
-    return; // an [ was found but not at the beginning
+  if(pos != std::string::npos && pos != 0) {
+    return;  // an [ was found but not at the beginning
+  }
 
   bool hasPort = false;
   if(pos != std::string::npos) {
     addr_port.erase(pos, 1);
     pos = addr_port.find_first_of("]");
 
-    if(pos == std::string::npos)
-      return; // no trailing ] although an leading [ was found
+    if(pos == std::string::npos) {
+      return;  // no trailing ] although an leading [ was found
+    }
 
     if(pos < addr_port.length()-2) {
 
-      if(addr_port[pos+1] != ':')
-        return; // wrong port delimieter
+      if(addr_port[pos+1] != ':') {
+        return;  // wrong port delimieter
+      }
 
       addr_port[pos+1] = '/';
       hasPort = true;
+    } else if(pos != addr_port.length()-1) {
+      return;  // to few characters left
     }
-    else if(pos != addr_port.length()-1)
-      return; // to few characters left
 
     addr_port.erase(pos, 1);
   }
@@ -92,12 +96,12 @@ void Host::splitAndSetAddrPort(std::string addr_port)
     std::stringstream tmp_stream(addr_port);
 
     getline(tmp_stream, addr_, '/');
-    if(!tmp_stream.good())
+    if(!tmp_stream.good()) {
       return;
+    }
 
     tmp_stream >> port_;
-  }
-  else {
+  } else {
     addr_ = addr_port;
     port_ = "2323"; // default sync port
   }
@@ -114,11 +118,11 @@ Options::Options() : control_interface_("0.0.0.0", "22222")
   daemonize_ = true;
   pid_file_ = "";
   local_addr_ = "";
-	local_sync_port_ = "";
-	rtp_start_port_ = 34000;
-	rtp_end_port_ = 35000;
-	no_nat_once_ = false;
-	nat_ = false;
+  local_sync_port_ = "";
+  rtp_start_port_ = 34000;
+  rtp_end_port_ = 35000;
+  no_nat_once_ = false;
+  nat_ = false;
 }
 
 Options::~Options()
@@ -205,13 +209,13 @@ bool Options::parse(int argc, char* argv[])
   progname_ = argv[0];
   std::queue<std::string> host_port_queue;
   argc--;
-  for(int i=1; argc > 0; ++i)
-  {
+  for(int i=1; argc > 0; ++i) {
     std::string str(argv[i]);
     argc--;
 
-    if(str == "-h" || str == "--help")
+    if(str == "-h" || str == "--help") {
       return false;
+    }
     PARSE_BOOL_PARAM("-t","--chroot", chroot_)
     PARSE_BOOL_PARAM("-n","--nat", nat_)
     PARSE_BOOL_PARAM("-o","--no-nat-once", no_nat_once_)
@@ -222,30 +226,31 @@ bool Options::parse(int argc, char* argv[])
     PARSE_SCALAR_PARAM("-i","--interface", local_addr_)
     PARSE_STRING_PARAM("-s","--control", control_interface_)
     PARSE_SCALAR_PARAM2("-p","--port-range", rtp_start_port_, rtp_end_port_)
-		PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
+    PARSE_CSLIST_PARAM("-M","--sync-hosts", host_port_queue)
     PARSE_SCALAR_PARAM("-S","--sync-port", local_sync_port_)
     PARSE_SCALAR_PARAM("-I","--sync-interface", local_sync_addr_)
-    else 
+    else {
       return false;
+    }
   }
-  while(!host_port_queue.empty())
-  {
+  while(!host_port_queue.empty()) {
     std::stringstream tmp_stream(host_port_queue.front());
     OptionConnectTo oct;
     getline(tmp_stream,oct.host,':');
-    if(!tmp_stream.good())
+    if(!tmp_stream.good()) {
       return false;
+    }
     tmp_stream >> oct.port;
     host_port_queue.pop();
     connect_to_.push_back(oct);
   }
-  
+
   return sanityCheck();
 }
 
 bool Options::sanityCheck()
 {
-  if(control_interface_.port_ == "") control_interface_.port_ = "22222";
+  if(control_interface_.port_ == "") { control_interface_.port_ = "22222"; }
   return true;
 }
 

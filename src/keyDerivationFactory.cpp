@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -39,19 +39,22 @@
 
 KeyDerivation* KeyDerivationFactory::create(std::string const& type)
 {
-  if(type == "null")
+  if(type == "null") {
     return new NullKeyDerivation();
+  }
 #ifndef NO_CRYPT
-  else if(type == "aes-ctr")
+  else if(type == "aes-ctr") {
     return new AesIcmKeyDerivation();
-  else if(type == "aes-ctr-128")
+  } else if(type == "aes-ctr-128") {
     return new AesIcmKeyDerivation(128);
-  else if(type == "aes-ctr-192")
+  } else if(type == "aes-ctr-192") {
     return new AesIcmKeyDerivation(192);
-  else if(type == "aes-ctr-256")
+  } else if(type == "aes-ctr-256") {
     return new AesIcmKeyDerivation(256);
+  }
 #endif
-  else
+  else {
     throw std::invalid_argument("key derivation prf not available");
+  }
 }
 

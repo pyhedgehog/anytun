@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -41,12 +41,12 @@
 class WinService
 {
 public:
-  #define SVC_NAME "anytun"
+#define SVC_NAME "anytun"
   static void install();
   static void uninstall();
   static void start();
 
-  static VOID WINAPI main(DWORD dwArgc, LPTSTR *lpszArgv);
+  static VOID WINAPI main(DWORD dwArgc, LPTSTR* lpszArgv);
   static VOID WINAPI ctrlHandler(DWORD dwCtrl);
 
   void reportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode);
@@ -61,8 +61,8 @@ public:
 private:
   WinService() {};
   ~WinService() {};
-  WinService(const WinService &w);
-  void operator=(const WinService &w);
+  WinService(const WinService& w);
+  void operator=(const WinService& w);
 
   SERVICE_STATUS status_;
   SERVICE_STATUS_HANDLE status_handle_;

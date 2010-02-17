@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -52,39 +52,41 @@ SyncQueue& SyncQueue::instance()
 {
   Lock lock(instMutex);
   static instanceCleaner c;
-  if(!inst)
+  if(!inst) {
     inst = new SyncQueue();
+  }
 
   return *inst;
 }
 
-void SyncQueue::push(const SyncCommand & scom )
+void SyncQueue::push(const SyncCommand& scom)
 {
-	std::ostringstream sout;
-	boost::archive::text_oarchive oa(sout);
-	oa << scom;
+  std::ostringstream sout;
+  boost::archive::text_oarchive oa(sout);
+  oa << scom;
 
   std::stringstream lengthout;
   lengthout << std::setw(5) << std::setfill('0') << sout.str().size()<< ' ';
-	push(lengthout.str()+sout.str());
+  push(lengthout.str()+sout.str());
 }
 
-void SyncQueue::push(const std::string & str )
+void SyncQueue::push(const std::string& str)
 {
   Lock lock(mutex_);
-//	std::cout << "Debug" << std:endl;
-	if( syncServer_)
-	  syncServer_->send(str);
+  //	std::cout << "Debug" << std:endl;
+  if(syncServer_) {
+    syncServer_->send(str);
+  }
 }
 
-void SyncQueue::setSyncServerPtr(SyncServer * ptr)
+void SyncQueue::setSyncServerPtr(SyncServer* ptr)
 {
   Lock lock(mutex_);
-	syncServer_=ptr;
+  syncServer_=ptr;
 }
 
 bool SyncQueue::empty()
 {
   Lock lock(mutex_);
-	return 1;
+  return 1;
 }

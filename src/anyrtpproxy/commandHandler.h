@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -46,31 +46,31 @@ class CommandHandler
 public:
   typedef boost::asio::ip::udp proto;
 
-  CommandHandler(SyncQueue& q, std::string lp, PortWindow &);
-  CommandHandler(SyncQueue& q, std::string la, std::string lp, PortWindow &);
-  
+  CommandHandler(SyncQueue& q, std::string lp, PortWindow&);
+  CommandHandler(SyncQueue& q, std::string la, std::string lp, PortWindow&);
+
   bool isRunning();
 
-  #define CMD_REQUEST 'U'
-  #define CMD_RESPONSE 'L'
-  #define CMD_DELETE 'D'
-  #define CMD_VERSION 'V'
-  #define CMD_INFO 'I'
+#define CMD_REQUEST 'U'
+#define CMD_RESPONSE 'L'
+#define CMD_DELETE 'D'
+#define CMD_VERSION 'V'
+#define CMD_INFO 'I'
 
-  #define RET_OK "0"
-  #define RET_ERR_SYNTAX "E1"
-  #define RET_ERR_UNKNOWN "E2"
+#define RET_OK "0"
+#define RET_ERR_SYNTAX "E1"
+#define RET_ERR_UNKNOWN "E2"
 
-  #define BASE_VERSION "20040107"
-  #define SUP_VERSION "20050322"
+#define BASE_VERSION "20040107"
+#define SUP_VERSION "20050322"
 
 private:
-  CommandHandler(const CommandHandler &c);
-  void operator=(const CommandHandler &c);
+  CommandHandler(const CommandHandler& c);
+  void operator=(const CommandHandler& c);
 
   static void run(void* s);
   std::string handle(std::string command);
-  
+
   std::string handleRequest(std::string modifiers, std::string call_id, std::string addr, std::string port, std::string from_tag, std::string to_tag);
   std::string handleResponse(std::string modifiers, std::string call_id, std::string addr, std::string port, std::string from_tag, std::string to_tag);
   std::string handleDelete(std::string call_id, std::string from_tag, std::string to_tag);
@@ -86,7 +86,7 @@ private:
   proto::socket control_sock_;
   std::string local_address_;
   std::string local_port_;
-	PortWindow& port_window_;
+  PortWindow& port_window_;
 };
 
 

@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -47,8 +47,9 @@ ConnectionList& ConnectionList::instance()
 {
   Lock lock(instMutex);
   static instanceCleaner c;
-  if(!inst)
+  if(!inst) {
     inst = new ConnectionList();
+  }
 
   return *inst;
 }
@@ -59,22 +60,21 @@ ConnectionList::ConnectionList()
 
 ConnectionList::~ConnectionList()
 {
-// TODO: comment this in as soon as threads @ main get cleaned up properly 
-//  Lock lock(mutex_);
-// 	ConnectionMap::iterator it;
-// 	for(it = connections_.begin(); it != connections_.end(); ++it) {
-//     delete &it->second.kd_;
-//     delete &it->second.seq_window_;
-//   }
-} 
+  // TODO: comment this in as soon as threads @ main get cleaned up properly
+  //  Lock lock(mutex_);
+  // 	ConnectionMap::iterator it;
+  // 	for(it = connections_.begin(); it != connections_.end(); ++it) {
+  //     delete &it->second.kd_;
+  //     delete &it->second.seq_window_;
+  //   }
+}
 
-void ConnectionList::addConnection(ConnectionParam &conn, u_int16_t mux )
+void ConnectionList::addConnection(ConnectionParam& conn, u_int16_t mux)
 {
   Lock lock(mutex_);
 
   std::pair<ConnectionMap::iterator, bool> ret = connections_.insert(ConnectionMap::value_type(mux, conn));
-  if(!ret.second)
-  {
+  if(!ret.second) {
     connections_.erase(ret.first);
     connections_.insert(ConnectionMap::value_type(mux, conn));
   }
@@ -82,8 +82,8 @@ void ConnectionList::addConnection(ConnectionParam &conn, u_int16_t mux )
 
 const ConnectionMap::iterator ConnectionList::getEnd()
 {
-    Lock lock(mutex_);
-	return connections_.end();
+  Lock lock(mutex_);
+  return connections_.end();
 }
 
 ConnectionMap::iterator ConnectionList::getBeginUnlocked()
@@ -105,48 +105,49 @@ ConnectionMap::iterator ConnectionList::getEndUnlocked()
 
 const ConnectionMap::iterator ConnectionList::getConnection(u_int16_t mux)
 {
-	Lock lock(mutex_);
-	ConnectionMap::iterator it = connections_.find(mux);
-	return it;
+  Lock lock(mutex_);
+  ConnectionMap::iterator it = connections_.find(mux);
+  return it;
 }
 
 
-ConnectionParam & ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
+ConnectionParam& ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
 {
-	ConnectionMap::iterator it = connections_.find(mux);
-	if(it!=connections_.end())
-		return it->second;
+  ConnectionMap::iterator it = connections_.find(mux);
+  if(it!=connections_.end()) {
+    return it->second;
+  }
 
   u_int8_t key[] = {
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-  'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
-  };
-  
-  u_int8_t salt[] = {
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-  'i', 'j', 'k', 'l', 'm', 'n'
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+    'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
   };
 
-  SeqWindow * seq= new SeqWindow(0);
+  u_int8_t salt[] = {
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+    'i', 'j', 'k', 'l', 'm', 'n'
+  };
+
+  SeqWindow* seq= new SeqWindow(0);
   seq_nr_t seq_nr_=0;
-  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
+  KeyDerivation* kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(Buffer(key, sizeof(key)), Buffer(salt, sizeof(salt)));
-  ConnectionParam conn ((*kd), (*seq), seq_nr_, PacketSourceEndpoint());
-	connections_.insert(ConnectionMap::value_type(mux, conn));
-	it = connections_.find(mux);
-	return it->second;
+  ConnectionParam conn((*kd), (*seq), seq_nr_, PacketSourceEndpoint());
+  connections_.insert(ConnectionMap::value_type(mux, conn));
+  it = connections_.find(mux);
+  return it->second;
 }
 
 void ConnectionList::clear()
 {
   Lock lock(mutex_);
-	connections_.clear();
+  connections_.clear();
 }
 
 bool ConnectionList::empty()
 {
   Lock lock(mutex_);
-	return connections_.empty();
+  return connections_.empty();
 }
 
 Mutex& ConnectionList::getMutex()

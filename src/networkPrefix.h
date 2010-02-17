@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -43,23 +43,22 @@
 class NetworkPrefix : public NetworkAddress
 {
 public:
-	NetworkPrefix();
-	NetworkPrefix(const NetworkAddress &, u_int8_t length);
-	NetworkPrefix(const NetworkPrefix &);
-	void setNetworkPrefixLength(u_int8_t length );
-	u_int8_t getNetworkPrefixLength() const;
-  bool operator<(const NetworkPrefix &s) const;
+  NetworkPrefix();
+  NetworkPrefix(const NetworkAddress&, u_int8_t length);
+  NetworkPrefix(const NetworkPrefix&);
+  void setNetworkPrefixLength(u_int8_t length);
+  u_int8_t getNetworkPrefixLength() const;
+  bool operator<(const NetworkPrefix& s) const;
 
 private:
-	operator NetworkAddress();
-  void operator=(const NetworkPrefix &s);
-	u_int8_t length_;
+  operator NetworkAddress();
+  void operator=(const NetworkPrefix& s);
+  u_int8_t length_;
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version)
-  {
-    ar & length_;
-		ar & boost::serialization::base_object<NetworkAddress>(*this);
+  void serialize(Archive& ar, const unsigned int version) {
+    ar& length_;
+    ar& boost::serialization::base_object<NetworkAddress>(*this);
   };
 
 };

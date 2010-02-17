@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -44,7 +44,7 @@
 #include <list>
 #include "syncTcpConnection.h"
 
-typedef boost::function<void (SyncTcpConnection *)> ConnectCallback;
+typedef boost::function<void (SyncTcpConnection*)> ConnectCallback;
 
 class SyncServer
 {
@@ -53,12 +53,12 @@ public:
   ~SyncServer();
   void onResolve(SyncTcpConnection::proto::resolver::iterator& it);
   void onResolvError(const std::runtime_error& e);
-  
+
   void run();
   void send(std::string message);
-  
+
   std::list<SyncTcpConnection::pointer> conns_;
-  
+
 private:
   Mutex mutex_; //Mutex for list conns_
   boost::asio::io_service io_service_;

@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -40,9 +40,10 @@ CallIdQueue& CallIdQueue::instance()
 {
   Lock lock(instMutex);
   static instanceCleaner c;
-  if(!inst)
+  if(!inst) {
     inst = new CallIdQueue();
-  
+  }
+
   return *inst;
 }
 
@@ -52,8 +53,9 @@ CallIdQueue::CallIdQueue()
 
 CallIdQueue::~CallIdQueue()
 {
-  while(!callids_.empty())
+  while(!callids_.empty()) {
     pop();
+  }
 }
 
 std::string& CallIdQueue::front()

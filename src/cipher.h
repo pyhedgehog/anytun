@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -53,12 +53,12 @@ public:
   Cipher(kd_dir_t d) : dir_(d) {};
   virtual ~Cipher() {};
 
-	void encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-	void decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out);
-  
+  void encrypt(KeyDerivation& kd, PlainPacket& in, EncryptedPacket& out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  void decrypt(KeyDerivation& kd, EncryptedPacket& in, PlainPacket& out);
+
 protected:
   virtual u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
-  virtual u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0; 
+  virtual u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
 
   kd_dir_t dir_;
 };
@@ -81,7 +81,7 @@ public:
   AesIcmCipher(kd_dir_t d);
   AesIcmCipher(kd_dir_t d, u_int16_t key_length);
   ~AesIcmCipher();
-  
+
   static const u_int16_t DEFAULT_KEY_LENGTH = 128;
   static const u_int16_t CTR_LENGTH = 16;
   static const u_int16_t SALT_LENGTH = 14;
@@ -106,7 +106,7 @@ private:
   Buffer salt_;
 
 #ifdef _MSC_VER
-  #pragma pack(push, 1)
+#pragma pack(push, 1)
 #endif
   union ATTR_PACKED cipher_aesctr_ctr_union {
     u_int8_t buf_[CTR_LENGTH];
@@ -114,7 +114,7 @@ private:
       u_int8_t buf_[SALT_LENGTH];
       u_int16_t zero_;
     } salt_;
-	struct ATTR_PACKED {
+    struct ATTR_PACKED {
       u_int8_t fill_[SALT_LENGTH - sizeof(mux_t) - sizeof(sender_id_t) - 2*sizeof(u_int8_t) - sizeof(seq_nr_t)];
       mux_t mux_;
       sender_id_t sender_id_;
@@ -124,7 +124,7 @@ private:
     } params_;
   } ctr_;
 #ifdef _MSC_VER
-  #pragma pack(pop)
+#pragma pack(pop)
 #endif
 };
 #endif

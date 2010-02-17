@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -77,28 +77,27 @@ public:
 
   virtual std::string printType() { return "GenericKeyDerivation"; };
 
-  satp_prf_label_t convertLabel(kd_dir_t dir, satp_prf_label_t label);  
+  satp_prf_label_t convertLabel(kd_dir_t dir, satp_prf_label_t label);
 
 protected:
   virtual void updateMasterKey() = 0;
-  
+
 #ifndef NO_PASSPHRASE
   void calcMasterKey(std::string passphrase, u_int16_t length);
   void calcMasterSalt(std::string passphrase, u_int16_t length);
 #endif
 
-	KeyDerivation(const KeyDerivation & src);
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
- 		WritersLock lock(mutex_);
-    ar & role_;
-    ar & key_length_;
-    ar & master_salt_;
-    ar & master_key_;
+  KeyDerivation(const KeyDerivation& src);
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int version) {
+    WritersLock lock(mutex_);
+    ar& role_;
+    ar& key_length_;
+    ar& master_salt_;
+    ar& master_key_;
     updateMasterKey();
-	}
+  }
 
   bool is_initialized_;
   role_t role_;
@@ -109,7 +108,7 @@ protected:
   SharedMutex mutex_;
 };
 
-#if BOOST_VERSION <= 103500 
+#if BOOST_VERSION <= 103500
 BOOST_IS_ABSTRACT(KeyDerivation);
 #else
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(KeyDerivation);
@@ -131,12 +130,11 @@ public:
 private:
   void updateMasterKey() {};
 
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
-    ar & boost::serialization::base_object<KeyDerivation>(*this);
-	}
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int version) {
+    ar& boost::serialization::base_object<KeyDerivation>(*this);
+  }
 
 };
 
@@ -153,7 +151,7 @@ public:
   static const u_int16_t DEFAULT_KEY_LENGTH = 128;
   static const u_int16_t CTR_LENGTH = 16;
   static const u_int16_t SALT_LENGTH = 14;
-   
+
   void init(Buffer key, Buffer salt, std::string passphrase = "");
   bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key);
 
@@ -164,12 +162,11 @@ private:
 
   bool calcCtr(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr);
 
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
-    ar & boost::serialization::base_object<KeyDerivation>(*this);
-	}
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int version) {
+    ar& boost::serialization::base_object<KeyDerivation>(*this);
+  }
 
 #ifndef USE_SSL_CRYPTO
   gcry_cipher_hd_t handle_[2];
@@ -179,8 +176,8 @@ private:
 #endif
 
 #ifdef _MSC_VER
-  #pragma pack(push, 1)
-#endif  
+#pragma pack(push, 1)
+#endif
   union ATTR_PACKED key_derivation_aesctr_ctr_union {
     u_int8_t buf_[CTR_LENGTH];
     struct ATTR_PACKED {
@@ -194,8 +191,8 @@ private:
       u_int16_t zero_;
     } params_;
   } ctr_[2];
-#ifdef _MSC_VER  
-  #pragma pack(pop)
+#ifdef _MSC_VER
+#pragma pack(pop)
 #endif
 };
 

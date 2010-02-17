@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -38,62 +38,64 @@
 #include <gcrypt.h>
 
 // boost thread callbacks for libgcrypt
-static int boost_mutex_init(void **priv)
+static int boost_mutex_init(void** priv)
 {
-  boost::mutex *lock = new boost::mutex();
-  if (!lock)
+  boost::mutex* lock = new boost::mutex();
+  if(!lock) {
     return ENOMEM;
+  }
   *priv = lock;
   return 0;
 }
 
-static int boost_mutex_destroy(void **lock)
+static int boost_mutex_destroy(void** lock)
 {
   delete reinterpret_cast<boost::mutex*>(*lock);
   return 0;
 }
 
-static int boost_mutex_lock(void **lock)
+static int boost_mutex_lock(void** lock)
 {
   reinterpret_cast<boost::mutex*>(*lock)->lock();
   return 0;
 }
 
-static int boost_mutex_unlock(void **lock)
+static int boost_mutex_unlock(void** lock)
 {
   reinterpret_cast<boost::mutex*>(*lock)->unlock();
   return 0;
 }
 
-static struct gcry_thread_cbs gcry_threads_boost =
-{ GCRY_THREAD_OPTION_USER, NULL,
+static struct gcry_thread_cbs gcry_threads_boost = {
+  GCRY_THREAD_OPTION_USER, NULL,
   boost_mutex_init, boost_mutex_destroy,
-  boost_mutex_lock, boost_mutex_unlock };
+  boost_mutex_lock, boost_mutex_unlock
+};
 
 #define MIN_GCRYPT_VERSION "1.2.0"
 
 bool initLibGCrypt()
 {
-  // make libgcrypt thread safe 
+  // make libgcrypt thread safe
   // this must be called before any other libgcrypt call
-  gcry_control( GCRYCTL_SET_THREAD_CBS, &gcry_threads_boost );
+  gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_boost);
 
   // this must be called right after the GCRYCTL_SET_THREAD_CBS command
   // no other function must be called till now
-  if( !gcry_check_version( MIN_GCRYPT_VERSION ) ) {
+  if(!gcry_check_version(MIN_GCRYPT_VERSION)) {
     std::cout << "initLibGCrypt: Invalid Version of libgcrypt, should be >= " << MIN_GCRYPT_VERSION << std::endl;
     return false;
   }
 
-  gcry_error_t err = gcry_control (GCRYCTL_DISABLE_SECMEM, 0);
-  if( err ) {
+  gcry_error_t err = gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
+  if(err) {
     std::cout << "initLibGCrypt: Failed to disable secure memory: " << AnytunGpgError(err) << std::endl;
     return false;
   }
 
   // Tell Libgcrypt that initialization has completed.
   err = gcry_control(GCRYCTL_INITIALIZATION_FINISHED);
-  if( err ) {
+  if(err) {
     std::cout << "initLibGCrypt: Failed to finish initialization: " << AnytunGpgError(err) << std::endl;
     return false;
   }

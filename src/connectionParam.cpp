@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -36,6 +36,6 @@ ConnectionParam::ConnectionParam(KeyDerivation& kd, SeqWindow& seq_window,seq_nr
 {
 }
 
-ConnectionParam::ConnectionParam(const ConnectionParam & src) : kd_(src.kd_),seq_window_(src.seq_window_),seq_nr_(src.seq_nr_),remote_end_(src.remote_end_),mutex_()
+ConnectionParam::ConnectionParam(const ConnectionParam& src) : kd_(src.kd_),seq_window_(src.seq_window_),seq_nr_(src.seq_nr_),remote_end_(src.remote_end_),mutex_()
 {
 }

@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -47,35 +47,39 @@ class TunDevice
 public:
   TunDevice(std::string dev,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix);
   ~TunDevice();
-  
+
   int read(u_int8_t* buf, u_int32_t len);
   int write(u_int8_t* buf, u_int32_t len);
 
   const char* getActualName() const { return actual_name_.c_str(); }
   const char* getActualNode() const { return actual_node_.c_str(); }
-  device_type_t getType() const { return conf_.type_; } 
+  device_type_t getType() const { return conf_.type_; }
   void waitUntilReady();
-  const char* getTypeString() const
-  {
+  const char* getTypeString() const {
 #ifndef _MSC_VER
     if(fd_ < 0)
 #else
     if(handle_ == INVALID_HANDLE_VALUE)
 #endif
       return "";
-    
-    switch(conf_.type_)
-    {
-    case TYPE_UNDEF: return "undef"; break;
-    case TYPE_TUN: return "tun"; break;
-    case TYPE_TAP: return "tap"; break;
+
+    switch(conf_.type_) {
+    case TYPE_UNDEF:
+      return "undef";
+      break;
+    case TYPE_TUN:
+      return "tun";
+      break;
+    case TYPE_TAP:
+      return "tap";
+      break;
     }
     return "";
   }
 
 private:
-  void operator=(const TunDevice &src);
-  TunDevice(const TunDevice &src);
+  void operator=(const TunDevice& src);
+  TunDevice(const TunDevice& src);
 
   void init_post();
   void do_ifconfig();
@@ -86,14 +90,14 @@ private:
 #else
   bool getAdapter(std::string const& dev_name);
   DWORD performIoControl(DWORD controlCode, LPVOID inBuffer, DWORD inBufferSize,
-                        LPVOID outBuffer, DWORD outBufferSize);
+                         LPVOID outBuffer, DWORD outBufferSize);
   HANDLE handle_;
   OVERLAPPED roverlapped_, woverlapped_;
 #endif
 
   DeviceConfig conf_;
 #ifndef _MSC_VER
-  SysExec * sys_exec_;
+  SysExec* sys_exec_;
 #endif
   bool with_pi_;
   std::string actual_name_;

@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -43,31 +43,34 @@ typedef std::map<std::string,RtpSession*> RtpSessionMap;
 class RtpSessionTable
 {
 public:
-	static RtpSessionTable& instance();
-	RtpSessionTable();
-	~RtpSessionTable();
-	void delSession(const std::string & call_id);
-	bool empty();
-	void clear();
+  static RtpSessionTable& instance();
+  RtpSessionTable();
+  ~RtpSessionTable();
+  void delSession(const std::string& call_id);
+  bool empty();
+  void clear();
   ::Mutex& getMutex();
-	RtpSessionMap::iterator getBeginUnlocked();
-	RtpSessionMap::iterator getEndUnlocked();
-	RtpSession& getOrNewSession(const std::string & call_id, bool& isnew);
-	RtpSession& getOrNewSessionUnlocked(const std::string & call_id, bool& isnew);
-	RtpSession& getSession(const std::string & call_id);
+  RtpSessionMap::iterator getBeginUnlocked();
+  RtpSessionMap::iterator getEndUnlocked();
+  RtpSession& getOrNewSession(const std::string& call_id, bool& isnew);
+  RtpSession& getOrNewSessionUnlocked(const std::string& call_id, bool& isnew);
+  RtpSession& getSession(const std::string& call_id);
 
 private:
   static ::Mutex instMutex;
-	static RtpSessionTable* inst;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-     if(RtpSessionTable::inst != 0)
-       delete RtpSessionTable::inst;
-   }
-	};
-	RtpSessionTable(const RtpSessionTable &s);
-  void operator=(const RtpSessionTable &s);
-	RtpSessionMap map_;
+  static RtpSessionTable* inst;
+  class instanceCleaner
+  {
+  public:
+    ~instanceCleaner() {
+      if(RtpSessionTable::inst != 0) {
+        delete RtpSessionTable::inst;
+      }
+    }
+  };
+  RtpSessionTable(const RtpSessionTable& s);
+  void operator=(const RtpSessionTable& s);
+  RtpSessionMap map_;
   ::Mutex mutex_;
 };
 

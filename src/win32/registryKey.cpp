@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -64,14 +64,16 @@ std::string RegistryKey::getName() const
 
 DWORD RegistryKey::open(HKEY hkey, std::string subKey, REGSAM samDesired)
 {
-  if(opened_)
+  if(opened_) {
     RegCloseKey(key_);
+  }
 
   opened_ = false;
   name_ = "";
   LONG err = RegOpenKeyExA(hkey, subKey.c_str(), 0, samDesired, &key_);
-  if(err != ERROR_SUCCESS)
+  if(err != ERROR_SUCCESS) {
     return err;
+  }
 
   name_ = subKey;
   opened_ = true;
@@ -80,28 +82,32 @@ DWORD RegistryKey::open(HKEY hkey, std::string subKey, REGSAM samDesired)
 
 void RegistryKey::close()
 {
-  if(opened_)
+  if(opened_) {
     RegCloseKey(key_);
+  }
   opened_ = false;
 }
 
 std::string RegistryKey::operator[](std::string const& name) const
 {
-  if(!opened_)
+  if(!opened_) {
     throw AnytunErrno(ERROR_INVALID_HANDLE);
+  }
 
   char value[STRING_VALUE_LENGTH];
   DWORD len = sizeof(value);
   LONG err = RegQueryValueExA(key_, name.c_str(), NULL, NULL, (LPBYTE)value, &len);
-  if(err != ERROR_SUCCESS)
+  if(err != ERROR_SUCCESS) {
     throw AnytunErrno(err);
+  }
 
   if(value[len-1] != 0) {
-    if(len < sizeof(value))
+    if(len < sizeof(value)) {
       value[len++] = 0;
-    else
+    } else {
       throw AnytunErrno(ERROR_INSUFFICIENT_BUFFER);
-  }  
+    }
+  }
   return std::string(value);
 }
 
@@ -110,8 +116,9 @@ DWORD RegistryKey::getSubKey(DWORD index, RegistryKey& subKey, REGSAM sam) const
   char subkeyname[NAME_LENGTH];
   DWORD len = sizeof(subkeyname);
   DWORD err = RegEnumKeyExA(key_, index, subkeyname, &len, NULL, NULL, NULL, NULL);
-  if(err != ERROR_SUCCESS)
+  if(err != ERROR_SUCCESS) {
     return err;
+  }
 
   return subKey.open(key_, subkeyname, sam);
 }

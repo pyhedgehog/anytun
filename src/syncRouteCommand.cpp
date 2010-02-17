@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -32,16 +32,16 @@
 #include "syncRouteCommand.h"
 
 SyncRouteCommand::SyncRouteCommand()
-{	
-}
-
-SyncRouteCommand::SyncRouteCommand( const NetworkPrefix & addr )
-:addr_(addr)
-{	
-}
-
-
-NetworkPrefix SyncRouteCommand::getPrefix() const 
 {
-	return addr_;
+}
+
+SyncRouteCommand::SyncRouteCommand(const NetworkPrefix& addr)
+  :addr_(addr)
+{
+}
+
+
+NetworkPrefix SyncRouteCommand::getPrefix() const
+{
+  return addr_;
 }

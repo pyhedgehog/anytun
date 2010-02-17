@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -47,10 +47,10 @@ public:
   Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc = true);
   Buffer(std::string hex_data, bool allow_realloc = true);
   virtual ~Buffer();
-  Buffer(const Buffer &src);
-  void operator=(const Buffer &src);
-  bool operator==(const Buffer &cmp) const;
-  Buffer operator^(const Buffer &xor_by) const;
+  Buffer(const Buffer& src);
+  void operator=(const Buffer& src);
+  bool operator==(const Buffer& cmp) const;
+  Buffer operator^(const Buffer& xor_by) const;
 
   u_int32_t getLength() const;
   virtual void setLength(u_int32_t new_length);
@@ -67,7 +67,7 @@ public:
 protected:
   virtual void reinit() {};
 
-  u_int8_t *buf_;
+  u_int8_t* buf_;
   u_int32_t length_;
   u_int32_t real_length_;
   bool allow_realloc_;

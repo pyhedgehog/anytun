@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -66,7 +66,7 @@ SysExec::SysExec(std::string const& script, StringVector args, StringList env) :
   doExec(args, env);
 }
 
-int SysExec::getReturnCode() const 
+int SysExec::getReturnCode() const
 {
   return return_code_;
 }

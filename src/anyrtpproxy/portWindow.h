@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -53,13 +53,13 @@ public:
 
 
 private:
-	u_int16_t start_port_;
-	u_int16_t end_port_;
+  u_int16_t start_port_;
+  u_int16_t end_port_;
   ::Mutex mutex_;
-	PortSet ports_;
+  PortSet ports_;
 
-  PortWindow(const PortWindow &s);
-  void operator=(const PortWindow &s);
+  PortWindow(const PortWindow& s);
+  void operator=(const PortWindow& s);
 };
 
 #endif

@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -52,108 +52,114 @@
 
 TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400), sys_exec_(NULL)
 {
-	struct ifreq ifr;
-	memset(&ifr, 0, sizeof(ifr));
+  struct ifreq ifr;
+  memset(&ifr, 0, sizeof(ifr));
 
   if(conf_.type_ == TYPE_TUN) {
     ifr.ifr_flags = IFF_TUN;
     with_pi_ = true;
-  } 
-  else if(conf_.type_ == TYPE_TAP) {
+  } else if(conf_.type_ == TYPE_TAP) {
     ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
     with_pi_ = false;
-  } 
-  else
+  } else {
     AnytunError::throwErr() << "unable to recognize type of device (tun or tap)";
+  }
 
-	if(dev_name != "")
-		strncpy(ifr.ifr_name, dev_name.c_str(), IFNAMSIZ);
+  if(dev_name != "") {
+    strncpy(ifr.ifr_name, dev_name.c_str(), IFNAMSIZ);
+  }
 
-	fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
-	if(fd_ < 0)
+  fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
+  if(fd_ < 0) {
     AnytunError::throwErr() << "can't open device file (" << DEFAULT_DEVICE  << "): " << AnytunErrno(errno);
+  }
 
-	if(!ioctl(fd_, TUNSETIFF, &ifr)) {
-		actual_name_ = ifr.ifr_name;
-	} else if(!ioctl(fd_, (('T' << 8) | 202), &ifr)) {
-		actual_name_ = ifr.ifr_name;
-	} else {
+  if(!ioctl(fd_, TUNSETIFF, &ifr)) {
+    actual_name_ = ifr.ifr_name;
+  } else if(!ioctl(fd_, (('T' << 8) | 202), &ifr)) {
+    actual_name_ = ifr.ifr_name;
+  } else {
     ::close(fd_);
     AnytunError::throwErr() << "tun/tap device ioctl failed: " << AnytunErrno(errno);
   }
   actual_node_ = DEFAULT_DEVICE;
 
-  if(ifcfg_addr != "")
+  if(ifcfg_addr != "") {
     do_ifconfig();
+  }
 }
 
 TunDevice::~TunDevice()
 {
-  if(fd_ > 0)
+  if(fd_ > 0) {
     ::close(fd_);
+  }
 }
 
 int TunDevice::fix_return(int ret, size_t pi_length) const
 {
-  if(ret < 0)
+  if(ret < 0) {
     return ret;
+  }
 
   return (static_cast<size_t>(ret) > pi_length ? (ret - pi_length) : 0);
 }
 
 int TunDevice::read(u_int8_t* buf, u_int32_t len)
 {
-  if(fd_ < 0)
+  if(fd_ < 0) {
     return -1;
+  }
 
-  if(with_pi_)
-  {
+  if(with_pi_) {
     struct iovec iov[2];
     struct tun_pi tpi;
-    
+
     iov[0].iov_base = &tpi;
     iov[0].iov_len = sizeof(tpi);
     iov[1].iov_base = buf;
     iov[1].iov_len = len;
     return(fix_return(::readv(fd_, iov, 2), sizeof(tpi)));
-  }
-  else
+  } else {
     return(::read(fd_, buf, len));
+  }
 }
 
 int TunDevice::write(u_int8_t* buf, u_int32_t len)
 {
-  if(fd_ < 0)
+  if(fd_ < 0) {
     return -1;
+  }
 
-  if(!buf)
+  if(!buf) {
     return 0;
+  }
 
-  if(with_pi_)
-  {
+  if(with_pi_) {
     struct iovec iov[2];
     struct tun_pi tpi;
-    struct iphdr *hdr = reinterpret_cast<struct iphdr *>(buf);
-    
+    struct iphdr* hdr = reinterpret_cast<struct iphdr*>(buf);
+
     tpi.flags = 0;
-    if(hdr->version == 4)
+    if(hdr->version == 4) {
       tpi.proto = htons(ETH_P_IP);
-    else
+    } else {
       tpi.proto = htons(ETH_P_IPV6);
-    
+    }
+
     iov[0].iov_base = &tpi;
     iov[0].iov_len = sizeof(tpi);
     iov[1].iov_base = buf;
     iov[1].iov_len = len;
     return(fix_return(::writev(fd_, iov, 2), sizeof(tpi)));
-  }
-  else
+  } else {
     return(::write(fd_, buf, len));
+  }
 }
 
 void TunDevice::init_post()
 {
-// nothing to be done here
+  // nothing to be done here
 }
 
 void TunDevice::do_ifconfig()
@@ -166,6 +172,7 @@ void TunDevice::do_ifconfig()
 
 void TunDevice::waitUntilReady()
 {
-  if(sys_exec_)
+  if(sys_exec_) {
     SysExec::waitAndDestroy(sys_exec_);
+  }
 }

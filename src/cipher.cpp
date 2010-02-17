@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -42,19 +42,19 @@
 #include "log.h"
 #include "anytunError.h"
 
-void Cipher::encrypt(KeyDerivation& kd, PlainPacket & in, EncryptedPacket & out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+void Cipher::encrypt(KeyDerivation& kd, PlainPacket& in, EncryptedPacket& out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-	u_int32_t len = cipher(kd, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
-	out.setSenderId(sender_id);
-	out.setSeqNr(seq_nr);
+  u_int32_t len = cipher(kd, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
+  out.setSenderId(sender_id);
+  out.setSeqNr(seq_nr);
   out.setMux(mux);
-	out.setPayloadLength(len);
+  out.setPayloadLength(len);
 }
 
-void Cipher::decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out)
+void Cipher::decrypt(KeyDerivation& kd, EncryptedPacket& in, PlainPacket& out)
 {
-	u_int32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
-	out.setLength(len);
+  u_int32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
+  out.setLength(len);
 }
 
 
@@ -62,18 +62,18 @@ void Cipher::decrypt(KeyDerivation& kd, EncryptedPacket & in, PlainPacket & out)
 
 u_int32_t NullCipher::cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
+  std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
 }
 
 u_int32_t NullCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-	std::memcpy(out, in, (ilen < olen) ? ilen : olen);
+  std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
 }
 
 #ifndef NO_CRYPT
-//****** AesIcmCipher ****** 
+//****** AesIcmCipher ******
 
 AesIcmCipher::AesIcmCipher(kd_dir_t d) : Cipher(d), key_(u_int32_t(DEFAULT_KEY_LENGTH/8)), salt_(u_int32_t(SALT_LENGTH))
 {
@@ -91,9 +91,15 @@ void AesIcmCipher::init(u_int16_t key_length)
   handle_ = NULL;
   int algo;
   switch(key_length) {
-  case 128: algo = GCRY_CIPHER_AES128; break;
-  case 192: algo = GCRY_CIPHER_AES192; break;
-  case 256: algo = GCRY_CIPHER_AES256; break;
+  case 128:
+    algo = GCRY_CIPHER_AES128;
+    break;
+  case 192:
+    algo = GCRY_CIPHER_AES192;
+    break;
+  case 256:
+    algo = GCRY_CIPHER_AES256;
+    break;
   default: {
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher::AesIcmCipher: cipher key length of " << key_length << " Bits is not supported";
     return;
@@ -101,9 +107,9 @@ void AesIcmCipher::init(u_int16_t key_length)
   }
 
   gcry_error_t err = gcry_cipher_open(&handle_, algo, GCRY_CIPHER_MODE_CTR, 0);
-  if( err ) {
+  if(err) {
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher::AesIcmCipher: Failed to open cipher" << AnytunGpgError(err);
-  } 
+  }
 #endif
 }
 
@@ -111,8 +117,9 @@ void AesIcmCipher::init(u_int16_t key_length)
 AesIcmCipher::~AesIcmCipher()
 {
 #ifndef USE_SSL_CRYPTO
-  if(handle_)
+  if(handle_) {
     gcry_cipher_close(handle_);
+  }
 #endif
 }
 
@@ -144,8 +151,9 @@ void AesIcmCipher::calcCtr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sende
 void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
 #ifndef USE_SSL_CRYPTO
-  if(!handle_)
+  if(!handle_) {
     return;
+  }
 #endif
 
   kd.generate(dir_, LABEL_ENC, seq_nr, key_);
@@ -164,7 +172,7 @@ void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_
 #endif
 
   calcCtr(kd, seq_nr, sender_id, mux);
- 
+
 #ifndef USE_SSL_CRYPTO
   err = gcry_cipher_setctr(handle_, ctr_.buf_, CTR_LENGTH);
   if(err) {

@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -41,7 +41,7 @@
 
 class Log;
 
-class LogStringBuilder 
+class LogStringBuilder
 {
 public:
   LogStringBuilder(LogStringBuilder const& src);
@@ -77,15 +77,18 @@ public:
 private:
   Log() {};
   ~Log() {};
-  Log(const Log &l);
-  void operator=(const Log &l);
+  Log(const Log& l);
+  void operator=(const Log& l);
 
   static Log* inst;
   static Mutex instMutex;
-  class instanceCleaner {
-    public: ~instanceCleaner() {
-      if(Log::inst != 0)
+  class instanceCleaner
+  {
+  public:
+    ~instanceCleaner() {
+      if(Log::inst != 0) {
         delete Log::inst;
+      }
     }
   };
   friend class instanceCleaner;

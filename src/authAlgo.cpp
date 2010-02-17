@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -59,7 +59,7 @@ Sha1AuthAlgo::Sha1AuthAlgo(kd_dir_t d) : AuthAlgo(d), key_(DIGEST_LENGTH)
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to open message digest algo";
     return;
-  } 
+  }
 #else
   HMAC_CTX_init(&ctx_);
   HMAC_Init_ex(&ctx_, NULL, 0, EVP_sha1(), NULL);
@@ -69,31 +69,34 @@ Sha1AuthAlgo::Sha1AuthAlgo(kd_dir_t d) : AuthAlgo(d), key_(DIGEST_LENGTH)
 Sha1AuthAlgo::~Sha1AuthAlgo()
 {
 #ifndef USE_SSL_CRYPTO
-  if(handle_)
+  if(handle_) {
     gcry_md_close(handle_);
+  }
 #else
   HMAC_CTX_cleanup(&ctx_);
-#endif    
+#endif
 }
 
 void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 {
 #ifndef USE_SSL_CRYPTO
-  if(!handle_)
+  if(!handle_) {
     return;
+  }
 #endif
 
   packet.addAuthTag();
-  if(!packet.getAuthTagLength())
+  if(!packet.getAuthTagLength()) {
     return;
-  
+  }
+
   kd.generate(dir_, LABEL_AUTH, packet.getSeqNr(), key_);
 #ifndef USE_SSL_CRYPTO
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
     return;
-  } 
+  }
 
   gcry_md_reset(handle_);
   gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
@@ -110,8 +113,9 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
   u_int8_t* tag = packet.getAuthTag();
   u_int32_t length = (packet.getAuthTagLength() < DIGEST_LENGTH) ? packet.getAuthTagLength() : DIGEST_LENGTH;
 
-  if(length > DIGEST_LENGTH)
+  if(length > DIGEST_LENGTH) {
     std::memset(tag, 0, packet.getAuthTagLength());
+  }
 
   std::memcpy(&tag[packet.getAuthTagLength() - length], &hmac[DIGEST_LENGTH - length], length);
 }
@@ -119,13 +123,15 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 {
 #ifndef USE_SSL_CRYPTO
-  if(!handle_)
+  if(!handle_) {
     return false;
+  }
 #endif
 
   packet.withAuthTag(true);
-  if(!packet.getAuthTagLength())
+  if(!packet.getAuthTagLength()) {
     return true;
+  }
 
   kd.generate(dir_, LABEL_AUTH, packet.getSeqNr(), key_);
 #ifndef USE_SSL_CRYPTO
@@ -133,15 +139,15 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
     return false;
-  } 
-  
+  }
+
   gcry_md_reset(handle_);
   gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   gcry_md_final(handle_);
   u_int8_t* hmac = gcry_md_read(handle_, 0);
 #else
   HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
-  
+
   u_int8_t hmac[DIGEST_LENGTH];
   HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   HMAC_Final(&ctx_, hmac, NULL);
@@ -152,13 +158,14 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 
   if(length > DIGEST_LENGTH)
     for(u_int32_t i=0; i < (packet.getAuthTagLength() - DIGEST_LENGTH); ++i)
-      if(tag[i]) return false;
+      if(tag[i]) { return false; }
 
   int ret = std::memcmp(&tag[packet.getAuthTagLength() - length], &hmac[DIGEST_LENGTH - length], length);
   packet.removeAuthTag();
-  
-  if(ret)
+
+  if(ret) {
     return false;
+  }
 
   return true;
 

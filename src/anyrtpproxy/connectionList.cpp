@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -38,15 +38,15 @@ ConnectionList::ConnectionList()
 
 ConnectionList::~ConnectionList()
 {
-} 
+}
 
-void ConnectionList::addConnection(ConnectionParam &conn, u_int16_t mux )
+void ConnectionList::addConnection(ConnectionParam& conn, u_int16_t mux)
 {
 }
 
 const ConnectionMap::iterator ConnectionList::getEnd()
 {
-	return connections_.end();
+  return connections_.end();
 }
 
 ConnectionMap::iterator ConnectionList::getBeginUnlocked()
@@ -61,28 +61,28 @@ ConnectionMap::iterator ConnectionList::getEndUnlocked()
 
 const ConnectionMap::iterator ConnectionList::getConnection(u_int16_t mux)
 {
-	Lock lock(mutex_);
-	ConnectionMap::iterator it = connections_.find(mux);
-	return it;
+  Lock lock(mutex_);
+  ConnectionMap::iterator it = connections_.find(mux);
+  return it;
 }
 
 
-ConnectionParam & ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
+ConnectionParam& ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
 {
-	ConnectionMap::iterator it = connections_.find(mux);
-		return it->second;
+  ConnectionMap::iterator it = connections_.find(mux);
+  return it->second;
 }
 
 void ConnectionList::clear()
 {
   Lock lock(mutex_);
-	connections_.clear();
+  connections_.clear();
 }
 
 bool ConnectionList::empty()
 {
   Lock lock(mutex_);
-	return connections_.empty();
+  return connections_.empty();
 }
 
 Mutex& ConnectionList::getMutex()

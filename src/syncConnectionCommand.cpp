@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -31,17 +31,17 @@
  */
 #include "syncConnectionCommand.h"
 
-SyncConnectionCommand::SyncConnectionCommand(ConnectionList & cl )
-:cl_(cl)
-{	
-}
-
-SyncConnectionCommand::SyncConnectionCommand(ConnectionList & cl, u_int16_t mux )
-:cl_(cl),mux_(mux)
-{	
-}
-
-u_int16_t SyncConnectionCommand::getMux() const 
+SyncConnectionCommand::SyncConnectionCommand(ConnectionList& cl)
+  :cl_(cl)
 {
-	return mux_;
+}
+
+SyncConnectionCommand::SyncConnectionCommand(ConnectionList& cl, u_int16_t mux)
+  :cl_(cl),mux_(mux)
+{
+}
+
+u_int16_t SyncConnectionCommand::getMux() const
+{
+  return mux_;
 }

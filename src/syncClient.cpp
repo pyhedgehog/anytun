@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -47,82 +47,79 @@
 
 
 SyncClient::SyncClient(std::string hostname,std::string port)
-:hostname_( hostname),port_(port)
+  :hostname_(hostname),port_(port)
 {
 }
 
 void SyncClient::run()
 {
-	bool connected(false);
-	for(;;)
-	{
-		try
-		{
-			boost::asio::io_service io_service;
-			SyncTcpConnection::proto::resolver resolver(io_service);
-			SyncTcpConnection::proto::resolver::query query( hostname_, port_);
-		  SyncTcpConnection::proto::resolver::iterator endpoint_iterator = resolver.resolve(query);
-			SyncTcpConnection::proto::resolver::iterator end;
+  bool connected(false);
+  for(;;) {
+    try {
+      boost::asio::io_service io_service;
+      SyncTcpConnection::proto::resolver resolver(io_service);
+      SyncTcpConnection::proto::resolver::query query(hostname_, port_);
+      SyncTcpConnection::proto::resolver::iterator endpoint_iterator = resolver.resolve(query);
+      SyncTcpConnection::proto::resolver::iterator end;
 
-			SyncTcpConnection::proto::socket socket(io_service);
-			boost::system::error_code error = boost::asio::error::host_not_found;
-			while (error && endpoint_iterator != end)
-			{
-				socket.close();
-				socket.connect(*endpoint_iterator++, error);
-			}
-			if (error)
-				throw boost::system::system_error(error);
-			if (!connected)
-				cLog.msg(Log::PRIO_NOTICE) << "sync: connected to " << hostname_ <<":"<< port_;
-			connected=true;
-			readAndProcess(socket); //endless loop
-		}
-		catch (std::exception& e)
-		{
-			if (connected) 
-				cLog.msg(Log::PRIO_NOTICE) << "sync: connection to " << hostname_ <<":"<< port_<< " lost ("<< e.what() << ") retrying every 10sec";
-			connected=false;
-			boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
-		}
-	}
+      SyncTcpConnection::proto::socket socket(io_service);
+      boost::system::error_code error = boost::asio::error::host_not_found;
+      while(error && endpoint_iterator != end) {
+        socket.close();
+        socket.connect(*endpoint_iterator++, error);
+      }
+      if(error) {
+        throw boost::system::system_error(error);
+      }
+      if(!connected) {
+        cLog.msg(Log::PRIO_NOTICE) << "sync: connected to " << hostname_ <<":"<< port_;
+      }
+      connected=true;
+      readAndProcess(socket); //endless loop
+    } catch(std::exception& e) {
+      if(connected) {
+        cLog.msg(Log::PRIO_NOTICE) << "sync: connection to " << hostname_ <<":"<< port_<< " lost ("<< e.what() << ") retrying every 10sec";
+      }
+      connected=false;
+      boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
+    }
+  }
 }
 
-void SyncClient::readAndProcess(SyncTcpConnection::proto::socket & socket)
+void SyncClient::readAndProcess(SyncTcpConnection::proto::socket& socket)
 {
-	ConnectionList & cl_ (gConnectionList);
-	size_t message_lenght ;
-	for (;;)
-	{
-		std::stringstream message_lenght_stream;
-		readExactly(socket,5,message_lenght_stream);
-		message_lenght_stream >> message_lenght;
-		std::stringstream void_stream;
-		readExactly(socket,1,void_stream); //skip space
-		std::stringstream sync_command_stream;
-		readExactly(socket,message_lenght, sync_command_stream);
-		//cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion "<<tmp.str()<< std::endl;
-		boost::archive::text_iarchive ia(sync_command_stream);
-		SyncCommand scom(cl_);
-		ia >> scom;
-	}
+  ConnectionList& cl_(gConnectionList);
+  size_t message_lenght ;
+  for(;;) {
+    std::stringstream message_lenght_stream;
+    readExactly(socket,5,message_lenght_stream);
+    message_lenght_stream >> message_lenght;
+    std::stringstream void_stream;
+    readExactly(socket,1,void_stream); //skip space
+    std::stringstream sync_command_stream;
+    readExactly(socket,message_lenght, sync_command_stream);
+    //cLog.msg(Log::PRIO_NOTICE) << "recieved sync inforamtaion "<<tmp.str()<< std::endl;
+    boost::archive::text_iarchive ia(sync_command_stream);
+    SyncCommand scom(cl_);
+    ia >> scom;
+  }
 }
 
-void SyncClient::readExactly(SyncTcpConnection::proto::socket & socket,size_t toread, std::iostream & result)
+void SyncClient::readExactly(SyncTcpConnection::proto::socket& socket,size_t toread, std::iostream& result)
 {
-	size_t hasread = 0;
-	while (toread > hasread)
-	{
-			//TODO read bigger buffers
-			boost::array<char, 1> buf;
-			boost::system::error_code error;
-			size_t len = socket.read_some(boost::asio::buffer(buf), error);
-			if (error == boost::asio::error::eof)
-				break; // Connection closed cleanly by peer.
-			else if (error)
-				throw boost::system::system_error(error); // Some other error.
-			//for (size_t pos=0; pos<len; pos++)
-				result<<buf[0];
-			hasread+=len;
-	}
+  size_t hasread = 0;
+  while(toread > hasread) {
+    //TODO read bigger buffers
+    boost::array<char, 1> buf;
+    boost::system::error_code error;
+    size_t len = socket.read_some(boost::asio::buffer(buf), error);
+    if(error == boost::asio::error::eof) {
+      break;  // Connection closed cleanly by peer.
+    } else if(error) {
+      throw boost::system::system_error(error);  // Some other error.
+    }
+    //for (size_t pos=0; pos<len; pos++)
+    result<<buf[0];
+    hasread+=len;
+  }
 }

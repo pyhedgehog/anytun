@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -48,7 +48,7 @@ std::ostream& operator<<(std::ostream& stream, syntax_error const& error)
   stream << "syntax error: " << error.what() << std::endl;
   if(error.pos >= 0) {
     stream << "              ";
-    for(int32_t i = 0; i < error.pos; ++i) stream << " ";
+    for(int32_t i = 0; i < error.pos; ++i) { stream << " "; }
     return stream << "^";
   }
   return stream;
@@ -57,10 +57,16 @@ std::ostream& operator<<(std::ostream& stream, syntax_error const& error)
 std::ostream& operator<<(std::ostream& stream, role_t const& role)
 {
   switch(role) {
-  case ROLE_LEFT: stream << "left"; break;
-  case ROLE_RIGHT:  stream << "right"; break;
-  default: stream << "unknown"; break;
-  }  
+  case ROLE_LEFT:
+    stream << "left";
+    break;
+  case ROLE_RIGHT:
+    stream << "right";
+    break;
+  default:
+    stream << "unknown";
+    break;
+  }
   return stream;
 }
 
@@ -69,30 +75,32 @@ void OptionHost::init(std::string addrPort)
   std::string origAddrPort(addrPort);
   size_t pos = addrPort.find_first_of("[");
 
-  if(pos != std::string::npos && pos != 0)
-    throw syntax_error(origAddrPort, pos); // an [ was found but not at the beginning;
+  if(pos != std::string::npos && pos != 0) {
+    throw syntax_error(origAddrPort, pos);  // an [ was found but not at the beginning;
+  }
 
   bool hasPort = false;
   if(pos != std::string::npos) {
     addrPort.erase(pos, 1);
     pos = addrPort.find_first_of("]");
 
-    if(pos == std::string::npos)
-      throw syntax_error(origAddrPort, origAddrPort.length()); //no trailing ] although an leading [ was found
+    if(pos == std::string::npos) {
+      throw syntax_error(origAddrPort, origAddrPort.length());  //no trailing ] although an leading [ was found
+    }
 
     if(pos < addrPort.length()-2) {
-      if(addrPort[pos+1] != ':')
-        throw syntax_error(origAddrPort, pos+2); // wrong port delimieter
+      if(addrPort[pos+1] != ':') {
+        throw syntax_error(origAddrPort, pos+2);  // wrong port delimieter
+      }
 
       addrPort[pos+1] = '/';
       hasPort = true;
+    } else if(pos != addrPort.length()-1) {
+      throw syntax_error(origAddrPort, pos+2);  // too few characters left
     }
-    else if(pos != addrPort.length()-1)
-      throw syntax_error(origAddrPort, pos+2); // too few characters left
 
     addrPort.erase(pos, 1);
-  }
-  else {
+  } else {
     pos = addrPort.find_first_of(":");
     if(pos != std::string::npos && pos == addrPort.find_last_of(":")) {
       // an ':' has been found and it is the only one -> assuming port present
@@ -105,12 +113,12 @@ void OptionHost::init(std::string addrPort)
     std::stringstream tmp_stream(addrPort);
 
     getline(tmp_stream, addr, '/');
-    if(!tmp_stream.good())
+    if(!tmp_stream.good()) {
       throw syntax_error(origAddrPort, addr.length());
+    }
 
     tmp_stream >> port;
-  }
-  else {
+  } else {
     addr = addrPort;
     port = "2323"; // default sync port
   }
@@ -124,12 +132,13 @@ std::istream& operator>>(std::istream& stream, OptionHost& host)
   return stream;
 }
 
-void OptionNetwork::init(std::string network) 
+void OptionNetwork::init(std::string network)
 {
   std::stringstream tmp_stream(network);
   getline(tmp_stream, net_addr, '/');
-  if(!tmp_stream.good())
+  if(!tmp_stream.good()) {
     throw syntax_error(network, net_addr.length());
+  }
   tmp_stream >> prefix_length;
 }
 
@@ -149,9 +158,10 @@ Options& Options::instance()
 {
   Lock lock(instMutex);
   static instanceCleaner c;
-  if(!inst)
+  if(!inst) {
     inst = new Options();
-  
+  }
+
   return *inst;
 }
 
@@ -368,29 +378,27 @@ bool Options::parse(int argc, char* argv[])
   argc--;
   bool ipv4_only = false, ipv6_only = false;
   std::string role = "";
-  for(int i=1; argc > 0; ++i)
-  {
+  for(int i=1; argc > 0; ++i) {
     std::string str(argv[i]);
     argc--;
 
     if(str == "-h" || str == "--help") {
       printUsage();
       return false;
-    }
-    else if(str == "-v" || str == "--version") {
+    } else if(str == "-v" || str == "--version") {
       printVersion();
       return false;
     }
 
 #if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
 
-  #ifndef _MSC_VER
+#ifndef _MSC_VER
     PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_, NOTHING)
     PARSE_SCALAR_PARAM("-u","--username", username_, NOTHING)
     PARSE_SCALAR_PARAM("-g","--groupname", groupname_, NOTHING)
     PARSE_SCALAR_PARAM("-C","--chroot", chroot_dir_, NOTHING)
     PARSE_SCALAR_PARAM("-P","--write-pid", pid_file_, NOTHING)
-  #endif
+#endif
 
 #endif
 
@@ -433,70 +441,75 @@ bool Options::parse(int argc, char* argv[])
 #endif
 #if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
 
-  #ifndef NO_ROUTING
+#ifndef NO_ROUTING
     PARSE_CSLIST_PARAM("-R","--route", routes_, OptionNetwork, connection_opts = true)
-  #endif
+#endif
 
     PARSE_SCALAR_PARAM("-m","--mux", mux_, connection_opts = true)
     PARSE_SCALAR_PARAM("-w","--window-size", seq_window_size_, connection_opts = true)
 
-  #ifndef NO_CRYPT
+#ifndef NO_CRYPT
     PARSE_SCALAR_PARAM("-k","--kd-prf", kd_prf_, connection_opts = true)
     PARSE_SCALAR_PARAM("-e","--role", role, connection_opts = true)
-  #ifndef NO_PASSPHRASE
+#ifndef NO_PASSPHRASE
     PARSE_PHRASE_PARAM_SEC("-E","--passphrase", passphrase_, connection_opts = true)
-  #endif
+#endif
     PARSE_HEXSTRING_PARAM_SEC("-K","--key", key_, connection_opts = true)
     PARSE_HEXSTRING_PARAM_SEC("-A","--salt", salt_, connection_opts = true)
-  #endif
+#endif
 
 #endif
 #if defined(ANYTUN_OPTIONS)
 
-  #ifndef NO_CRYPT
+#ifndef NO_CRYPT
     PARSE_SCALAR_PARAM("-c","--cipher", cipher_, NOTHING)
     PARSE_SCALAR_PARAM("-a","--auth-algo", auth_algo_, NOTHING)
     PARSE_SCALAR_PARAM("-b","--auth-tag-length", auth_tag_length_, NOTHING)
-  #endif
+#endif
 
 #endif
-    else 
+    else {
       throw syntax_error(str, 0);
+    }
   }
-  if(ipv4_only && ipv6_only)
+  if(ipv4_only && ipv6_only) {
     throw syntax_error("-4 and -6 are mutual exclusive", -1);
-  if(ipv4_only)
+  }
+  if(ipv4_only) {
     resolv_addr_type_ = IPV4_ONLY;
-  if(ipv6_only)
+  }
+  if(ipv6_only) {
     resolv_addr_type_ = IPV6_ONLY;
+  }
 
   if(role != "") {
-    if(role == "alice" || role == "server" || role == "left")
+    if(role == "alice" || role == "server" || role == "left") {
       role_ = ROLE_LEFT;
-    else if(role == "bob" || role == "client" || role == "right")
+    } else if(role == "bob" || role == "client" || role == "right") {
       role_ = ROLE_RIGHT;
-    else
-      throw syntax_error("unknown role name: " + role, -1); 
+    } else {
+      throw syntax_error("unknown role name: " + role, -1);
+    }
   }
 
   if(debug_) {
     log_targets_.push_back("stdout:5");
-    daemonize_ = false; 
+    daemonize_ = false;
   }
 
   if(log_targets_.empty()) {
 #ifndef _MSC_VER
- #if !defined(ANYCONF_OPTIONS)
+#if !defined(ANYCONF_OPTIONS)
     log_targets_.push_back(std::string("syslog:3,").append(progname_).append(",daemon"));
- #else
-    log_targets_.push_back("stderr:2");
- #endif
 #else
- #ifdef WIN_SERVICE
+    log_targets_.push_back("stderr:2");
+#endif
+#else
+#ifdef WIN_SERVICE
     log_targets_.push_back(std::string("eventlog:3,").append(progname_));
- #else
+#else
     log_targets_.push_back("stdout:3");
- #endif
+#endif
 #endif
   }
 
@@ -506,24 +519,28 @@ bool Options::parse(int argc, char* argv[])
 void Options::parse_post()
 {
 #if defined(ANYTUN_OPTIONS)
-  if(cluster_opts && connection_opts)
+  if(cluster_opts && connection_opts) {
     cLog.msg(Log::PRIO_WARNING) << "you have provided options for cluster support as well as connection oriented options, we strongly recommend to use anytun-config and anytun-controld when building a cluster";
+  }
 
-  if(cipher_ == "null" && auth_algo_ == "null")
+  if(cipher_ == "null" && auth_algo_ == "null") {
     kd_prf_ = "null";
-  if((cipher_ != "null" || auth_algo_ != "null") && kd_prf_ == "null")
+  }
+  if((cipher_ != "null" || auth_algo_ != "null") && kd_prf_ == "null") {
     cLog.msg(Log::PRIO_WARNING) << "using NULL key derivation with encryption and or authentication enabled!";
+  }
 
   u_int32_t tag_len_max = AuthAlgoFactory::getDigestLength(auth_algo_);
-  if(!tag_len_max) auth_tag_length_ = 0;
+  if(!tag_len_max) { auth_tag_length_ = 0; }
   else if(tag_len_max < auth_tag_length_) {
     cLog.msg(Log::PRIO_WARNING) << auth_algo_ << " auth algo can't generate tags of length " << auth_tag_length_ << ", using maximum tag length(" << tag_len_max << ")";
     auth_tag_length_ = tag_len_max;
   }
 #endif
 
-  if(dev_name_ == "" && dev_type_ == "")
+  if(dev_name_ == "" && dev_type_ == "") {
     dev_type_ = "tun";
+  }
 }
 
 void Options::printVersion()
@@ -556,13 +573,13 @@ void Options::printUsage()
 
 #if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
 
- #ifndef _MSC_VER
+#ifndef _MSC_VER
   std::cout << "   [-D|--nodaemonize]                  don't run in background" << std::endl;
   std::cout << "   [-u|--username] <username>          change to this user" << std::endl;
   std::cout << "   [-g|--groupname] <groupname>        change to this group" << std::endl;
   std::cout << "   [-C|--chroot] <path>                chroot to this directory" << std::endl;
   std::cout << "   [-P|--write-pid] <path>             write pid to this file" << std::endl;
- #endif
+#endif
 
 #endif
 
@@ -610,31 +627,31 @@ void Options::printUsage()
 #endif
 #if defined(ANYTUN_OPTIONS) || defined(ANYCONF_OPTIONS)
 
- #ifndef NO_ROUTING
+#ifndef NO_ROUTING
   std::cout << "   [-R|--route] <net>/<prefix length>  add a route to connection, can be invoked several times" << std::endl;
- #endif
+#endif
 
   std::cout << "   [-m|--mux] <mux-id>                 the multiplex id to use" << std::endl;
   std::cout << "   [-w|--window-size] <window size>    seqence number window size" << std::endl;
 
- #ifndef NO_CRYPT
+#ifndef NO_CRYPT
   std::cout << "   [-k|--kd-prf] <kd-prf type>         key derivation pseudo random function" << std::endl;
   std::cout << "   [-e|--role] <role>                  left (alice) or right (bob)" << std::endl;
- #ifndef NO_PASSPHRASE
+#ifndef NO_PASSPHRASE
   std::cout << "   [-E|--passphrase] <pass phrase>     a passprhase to generate master key and salt from" << std::endl;
- #endif
+#endif
   std::cout << "   [-K|--key] <master key>             master key to use for encryption" << std::endl;
   std::cout << "   [-A|--salt] <master salt>           master salt to use for encryption" << std::endl;
- #endif
+#endif
 
 #endif
 #if defined(ANYTUN_OPTIONS)
 
- #ifndef NO_CRYPT
+#ifndef NO_CRYPT
   std::cout << "   [-c|--cipher] <cipher type>         payload encryption algorithm" << std::endl;
   std::cout << "   [-a|--auth-algo] <algo type>        message authentication algorithm" << std::endl;
   std::cout << "   [-b|--auth-tag-length]              length of the auth tag" << std::endl;
- #endif
+#endif
 
 #endif
 }
@@ -653,8 +670,9 @@ void Options::printOptions()
   std::cout << std::endl;
   std::cout << "log_targets:";
   StringList::const_iterator lit = log_targets_.begin();
-  for(; lit != log_targets_.end(); ++lit)
+  for(; lit != log_targets_.end(); ++lit) {
     std::cout << " '" << *lit << "',";
+  }
   std::cout << std::endl;
   std::cout << "debug = " << debug_ << std::endl;
   std::cout << std::endl;
@@ -664,10 +682,18 @@ void Options::printOptions()
   std::cout << std::endl;
   std::cout << "resolv_addr_type = ";
   switch(resolv_addr_type_) {
-  case ANY: std::cout <<  "any" << std::endl; break;
-  case IPV4_ONLY: std::cout <<  "ipv4-only" << std::endl; break;
-  case IPV6_ONLY: std::cout <<  "ipv6-only" << std::endl; break;
-  default: std::cout <<  "?" << std::endl; break;
+  case ANY:
+    std::cout <<  "any" << std::endl;
+    break;
+  case IPV4_ONLY:
+    std::cout <<  "ipv4-only" << std::endl;
+    break;
+  case IPV6_ONLY:
+    std::cout <<  "ipv6-only" << std::endl;
+    break;
+  default:
+    std::cout <<  "?" << std::endl;
+    break;
   }
   std::cout << std::endl;
   std::cout << "local.addr = '" << local_.addr << "'" << std::endl;
@@ -678,8 +704,9 @@ void Options::printOptions()
   std::cout << "local_sync.port = '" << local_sync_.port << "'" << std::endl;
   std::cout << "remote_sync_hosts:" << std::endl;
   HostList::const_iterator hit = remote_sync_hosts_.begin();
-  for(; hit != remote_sync_hosts_.end(); ++hit)
+  for(; hit != remote_sync_hosts_.end(); ++hit) {
     std::cout << "  '" << hit->addr << "','" << hit->port << "'" << std::endl;
+  }
   std::cout << std::endl;
   std::cout << "dev_name = '" << dev_name_ << "'" << std::endl;
   std::cout << "dev_type = '" << dev_type_ << "'" << std::endl;
@@ -687,8 +714,9 @@ void Options::printOptions()
   std::cout << "post_up_script = '" << post_up_script_ << "'" << std::endl;
   std::cout << "routes:" << std::endl;
   NetworkList::const_iterator rit;
-  for(rit = routes_.begin(); rit != routes_.end(); ++rit)
+  for(rit = routes_.begin(); rit != routes_.end(); ++rit) {
     std::cout << "  " << rit->net_addr << "/" << rit->prefix_length << std::endl;
+  }
   std::cout << std::endl;
   std::cout << "sender_id = '" << sender_id_ << "'" << std::endl;
   std::cout << "mux_id = " << mux_ << std::endl;
@@ -700,9 +728,15 @@ void Options::printOptions()
   std::cout << "kd_prf = '" << kd_prf_ << "'" << std::endl;
   std::cout << "role = ";
   switch(role_) {
-  case ROLE_LEFT: std::cout << "left" << std::endl; break;
-  case ROLE_RIGHT: std::cout << "right" << std::endl; break;
-  default: std::cout << "??" << std::endl; break;
+  case ROLE_LEFT:
+    std::cout << "left" << std::endl;
+    break;
+  case ROLE_RIGHT:
+    std::cout << "right" << std::endl;
+    break;
+  default:
+    std::cout << "??" << std::endl;
+    break;
   }
   std::cout << "passphrase = '" << passphrase_ << "'" << std::endl;
   std::cout << "key = " << key_.getHexDumpOneLine() << std::endl;
@@ -839,7 +873,7 @@ Options& Options::setBindToAddr(std::string b)
 std::string Options::getBindToPort()
 {
   ReadersLock lock(mutex);
-  return bind_to_.port;  
+  return bind_to_.port;
 }
 
 Options& Options::setBindToPort(std::string b)

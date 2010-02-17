@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -54,11 +54,11 @@ void SyncTcpConnection::Send(std::string message)
                                        boost::asio::placeholders::bytes_transferred));
 }
 SyncTcpConnection::SyncTcpConnection(boost::asio::io_service& io_service)
-	: socket_(io_service)
+  : socket_(io_service)
 {
 }
 
 void SyncTcpConnection::handle_write(const boost::system::error_code& /*error*/,
-		size_t /*bytes_transferred*/)
+                                     size_t /*bytes_transferred*/)
 {
 }

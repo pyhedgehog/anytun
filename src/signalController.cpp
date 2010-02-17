@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -45,12 +45,13 @@ SignalController& gSignalController = SignalController::instance();
 
 SignalController& SignalController::instance()
 {
-	Lock lock(instMutex);
-	static instanceCleaner c;
-	if(!inst)
-		inst = new SignalController();
+  Lock lock(instMutex);
+  static instanceCleaner c;
+  if(!inst) {
+    inst = new SignalController();
+  }
 
-	return *inst;
+  return *inst;
 }
 
 int SigErrorHandler(int /*sig*/, const std::string& msg)
@@ -64,11 +65,11 @@ int SigErrorHandler(int /*sig*/, const std::string& msg)
 #ifndef _MSC_VER
 #include "signalHandler.hpp"
 #else
- #ifdef WIN_SERVICE
- #include "win32/signalServiceHandler.hpp"
- #else
- #include "win32/signalHandler.hpp"
- #endif
+#ifdef WIN_SERVICE
+#include "win32/signalServiceHandler.hpp"
+#else
+#include "win32/signalHandler.hpp"
+#endif
 #endif
 
 void SignalController::init(DaemonService& service)
@@ -89,8 +90,9 @@ void SignalController::inject(int sig, const std::string& msg)
 int SignalController::run()
 {
   for(CallbackMap::iterator it = callbacks.begin(); it != callbacks.end(); ++it)
-    if(it->first == CALLB_RUNNING)
+    if(it->first == CALLB_RUNNING) {
       it->second();
+    }
 
   int ret = 0;
   while(1) {
@@ -101,27 +103,28 @@ int SignalController::run()
       sig = sigQueue.front();
       sigQueue.pop();
     }
-    
+
     HandlerMap::iterator it = handler.find(sig.first);
-    if(it != handler.end())
-    {
+    if(it != handler.end()) {
       ret = it->second(sig.first, sig.second);
 
-      if(ret)
+      if(ret) {
         break;
-    }
-    else {
+      }
+    } else {
       it = handler.find(SIGUNKNOWN);
-      if(it != handler.end())
+      if(it != handler.end()) {
         it->second(sig.first, sig.second);
-      else
+      } else {
         cLog.msg(Log::PRIO_NOTICE) << "SIG " << sig.first << " caught with message '" << sig.second << "' - ignoring";
+      }
     }
   }
 
   for(CallbackMap::iterator it = callbacks.begin(); it != callbacks.end(); ++it)
-    if(it->first == CALLB_STOPPING)
+    if(it->first == CALLB_STOPPING) {
       it->second();
+    }
 
   return ret;
 }

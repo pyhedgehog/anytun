@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -39,25 +39,31 @@
 
 AuthAlgo* AuthAlgoFactory::create(std::string const& type, kd_dir_t dir)
 {
-  if(type == "null")
+  if(type == "null") {
     return new NullAuthAlgo();
+  }
 #ifndef NO_CRYPT
-  else if(type == "sha1")
+  else if(type == "sha1") {
     return new Sha1AuthAlgo(dir);
+  }
 #endif
-  else
+  else {
     throw std::invalid_argument("auth algo not available");
+  }
 }
 
 u_int32_t AuthAlgoFactory::getDigestLength(std::string const& type)
 {
-  if(type == "null")
+  if(type == "null") {
     return NullAuthAlgo::DIGEST_LENGTH;
+  }
 #ifndef NO_CRYPT
-  else if(type == "sha1")
+  else if(type == "sha1") {
     return Sha1AuthAlgo::DIGEST_LENGTH;
+  }
 #endif
-  else
+  else {
     throw std::invalid_argument("auth algo not available");
+  }
 }
 

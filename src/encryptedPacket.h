@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -43,7 +43,7 @@ public:
 
   /**
    * Packet constructor
-   * @param the length of the payload 
+   * @param the length of the payload
    * @param allow reallocation of buffer
    */
   EncryptedPacket(u_int32_t payload_length, u_int32_t auth_tag_length, bool allow_realloc = false);
@@ -130,29 +130,28 @@ public:
   void removeAuthTag();
   u_int8_t* getAuthTag();
   u_int32_t getAuthTagLength();
-                      
+
 private:
   EncryptedPacket();
-  EncryptedPacket(const EncryptedPacket &src);
+  EncryptedPacket(const EncryptedPacket& src);
 
   void reinit();
 
 #ifdef _MSC_VER
-  #pragma pack(push, 1)
-#endif  
-  struct ATTR_PACKED HeaderStruct
-  {
+#pragma pack(push, 1)
+#endif
+  struct ATTR_PACKED HeaderStruct {
     seq_nr_t seq_nr;
     sender_id_t sender_id;
     mux_t mux;
   };
 #ifdef _MSC_VER
-  #pragma pack(pop)
+#pragma pack(pop)
 #endif
 
   struct HeaderStruct* header_;
-	u_int8_t * payload_;
-  u_int8_t * auth_tag_;
+  u_int8_t* payload_;
+  u_int8_t* auth_tag_;
   u_int32_t  auth_tag_length_;
 };
 

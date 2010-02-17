@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -51,7 +51,7 @@ int SigQuitHandler(int /*sig*/, const std::string& /*msg*/)
 
 int SigHupHandler(int /*sig*/, const std::string& /*msg*/)
 {
-  cLog.msg(Log::PRIO_NOTICE) << "SIG-Hup caught"; 
+  cLog.msg(Log::PRIO_NOTICE) << "SIG-Hup caught";
   return 0;
 }
 
@@ -98,10 +98,10 @@ void handleSignal()
     timeout.tv_sec = 1;
     timeout.tv_nsec = 0;
     sigNum = sigtimedwait(&signal_set, NULL, &timeout);
-    if (sigNum == -1) {
-      if (errno != EINTR && errno != EAGAIN) {
-      	cLog.msg(Log::PRIO_ERROR) << "sigwait failed with error: \"" << AnytunErrno(errno) << "\" SignalHandling will be disabled";
-      	break;
+    if(sigNum == -1) {
+      if(errno != EINTR && errno != EAGAIN) {
+        cLog.msg(Log::PRIO_ERROR) << "sigwait failed with error: \"" << AnytunErrno(errno) << "\" SignalHandling will be disabled";
+        break;
       }
     } else {
       gSignalController.inject(sigNum);
@@ -112,7 +112,7 @@ void handleSignal()
 void registerSignalHandler(SignalController& ctrl, DaemonService& /*service*/)
 {
   sigset_t signal_set;
-  
+
   sigemptyset(&signal_set);
   sigaddset(&signal_set, SIGINT);
   sigaddset(&signal_set, SIGQUIT);
@@ -120,13 +120,13 @@ void registerSignalHandler(SignalController& ctrl, DaemonService& /*service*/)
   sigaddset(&signal_set, SIGTERM);
   sigaddset(&signal_set, SIGUSR1);
   sigaddset(&signal_set, SIGUSR2);
-  
+
 #if defined(BOOST_HAS_PTHREADS)
   pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
 #else
 #error The signalhandler works only with pthreads
 #endif
-  
+
   boost::thread(boost::bind(handleSignal));
 
   ctrl.handler[SIGINT] = boost::bind(SigIntHandler, _1, _2);

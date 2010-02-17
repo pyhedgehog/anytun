@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -42,23 +42,22 @@
 class SyncConnectionCommand
 {
 public:
-	SyncConnectionCommand(ConnectionList & cl );
-	SyncConnectionCommand(ConnectionList & cl ,u_int16_t mux);
-	u_int16_t getMux() const;
+  SyncConnectionCommand(ConnectionList& cl);
+  SyncConnectionCommand(ConnectionList& cl ,u_int16_t mux);
+  u_int16_t getMux() const;
 
 private:
-	SyncConnectionCommand(const SyncConnectionCommand &);
-	ConnectionList & cl_;
-	u_int16_t mux_;
+  SyncConnectionCommand(const SyncConnectionCommand&);
+  ConnectionList& cl_;
+  u_int16_t mux_;
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version)
-  {
-		Lock lock(cl_.getMutex());
-    ar & mux_;
-		ConnectionParam & conn = cl_.getOrNewConnectionUnlocked(mux_);
-		ar & conn;
-	}
+  void serialize(Archive& ar, const unsigned int version) {
+    Lock lock(cl_.getMutex());
+    ar& mux_;
+    ConnectionParam& conn = cl_.getOrNewConnectionUnlocked(mux_);
+    ar& conn;
+  }
 };
 
 

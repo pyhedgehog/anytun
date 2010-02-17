@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -40,22 +40,21 @@
 class SyncRtpCommand
 {
 public:
-	SyncRtpCommand(const std::string & );
-	SyncRtpCommand();
-	std::string getCallId() const;
+  SyncRtpCommand(const std::string&);
+  SyncRtpCommand();
+  std::string getCallId() const;
 
 private:
-	SyncRtpCommand(const SyncRtpCommand &);
-	std::string callid_;
+  SyncRtpCommand(const SyncRtpCommand&);
+  std::string callid_;
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version)
-  {
-		Lock lock(gRtpSessionTable.getMutex());
-		ar & callid_;
+  void serialize(Archive& ar, const unsigned int version) {
+    Lock lock(gRtpSessionTable.getMutex());
+    ar& callid_;
     bool is_new;
-		ar & gRtpSessionTable.getOrNewSessionUnlocked(callid_, is_new);
-	};
+    ar& gRtpSessionTable.getOrNewSessionUnlocked(callid_, is_new);
+  };
 };
 
 

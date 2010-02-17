@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -51,15 +51,15 @@
 
 
 
-void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux, Semaphore& sem)
+void createConnection(const PacketSourceEndpoint& remote_end, ConnectionList& cl, u_int16_t seqSize, SyncQueue& queue, mux_t mux, Semaphore& sem)
 {
-  SeqWindow * seq = new SeqWindow(seqSize);
+  SeqWindow* seq = new SeqWindow(seqSize);
   seq_nr_t seq_nr_ = 0;
-  KeyDerivation * kd = KeyDerivationFactory::create(gOpt.getKdPrf());
+  KeyDerivation* kd = KeyDerivationFactory::create(gOpt.getKdPrf());
   kd->init(gOpt.getKey(), gOpt.getSalt(), gOpt.getPassphrase());
   kd->setRole(gOpt.getRole());
   cLog.msg(Log::PRIO_NOTICE) << "added connection remote host " << remote_end;
-  ConnectionParam connparam ((*kd), (*seq), seq_nr_, remote_end);
+  ConnectionParam connparam((*kd), (*seq), seq_nr_, remote_end);
   cl.addConnection(connparam, mux);
 
   std::ostringstream sout;
@@ -71,24 +71,23 @@ void createConnection(const PacketSourceEndpoint & remote_end, ConnectionList & 
 
   NetworkList routes = gOpt.getRoutes();
   NetworkList::const_iterator rit;
-  for(rit = routes.begin(); rit != routes.end(); ++rit)
-  {
+  for(rit = routes.begin(); rit != routes.end(); ++rit) {
     NetworkAddress addr(rit->net_addr.c_str());
     NetworkPrefix prefix(addr, rit->prefix_length);
-    
+
     gRoutingTable.addRoute(prefix, mux);
-    
+
     std::ostringstream sout2;
     boost::archive::text_oarchive oa2(sout2);
     const SyncCommand scom2(prefix);
-    
+
     oa2 << scom2;
     std::cout <<  std::setw(5) << std::setfill('0') << sout2.str().size()<< ' ' << sout2.str() << std::endl;
-  }    
+  }
   sem.up();
 }
 
-void createConnectionResolver(PacketSourceResolverIt& it, ConnectionList & cl, u_int16_t seqSize, SyncQueue & queue, mux_t mux, Semaphore& sem)
+void createConnectionResolver(PacketSourceResolverIt& it, ConnectionList& cl, u_int16_t seqSize, SyncQueue& queue, mux_t mux, Semaphore& sem)
 {
   createConnection(*it, cl, seqSize, queue, mux, sem);
 }
@@ -102,38 +101,37 @@ void createConnectionError(const std::exception& e, Semaphore& sem, int& ret)
 
 int main(int argc, char* argv[])
 {
-  try 
-  {
-    if(!gOpt.parse(argc, argv))
+  try {
+    if(!gOpt.parse(argc, argv)) {
       exit(0);
+    }
 
     StringList targets = gOpt.getLogTargets();
-    for(StringList::const_iterator it = targets.begin();it != targets.end(); ++it)
+    for(StringList::const_iterator it = targets.begin(); it != targets.end(); ++it) {
       cLog.addTarget(*it);
-  }
-  catch(syntax_error& e)
-  {
+    }
+  } catch(syntax_error& e) {
     std::cerr << e << std::endl;
     gOpt.printUsage();
     exit(-1);
   }
 
-  gOpt.parse_post(); // print warnings  
+  gOpt.parse_post(); // print warnings
 
   gResolver.init();
 
-	ConnectionList cl;
-	SyncQueue queue;
+  ConnectionList cl;
+  SyncQueue queue;
 
   Semaphore sem;
   int ret = 0;
-	UDPPacketSource::proto::endpoint endpoint;
-	// allow emtpy endpoint!!!
-	gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), 
-											 boost::bind(createConnectionResolver, _1, boost::ref(cl), gOpt.getSeqWindowSize(), boost::ref(queue), gOpt.getMux(), boost::ref(sem)),
-											 boost::bind(createConnectionError, _1, boost::ref(sem), boost::ref(ret)), 
-											 gOpt.getResolvAddrType());
-	sem.down();
+  UDPPacketSource::proto::endpoint endpoint;
+  // allow emtpy endpoint!!!
+  gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(),
+                       boost::bind(createConnectionResolver, _1, boost::ref(cl), gOpt.getSeqWindowSize(), boost::ref(queue), gOpt.getMux(), boost::ref(sem)),
+                       boost::bind(createConnectionError, _1, boost::ref(sem), boost::ref(ret)),
+                       gOpt.getResolvAddrType());
+  sem.down();
   return ret;
 }
 

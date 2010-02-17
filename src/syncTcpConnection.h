@@ -11,7 +11,7 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl, 
+ *  Copyright (C) 2007-2009 Othmar Gsenger, Erwin Nindl,
  *                          Christian Pointner <satp@wirdorange.org>
  *
  *  This file is part of Anytun.
@@ -46,21 +46,20 @@ public:
   typedef boost::shared_ptr<SyncTcpConnection> pointer;
   typedef boost::asio::ip::tcp proto;
 
-  static pointer create(boost::asio::io_service& io_service)
-	{
-	   return pointer(new SyncTcpConnection(io_service));
-	};
+  static pointer create(boost::asio::io_service& io_service) {
+    return pointer(new SyncTcpConnection(io_service));
+  };
 
-	boost::function<void(SyncTcpConnection *)> onConnect;
+  boost::function<void(SyncTcpConnection*)> onConnect;
   proto::socket& socket();
 
   void start();
-	void Send(std::string message);
+  void Send(std::string message);
 private:
   SyncTcpConnection(boost::asio::io_service& io_service);
 
   void handle_write(const boost::system::error_code & /*error*/,
-      size_t /*bytes_transferred*/);
+                    size_t /*bytes_transferred*/);
   proto::socket socket_;
 };
 
