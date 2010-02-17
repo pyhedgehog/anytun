@@ -104,6 +104,7 @@ Notes:
     because openssl had no SHA256 implementation prior to this
     version
   - on FreeBSD you have to use gmake instead of make
+  - the FreeBSD port has some issues concering daemonizing and signal handling
 
 Installing
 ----------
