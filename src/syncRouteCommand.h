@@ -48,14 +48,14 @@ public:
 
 private:
   SyncRouteCommand(const SyncRouteCommand&);
-  u_int16_t count_;
+  uint16_t count_;
   NetworkPrefix addr_;
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive& ar, const unsigned int version) {
     Lock lock(gRoutingTable.getMutex());
     ar& addr_;
-    //		u_int16_t & mux (gRoutingTable.getOrNewRoutingTEUnlocked(addr_));
+    //		uint16_t & mux (gRoutingTable.getOrNewRoutingTEUnlocked(addr_));
     //		ar & mux;
     ar & (*(gRoutingTable.getOrNewRoutingTEUnlocked(addr_)));
     gRoutingTable.updateRouteTreeUnlocked(addr_);

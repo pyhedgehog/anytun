@@ -40,21 +40,21 @@
 class PortWindow
 {
 public:
-  typedef std::set<u_int16_t> PortSet;
+  typedef std::set<uint16_t> PortSet;
 
-  PortWindow(u_int16_t,u_int16_t);
+  PortWindow(uint16_t,uint16_t);
   ~PortWindow();
 
   PortSet::size_type getLength();
-  bool hasPort(u_int16_t);
-  bool freePort(u_int16_t);
-  u_int16_t newPort();
+  bool hasPort(uint16_t);
+  bool freePort(uint16_t);
+  uint16_t newPort();
   void clear();
 
 
 private:
-  u_int16_t start_port_;
-  u_int16_t end_port_;
+  uint16_t start_port_;
+  uint16_t end_port_;
   ::Mutex mutex_;
   PortSet ports_;
 

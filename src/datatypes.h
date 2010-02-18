@@ -36,23 +36,24 @@
 #include <boost/cstdint.hpp>
 #include <boost/integer_traits.hpp>
 
-typedef boost::uint8_t u_int8_t;
-typedef boost::uint16_t u_int16_t;
-typedef boost::uint32_t u_int32_t;
-typedef boost::uint64_t u_int64_t;
-typedef boost::int8_t int8_t;
-typedef boost::int16_t int16_t;
-typedef boost::int32_t int32_t;
-typedef boost::int64_t int64_t;
+// should not be necessary on GCC, #ifdef + #include <stdint.h> should do the job; still required on MS VC++9, though.
+using boost::int8_t;
+using boost::uint8_t;
+using boost::int16_t;
+using boost::uint16_t;
+using boost::int32_t;
+using boost::uint32_t;
+using boost::int64_t;
+using boost::uint64_t;
 
-typedef u_int32_t window_size_t;
+typedef uint32_t window_size_t;
 
-typedef u_int32_t seq_nr_t;
+typedef uint32_t seq_nr_t;
 #define SEQ_NR_MAX 0xFFFFFFFF
-typedef u_int16_t sender_id_t;
-typedef u_int16_t payload_type_t;
-typedef u_int16_t mux_t;
-typedef u_int32_t satp_prf_label_t;
+typedef uint16_t sender_id_t;
+typedef uint16_t payload_type_t;
+typedef uint16_t mux_t;
+typedef uint32_t satp_prf_label_t;
 
 typedef enum { ANY, IPV4_ONLY, IPV6_ONLY } ResolvAddrType;
 

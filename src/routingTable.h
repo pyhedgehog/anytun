@@ -42,7 +42,7 @@
 #include "networkPrefix.h"
 #include "routingTreeNode.h"
 #include "boost/array.hpp"
-typedef std::map<NetworkPrefix,u_int16_t> RoutingMap;
+typedef std::map<NetworkPrefix,uint16_t> RoutingMap;
 
 class RoutingTable
 {
@@ -50,15 +50,15 @@ public:
   static RoutingTable& instance();
   RoutingTable();
   ~RoutingTable();
-  void addRoute(const NetworkPrefix& ,u_int16_t);
+  void addRoute(const NetworkPrefix& ,uint16_t);
   void updateRouteTreeUnlocked(const NetworkPrefix& pref);
   void delRoute(const NetworkPrefix&);
-  u_int16_t getRoute(const NetworkAddress&);
+  uint16_t getRoute(const NetworkAddress&);
   bool empty(network_address_type_t type);
   void clear(network_address_type_t type);
   Mutex& getMutex();
-  u_int16_t* getOrNewRoutingTEUnlocked(const NetworkPrefix& addr);
-  u_int16_t getCountUnlocked(network_address_type_t type);
+  uint16_t* getOrNewRoutingTEUnlocked(const NetworkPrefix& addr);
+  uint16_t getCountUnlocked(network_address_type_t type);
   RoutingMap::iterator getBeginUnlocked(network_address_type_t type);
   RoutingMap::iterator getEndUnlocked(network_address_type_t type);
 

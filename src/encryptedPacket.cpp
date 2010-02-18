@@ -40,7 +40,7 @@
 #include "log.h"
 #include "anytunError.h"
 
-EncryptedPacket::EncryptedPacket(u_int32_t payload_length, u_int32_t auth_tag_length, bool allow_realloc)
+EncryptedPacket::EncryptedPacket(uint32_t payload_length, uint32_t auth_tag_length, bool allow_realloc)
   : Buffer(payload_length + sizeof(struct HeaderStruct), allow_realloc), auth_tag_length_(auth_tag_length)
 {
   header_ = reinterpret_cast<struct HeaderStruct*>(buf_);
@@ -53,7 +53,7 @@ EncryptedPacket::EncryptedPacket(u_int32_t payload_length, u_int32_t auth_tag_le
   }
 }
 
-u_int32_t EncryptedPacket::getHeaderLength()
+uint32_t EncryptedPacket::getHeaderLength()
 {
   return sizeof(struct HeaderStruct);
 }
@@ -117,7 +117,7 @@ void EncryptedPacket::setHeader(seq_nr_t seq_nr, sender_id_t sender_id, mux_t mu
   header_->mux = MUX_T_HTON(mux);
 }
 
-u_int32_t EncryptedPacket::getPayloadLength() const
+uint32_t EncryptedPacket::getPayloadLength() const
 {
   if(!payload_) {
     return 0;
@@ -130,7 +130,7 @@ u_int32_t EncryptedPacket::getPayloadLength() const
   return (length_ > (sizeof(struct HeaderStruct) + auth_tag_length_)) ? (length_ - sizeof(struct HeaderStruct) - auth_tag_length_) : 0;
 }
 
-void EncryptedPacket::setPayloadLength(u_int32_t payload_length)
+void EncryptedPacket::setPayloadLength(uint32_t payload_length)
 {
   Buffer::setLength(payload_length + sizeof(struct HeaderStruct));
   // depending on allow_realloc buf_ may point to another address
@@ -160,17 +160,17 @@ void EncryptedPacket::reinit()
   }
 }
 
-u_int8_t* EncryptedPacket::getPayload()
+uint8_t* EncryptedPacket::getPayload()
 {
   return payload_;
 }
 
-u_int8_t* EncryptedPacket::getAuthenticatedPortion()
+uint8_t* EncryptedPacket::getAuthenticatedPortion()
 {
   return buf_;
 }
 
-u_int32_t EncryptedPacket::getAuthenticatedPortionLength()
+uint32_t EncryptedPacket::getAuthenticatedPortionLength()
 {
   if(!buf_) {
     return 0;
@@ -223,12 +223,12 @@ void EncryptedPacket::removeAuthTag()
   setLength(length_ - auth_tag_length_);
 }
 
-u_int8_t* EncryptedPacket::getAuthTag()
+uint8_t* EncryptedPacket::getAuthTag()
 {
   return auth_tag_;
 }
 
-u_int32_t EncryptedPacket::getAuthTagLength()
+uint32_t EncryptedPacket::getAuthTagLength()
 {
   if(auth_tag_) {
     return auth_tag_length_;

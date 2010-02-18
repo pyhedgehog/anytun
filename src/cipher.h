@@ -57,8 +57,8 @@ public:
   void decrypt(KeyDerivation& kd, EncryptedPacket& in, PlainPacket& out);
 
 protected:
-  virtual u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
-  virtual u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
+  virtual uint32_t cipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
+  virtual uint32_t decipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
 
   kd_dir_t dir_;
 };
@@ -68,8 +68,8 @@ protected:
 class NullCipher : public Cipher
 {
 protected:
-  u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  uint32_t cipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  uint32_t decipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 };
 
 #ifndef NO_CRYPT
@@ -79,28 +79,28 @@ class AesIcmCipher : public Cipher
 {
 public:
   AesIcmCipher(kd_dir_t d);
-  AesIcmCipher(kd_dir_t d, u_int16_t key_length);
+  AesIcmCipher(kd_dir_t d, uint16_t key_length);
   ~AesIcmCipher();
 
-  static const u_int16_t DEFAULT_KEY_LENGTH = 128;
-  static const u_int16_t CTR_LENGTH = 16;
-  static const u_int16_t SALT_LENGTH = 14;
+  static const uint16_t DEFAULT_KEY_LENGTH = 128;
+  static const uint16_t CTR_LENGTH = 16;
+  static const uint16_t SALT_LENGTH = 14;
 
 protected:
-  u_int32_t cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  u_int32_t decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  uint32_t cipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  uint32_t decipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
 private:
-  void init(u_int16_t key_length = DEFAULT_KEY_LENGTH);
+  void init(uint16_t key_length = DEFAULT_KEY_LENGTH);
 
   void calcCtr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-  void calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+  void calc(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
 #ifndef USE_SSL_CRYPTO
   gcry_cipher_hd_t handle_;
 #else
   AES_KEY aes_key_;
-  u_int8_t ecount_buf_[AES_BLOCK_SIZE];
+  uint8_t ecount_buf_[AES_BLOCK_SIZE];
 #endif
   Buffer key_;
   Buffer salt_;
@@ -109,18 +109,18 @@ private:
 #pragma pack(push, 1)
 #endif
   union ATTR_PACKED cipher_aesctr_ctr_union {
-    u_int8_t buf_[CTR_LENGTH];
+    uint8_t buf_[CTR_LENGTH];
     struct ATTR_PACKED {
-      u_int8_t buf_[SALT_LENGTH];
-      u_int16_t zero_;
+      uint8_t buf_[SALT_LENGTH];
+      uint16_t zero_;
     } salt_;
     struct ATTR_PACKED {
-      u_int8_t fill_[SALT_LENGTH - sizeof(mux_t) - sizeof(sender_id_t) - 2*sizeof(u_int8_t) - sizeof(seq_nr_t)];
+      uint8_t fill_[SALT_LENGTH - sizeof(mux_t) - sizeof(sender_id_t) - 2*sizeof(uint8_t) - sizeof(seq_nr_t)];
       mux_t mux_;
       sender_id_t sender_id_;
-      u_int8_t empty_[2];
+      uint8_t empty_[2];
       seq_nr_t seq_nr_;
-      u_int16_t zero_;
+      uint16_t zero_;
     } params_;
   } ctr_;
 #ifdef _MSC_VER

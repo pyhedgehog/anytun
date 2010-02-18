@@ -66,12 +66,12 @@ class OptionNetwork
 public:
   OptionNetwork() : net_addr(""), prefix_length(0) {};
   OptionNetwork(std::string network) { init(network); };
-  OptionNetwork(std::string n, u_int16_t p) : net_addr(n), prefix_length(p) {};
+  OptionNetwork(std::string n, uint16_t p) : net_addr(n), prefix_length(p) {};
 
   void init(std::string network);
 
   std::string net_addr;
-  u_int16_t prefix_length;
+  uint16_t prefix_length;
 };
 typedef std::list<OptionNetwork> NetworkList;
 std::istream& operator>>(std::istream& stream, OptionNetwork& network);
@@ -154,8 +154,8 @@ public:
   Options& setCipher(std::string c);
   std::string getAuthAlgo();
   Options& setAuthAlgo(std::string a);
-  u_int32_t getAuthTagLength();
-  Options& setAuthTagLength(u_int32_t a);
+  uint32_t getAuthTagLength();
+  Options& setAuthTagLength(uint32_t a);
   std::string getKdPrf();
   Options& setKdPrf(std::string k);
   role_t getRole();
@@ -225,7 +225,7 @@ private:
 
   std::string cipher_;
   std::string auth_algo_;
-  u_int32_t auth_tag_length_;
+  uint32_t auth_tag_length_;
   std::string kd_prf_;
   role_t role_;
   std::string passphrase_;

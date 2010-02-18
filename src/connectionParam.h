@@ -60,7 +60,7 @@ private:
   void serialize(Archive& ar, const unsigned int version) {
     Lock lock(mutex_);
     std::string remote_host(remote_end_.address().to_string());
-    u_int16_t remote_port = remote_end_.port();
+    uint16_t remote_port = remote_end_.port();
     ar& kd_;
     ar& seq_window_;
     ar& seq_nr_;

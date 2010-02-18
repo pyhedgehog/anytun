@@ -43,8 +43,8 @@ class Buffer
 {
 public:
   Buffer(bool allow_realloc = true);
-  Buffer(u_int32_t length, bool allow_realloc = true);
-  Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc = true);
+  Buffer(uint32_t length, bool allow_realloc = true);
+  Buffer(uint8_t* data, uint32_t length, bool allow_realloc = true);
   Buffer(std::string hex_data, bool allow_realloc = true);
   virtual ~Buffer();
   Buffer(const Buffer& src);
@@ -52,27 +52,27 @@ public:
   bool operator==(const Buffer& cmp) const;
   Buffer operator^(const Buffer& xor_by) const;
 
-  u_int32_t getLength() const;
-  virtual void setLength(u_int32_t new_length);
-  u_int8_t* getBuf();
-  u_int8_t& operator[](u_int32_t index);
-  u_int8_t operator[](u_int32_t index) const;
+  uint32_t getLength() const;
+  virtual void setLength(uint32_t new_length);
+  uint8_t* getBuf();
+  uint8_t& operator[](uint32_t index);
+  uint8_t operator[](uint32_t index) const;
   std::string getHexDump() const;
   std::string getHexDumpOneLine() const;
 
   bool isReallocAllowed() const;
 
-  operator u_int8_t*();
+  operator uint8_t*();
 
 protected:
   virtual void reinit() {};
 
-  u_int8_t* buf_;
-  u_int32_t length_;
-  u_int32_t real_length_;
+  uint8_t* buf_;
+  uint32_t length_;
+  uint32_t real_length_;
   bool allow_realloc_;
 
-  static const u_int32_t OVER_SIZE_ = 100;
+  static const uint32_t OVER_SIZE_ = 100;
 };
 
 #endif

@@ -95,7 +95,7 @@ void UDPPacketSource::onResolve(PacketSourceResolverIt& it)
     std::list<SocketsElement>::iterator it = sockets_.begin();
     for(; it != sockets_.end(); ++it) {
       it->len_ = MAX_PACKET_LENGTH;
-      it->buf_ = new u_int8_t[it->len_];
+      it->buf_ = new uint8_t[it->len_];
       if(!it->buf_) {
         AnytunError::throwErr() << "memory error";
       }
@@ -128,7 +128,7 @@ void UDPPacketSource::recv_thread(std::list<SocketsElement>::iterator it)
   result.it_ = it;
   for(;;) {
     it->sem_->down();
-    result.len_ = static_cast<u_int32_t>(it->sock_->receive_from(boost::asio::buffer(it->buf_, it->len_), result.remote_));
+    result.len_ = static_cast<uint32_t>(it->sock_->receive_from(boost::asio::buffer(it->buf_, it->len_), result.remote_));
     {
       Lock lock(thread_result_mutex_);
       thread_result_queue_.push(result);
@@ -137,10 +137,10 @@ void UDPPacketSource::recv_thread(std::list<SocketsElement>::iterator it)
   }
 }
 
-u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote)
+uint32_t UDPPacketSource::recv(uint8_t* buf, uint32_t len, PacketSourceEndpoint& remote)
 {
   if(sockets_.size() == 1) {
-    return static_cast<u_int32_t>(sockets_.front().sock_->receive_from(boost::asio::buffer(buf, len), remote));
+    return static_cast<uint32_t>(sockets_.front().sock_->receive_from(boost::asio::buffer(buf, len), remote));
   }
 
   thread_result_sem_.down();
@@ -158,7 +158,7 @@ u_int32_t UDPPacketSource::recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoi
   return len;
 }
 
-void UDPPacketSource::send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote)
+void UDPPacketSource::send(uint8_t* buf, uint32_t len, PacketSourceEndpoint remote)
 {
   std::list<SocketsElement>::iterator it = sockets_.begin();
   for(; it != sockets_.end(); ++it) {

@@ -44,7 +44,7 @@
 
 void Cipher::encrypt(KeyDerivation& kd, PlainPacket& in, EncryptedPacket& out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  u_int32_t len = cipher(kd, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
+  uint32_t len = cipher(kd, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
   out.setSenderId(sender_id);
   out.setSeqNr(seq_nr);
   out.setMux(mux);
@@ -53,20 +53,20 @@ void Cipher::encrypt(KeyDerivation& kd, PlainPacket& in, EncryptedPacket& out, s
 
 void Cipher::decrypt(KeyDerivation& kd, EncryptedPacket& in, PlainPacket& out)
 {
-  u_int32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
+  uint32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
   out.setLength(len);
 }
 
 
 //******* NullCipher *******
 
-u_int32_t NullCipher::cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+uint32_t NullCipher::cipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
   std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
 }
 
-u_int32_t NullCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+uint32_t NullCipher::decipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
   std::memcpy(out, in, (ilen < olen) ? ilen : olen);
   return (ilen < olen) ? ilen : olen;
@@ -75,17 +75,17 @@ u_int32_t NullCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, 
 #ifndef NO_CRYPT
 //****** AesIcmCipher ******
 
-AesIcmCipher::AesIcmCipher(kd_dir_t d) : Cipher(d), key_(u_int32_t(DEFAULT_KEY_LENGTH/8)), salt_(u_int32_t(SALT_LENGTH))
+AesIcmCipher::AesIcmCipher(kd_dir_t d) : Cipher(d), key_(uint32_t(DEFAULT_KEY_LENGTH/8)), salt_(uint32_t(SALT_LENGTH))
 {
   init();
 }
 
-AesIcmCipher::AesIcmCipher(kd_dir_t d, u_int16_t key_length) : Cipher(d), key_(u_int32_t(key_length/8)), salt_(u_int32_t(SALT_LENGTH))
+AesIcmCipher::AesIcmCipher(kd_dir_t d, uint16_t key_length) : Cipher(d), key_(uint32_t(key_length/8)), salt_(uint32_t(SALT_LENGTH))
 {
   init(key_length);
 }
 
-void AesIcmCipher::init(u_int16_t key_length)
+void AesIcmCipher::init(uint16_t key_length)
 {
 #ifndef USE_SSL_CRYPTO
   handle_ = NULL;
@@ -123,13 +123,13 @@ AesIcmCipher::~AesIcmCipher()
 #endif
 }
 
-u_int32_t AesIcmCipher::cipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+uint32_t AesIcmCipher::cipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
   calc(kd, in, ilen, out, olen, seq_nr, sender_id, mux);
   return (ilen < olen) ? ilen : olen;
 }
 
-u_int32_t AesIcmCipher::decipher(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+uint32_t AesIcmCipher::decipher(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
   calc(kd, in, ilen, out, olen, seq_nr, sender_id, mux);
   return (ilen < olen) ? ilen : olen;
@@ -148,7 +148,7 @@ void AesIcmCipher::calcCtr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sende
   return;
 }
 
-void AesIcmCipher::calc(KeyDerivation& kd, u_int8_t* in, u_int32_t ilen, u_int8_t* out, u_int32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+void AesIcmCipher::calc(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
 #ifndef USE_SSL_CRYPTO
   if(!handle_) {

@@ -67,7 +67,7 @@ class KeyDerivation
 {
 public:
   KeyDerivation() : is_initialized_(false), role_(ROLE_LEFT), key_length_(0), master_salt_(0), master_key_(0) {};
-  KeyDerivation(u_int16_t key_length) : is_initialized_(false), role_(ROLE_LEFT), key_length_(key_length), master_salt_(0), master_key_(0) {};
+  KeyDerivation(uint16_t key_length) : is_initialized_(false), role_(ROLE_LEFT), key_length_(key_length), master_salt_(0), master_key_(0) {};
   virtual ~KeyDerivation() {};
 
   void setRole(const role_t role);
@@ -83,8 +83,8 @@ protected:
   virtual void updateMasterKey() = 0;
 
 #ifndef NO_PASSPHRASE
-  void calcMasterKey(std::string passphrase, u_int16_t length);
-  void calcMasterSalt(std::string passphrase, u_int16_t length);
+  void calcMasterKey(std::string passphrase, uint16_t length);
+  void calcMasterSalt(std::string passphrase, uint16_t length);
 #endif
 
   KeyDerivation(const KeyDerivation& src);
@@ -101,7 +101,7 @@ protected:
 
   bool is_initialized_;
   role_t role_;
-  u_int16_t key_length_;
+  uint16_t key_length_;
   SyncBuffer master_salt_;
   SyncBuffer master_key_;
 
@@ -145,12 +145,12 @@ class AesIcmKeyDerivation : public KeyDerivation
 {
 public:
   AesIcmKeyDerivation();
-  AesIcmKeyDerivation(u_int16_t key_length);
+  AesIcmKeyDerivation(uint16_t key_length);
   ~AesIcmKeyDerivation();
 
-  static const u_int16_t DEFAULT_KEY_LENGTH = 128;
-  static const u_int16_t CTR_LENGTH = 16;
-  static const u_int16_t SALT_LENGTH = 14;
+  static const uint16_t DEFAULT_KEY_LENGTH = 128;
+  static const uint16_t CTR_LENGTH = 16;
+  static const uint16_t SALT_LENGTH = 14;
 
   void init(Buffer key, Buffer salt, std::string passphrase = "");
   bool generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, Buffer& key);
@@ -172,23 +172,23 @@ private:
   gcry_cipher_hd_t handle_[2];
 #else
   AES_KEY aes_key_[2];
-  u_int8_t ecount_buf_[2][AES_BLOCK_SIZE];
+  uint8_t ecount_buf_[2][AES_BLOCK_SIZE];
 #endif
 
 #ifdef _MSC_VER
 #pragma pack(push, 1)
 #endif
   union ATTR_PACKED key_derivation_aesctr_ctr_union {
-    u_int8_t buf_[CTR_LENGTH];
+    uint8_t buf_[CTR_LENGTH];
     struct ATTR_PACKED {
-      u_int8_t buf_[SALT_LENGTH];
-      u_int16_t zero_;
+      uint8_t buf_[SALT_LENGTH];
+      uint16_t zero_;
     } salt_;
     struct ATTR_PACKED {
-      u_int8_t fill_[SALT_LENGTH - sizeof(satp_prf_label_t) - sizeof(seq_nr_t)];
+      uint8_t fill_[SALT_LENGTH - sizeof(satp_prf_label_t) - sizeof(seq_nr_t)];
       satp_prf_label_t label_;
       seq_nr_t seq_;
-      u_int16_t zero_;
+      uint16_t zero_;
     } params_;
   } ctr_[2];
 #ifdef _MSC_VER

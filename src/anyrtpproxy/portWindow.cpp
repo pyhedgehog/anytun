@@ -32,7 +32,7 @@
 
 #include "portWindow.h"
 
-PortWindow::PortWindow(u_int16_t start, u_int16_t end) : start_port_(start), end_port_(end)
+PortWindow::PortWindow(uint16_t start, uint16_t end) : start_port_(start), end_port_(end)
 {
 }
 
@@ -46,7 +46,7 @@ PortWindow::PortSet::size_type PortWindow::getLength()
   return ports_.size();
 }
 
-bool PortWindow::hasPort(u_int16_t port)
+bool PortWindow::hasPort(uint16_t port)
 {
   Lock lock(mutex_);
 
@@ -57,7 +57,7 @@ bool PortWindow::hasPort(u_int16_t port)
   return true;
 }
 
-bool PortWindow::freePort(u_int16_t port)
+bool PortWindow::freePort(uint16_t port)
 {
   Lock lock(mutex_);
 
@@ -69,10 +69,10 @@ bool PortWindow::freePort(u_int16_t port)
   return true;
 }
 
-u_int16_t PortWindow::newPort()
+uint16_t PortWindow::newPort()
 {
   Lock lock(mutex_);
-  u_int16_t port= start_port_;
+  uint16_t port= start_port_;
   while(port<end_port_ && ports_.find(port) !=ports_.end()) {
     port++;
   }

@@ -44,7 +44,7 @@ enum device_type_t { TYPE_UNDEF, TYPE_TUN, TYPE_TAP };
 class DeviceConfig
 {
 public:
-  DeviceConfig(std::string dev_name ,std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix, u_int16_t mtu) {
+  DeviceConfig(std::string dev_name ,std::string dev_type, std::string ifcfg_addr, uint16_t ifcfg_prefix, uint16_t mtu) {
     mtu_ = mtu;
     type_ = TYPE_UNDEF;
 #ifndef _MSC_VER
@@ -81,8 +81,8 @@ public:
       addr_.setNetworkAddress(ipv4, ifcfg_addr.c_str());
     }
     prefix_ = ifcfg_prefix;
-    u_int32_t mask = 0;
-    for(u_int16_t i = 0; i < prefix_; ++i) {
+    uint32_t mask = 0;
+    for(uint16_t i = 0; i < prefix_; ++i) {
       mask = mask >> 1;
       mask |= 0x80000000L;
     }
@@ -93,8 +93,8 @@ private:
   device_type_t type_;
   NetworkAddress addr_;
   NetworkAddress netmask_;
-  u_int16_t prefix_;
-  u_int16_t mtu_;
+  uint16_t prefix_;
+  uint16_t mtu_;
 
   friend class TunDevice;
 };

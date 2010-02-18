@@ -40,7 +40,7 @@ ConnectionList::~ConnectionList()
 {
 }
 
-void ConnectionList::addConnection(ConnectionParam& conn, u_int16_t mux)
+void ConnectionList::addConnection(ConnectionParam& conn, uint16_t mux)
 {
 }
 
@@ -59,7 +59,7 @@ ConnectionMap::iterator ConnectionList::getEndUnlocked()
   return connections_.end();
 }
 
-const ConnectionMap::iterator ConnectionList::getConnection(u_int16_t mux)
+const ConnectionMap::iterator ConnectionList::getConnection(uint16_t mux)
 {
   Lock lock(mutex_);
   ConnectionMap::iterator it = connections_.find(mux);
@@ -67,7 +67,7 @@ const ConnectionMap::iterator ConnectionList::getConnection(u_int16_t mux)
 }
 
 
-ConnectionParam& ConnectionList::getOrNewConnectionUnlocked(u_int16_t mux)
+ConnectionParam& ConnectionList::getOrNewConnectionUnlocked(uint16_t mux)
 {
   ConnectionMap::iterator it = connections_.find(mux);
   return it->second;

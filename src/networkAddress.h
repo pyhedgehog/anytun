@@ -62,13 +62,13 @@ public:
   NetworkAddress(const std::string&);
   NetworkAddress(boost::asio::ip::address_v6);
   NetworkAddress(boost::asio::ip::address_v4);
-  NetworkAddress(u_int64_t);
+  NetworkAddress(uint64_t);
   NetworkAddress(const network_address_type_t type, const std::string& address);
   ~NetworkAddress();
   void setNetworkAddress(const network_address_type_t type, const std::string& address);
   void setNetworkAddress(boost::asio::ip::address_v4);
   void setNetworkAddress(boost::asio::ip::address_v6);
-  void setNetworkAddress(u_int64_t);
+  void setNetworkAddress(uint64_t);
   network_address_type_t getNetworkAddressType() const;
   std::string toString() const;
   bool operator<(const NetworkAddress& s) const;
@@ -77,12 +77,12 @@ public:
   ethernet_bytes_type to_bytes_ethernet() const;
   const boost::asio::ip::address_v4& getNetworkAddressV4() const;
   const boost::asio::ip::address_v6& getNetworkAddressV6() const;
-  const u_int64_t getNetworkAdrressEther() const;
+  const uint64_t getNetworkAdrressEther() const;
 protected:
   Mutex mutex_;
   boost::asio::ip::address_v4 ipv4_address_;
   boost::asio::ip::address_v6 ipv6_address_;
-  u_int64_t ethernet_address_;
+  uint64_t ethernet_address_;
   network_address_type_t network_address_type_;
 private:
   NetworkAddress operator=(const NetworkAddress& s);

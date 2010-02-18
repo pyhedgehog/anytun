@@ -82,13 +82,13 @@ private:
 
     // address of local_end1 and local_end2 are always equal
     std::string local_addr(local_end1_.address().to_string());
-    u_int16_t local_port1 = local_end1_.port();
-    u_int16_t local_port2 = local_end2_.port();
+    uint16_t local_port1 = local_end1_.port();
+    uint16_t local_port2 = local_end2_.port();
 
     std::string remote_addr1(remote_end1_.address().to_string());
-    u_int16_t remote_port1 = remote_end1_.port();
+    uint16_t remote_port1 = remote_end1_.port();
     std::string remote_addr2(remote_end2_.address().to_string());
-    u_int16_t remote_port2 = remote_end2_.port();
+    uint16_t remote_port2 = remote_end2_.port();
 
     ar& dead_;
     ar& complete_;

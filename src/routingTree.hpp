@@ -40,7 +40,7 @@ class RoutingTree
 
 public:
   template <class BinaryType>
-  static void walk(BinaryType bytes ,RoutingTreeNode* node,u_int8_t length,u_int16_t mux) {
+  static void walk(BinaryType bytes ,RoutingTreeNode* node,uint8_t length,uint16_t mux) {
     for(int i=0; i<(length/8); i++) {
       if(!node->nodes_[bytes[i]]) {
         node->nodes_[bytes[i]] = new RoutingTreeNode;
@@ -68,9 +68,9 @@ public:
   }
 
   template <class BinaryType>
-  static u_int16_t find(BinaryType bytes ,RoutingTreeNode& root) {
+  static uint16_t find(BinaryType bytes ,RoutingTreeNode& root) {
     bool valid=0;
-    u_int16_t mux=0;
+    uint16_t mux=0;
     RoutingTreeNode* node = &root;
     if(root.valid_) {
       mux=root.mux_;

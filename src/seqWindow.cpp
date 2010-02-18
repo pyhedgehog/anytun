@@ -54,7 +54,7 @@ void SeqWindowElement::init(window_size_t w, seq_nr_t m)
   if(window_) {
     delete[] window_;
   }
-  window_ = new u_int8_t[w];
+  window_ = new uint8_t[w];
   memset(window_, 0, w);
   pos_ = 0;
   max_ = m;

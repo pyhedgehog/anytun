@@ -70,7 +70,7 @@ NetworkAddress::NetworkAddress(boost::asio::ip::address_v4 ipv4_address)
   ipv4_address_ = ipv4_address;
 }
 
-NetworkAddress::NetworkAddress(u_int64_t ethernet_address)
+NetworkAddress::NetworkAddress(uint64_t ethernet_address)
 {
   network_address_type_=ethernet;
   ethernet_address_=ethernet_address;
@@ -112,7 +112,7 @@ void NetworkAddress::setNetworkAddress(boost::asio::ip::address_v6 addr)
   ipv6_address_ = addr;
 }
 
-void NetworkAddress::setNetworkAddress(u_int64_t addr)
+void NetworkAddress::setNetworkAddress(uint64_t addr)
 {
   network_address_type_=ethernet;
   ethernet_address_=addr;
@@ -141,7 +141,7 @@ const boost::asio::ip::address_v6& NetworkAddress::getNetworkAddressV6() const
   return ipv6_address_;
 }
 
-const u_int64_t NetworkAddress::getNetworkAdrressEther() const
+const uint64_t NetworkAddress::getNetworkAdrressEther() const
 {
   if(network_address_type_ != ethernet) {
     AnytunError::throwErr() << "wrong address type";
@@ -175,7 +175,7 @@ ipv6_bytes_type	NetworkAddress::to_bytes_v6() const
 ethernet_bytes_type	NetworkAddress::to_bytes_ethernet() const
 {
   boost::array<unsigned char,6> result;
-  u_int64_t ether=ethernet_address_;
+  uint64_t ether=ethernet_address_;
   for(int i = 0; i < 6; i++) {
     result[i] = (unsigned char)(ether && 0xff);
     ether >>= 8;

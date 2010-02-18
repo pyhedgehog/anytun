@@ -44,10 +44,10 @@ Buffer::Buffer(bool allow_realloc) : buf_(0), length_(0), real_length_(0), allow
 {
 }
 
-Buffer::Buffer(u_int32_t length, bool allow_realloc) : length_(length), real_length_(length_ + Buffer::OVER_SIZE_),
+Buffer::Buffer(uint32_t length, bool allow_realloc) : length_(length), real_length_(length_ + Buffer::OVER_SIZE_),
   allow_realloc_(allow_realloc)
 {
-  buf_ = new u_int8_t[real_length_];
+  buf_ = new uint8_t[real_length_];
   if(!buf_) {
     length_ = 0;
     real_length_ = 0;
@@ -56,7 +56,7 @@ Buffer::Buffer(u_int32_t length, bool allow_realloc) : length_(length), real_len
   std::memset(buf_, 0, real_length_);
 }
 
-Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc) : length_(length), real_length_(length + Buffer::OVER_SIZE_),
+Buffer::Buffer(uint8_t* data, uint32_t length, bool allow_realloc) : length_(length), real_length_(length + Buffer::OVER_SIZE_),
   allow_realloc_(allow_realloc)
 {
   if(!data) {
@@ -65,7 +65,7 @@ Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc) : length_(l
     return;
   }
 
-  buf_ = new u_int8_t[real_length_];
+  buf_ = new uint8_t[real_length_];
   if(!buf_) {
     length_ = 0;
     real_length_ = 0;
@@ -74,22 +74,22 @@ Buffer::Buffer(u_int8_t* data, u_int32_t length, bool allow_realloc) : length_(l
   std::memcpy(buf_, data, length_);
 }
 
-Buffer::Buffer(std::string hex_data, bool allow_realloc) : length_(static_cast<u_int32_t>(hex_data.size())/2),
+Buffer::Buffer(std::string hex_data, bool allow_realloc) : length_(static_cast<uint32_t>(hex_data.size())/2),
   real_length_(length_ + Buffer::OVER_SIZE_),
   allow_realloc_(allow_realloc)
 {
-  buf_ = new u_int8_t[real_length_];
+  buf_ = new uint8_t[real_length_];
   if(!buf_) {
     length_ = 0;
     real_length_ = 0;
     throw std::bad_alloc();
   }
 
-  for(u_int32_t i=0; i<length_; ++i) {
-    u_int32_t tmp;
+  for(uint32_t i=0; i<length_; ++i) {
+    uint32_t tmp;
     std::istringstream ss(std::string(hex_data.c_str(), i*2, 2));
     if(!(ss >> std::hex >> tmp)) { tmp = 0; }
-    buf_[i] = static_cast<u_int8_t>(tmp);
+    buf_[i] = static_cast<uint8_t>(tmp);
   }
 }
 
@@ -102,7 +102,7 @@ Buffer::~Buffer()
 
 Buffer::Buffer(const Buffer& src) : length_(src.length_), real_length_(src.real_length_), allow_realloc_(src.allow_realloc_)
 {
-  buf_ = new u_int8_t[real_length_];
+  buf_ = new uint8_t[real_length_];
   if(!buf_) {
     length_ = 0;
     real_length_ = 0;
@@ -121,7 +121,7 @@ void Buffer::operator=(const Buffer& src)
   real_length_ = src.real_length_;
   allow_realloc_ = src.allow_realloc_;
 
-  buf_ = new u_int8_t[real_length_];
+  buf_ = new uint8_t[real_length_];
   if(!buf_) {
     length_ = 0;
     real_length_ = 0;
@@ -145,23 +145,23 @@ bool Buffer::operator==(const Buffer& cmp) const
 
 Buffer Buffer::operator^(const Buffer& xor_by) const
 {
-  u_int32_t res_length = (xor_by.length_ > length_) ? xor_by.length_ : length_;
-  u_int32_t min_length = (xor_by.length_ < length_) ? xor_by.length_ : length_;
+  uint32_t res_length = (xor_by.length_ > length_) ? xor_by.length_ : length_;
+  uint32_t min_length = (xor_by.length_ < length_) ? xor_by.length_ : length_;
   Buffer res(res_length);
 
-  for(u_int32_t index = 0; index < min_length; index++) {
+  for(uint32_t index = 0; index < min_length; index++) {
     res[index] = buf_[index] ^ xor_by[index];
   }
 
   return res;
 }
 
-u_int32_t Buffer::getLength() const
+uint32_t Buffer::getLength() const
 {
   return length_;
 }
 
-void Buffer::setLength(u_int32_t new_length)
+void Buffer::setLength(uint32_t new_length)
 {
   if(new_length == length_) {
     return;
@@ -172,13 +172,13 @@ void Buffer::setLength(u_int32_t new_length)
       throw std::out_of_range("buffer::setLength() - reallocation not allowed for this Buffer");
     }
 
-    u_int8_t* old_buf = buf_;
-    u_int32_t old_length = length_;
+    uint8_t* old_buf = buf_;
+    uint32_t old_length = length_;
 
     length_ = new_length;
     real_length_ = length_ + Buffer::OVER_SIZE_;
 
-    buf_ = new u_int8_t[real_length_];
+    buf_ = new uint8_t[real_length_];
     if(!buf_) {
       length_ = 0;
       real_length_ = 0;
@@ -204,12 +204,12 @@ void Buffer::setLength(u_int32_t new_length)
 }
 
 
-u_int8_t* Buffer::getBuf()
+uint8_t* Buffer::getBuf()
 {
   return buf_;
 }
 
-u_int8_t& Buffer::operator[](u_int32_t index)
+uint8_t& Buffer::operator[](uint32_t index)
 {
   if(index >= length_) {
     throw std::out_of_range("buffer::operator[]");
@@ -218,7 +218,7 @@ u_int8_t& Buffer::operator[](u_int32_t index)
   return buf_[index];
 }
 
-u_int8_t Buffer::operator[](u_int32_t index) const
+uint8_t Buffer::operator[](uint32_t index) const
 {
   if(index >= length_) {
     throw std::out_of_range("buffer::operator[] const");
@@ -227,7 +227,7 @@ u_int8_t Buffer::operator[](u_int32_t index) const
   return buf_[index];
 }
 
-Buffer::operator u_int8_t*()
+Buffer::operator uint8_t*()
 {
   return buf_;
 }
@@ -236,8 +236,8 @@ std::string Buffer::getHexDump() const
 {
   std::stringstream ss;
   ss << "Length=" << length_ << std::endl << std::hex << std::uppercase;
-  for(u_int32_t index = 0; index < length_; index++) {
-    ss << std::setw(2) << std::setfill('0') << u_int32_t(buf_[index]) << " ";
+  for(uint32_t index = 0; index < length_; index++) {
+    ss << std::setw(2) << std::setfill('0') << uint32_t(buf_[index]) << " ";
     if(!((index+1) % 16)) {
       ss << std::endl;
       continue;
@@ -253,8 +253,8 @@ std::string Buffer::getHexDumpOneLine() const
 {
   std::stringstream ss;
   ss << length_ << " Bytes,'" << std::hex << std::uppercase;
-  for(u_int32_t index = 0; index < length_; index++) {
-    ss << std::setw(2) << std::setfill('0') << u_int32_t(buf_[index]);
+  for(uint32_t index = 0; index < length_; index++) {
+    ss << std::setw(2) << std::setfill('0') << uint32_t(buf_[index]);
   }
   ss << "'";
   return ss.str();

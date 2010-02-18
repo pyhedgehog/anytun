@@ -67,12 +67,12 @@ void listener(RtpSession::proto::socket* sock1, RtpSession::proto::socket* sock2
   cLog.msg(Log::PRIO_NOTICE) << "listener(" << call_id << "/" << dir << ") started";
 
   try {
-    Buffer buf(u_int32_t(MAX_PACKET_SIZE));
+    Buffer buf(uint32_t(MAX_PACKET_SIZE));
     RtpSession::proto::endpoint remote_end;
 
     while(1) {
       buf.setLength(MAX_PACKET_SIZE);
-      u_int32_t len=0;
+      uint32_t len=0;
       if(dir == 1) {
         len = 0;  //sock1->recvFromNonBlocking(buf.getBuf(), buf.getLength(), remote_end, 1000);
       } else if(dir == 2) {

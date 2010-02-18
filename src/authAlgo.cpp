@@ -101,17 +101,17 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
   gcry_md_reset(handle_);
   gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   gcry_md_final(handle_);
-  u_int8_t* hmac = gcry_md_read(handle_, 0);
+  uint8_t* hmac = gcry_md_read(handle_, 0);
 #else
   HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
 
-  u_int8_t hmac[DIGEST_LENGTH];
+  uint8_t hmac[DIGEST_LENGTH];
   HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   HMAC_Final(&ctx_, hmac, NULL);
 #endif
 
-  u_int8_t* tag = packet.getAuthTag();
-  u_int32_t length = (packet.getAuthTagLength() < DIGEST_LENGTH) ? packet.getAuthTagLength() : DIGEST_LENGTH;
+  uint8_t* tag = packet.getAuthTag();
+  uint32_t length = (packet.getAuthTagLength() < DIGEST_LENGTH) ? packet.getAuthTagLength() : DIGEST_LENGTH;
 
   if(length > DIGEST_LENGTH) {
     std::memset(tag, 0, packet.getAuthTagLength());
@@ -144,20 +144,20 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
   gcry_md_reset(handle_);
   gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   gcry_md_final(handle_);
-  u_int8_t* hmac = gcry_md_read(handle_, 0);
+  uint8_t* hmac = gcry_md_read(handle_, 0);
 #else
   HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
 
-  u_int8_t hmac[DIGEST_LENGTH];
+  uint8_t hmac[DIGEST_LENGTH];
   HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   HMAC_Final(&ctx_, hmac, NULL);
 #endif
 
-  u_int8_t* tag = packet.getAuthTag();
-  u_int32_t length = (packet.getAuthTagLength() < DIGEST_LENGTH) ? packet.getAuthTagLength() : DIGEST_LENGTH;
+  uint8_t* tag = packet.getAuthTag();
+  uint32_t length = (packet.getAuthTagLength() < DIGEST_LENGTH) ? packet.getAuthTagLength() : DIGEST_LENGTH;
 
   if(length > DIGEST_LENGTH)
-    for(u_int32_t i=0; i < (packet.getAuthTagLength() - DIGEST_LENGTH); ++i)
+    for(uint32_t i=0; i < (packet.getAuthTagLength() - DIGEST_LENGTH); ++i)
       if(tag[i]) { return false; }
 
   int ret = std::memcmp(&tag[packet.getAuthTagLength() - length], &hmac[DIGEST_LENGTH - length], length);
@@ -168,8 +168,6 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
   }
 
   return true;
-
 }
 
 #endif
-

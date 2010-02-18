@@ -65,9 +65,9 @@ void RoutingTable::updateRouteTreeUnlocked(const NetworkPrefix& pref)
 {
   //Lock lock(mutex_); //deadlock
 
-  u_int8_t length=pref.getNetworkPrefixLength();
+  uint8_t length=pref.getNetworkPrefixLength();
   network_address_type_t type=pref.getNetworkAddressType();
-  u_int16_t mux = routes_[pref.getNetworkAddressType()].find(pref)->second;
+  uint16_t mux = routes_[pref.getNetworkAddressType()].find(pref)->second;
   RoutingTreeNode* node = &(root_[type]);
   if(type==ipv4) {
     ipv4_bytes_type bytes(pref.to_bytes_v4());
@@ -93,7 +93,7 @@ void RoutingTable::updateRouteTreeUnlocked(const NetworkPrefix& pref)
   //root_[type].print(0);
 }
 
-void RoutingTable::addRoute(const NetworkPrefix& pref, u_int16_t mux)
+void RoutingTable::addRoute(const NetworkPrefix& pref, uint16_t mux)
 {
   Lock lock(mutex_);
 
@@ -125,7 +125,7 @@ void RoutingTable::delRoute(const NetworkPrefix& pref)
   routes_[pref.getNetworkAddressType()].erase(routes_[pref.getNetworkAddressType()].find(pref));
 }
 
-u_int16_t RoutingTable::getRoute(const NetworkAddress& addr)
+uint16_t RoutingTable::getRoute(const NetworkAddress& addr)
 {
   Lock lock(mutex_);
   network_address_type_t type=addr.getNetworkAddressType();
@@ -151,7 +151,7 @@ u_int16_t RoutingTable::getRoute(const NetworkAddress& addr)
   return 0;
 }
 
-u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix& addr)
+uint16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix& addr)
 {
   RoutingMap::iterator it = routes_[addr.getNetworkAddressType()].find(addr);
   if(it!=routes_[addr.getNetworkAddressType()].end()) {
@@ -163,10 +163,10 @@ u_int16_t* RoutingTable::getOrNewRoutingTEUnlocked(const NetworkPrefix& addr)
   return &(it->second);
 }
 
-u_int16_t RoutingTable::getCountUnlocked(network_address_type_t type)
+uint16_t RoutingTable::getCountUnlocked(network_address_type_t type)
 {
   RoutingMap::iterator it = routes_[type].begin();
-  u_int16_t routes=0;
+  uint16_t routes=0;
   for(; it!=routes_[type].end(); ++it) {
     routes++;
   }

@@ -384,23 +384,23 @@ Options& Options::setLocalSyncPort(std::string l)
   return *this;
 }
 
-u_int16_t Options::getRtpStartPort()
+uint16_t Options::getRtpStartPort()
 {
   return rtp_start_port_;
 }
 
-Options& Options::setRtpStartPort(u_int16_t l)
+Options& Options::setRtpStartPort(uint16_t l)
 {
   rtp_start_port_ = l;
   return *this;
 }
 
-u_int16_t Options::getRtpEndPort()
+uint16_t Options::getRtpEndPort()
 {
   return rtp_end_port_;
 }
 
-Options& Options::setRtpEndPort(u_int16_t l)
+Options& Options::setRtpEndPort(uint16_t l)
 {
   rtp_end_port_ = l;
   return *this;

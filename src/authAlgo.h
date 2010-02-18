@@ -76,7 +76,7 @@ public:
   void generate(KeyDerivation& kd, EncryptedPacket& packet);
   bool checkTag(KeyDerivation& kd, EncryptedPacket& packet);
 
-  static const u_int32_t DIGEST_LENGTH = 0;
+  static const uint32_t DIGEST_LENGTH = 0;
 };
 
 #ifndef NO_CRYPT
@@ -92,7 +92,7 @@ public:
   void generate(KeyDerivation& kd, EncryptedPacket& packet);
   bool checkTag(KeyDerivation& kd, EncryptedPacket& packet);
 
-  static const u_int32_t DIGEST_LENGTH = 20;
+  static const uint32_t DIGEST_LENGTH = 20;
 
 private:
 #ifndef USE_SSL_CRYPTO

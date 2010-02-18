@@ -144,7 +144,7 @@ void sender(TunDevice* dev, PacketSource* src)
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, gOpt.getAuthTagLength());
 
-    u_int16_t mux = gOpt.getMux();
+    uint16_t mux = gOpt.getMux();
     PacketSourceEndpoint emptyEndpoint;
     while(1) {
       plain_packet.setLength(MAX_PACKET_LENGTH);
@@ -157,7 +157,7 @@ void sender(TunDevice* dev, PacketSource* src)
         continue;  // silently ignore device read errors, this is probably no good idea...
       }
 
-      if(static_cast<u_int32_t>(len) < PlainPacket::getHeaderLength()) {
+      if(static_cast<uint32_t>(len) < PlainPacket::getHeaderLength()) {
         continue;  // ignore short packets
       }
       plain_packet.setPayloadLength(len);
@@ -233,7 +233,7 @@ void receiver(TunDevice* dev, PacketSource* src)
     std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_INBOUND));
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_INBOUND));
 
-    u_int32_t auth_tag_length = gOpt.getAuthTagLength();
+    uint32_t auth_tag_length = gOpt.getAuthTagLength();
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, auth_tag_length);
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
 
@@ -257,7 +257,7 @@ void receiver(TunDevice* dev, PacketSource* src)
         continue;  // silently ignore socket recv errors, this is probably no good idea...
       }
 
-      if(static_cast<u_int32_t>(len) < (EncryptedPacket::getHeaderLength() + auth_tag_length)) {
+      if(static_cast<uint32_t>(len) < (EncryptedPacket::getHeaderLength() + auth_tag_length)) {
         continue;  // ignore short packets
       }
       encrypted_packet.setLength(len);
@@ -429,7 +429,7 @@ int main(int argc, char* argv[])
     NetworkList::const_iterator rit;
     for(rit = routes.begin(); rit != routes.end(); ++rit) {
       NetworkAddress addr(rit->net_addr);
-      NetworkPrefix prefix(addr, static_cast<u_int8_t>(rit->prefix_length));
+      NetworkPrefix prefix(addr, static_cast<uint8_t>(rit->prefix_length));
       gRoutingTable.addRoute(prefix, gOpt.getMux());
     }
     if(connect_to.begin() == connect_to.end() || gOpt.getDevType()!="tun") {

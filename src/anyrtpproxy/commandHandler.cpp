@@ -76,7 +76,7 @@ void CommandHandler::run(void* s)
 {
   CommandHandler* self = reinterpret_cast<CommandHandler*>(s);
 
-  Buffer buf(u_int32_t(MAX_COMMAND_LENGTH));
+  Buffer buf(uint32_t(MAX_COMMAND_LENGTH));
   try {
     proto::endpoint remote_end;
 
@@ -171,8 +171,8 @@ string CommandHandler::handleRequest(string modifiers, string call_id, string ad
     bool is_new;
     RtpSession& session = gRtpSessionTable.getOrNewSession(call_id, is_new);
     if(is_new) {
-      u_int16_t port1 = port_window_.newPort(); // TODO: get next available port
-      u_int16_t port2 = port_window_.newPort(); // TODO: get next available port
+      uint16_t port1 = port_window_.newPort(); // TODO: get next available port
+      uint16_t port2 = port_window_.newPort(); // TODO: get next available port
       if(!port1 || !port2) {
         if(port1) { port_window_.freePort(port1); }
         if(port2) { port_window_.freePort(port2); }

@@ -50,8 +50,8 @@ class PacketSource
 public:
   virtual ~PacketSource() {}
 
-  virtual u_int32_t recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote) = 0;
-  virtual void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote) = 0;
+  virtual uint32_t recv(uint8_t* buf, uint32_t len, PacketSourceEndpoint& remote) = 0;
+  virtual void send(uint8_t* buf, uint32_t len, PacketSourceEndpoint remote) = 0;
 
   void waitUntilReady();
 
@@ -67,8 +67,8 @@ public:
   UDPPacketSource(std::string localaddr, std::string port);
   ~UDPPacketSource();
 
-  u_int32_t recv(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint& remote);
-  void send(u_int8_t* buf, u_int32_t len, PacketSourceEndpoint remote);
+  uint32_t recv(uint8_t* buf, uint32_t len, PacketSourceEndpoint& remote);
+  void send(uint8_t* buf, uint32_t len, PacketSourceEndpoint remote);
 
   void onResolve(PacketSourceResolverIt& it);
   void onError(const std::runtime_error& e);
@@ -77,8 +77,8 @@ private:
   boost::asio::io_service io_service_;
 
   typedef struct {
-    u_int8_t* buf_;
-    u_int32_t len_;
+    uint8_t* buf_;
+    uint32_t len_;
     proto::socket* sock_;
     Semaphore* sem_;
   } SocketsElement;
@@ -86,7 +86,7 @@ private:
 
   void recv_thread(std::list<SocketsElement>::iterator it);
   typedef struct {
-    u_int32_t len_;
+    uint32_t len_;
     PacketSourceEndpoint remote_;
     std::list<SocketsElement>::iterator it_;
   } ThreadResult;

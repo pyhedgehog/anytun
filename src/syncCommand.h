@@ -46,7 +46,7 @@ class SyncCommand
 {
 public:
   SyncCommand(ConnectionList& cl);
-  SyncCommand(ConnectionList& cl ,u_int16_t mux);
+  SyncCommand(ConnectionList& cl ,uint16_t mux);
   SyncCommand(NetworkPrefix);
   ~SyncCommand();
 

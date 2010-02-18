@@ -37,7 +37,7 @@ SyncCommand::SyncCommand(ConnectionList& cl)
   src_ = new SyncRouteCommand();
 }
 
-SyncCommand::SyncCommand(ConnectionList& cl, u_int16_t mux)
+SyncCommand::SyncCommand(ConnectionList& cl, uint16_t mux)
 {
   scc_ = new SyncConnectionCommand(cl,mux);
   src_=NULL;

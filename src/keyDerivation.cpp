@@ -61,7 +61,7 @@ void KeyDerivation::setRole(const role_t role)
 
 #ifndef NO_CRYPT
 #ifndef NO_PASSPHRASE
-void KeyDerivation::calcMasterKey(std::string passphrase, u_int16_t length)
+void KeyDerivation::calcMasterKey(std::string passphrase, uint16_t length)
 {
   cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation: calculating master key from passphrase";
   if(!length) {
@@ -79,10 +79,10 @@ void KeyDerivation::calcMasterKey(std::string passphrase, u_int16_t length)
   }
 
 #ifndef USE_SSL_CRYPTO
-  Buffer digest(static_cast<u_int32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA256)));
+  Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA256)));
   gcry_md_hash_buffer(GCRY_MD_SHA256, digest.getBuf(), passphrase.c_str(), passphrase.length());
 #else
-  Buffer digest(u_int32_t(SHA256_DIGEST_LENGTH));
+  Buffer digest(uint32_t(SHA256_DIGEST_LENGTH));
   SHA256(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
 #endif
   master_key_.setLength(length);
@@ -90,7 +90,7 @@ void KeyDerivation::calcMasterKey(std::string passphrase, u_int16_t length)
   std::memcpy(master_key_.getBuf(), &digest.getBuf()[digest.getLength() - master_key_.getLength()], master_key_.getLength());
 }
 
-void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
+void KeyDerivation::calcMasterSalt(std::string passphrase, uint16_t length)
 {
   cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation: calculating master salt from passphrase";
   if(!length) {
@@ -108,10 +108,10 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, u_int16_t length)
   }
 
 #ifndef USE_SSL_CRYPTO
-  Buffer digest(static_cast<u_int32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA1)));
+  Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA1)));
   gcry_md_hash_buffer(GCRY_MD_SHA1, digest.getBuf(), passphrase.c_str(), passphrase.length());
 #else
-  Buffer digest(u_int32_t(SHA_DIGEST_LENGTH));
+  Buffer digest(uint32_t(SHA_DIGEST_LENGTH));
   SHA1(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
 #endif
   master_salt_.setLength(length);
@@ -179,7 +179,7 @@ AesIcmKeyDerivation::AesIcmKeyDerivation() : KeyDerivation(DEFAULT_KEY_LENGTH)
 #endif
 }
 
-AesIcmKeyDerivation::AesIcmKeyDerivation(u_int16_t key_length) : KeyDerivation(key_length)
+AesIcmKeyDerivation::AesIcmKeyDerivation(uint16_t key_length) : KeyDerivation(key_length)
 {
 #ifndef USE_SSL_CRYPTO
   for(int i=0; i<2; i++) {

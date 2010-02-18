@@ -90,10 +90,10 @@ public:
   Options& setLocalSyncAddr(std::string l);
   std::string getLocalSyncPort();
   Options& setLocalSyncPort(std::string l);
-  u_int16_t getRtpStartPort();
-  Options& setRtpStartPort(u_int16_t l);
-  u_int16_t getRtpEndPort();
-  Options& setRtpEndPort(u_int16_t l);
+  uint16_t getRtpStartPort();
+  Options& setRtpStartPort(uint16_t l);
+  uint16_t getRtpEndPort();
+  Options& setRtpEndPort(uint16_t l);
   ConnectToList getConnectTo();
 
 private:
@@ -129,8 +129,8 @@ private:
   std::string local_sync_addr_;
   std::string local_sync_port_;
   std::string local_addr_;
-  u_int16_t rtp_start_port_;
-  u_int16_t rtp_end_port_;
+  uint16_t rtp_start_port_;
+  uint16_t rtp_end_port_;
   ConnectToList connect_to_;
   Host control_interface_;
 };

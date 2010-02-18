@@ -57,7 +57,7 @@ public:
    * @param the length of the payload
    * @param allow reallocation of buffer
    */
-  PlainPacket(u_int32_t payload_length, bool allow_realloc = false);
+  PlainPacket(uint32_t payload_length, bool allow_realloc = false);
 
   /**
    * Packet destructor
@@ -68,7 +68,7 @@ public:
    * Get the length of the header
    * @return the length of the header
    */
-  static u_int32_t getHeaderLength();
+  static uint32_t getHeaderLength();
 
   /**
    * Get the payload type
@@ -86,19 +86,19 @@ public:
    * Get the length of the payload
    * @return the length of the payload
    */
-  u_int32_t getPayloadLength() const;
+  uint32_t getPayloadLength() const;
 
   /**
    * Set the length of the payload
    * @param length length of the payload
    */
-  void setPayloadLength(u_int32_t payload_length);
+  void setPayloadLength(uint32_t payload_length);
 
   /**
    * Get the the payload
    * @return the Pointer to the payload
    */
-  u_int8_t* getPayload();
+  uint8_t* getPayload();
 
   //  NetworkAddress getSrcAddr() const;
   NetworkAddress getDstAddr() const;
@@ -110,7 +110,7 @@ private:
   void reinit();
 
   payload_type_t* payload_type_;
-  u_int8_t* payload_;
+  uint8_t* payload_;
 };
 
 #endif

@@ -43,13 +43,13 @@ class SyncConnectionCommand
 {
 public:
   SyncConnectionCommand(ConnectionList& cl);
-  SyncConnectionCommand(ConnectionList& cl ,u_int16_t mux);
-  u_int16_t getMux() const;
+  SyncConnectionCommand(ConnectionList& cl ,uint16_t mux);
+  uint16_t getMux() const;
 
 private:
   SyncConnectionCommand(const SyncConnectionCommand&);
   ConnectionList& cl_;
-  u_int16_t mux_;
+  uint16_t mux_;
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive& ar, const unsigned int version) {

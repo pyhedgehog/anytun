@@ -39,19 +39,19 @@
 #include "../datatypes.h"
 #include "../connectionParam.h"
 #include "../networkAddress.h"
-typedef std::map<u_int16_t, ConnectionParam> ConnectionMap;
+typedef std::map<uint16_t, ConnectionParam> ConnectionMap;
 
 class ConnectionList
 {
 public:
   ConnectionList();
   ~ConnectionList();
-  void addConnection(ConnectionParam& conn, u_int16_t mux);
-  const ConnectionMap::iterator getConnection(u_int16_t mux);
+  void addConnection(ConnectionParam& conn, uint16_t mux);
+  const ConnectionMap::iterator getConnection(uint16_t mux);
   const ConnectionMap::iterator getEnd();
   ConnectionMap::iterator getEndUnlocked();
   ConnectionMap::iterator getBeginUnlocked();
-  ConnectionParam& getOrNewConnectionUnlocked(u_int16_t mux);
+  ConnectionParam& getOrNewConnectionUnlocked(uint16_t mux);
   bool empty();
   void clear();
   Mutex& getMutex();

@@ -49,7 +49,7 @@ public:
 
 private:
   //  Mutex mutex_;
-  u_int16_t mux_;
+  uint16_t mux_;
   bool valid_;
   boost::array<RoutingTreeNode*,256> nodes_;
 

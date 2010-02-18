@@ -42,7 +42,7 @@ class AuthAlgoFactory
 {
 public:
   static AuthAlgo* create(std::string const& type, kd_dir_t dir);
-  static u_int32_t getDigestLength(std::string const& type);
+  static uint32_t getDigestLength(std::string const& type);
 
 private:
   AuthAlgoFactory();

@@ -37,14 +37,14 @@
 #include "plainPacket.h"
 #include "anytunError.h"
 
-PlainPacket::PlainPacket(u_int32_t payload_length, bool allow_realloc) : Buffer(payload_length + sizeof(payload_type_t), allow_realloc)
+PlainPacket::PlainPacket(uint32_t payload_length, bool allow_realloc) : Buffer(payload_length + sizeof(payload_type_t), allow_realloc)
 {
   payload_type_ = reinterpret_cast<payload_type_t*>(buf_);
   payload_ = buf_ + sizeof(payload_type_t);
   *payload_type_ = 0;
 }
 
-u_int32_t PlainPacket::getHeaderLength()
+uint32_t PlainPacket::getHeaderLength()
 {
   return sizeof(payload_type_t);
 }
@@ -83,7 +83,7 @@ void PlainPacket::setPayloadType(payload_type_t payload_type)
   }
 }
 
-u_int32_t PlainPacket::getPayloadLength() const
+uint32_t PlainPacket::getPayloadLength() const
 {
   if(!payload_) {
     return 0;
@@ -92,7 +92,7 @@ u_int32_t PlainPacket::getPayloadLength() const
   return (length_ > sizeof(payload_type_t)) ? (length_ - sizeof(payload_type_t)) : 0;
 }
 
-void PlainPacket::setPayloadLength(u_int32_t payload_length)
+void PlainPacket::setPayloadLength(uint32_t payload_length)
 {
   Buffer::setLength(payload_length + sizeof(payload_type_t));
   // depending on allow_realloc buf_ may point to another address
@@ -115,7 +115,7 @@ void PlainPacket::reinit()
 
 }
 
-u_int8_t* PlainPacket::getPayload()
+uint8_t* PlainPacket::getPayload()
 {
   return payload_;
 }

@@ -165,7 +165,7 @@ Options& Options::instance()
   return *inst;
 }
 
-Options::Options() : key_(u_int32_t(0)), salt_(u_int32_t(0))
+Options::Options() : key_(uint32_t(0)), salt_(uint32_t(0))
 {
 #if defined(ANYCTR_OPTIONS)
   progname_ = "anytun-controld";
@@ -265,7 +265,7 @@ Options::~Options()
       if(argc < 1)                                                              \
         throw syntax_error(str, str.length());                                  \
       if(argv[i+1][0] == '-') {                                                 \
-        u_int32_t pos = str.length() + 1;                                       \
+        uint32_t pos = str.length() + 1;                                       \
         throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
       }                                                                         \
       std::stringstream tmp;                                                    \
@@ -284,11 +284,11 @@ Options::~Options()
       if(argc < 2)                                                              \
         throw syntax_error(str.append(" ").append(argv[i+1]), str.length());    \
       if(argv[i+1][0] == '-') {                                                 \
-        u_int32_t pos = str.length() + 1;                                       \
+        uint32_t pos = str.length() + 1;                                       \
         throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
       }                                                                         \
       if(argv[i+2][0] == '-') {                                                 \
-        u_int32_t pos = str.length() + 1 + strlen(argv[i+1]) + 1;               \
+        uint32_t pos = str.length() + 1 + strlen(argv[i+1]) + 1;               \
         throw syntax_error(str.append(" ").append(argv[i+1]).append(" ").append(argv[i+2]), pos); \
       }                                                                         \
       std::stringstream tmp;                                                    \
@@ -306,7 +306,7 @@ Options::~Options()
       if(argc < 1)                                                              \
         throw syntax_error(str, str.length());                                  \
       if(argv[i+1][0] == '-') {                                                 \
-        u_int32_t pos = str.length() + 1;                                       \
+        uint32_t pos = str.length() + 1;                                       \
         throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
       }                                                                         \
       std::stringstream tmp(argv[i+1]);                                         \
@@ -327,7 +327,7 @@ Options::~Options()
       if(argc < 1)                                                              \
         throw syntax_error(str, str.length());                                  \
       if(argv[i+1][0] == '-') {                                                 \
-        u_int32_t pos = str.length() + 1;                                       \
+        uint32_t pos = str.length() + 1;                                       \
         throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
       }                                                                         \
       VALUE = Buffer(std::string(argv[i+1]));                                   \
@@ -344,7 +344,7 @@ Options::~Options()
       if(argc < 1)                                                              \
         throw syntax_error(str, str.length());                                  \
       if(argv[i+1][0] == '-') {                                                 \
-        u_int32_t pos = str.length() + 1;                                       \
+        uint32_t pos = str.length() + 1;                                       \
         throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
       }                                                                         \
       VALUE = argv[i+1];                                                        \
@@ -361,7 +361,7 @@ Options::~Options()
       if(argc < 1)                                                              \
         throw syntax_error(str, str.length());                                  \
       if(argv[i+1][0] == '-') {                                                 \
-        u_int32_t pos = str.length() + 1;                                       \
+        uint32_t pos = str.length() + 1;                                       \
         throw syntax_error(str.append(" ").append(argv[i+1]), pos);             \
       }                                                                         \
       LIST.push_back(argv[i+1]);                                                \
@@ -530,7 +530,7 @@ void Options::parse_post()
     cLog.msg(Log::PRIO_WARNING) << "using NULL key derivation with encryption and or authentication enabled!";
   }
 
-  u_int32_t tag_len_max = AuthAlgoFactory::getDigestLength(auth_algo_);
+  uint32_t tag_len_max = AuthAlgoFactory::getDigestLength(auth_algo_);
   if(!tag_len_max) { auth_tag_length_ = 0; }
   else if(tag_len_max < auth_tag_length_) {
     cLog.msg(Log::PRIO_WARNING) << auth_algo_ << " auth algo can't generate tags of length " << auth_tag_length_ << ", using maximum tag length(" << tag_len_max << ")";
@@ -1110,13 +1110,13 @@ Options& Options::setAuthAlgo(std::string a)
   return *this;
 }
 
-u_int32_t Options::getAuthTagLength()
+uint32_t Options::getAuthTagLength()
 {
   ReadersLock lock(mutex);
   return auth_tag_length_;
 }
 
-Options& Options::setAuthTagLength(u_int32_t a)
+Options& Options::setAuthTagLength(uint32_t a)
 {
   WritersLock lock(mutex);
   auth_tag_length_ = a;

@@ -52,7 +52,7 @@ AuthAlgo* AuthAlgoFactory::create(std::string const& type, kd_dir_t dir)
   }
 }
 
-u_int32_t AuthAlgoFactory::getDigestLength(std::string const& type)
+uint32_t AuthAlgoFactory::getDigestLength(std::string const& type)
 {
   if(type == "null") {
     return NullAuthAlgo::DIGEST_LENGTH;
@@ -66,4 +66,3 @@ u_int32_t AuthAlgoFactory::getDigestLength(std::string const& type)
     throw std::invalid_argument("auth algo not available");
   }
 }
-

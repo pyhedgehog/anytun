@@ -52,7 +52,7 @@ public:
 
   seq_nr_t max_;
   window_size_t pos_;
-  u_int8_t* window_;
+  uint8_t* window_;
 };
 
 class SeqWindow

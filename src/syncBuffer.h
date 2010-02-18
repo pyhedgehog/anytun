@@ -44,9 +44,9 @@ class SyncBuffer : public Buffer
 {
 public:
   SyncBuffer() : Buffer() {};
-  SyncBuffer(u_int32_t length) : Buffer(length) {};
+  SyncBuffer(uint32_t length) : Buffer(length) {};
   SyncBuffer(Buffer b): Buffer(b) {};
-  SyncBuffer(u_int8_t* data, u_int32_t length): Buffer(data,length) {};
+  SyncBuffer(uint8_t* data, uint32_t length): Buffer(data,length) {};
   SyncBuffer(const SyncBuffer& src) : Buffer(src) {};
 private:
   //TODO check if this is ok
@@ -56,7 +56,7 @@ private:
   void serialize(Archive& ar, const unsigned int version) {
     //		Lock lock(mutex_);
     ar& length_;
-    for(u_int32_t i = 0; i < length_; i++) {
+    for(uint32_t i = 0; i < length_; i++) {
       ar & (*this)[i];
     }
   }

@@ -51,7 +51,7 @@
 
 
 
-void createConnection(const PacketSourceEndpoint& remote_end, ConnectionList& cl, u_int16_t seqSize, SyncQueue& queue, mux_t mux, Semaphore& sem)
+void createConnection(const PacketSourceEndpoint& remote_end, ConnectionList& cl, uint16_t seqSize, SyncQueue& queue, mux_t mux, Semaphore& sem)
 {
   SeqWindow* seq = new SeqWindow(seqSize);
   seq_nr_t seq_nr_ = 0;
@@ -87,7 +87,7 @@ void createConnection(const PacketSourceEndpoint& remote_end, ConnectionList& cl
   sem.up();
 }
 
-void createConnectionResolver(PacketSourceResolverIt& it, ConnectionList& cl, u_int16_t seqSize, SyncQueue& queue, mux_t mux, Semaphore& sem)
+void createConnectionResolver(PacketSourceResolverIt& it, ConnectionList& cl, uint16_t seqSize, SyncQueue& queue, mux_t mux, Semaphore& sem)
 {
   createConnection(*it, cl, seqSize, queue, mux, sem);
 }

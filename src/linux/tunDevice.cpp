@@ -50,7 +50,7 @@
 #include "anytunError.h"
 #include "sysExec.h"
 
-TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, u_int16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400), sys_exec_(NULL)
+TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifcfg_addr, uint16_t ifcfg_prefix) : conf_(dev_name, dev_type, ifcfg_addr, ifcfg_prefix, 1400), sys_exec_(NULL)
 {
   struct ifreq ifr;
   memset(&ifr, 0, sizeof(ifr));
@@ -105,7 +105,7 @@ int TunDevice::fix_return(int ret, size_t pi_length) const
   return (static_cast<size_t>(ret) > pi_length ? (ret - pi_length) : 0);
 }
 
-int TunDevice::read(u_int8_t* buf, u_int32_t len)
+int TunDevice::read(uint8_t* buf, uint32_t len)
 {
   if(fd_ < 0) {
     return -1;
@@ -125,7 +125,7 @@ int TunDevice::read(u_int8_t* buf, u_int32_t len)
   }
 }
 
-int TunDevice::write(u_int8_t* buf, u_int32_t len)
+int TunDevice::write(uint8_t* buf, uint32_t len)
 {
   if(fd_ < 0) {
     return -1;
