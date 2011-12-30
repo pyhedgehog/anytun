@@ -109,7 +109,7 @@ void SyncServer::start_accept()
   std::list<AcceptorsElement>::iterator it = acceptors_.begin();
   for(;it != acceptors_.end(); ++it) {
     if(!it->started_) {
-      SyncTcpConnection::pointer new_connection = SyncTcpConnection::create(it->acceptor_->io_service());
+      SyncTcpConnection::pointer new_connection = SyncTcpConnection::create(it->acceptor_->get_io_service());
       conns_.push_back(new_connection);
       it->acceptor_->async_accept(new_connection->socket(),
                              boost::bind(&SyncServer::handle_accept, this, new_connection, boost::asio::placeholders::error, it));
