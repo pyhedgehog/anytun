@@ -1,3 +1,9 @@
+2011.12.30 -- Version 0.3.4
+
+* Service Release: several build fixes for newer versions of
+  libboost and gcc
+* formatting cleanups
+
 2010.2.16 -- Version 0.3.3
 
 * Security fix: packet length check errors
@@ -9,7 +15,7 @@
 * added workaround for signalhandling on Debian GNU/kFreebsd
 * added -v|--version option
 * added prebuilt manpage to release tarball (less build deps)
-	
+
 2009.12.02 -- Version 0.3.2
 
 * added 64bit build target to windows build system
