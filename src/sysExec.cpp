@@ -39,7 +39,7 @@
 #include "anytunError.h"
 
 //use system specific sys exec
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
 #include "sysExec.hpp"
 #else
 #include "win32/sysExec.hpp"

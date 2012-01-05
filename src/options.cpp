@@ -392,7 +392,7 @@ bool Options::parse(int argc, char* argv[])
 
 #if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
     PARSE_INVERSE_BOOL_PARAM("-D","--nodaemonize", daemonize_, NOTHING)
     PARSE_SCALAR_PARAM("-u","--username", username_, NOTHING)
     PARSE_SCALAR_PARAM("-g","--groupname", groupname_, NOTHING)
@@ -498,7 +498,7 @@ bool Options::parse(int argc, char* argv[])
   }
 
   if(log_targets_.empty()) {
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
 #if !defined(ANYCONF_OPTIONS)
     log_targets_.push_back(std::string("syslog:3,").append(progname_).append(",daemon"));
 #else
@@ -573,7 +573,7 @@ void Options::printUsage()
 
 #if defined(ANYTUN_OPTIONS) || defined(ANYCTR_OPTIONS)
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
   std::cout << "   [-D|--nodaemonize]                  don't run in background" << std::endl;
   std::cout << "   [-u|--username] <username>          change to this user" << std::endl;
   std::cout << "   [-g|--groupname] <groupname>        change to this group" << std::endl;

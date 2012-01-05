@@ -59,10 +59,14 @@ typedef enum { ANY, IPV4_ONLY, IPV6_ONLY } ResolvAddrType;
 
 #ifndef _MSC_VER
 #define ATTR_PACKED __attribute__((__packed__))
+#else
+#define ATTR_PACKED
+#endif
+
+#if !defined(_MSC_VER) && !defined(MINGW)
 typedef int system_error_t;
 #else
 #include <windows.h>
-#define ATTR_PACKED
 typedef DWORD system_error_t;
 #endif
 

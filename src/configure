@@ -198,6 +198,7 @@ case $TARGET in
     rm -f sysExec.hpp
     rm -f daemonService.h daemonService.cpp
     echo "loading Windows specific TUN Device"
+    CXXFLAGS=$CXXFLAGS' -DMINGW'
     LDFLAGS=$LDFLAGS' -static'
   ;;
   *)

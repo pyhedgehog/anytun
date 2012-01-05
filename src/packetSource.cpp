@@ -79,7 +79,7 @@ void UDPPacketSource::onResolve(PacketSourceResolverIt& it)
     }
 
     sock.sock_->open(e.protocol());
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
     if(e.protocol() == proto::v6()) {
       sock.sock_->set_option(boost::asio::ip::v6_only(true));
     }

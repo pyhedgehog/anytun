@@ -64,7 +64,7 @@ void SyncServer::onResolve(SyncTcpConnection::proto::resolver::iterator& it)
     }
 
     acceptor.acceptor_->open(e.protocol());
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
     if(e.protocol() == boost::asio::ip::tcp::v6()) {
       acceptor.acceptor_->set_option(boost::asio::ip::v6_only(true));
     }

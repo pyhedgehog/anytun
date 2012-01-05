@@ -59,13 +59,13 @@ private:
 
   std::string script_;
   bool closed_;
-#ifdef _MSC_VER
-  PROCESS_INFORMATION process_info_;
-  DWORD return_code_;
-#else
+#if !defined(_MSC_VER) && !defined(MINGW)
   pid_t pid_;
   int pipefd_;
   int return_code_;
+#else
+  PROCESS_INFORMATION process_info_;
+  DWORD return_code_;
 #endif
 
 

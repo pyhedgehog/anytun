@@ -50,7 +50,7 @@
 #include "authAlgoFactory.h"
 #include "keyDerivationFactory.h"
 #include "signalController.h"
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
 # include "daemonService.h"
 #else
 # ifdef WIN_SERVICE

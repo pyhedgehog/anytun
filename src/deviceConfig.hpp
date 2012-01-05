@@ -47,7 +47,7 @@ public:
   DeviceConfig(std::string dev_name ,std::string dev_type, std::string ifcfg_addr, uint16_t ifcfg_prefix, uint16_t mtu) {
     mtu_ = mtu;
     type_ = TYPE_UNDEF;
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
     if(dev_type != "") {
       if(!dev_type.compare(0,3,"tun")) {
         type_ = TYPE_TUN;

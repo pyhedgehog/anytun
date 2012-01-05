@@ -62,7 +62,7 @@ int SigErrorHandler(int /*sig*/, const std::string& msg)
 }
 
 //use system specific signal handler
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
 #include "signalHandler.hpp"
 #else
 #ifdef WIN_SERVICE

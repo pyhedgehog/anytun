@@ -36,10 +36,10 @@
 #include "buffer.h"
 #include "deviceConfig.hpp"
 #include "threadUtils.hpp"
-#ifdef _MSC_VER
-#include <windows.h>
-#else
+#if !defined(_MSC_VER) && !defined(MINGW)
 #include "sysExec.h"
+#else
+#include <windows.h>
 #endif
 
 class TunDevice
@@ -56,7 +56,7 @@ public:
   device_type_t getType() const { return conf_.type_; }
   void waitUntilReady();
   const char* getTypeString() const {
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
     if(fd_ < 0)
 #else
     if(handle_ == INVALID_HANDLE_VALUE)
@@ -85,7 +85,7 @@ private:
   void do_ifconfig();
   int fix_return(int ret, size_t pi_length) const;
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
   int fd_;
 #else
   bool getAdapter(std::string const& dev_name);
@@ -96,7 +96,7 @@ private:
 #endif
 
   DeviceConfig conf_;
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(MINGW)
   SysExec* sys_exec_;
 #endif
   bool with_pi_;
