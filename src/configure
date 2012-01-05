@@ -36,7 +36,8 @@ TARGET=`uname -s`
 EBUILD_COMPAT=0
 
 CXXFLAGS='-g -Wall -O2 -DLOG_SYSLOG -DLOG_FILE -DLOG_STDOUT'
-LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system -lboost_date_time -lpthread'
+LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system -lboost_date_time'
+CROSS_PREFIX=''
 
 CRYPTO_LIB='gcrypt'
 PASSPHRASE=1
@@ -50,6 +51,10 @@ MANDIR=''
 INSTALLMANPAGE=1
 EXAMPLESDIR=''
 INSTALLEXAMPLES=1
+
+BOOST_PREFIX=''
+GCRYPT_PREFIX=''
+OPENSSL_PREFIX=''
 
 print_usage() {
   echo "configure --help                    print this"
@@ -68,6 +73,10 @@ print_usage() {
   echo "          --enable-passphrase       enable master key and salt passphrase"
   echo "          --disable-routing         disable built-in routing capability"
   echo "          --enable-routing          enable built-in routing capability"
+  echo "          --cross-prefix=<PREFIX>   add PREFIX to compiler calls"
+  echo "          --with-boost=<PREFIX>     don't use systemwide boost"
+  echo "          --with-gcrypt=<PREFIX>    don't use systemwide gcrypt"
+  echo "          --with-openssl=<PREFIX>   don't use systemwide openssl"
 }
 
 for arg
@@ -121,6 +130,18 @@ do
   --ebuild-compat)
     EBUILD_COMPAT=1
   ;;
+  --cross-prefix=*)
+    CROSS_PREFIX=${arg#--cross-prefix=}
+  ;;
+  --with-boost=*)
+    BOOST_PREFIX=${arg#--with-boost=}
+  ;;
+  --with-gcrypt=*)
+    GCRYPT_PREFIX=${arg#--with-gcrypt=}
+  ;;
+  --with-openssl=*)
+    OPENSSL_PREFIX=${arg#--with-openssl=}
+  ;;
   --help)
     print_usage
     exit 0
@@ -155,6 +176,7 @@ case $TARGET in
     ln -sf posix/posixDaemon.h daemonService.h
     ln -sf posix/posixDaemon.cpp daemonService.cpp
     echo "loading Linux specific TUN Device"
+    LDFLAGS=$LDFLAGS' -lpthread'
   ;;
   OpenBSD|FreeBSD|NetBSD|GNU/kFreeBSD)
     rm -f tunDevice.cpp
@@ -168,7 +190,20 @@ case $TARGET in
     ln -sf posix/posixDaemon.cpp daemonService.cpp
     echo "loading BSD specific TUN Device"
     CXXFLAGS=$CXXFLAGS' -I/usr/local/include'
-    LDFLAGS=$LDFLAGS' -L/usr/local/lib'
+    LDFLAGS=$LDFLAGS' -L/usr/local/lib -lpthread'
+  ;;
+  mingw)
+    rm -f tunDevice.cpp
+    ln -sf win32/tunDevice.cpp
+    rm -f signalHandler.hpp
+    ln -sf win32/signalHandler.hpp
+    rm -f sysExec.hpp
+    ln -sf win32/sysExec.hpp
+    rm -f daemonService.h daemonService.cpp
+    ln -sf win32/winService.h daemonService.h
+    ln -sf win32/winService.cpp daemonService.cpp
+    echo "loading Windows specific TUN Device"
+    LDFLAGS=$LDFLAGS' -static'
   ;;
   *)
     echo "platform not supported"
@@ -176,14 +211,27 @@ case $TARGET in
   ;;
 esac
 
+if [ -n "$BOOST_PREFIX" ]; then
+  CXXFLAGS="$CXXFLAGS -I\"$BOOST_PREFIX/include\""
+  LDFLAGS="$LDFLAGS -L\"$BOOST_PREFIX/lib\""
+fi
+
 case $CRYPTO_LIB in
   gcrypt)
     LDFLAGS=$LDFLAGS' -lgcrypt -lgpg-error'
+    if [ -n "$GCRYPT_PREFIX" ]; then
+      CXXFLAGS="$CXXFLAGS -I\"$GCRYPT_PREFIX/include\""
+      LDFLAGS="$LDFLAGS -L\"$GCRYPT_PREFIX/lib\""
+    fi
     echo "using libgcrypt library"
   ;;
   ssl)
     CXXFLAGS=$CXXFLAGS' -DUSE_SSL_CRYPTO'
     LDFLAGS=$LDFLAGS' -lcrypto'
+    if [ -n "$OPENSSL_PREFIX" ]; then
+      CXXFLAGS="$CXXFLAGS -I\"$OPENSSL_PREFIX/include\""
+      LDFLAGS="$LDFLAGS -L\"$OPENSSL_PREFIX/lib\""
+    fi
     echo "using ssl crypto library"
   ;;
   none)
@@ -228,11 +276,11 @@ cat > include.mk <<EOF
 # use ./configure instead
 
 TARGET = $TARGET
-CXX = g++
+CXX = ${CROSS_PREFIX}g++
 CXXFLAGS = $CXXFLAGS
-LD = g++
+LD = ${CROSS_PREFIX}g++
 LDFLAGS = $LDFLAGS
-STRIP = strip
+STRIP = ${CROSS_PREFIX}strip
 INSTALL = install
 
 PREFIX := $PREFIX
