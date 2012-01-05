@@ -194,14 +194,9 @@ case $TARGET in
   ;;
   mingw)
     rm -f tunDevice.cpp
-    ln -sf win32/tunDevice.cpp
     rm -f signalHandler.hpp
-    ln -sf win32/signalHandler.hpp
     rm -f sysExec.hpp
-    ln -sf win32/sysExec.hpp
     rm -f daemonService.h daemonService.cpp
-    ln -sf win32/winService.h daemonService.h
-    ln -sf win32/winService.cpp daemonService.cpp
     echo "loading Windows specific TUN Device"
     LDFLAGS=$LDFLAGS' -static'
   ;;
