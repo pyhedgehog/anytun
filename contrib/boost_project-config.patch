@@ -1,0 +1,15 @@
+--- boost_1_48_0/project-config.jam	2012-01-05 22:25:47.000000000 +0100
++++ project-config.jam	2012-01-05 22:14:39.000000000 +0100
+@@ -7,10 +7,8 @@
+ # Compiler configuration. This definition will be used unless
+ # you already have defined some toolsets in your user-config.jam
+ # file.
+-if ! gcc in [ feature.values <toolset> ]
+-{
+-    using gcc ; 
+-}
++using gcc : w32 : i686-w64-mingw32-g++ ;
++using gcc : w64 : x86_64-w64-mingw32-g++ ;
+ 
+ project : default-build <toolset>gcc ;
+ 
