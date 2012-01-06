@@ -34,9 +34,7 @@ ifneq ($(MAKECMDGOALS),distclean)
 include include.mk
 endif
 
-
-ANYTUNOBJS := tunDevice.o \
-              packetSource.o \
+ANYTUNOBJS := packetSource.o \
               authAlgo.o \
               authAlgoFactory.o \
               cipher.o \
@@ -45,7 +43,6 @@ ANYTUNOBJS := tunDevice.o \
               encryptedPacket.o \
               options.o \
               signalController.o \
-              daemonService.o \
               sysExec.o \
               resolver.o \
               buffer.o \
@@ -62,6 +59,17 @@ ANYTUNOBJS := tunDevice.o \
               logTargets.o \
               anytunError.o \
               seqWindow.o
+
+ifneq ($(TARGET),mingw)
+ANYTUNOBJS := $(ANYTUNOBJS) \
+              tunDevice.o \
+              daemonService.o
+else
+ANYTUNOBJS := $(ANYTUNOBJS) \
+              win32/tunDevice.o \
+              win32/winService.o \
+              win32/registryKey.o
+endif
 
 ANYSHOWOBJS := buffer.o \
                syncBuffer.o \

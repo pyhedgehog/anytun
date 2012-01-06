@@ -69,7 +69,7 @@ bool endsWith(std::string const& string, std::string const& suffix)
   return string.find(suffix, string.size() - suffix.size()) != std::string::npos;
 }
 
-void SysExec::doExec(StringVector args, StringList env)
+void SysExec::doExec(StringVector args, StringList env_param)
 {
   std::vector<char> arguments;
 
@@ -105,7 +105,7 @@ void SysExec::doExec(StringVector args, StringList env)
   STARTUPINFOA startup_info = getStartupInfo();
 
   std::map<std::string, std::string> envDict;
-  for(StringList::const_iterator it = env.begin(); it != env.begin(); ++it) {
+  for(StringList::const_iterator it = env_param.begin(); it != env_param.begin(); ++it) {
     size_t delimiter_pos = it->find('=');
     envDict.insert(std::make_pair(it->substr(0, delimiter_pos), it->substr(delimiter_pos + 1)));
   }

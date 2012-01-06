@@ -35,7 +35,7 @@ TARGET=`uname -s`
 
 EBUILD_COMPAT=0
 
-CXXFLAGS='-g -Wall -O2 -DLOG_SYSLOG -DLOG_FILE -DLOG_STDOUT'
+CXXFLAGS='-g -Wall -O2'
 LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system -lboost_date_time'
 CROSS_PREFIX=''
 
@@ -177,6 +177,7 @@ case $TARGET in
     ln -sf posix/posixDaemon.cpp daemonService.cpp
     echo "loading Linux specific TUN Device"
     LDFLAGS=$LDFLAGS' -lpthread'
+    LOG_TARGETS='-DLOG_SYSLOG -DLOG_FILE -DLOG_STDOUT'
   ;;
   OpenBSD|FreeBSD|NetBSD|GNU/kFreeBSD)
     rm -f tunDevice.cpp
@@ -191,6 +192,7 @@ case $TARGET in
     echo "loading BSD specific TUN Device"
     CXXFLAGS=$CXXFLAGS' -I/usr/local/include'
     LDFLAGS=$LDFLAGS' -L/usr/local/lib -lpthread'
+    LOG_TARGETS='-DLOG_SYSLOG -DLOG_FILE -DLOG_STDOUT'
   ;;
   mingw)
     rm -f tunDevice.cpp
@@ -198,14 +200,17 @@ case $TARGET in
     rm -f sysExec.hpp
     rm -f daemonService.h daemonService.cpp
     echo "loading Windows specific TUN Device"
-    CXXFLAGS=$CXXFLAGS' -DMINGW'
+    CXXFLAGS=$CXXFLAGS' -DMINGW -D_WIN32_WINNT=0x0501 -DWIN32_LEAN_AND_MEAN -DBOOST_WINDOWS'
     LDFLAGS=$LDFLAGS' -static'
+    LOG_TARGETS='-DWIN_EVENTLOG -DLOG_FILE -DLOG_STDOUT'
   ;;
   *)
     echo "platform not supported"
     exit 1
   ;;
 esac
+
+CXXFLAGS="$CXXFLAGS $LOG_TARGETS"
 
 if [ -n "$BOOST_PREFIX" ]; then
   CXXFLAGS="$CXXFLAGS -I\"$BOOST_PREFIX/include\""
