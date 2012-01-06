@@ -18,4 +18,4 @@ for target in w32 w64; do
   cp -r boost ../boost-$target/include
   ./b2 --layout=system variant=release threading=multi link=shared runtime-link=shared toolset=gcc-$target target-os=windows threadapi=win32 stage --clean || true
 done
-rm -rf boost_${BOOST_DASH}
+rm -rf ../boost_${BOOST_DASH}
