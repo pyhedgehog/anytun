@@ -31,7 +31,6 @@
  */
 
 #include <iostream>
-#include <poll.h>
 
 #include "datatypes.h"
 

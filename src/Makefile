@@ -67,9 +67,11 @@ ANYTUNOBJS := $(ANYTUNOBJS) \
 else
 ANYTUNOBJS := $(ANYTUNOBJS) \
               win32/tunDevice.o \
+              nullDaemon.o \
               win32/winService.o \
               win32/registryKey.o
 endif
+
 
 ANYSHOWOBJS := buffer.o \
                syncBuffer.o \
@@ -88,6 +90,7 @@ ANYSHOWOBJS := buffer.o \
                nullOptions.o \
                resolver.o
 
+
 SYNCOBJS := syncServer.o \
             syncClient.o \
             syncQueue.o \
@@ -96,8 +99,8 @@ SYNCOBJS := syncServer.o \
             syncConnectionCommand.o \
             syncTcpConnection.o
 
+
 ANYCTROBJS := signalController.o \
-              daemonService.o \
               anyCtrOptions.o \
               buffer.o \
               log.o \
@@ -106,6 +109,15 @@ ANYCTROBJS := signalController.o \
               syncTcpConnection.o \
               syncServer.o \
               resolver.o
+
+ifneq ($(TARGET),mingw)
+ANYCTROBJS := $(ANYCTROBJS) \
+              daemonService.o
+else
+ANYCTROBJS := $(ANYCTROBJS) \
+              nullDaemon.o
+endif
+
 
 ANYCONFOBJS := log.o \
                logTargets.o \
@@ -130,7 +142,13 @@ ANYCONFOBJS := log.o \
                syncConnectionCommand.o \
                resolver.o
 
-EXECUTABLES := anytun anytun-config anytun-controld anytun-showtables anytun-nosync
+ifneq ($(TARGET),mingw)
+  EXE :=
+else
+  EXE := .exe
+endif
+
+EXECUTABLES := anytun$(EXE) anytun-config$(EXE) anytun-controld$(EXE) anytun-showtables$(EXE) anytun-nosync$(EXE)
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
 
 ANYTUNSRCS := $(ANYTUNOBJS:%.o=%.cpp)
@@ -157,26 +175,26 @@ endif
 strip: $(EXECUTABLES)
 	$(STRIP) -s $(EXECUTABLES) 
 
-anytun: $(ANYTUNOBJS) $(SYNCOBJS) anytun.o
+anytun$(EXE): $(ANYTUNOBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(ANYTUNOBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
 
 anytun-static: $(ANYTUNOBJS) $(SYNCOBJS) anytun-noprivdrop.o
 	$(LD) $(ANYTUNOBJS) $(SYNCOBJS) anytun-noprivdrop.o -o $@ -Bstatic -lstdc++ -static $(LDFLAGS) -lpthread
 	$(STRIP) -s anytun-static
 
-anytun-nosync: $(ANYTUNOBJS) anytun-nosync.o
+anytun-nosync$(EXE): $(ANYTUNOBJS) anytun-nosync.o
 	$(LD) $(ANYTUNOBJS) anytun-nosync.o -o $@ $(LDFLAGS)
 
 anytun-nosync.o: anytun.cpp
 	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
 
-anytun-showtables: $(ANYSHOWOBJS) $(SYNCOBJS) anytun-showtables.o
+anytun-showtables$(EXE): $(ANYSHOWOBJS) $(SYNCOBJS) anytun-showtables.o
 	$(LD) $(ANYSHOWOBJS) $(SYNCOBJS) anytun-showtables.o -o $@ $(LDFLAGS)
 
-anytun-config: $(ANYCONFOBJS) anytun-config.o
+anytun-config$(EXE): $(ANYCONFOBJS) anytun-config.o
 	$(LD) $(ANYCONFOBJS) anytun-config.o -o $@ $(LDFLAGS)
 
-anytun-controld: $(ANYCTROBJS) anytun-controld.o
+anytun-controld$(EXE): $(ANYCTROBJS) anytun-controld.o
 	$(LD) $(ANYCTROBJS) anytun-controld.o -o $@ $(LDFLAGS)
 
 
@@ -193,7 +211,7 @@ nullOptions.o: options.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $< -c
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 
 libAnysync.a: $(OBJS)
@@ -222,7 +240,11 @@ clean:
 	rm -f *.o
 	rm -f *.d
 	rm -f *.d.*
+	rm -f win32/*.o
+	rm -f win32/*.d
+	rm -f win32/*.d.*
 	rm -f $(EXECUTABLES)
+	rm -f *.exe
 	rm -f anytun-nosync
 	rm -f -r doc/html/*
 	rm -f -r doc/latex/*

@@ -442,6 +442,7 @@ int main(int argc, char* argv[])
     boost::thread* syncListenerThread = NULL;
     if(gOpt.getLocalSyncPort() != "") {
       syncListenerThread = new boost::thread(boost::bind(syncListener));
+      if(syncListenerThread) syncListenerThread->detach();
     }
 
     boost::thread_group connectThreads;

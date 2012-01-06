@@ -121,7 +121,7 @@ void SysExec::doExec(StringVector args, StringList env_param)
                      NULL,
                      NULL,
                      false,
-                     NULL,
+                     0,
                      &env[0],
                      NULL,
                      &startup_info,

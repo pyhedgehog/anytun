@@ -32,10 +32,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <poll.h>
-#include <fcntl.h>
-#include <pwd.h>
-#include <grp.h>
 #include <string>
 
 #include "datatypes.h"
@@ -46,7 +42,11 @@
 #include "resolver.h"
 
 #include "syncServer.h"
-#include "daemonService.h"
+#if !defined(_MSC_VER) && !defined(MINGW)
+# include "daemonService.h"
+#else
+# include "nullDaemon.h"
+#endif
 #include <vector>
 
 std::list<std::string> config_;
@@ -122,6 +122,7 @@ int main(int argc, char* argv[])
 
     boost::thread* syncListenerThread;
     syncListenerThread = new boost::thread(boost::bind(syncListener));
+    if(syncListenerThread) syncListenerThread->detach();
 
     int ret = gSignalController.run();
 

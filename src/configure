@@ -36,7 +36,7 @@ TARGET=`uname -s`
 EBUILD_COMPAT=0
 
 CXXFLAGS='-g -Wall -O2'
-LDFLAGS='-g -Wall -O2 -lboost_thread -lboost_serialization -lboost_system -lboost_date_time'
+LDFLAGS='-g -Wall -O2'
 CROSS_PREFIX=''
 
 CRYPTO_LIB='gcrypt'
@@ -161,7 +161,6 @@ if [ -n "$ERRORS" ] && [ $EBUILD_COMPAT -ne 1 ]; then
   exit 1
 fi
 
-
 rm -f include.mk
 rm -f version.h
 case $TARGET in
@@ -176,7 +175,7 @@ case $TARGET in
     ln -sf posix/posixDaemon.h daemonService.h
     ln -sf posix/posixDaemon.cpp daemonService.cpp
     echo "loading Linux specific TUN Device"
-    LDFLAGS=$LDFLAGS' -lpthread'
+    LDFLAGS=$LDFLAGS' -lboost_thread -lboost_serialization -lboost_system -lboost_date_time -lpthread'
     LOG_TARGETS='-DLOG_SYSLOG -DLOG_FILE -DLOG_STDOUT'
   ;;
   OpenBSD|FreeBSD|NetBSD|GNU/kFreeBSD)
@@ -191,7 +190,7 @@ case $TARGET in
     ln -sf posix/posixDaemon.cpp daemonService.cpp
     echo "loading BSD specific TUN Device"
     CXXFLAGS=$CXXFLAGS' -I/usr/local/include'
-    LDFLAGS=$LDFLAGS' -L/usr/local/lib -lpthread'
+    LDFLAGS=$LDFLAGS' -L/usr/local/lib  -lboost_thread -lboost_serialization -lboost_system -lboost_date_time -lpthread'
     LOG_TARGETS='-DLOG_SYSLOG -DLOG_FILE -DLOG_STDOUT'
   ;;
   mingw)
@@ -200,8 +199,8 @@ case $TARGET in
     rm -f sysExec.hpp
     rm -f daemonService.h daemonService.cpp
     echo "loading Windows specific TUN Device"
-    CXXFLAGS=$CXXFLAGS' -DMINGW -D_WIN32_WINNT=0x0501 -DWIN32_LEAN_AND_MEAN -DBOOST_WINDOWS'
-    LDFLAGS=$LDFLAGS' -static'
+    CXXFLAGS=$CXXFLAGS' -DMINGW -D_WIN32_WINNT=0x0501 -DWIN32_LEAN_AND_MEAN -DBOOST_WINDOWS -fno-strict-aliasing -DBOOST_THREAD_USE_LIB'
+    LDFLAGS=$LDFLAGS'  -lboost_thread_win32 -lboost_serialization -lboost_system -lboost_date_time -lwsock32 -lws2_32'
     LOG_TARGETS='-DWIN_EVENTLOG -DLOG_FILE -DLOG_STDOUT'
   ;;
   *)
