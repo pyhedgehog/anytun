@@ -1,3 +1,8 @@
+201?.??.?? -- Version 0.?.?
+
+* added support for clang
+* added libnettle as additional crypot library option
+
 2011.12.30 -- Version 0.3.4
 
 * Service Release: several build fixes for newer versions of
