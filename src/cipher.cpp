@@ -163,6 +163,9 @@ void AesIcmCipher::calc(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* 
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher ssl key (code: " << ret << ")";
     return;
   }
+#elif defined(USE_NETTLE)
+      // TODO: nettle
+
 #else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_cipher_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
@@ -181,6 +184,9 @@ void AesIcmCipher::calc(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* 
   unsigned int num = 0;
   std::memset(ecount_buf_, 0, AES_BLOCK_SIZE);
   AES_ctr128_encrypt(in, out, (ilen < olen) ? ilen : olen, &aes_key_, ctr_.buf_, ecount_buf_, &num);
+#elif defined(USE_NETTLE)
+      // TODO: nettle
+
 #else  // USE_GCRYPT is the default
   err = gcry_cipher_setctr(handle_, ctr_.buf_, CTR_LENGTH);
   if(err) {

@@ -114,6 +114,8 @@ bool initCrypto()
 
 #if defined(USE_SSL_CRYPTO)
   return true;
+#elif defined(USE_NETTLE)
+  return true;
 #else  // USE_GCRYPT is the default
   return initLibGCrypt();
 #endif

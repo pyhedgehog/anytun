@@ -49,6 +49,9 @@
 
 #if defined(USE_SSL_CRYPTO)
 #include <openssl/sha.h>
+#elif defined(USE_NETTLE)
+#include <nettle/sha1.h>
+#include <nettle/sha2.h>
 #endif
 
 #endif
@@ -73,6 +76,8 @@ void KeyDerivation::calcMasterKey(std::string passphrase, uint16_t length)
 
 #if defined(USE_SSL_CRYPTO)
   if(length > SHA256_DIGEST_LENGTH) {
+#elif defined(USE_NETTLE)
+  if(length > SHA256_DIGEST_SIZE) {
 #else  // USE_GCRYPT is the default
   if(length > gcry_md_get_algo_dlen(GCRY_MD_SHA256)) {
 #endif
@@ -83,6 +88,10 @@ void KeyDerivation::calcMasterKey(std::string passphrase, uint16_t length)
 #if defined(USE_SSL_CRYPTO)
   Buffer digest(uint32_t(SHA256_DIGEST_LENGTH));
   SHA256(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
+#elif defined(USE_NETTLE)
+        // TODO: nettle
+  Buffer digest(uint32_t(SHA256_DIGEST_SIZE));
+
 #else  // USE_GCRYPT is the default
   Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA256)));
   gcry_md_hash_buffer(GCRY_MD_SHA256, digest.getBuf(), passphrase.c_str(), passphrase.length());
@@ -102,6 +111,8 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, uint16_t length)
 
 #if defined(USE_SSL_CRYPTO)
   if(length > SHA_DIGEST_LENGTH) {
+#elif defined(USE_NETTLE)
+  if(length > SHA1_DIGEST_SIZE) {
 #else  // USE_GCRYPT is the default
   if(length > gcry_md_get_algo_dlen(GCRY_MD_SHA1)) {
 #endif
@@ -112,6 +123,10 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, uint16_t length)
 #if defined(USE_SSL_CRYPTO)
   Buffer digest(uint32_t(SHA_DIGEST_LENGTH));
   SHA1(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
+#elif defined(USE_NETTLE)
+        // TODO: nettle
+  Buffer digest(uint32_t(SHA1_DIGEST_SIZE));
+
 #else  // USE_GCRYPT is the default
   Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA1)));
   gcry_md_hash_buffer(GCRY_MD_SHA1, digest.getBuf(), passphrase.c_str(), passphrase.length());
@@ -246,6 +261,9 @@ void AesIcmKeyDerivation::updateMasterKey()
       return;
     }
   }
+#elif defined(USE_NETTLE)
+        // TODO: nettle
+
 #else  // USE_GCRYPT is the default
   int algo;
   switch(key_length_) {
@@ -329,6 +347,9 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
   std::memset(ecount_buf_[dir], 0, AES_BLOCK_SIZE);
   std::memset(key.getBuf(), 0, key.getLength());
   AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);
+#elif defined(USE_NETTLE)
+        // TODO: nettle
+
 #else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {

@@ -43,6 +43,8 @@
 
 #if defined(USE_SSL_CRYPTO)
 #include <openssl/aes.h>
+#elif defined(USE_NETTLE)
+#include <openssl/aes.h>
 #else  // USE_GCRYPT is the default
 #include <gcrypt.h>
 #endif
@@ -173,6 +175,9 @@ private:
 #if defined(USE_SSL_CRYPTO)
   AES_KEY aes_key_[2];
   uint8_t ecount_buf_[2][AES_BLOCK_SIZE];
+#elif defined(USE_NETTLE)
+      // TODO: nettle
+
 #else  // USE_GCRYPT is the default
   gcry_cipher_hd_t handle_[2];
 #endif

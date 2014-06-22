@@ -40,6 +40,8 @@
 
 #if defined(USE_SSL_CRYPTO)
 #include <openssl/hmac.h>
+#elif defined(USE_NETTLE)
+#include <nettle/hmac.h>
 #else  // USE_GCRYPT is the default
 #include <gcrypt.h>
 #endif
@@ -99,6 +101,9 @@ public:
 private:
 #if defined(USE_SSL_CRYPTO)
   HMAC_CTX ctx_;
+#elif defined(USE_NETTLE)
+      // TODO: nettle
+
 #else  // USE_GCRYPT is the default
   gcry_md_hd_t handle_;
 #endif
