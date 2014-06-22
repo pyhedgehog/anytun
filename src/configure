@@ -54,6 +54,7 @@ INSTALLEXAMPLES=1
 
 BOOST_PREFIX=''
 GCRYPT_PREFIX=''
+NETTLE_PREFIX=''
 OPENSSL_PREFIX=''
 
 print_usage() {
@@ -67,7 +68,9 @@ print_usage() {
   echo "          --no-manpage              dont't install manpages"
   echo "          --examplesdir=<DIR>       the path to the examples files (default: $PREFIX/share/examples)"
   echo "          --no-examples             dont't install example files"
-  echo "          --use-ssl-crypto          use ssl crypto library instead of libgcrypt"
+  echo "          --use-gcrypt              use libgcrypt (this is the default)"
+  echo "          --use-nettle              use libnettle instead of libgcrypt"
+  echo "          --use-ssl-crypto          use openssl crypto library instead of libgcrypt"
   echo "          --no-crypto               disable crypto at all (only NULL cipher)"
   echo "          --disable-passphrase      disable master key and salt passphrase"
   echo "          --enable-passphrase       enable master key and salt passphrase"
@@ -76,6 +79,7 @@ print_usage() {
   echo "          --cross-prefix=<PREFIX>   add PREFIX to compiler calls"
   echo "          --with-boost=<PREFIX>     don't use systemwide boost"
   echo "          --with-gcrypt=<PREFIX>    don't use systemwide gcrypt"
+  echo "          --with-nettle=<PREFIX>    don't use systemwide nettle"
   echo "          --with-openssl=<PREFIX>   don't use systemwide openssl"
 }
 
@@ -109,6 +113,12 @@ do
   --no-examples)
     INSTALLEXAMPLES=0
   ;;
+  --use-gcrypt)
+    CRYPTO_LIB='gcrypt'
+  ;;
+  --use-nettle)
+    CRYPTO_LIB='nettle'
+  ;;
   --use-ssl-crypto)
     CRYPTO_LIB='ssl'
   ;;
@@ -138,6 +148,9 @@ do
   ;;
   --with-gcrypt=*)
     GCRYPT_PREFIX=${arg#--with-gcrypt=}
+  ;;
+  --with-nettle=*)
+    NETTLE_PREFIX=${arg#--with-nettle=}
   ;;
   --with-openssl=*)
     OPENSSL_PREFIX=${arg#--with-openssl=}
@@ -218,12 +231,22 @@ fi
 
 case $CRYPTO_LIB in
   gcrypt)
+    CXXFLAGS=$CXXFLAGS' -DUSE_GCRYPT'
     LDFLAGS=$LDFLAGS' -lgcrypt -lgpg-error'
     if [ -n "$GCRYPT_PREFIX" ]; then
       CXXFLAGS="$CXXFLAGS -I\"$GCRYPT_PREFIX/include\""
       LDFLAGS="$LDFLAGS -L\"$GCRYPT_PREFIX/lib\""
     fi
-    echo "using libgcrypt library"
+    echo "using gcrypt library"
+  ;;
+  nettle)
+    CXXFLAGS=$CXXFLAGS' -DUSE_NETTLE'
+    LDFLAGS=$LDFLAGS' -lnettle'
+    if [ -n "$NETTLE_PREFIX" ]; then
+      CXXFLAGS="$CXXFLAGS -I\"$NETTLE_PREFIX/include\""
+      LDFLAGS="$LDFLAGS -L\"$NETTLE_PREFIX/lib\""
+    fi
+    echo "using nettle library"
   ;;
   ssl)
     CXXFLAGS=$CXXFLAGS' -DUSE_SSL_CRYPTO'
@@ -232,7 +255,7 @@ case $CRYPTO_LIB in
       CXXFLAGS="$CXXFLAGS -I\"$OPENSSL_PREFIX/include\""
       LDFLAGS="$LDFLAGS -L\"$OPENSSL_PREFIX/lib\""
     fi
-    echo "using ssl crypto library"
+    echo "using openssl crypto library"
   ;;
   none)
     CXXFLAGS=$CXXFLAGS' -DNO_CRYPT'

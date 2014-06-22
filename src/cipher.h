@@ -39,11 +39,15 @@
 #include "keyDerivation.h"
 
 #ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
-#include <gcrypt.h>
-#else
+
+#if defined(USE_SSL_CRYPTO)
 #include <openssl/aes.h>
+#elif defined(USE_NETTLE)
+#include <nettle/aes.h>
+#else  // USE_GCRYPT is the default
+#include <gcrypt.h>
 #endif
+
 #endif
 
 class Cipher
@@ -96,12 +100,15 @@ private:
   void calcCtr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
   void calc(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
-#ifndef USE_SSL_CRYPTO
-  gcry_cipher_hd_t handle_;
-#else
+#if defined(USE_SSL_CRYPTO)
   AES_KEY aes_key_;
   uint8_t ecount_buf_[AES_BLOCK_SIZE];
+#elif defined(USE_NETTLE)
+  struct aes_ctx ctx_;
+#else  // USE_GCRYPT is the default
+  gcry_cipher_hd_t handle_;
 #endif
+
   Buffer key_;
   Buffer salt_;
 

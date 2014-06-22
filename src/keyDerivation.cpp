@@ -46,9 +46,15 @@
 
 #ifndef NO_CRYPT
 #ifndef NO_PASSPHRASE
-#ifdef USE_SSL_CRYPTO
+
+#if defined(USE_SSL_CRYPTO)
 #include <openssl/sha.h>
+#elif defined(USE_NETTLE)
+#include <nettle/sha1.h>
+#include <nettle/sha2.h>
+#include <nettle/ctr.h>
 #endif
+
 #endif
 #endif
 
@@ -69,21 +75,29 @@ void KeyDerivation::calcMasterKey(std::string passphrase, uint16_t length)
     return;
   }
 
-#ifndef USE_SSL_CRYPTO
-  if(length > gcry_md_get_algo_dlen(GCRY_MD_SHA256)) {
-#else
+#if defined(USE_SSL_CRYPTO)
   if(length > SHA256_DIGEST_LENGTH) {
+#elif defined(USE_NETTLE)
+  if(length > SHA256_DIGEST_SIZE) {
+#else  // USE_GCRYPT is the default
+  if(length > gcry_md_get_algo_dlen(GCRY_MD_SHA256)) {
 #endif
     cLog.msg(Log::PRIO_ERROR) << "KeyDerivation: master key too long for passphrase algorithm";
     return;
   }
 
-#ifndef USE_SSL_CRYPTO
-  Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA256)));
-  gcry_md_hash_buffer(GCRY_MD_SHA256, digest.getBuf(), passphrase.c_str(), passphrase.length());
-#else
+#if defined(USE_SSL_CRYPTO)
   Buffer digest(uint32_t(SHA256_DIGEST_LENGTH));
   SHA256(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
+#elif defined(USE_NETTLE)
+  Buffer digest(uint32_t(SHA256_DIGEST_SIZE));
+  struct sha256_ctx ctx;
+  sha256_init(&ctx);
+  sha256_update(&ctx, passphrase.length(), reinterpret_cast<const unsigned char*>(passphrase.c_str()));
+  sha256_digest(&ctx, digest.getLength(), digest.getBuf());
+#else  // USE_GCRYPT is the default
+  Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA256)));
+  gcry_md_hash_buffer(GCRY_MD_SHA256, digest.getBuf(), passphrase.c_str(), passphrase.length());
 #endif
   master_key_.setLength(length);
 
@@ -98,21 +112,29 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, uint16_t length)
     return;
   }
 
-#ifndef USE_SSL_CRYPTO
-  if(length > gcry_md_get_algo_dlen(GCRY_MD_SHA1)) {
-#else
+#if defined(USE_SSL_CRYPTO)
   if(length > SHA_DIGEST_LENGTH) {
+#elif defined(USE_NETTLE)
+  if(length > SHA1_DIGEST_SIZE) {
+#else  // USE_GCRYPT is the default
+  if(length > gcry_md_get_algo_dlen(GCRY_MD_SHA1)) {
 #endif
     cLog.msg(Log::PRIO_ERROR) << "KeyDerivation: master key too long for passphrase algorithm";
     return;
   }
 
-#ifndef USE_SSL_CRYPTO
-  Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA1)));
-  gcry_md_hash_buffer(GCRY_MD_SHA1, digest.getBuf(), passphrase.c_str(), passphrase.length());
-#else
+#if defined(USE_SSL_CRYPTO)
   Buffer digest(uint32_t(SHA_DIGEST_LENGTH));
   SHA1(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
+#elif defined(USE_NETTLE)
+  Buffer digest(uint32_t(SHA1_DIGEST_SIZE));
+  struct sha1_ctx ctx;
+  sha1_init(&ctx);
+  sha1_update(&ctx, passphrase.length(), reinterpret_cast<const unsigned char*>(passphrase.c_str()));
+  sha1_digest(&ctx, digest.getLength(), digest.getBuf());
+#else  // USE_GCRYPT is the default
+  Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA1)));
+  gcry_md_hash_buffer(GCRY_MD_SHA1, digest.getBuf(), passphrase.c_str(), passphrase.length());
 #endif
   master_salt_.setLength(length);
 
@@ -172,7 +194,7 @@ bool NullKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_t 
 
 AesIcmKeyDerivation::AesIcmKeyDerivation() : KeyDerivation(DEFAULT_KEY_LENGTH)
 {
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_GCRYPT)
   for(int i=0; i<2; i++) {
     handle_[i] = NULL;
   }
@@ -181,7 +203,7 @@ AesIcmKeyDerivation::AesIcmKeyDerivation() : KeyDerivation(DEFAULT_KEY_LENGTH)
 
 AesIcmKeyDerivation::AesIcmKeyDerivation(uint16_t key_length) : KeyDerivation(key_length)
 {
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_GCRYPT)
   for(int i=0; i<2; i++) {
     handle_[i] = NULL;
   }
@@ -191,7 +213,7 @@ AesIcmKeyDerivation::AesIcmKeyDerivation(uint16_t key_length) : KeyDerivation(ke
 AesIcmKeyDerivation::~AesIcmKeyDerivation()
 {
   WritersLock lock(mutex_);
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_GCRYPT)
   for(int i=0; i<2; i++)
     if(handle_[i]) {
       gcry_cipher_close(handle_[i]);
@@ -236,7 +258,19 @@ void AesIcmKeyDerivation::updateMasterKey()
     return;
   }
 
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
+  for(int i=0; i<2; i++) {
+    int ret = AES_set_encrypt_key(master_key_.getBuf(), master_key_.getLength()*8, &aes_key_[i]);
+    if(ret) {
+      cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: Failed to set ssl key (code: " << ret << ")";
+      return;
+    }
+  }
+#elif defined(USE_NETTLE)
+  for(int i=0; i<2; i++) {
+    aes_set_encrypt_key(&(ctx_[i]), master_key_.getLength(), master_key_.getBuf());
+  }
+#else  // USE_GCRYPT is the default
   int algo;
   switch(key_length_) {
   case 128:
@@ -268,14 +302,6 @@ void AesIcmKeyDerivation::updateMasterKey()
     err = gcry_cipher_setkey(handle_[i], master_key_.getBuf(), master_key_.getLength());
     if(err) {
       cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: Failed to set cipher key: " << AnytunGpgError(err);
-      return;
-    }
-  }
-#else
-  for(int i=0; i<2; i++) {
-    int ret = AES_set_encrypt_key(master_key_.getBuf(), master_key_.getLength()*8, &aes_key_[i]);
-    if(ret) {
-      cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::updateMasterKey: Failed to set ssl key (code: " << ret << ")";
       return;
     }
   }
@@ -318,7 +344,23 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
     return false;
   }
 
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
+  if(CTR_LENGTH != AES_BLOCK_SIZE) {
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";
+    return false;
+  }
+  unsigned int num = 0;
+  std::memset(ecount_buf_[dir], 0, AES_BLOCK_SIZE);
+  std::memset(key.getBuf(), 0, key.getLength());
+  AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);
+#elif defined(USE_NETTLE)
+  if(CTR_LENGTH != AES_BLOCK_SIZE) {
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";
+    return false;
+  }
+  std::memset(key.getBuf(), 0, key.getLength());
+  ctr_crypt(&(ctx_[dir]), (nettle_crypt_func *)(aes_encrypt), AES_BLOCK_SIZE, ctr_[dir].buf_, key.getLength(), key.getBuf(), key.getBuf());
+#else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::generate: Failed to reset cipher: " << AnytunGpgError(err);
@@ -335,15 +377,6 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "KeyDerivation::generate: Failed to generate cipher bitstream: " << AnytunGpgError(err);
   }
-#else
-  if(CTR_LENGTH != AES_BLOCK_SIZE) {
-    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
-    return false;
-  }
-  unsigned int num = 0;
-  std::memset(ecount_buf_[dir], 0, AES_BLOCK_SIZE);
-  std::memset(key.getBuf(), 0, key.getLength());
-  AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);
 #endif
 
   return true;

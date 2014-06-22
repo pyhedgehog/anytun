@@ -1,8 +1,8 @@
 Dependencies
 ============
 
-Anytun can be built by using either libgcrypt or the openssl-crypto library. 
-The latter is more performant in most cases but there are some license 
+Anytun can be built by using either libgcrypt, libnettle or the openssl-crypto
+library. The latter is more performant in most cases but there are some license
 issues when using this library.
 
 Linux
@@ -12,15 +12,18 @@ Linux
 using libgcrypt:
   libgcrypt11-dev
 
-using ssl crypto lib:
+using ssl crypto library:
   libssl-dev
+
+using nettle crypto library:
+  nettle-dev
 
 common:
   build-essential
-  libboost-serialization1.35-dev
-  libboost-thread1.35-dev
-  libboost-system1.35-dev
-  libboost-regex1.35-dev
+  libboost-serialization-dev
+  libboost-thread-dev
+  libboost-system-dev
+  libboost-regex-dev
 
 if you want to rebuild the manpage:
   asciidoc
@@ -44,33 +47,33 @@ if you want to rebuild the manpage:
  textproc/libxslt
  textproc/docbook-xsl
  sysutils/readlink
- misc/getopt 
+ misc/getopt
 
 
 
 Windows
 -------
 OpenSSL
- Developer: 
- 	http://www.slproweb.com/download/Win32OpenSSL-0_9_8j.exe
+ Developer:
+  http://www.slproweb.com/download/Win32OpenSSL-0_9_8j.exe
 
- Runtime Only: 
- 	http://www.slproweb.com/download/Win32OpenSSL_Light-0_9_8j.exe
-  
-Boost 1.35: 
-	http://www.boostpro.com/download/boost_1_35_0_setup.exe
+ Runtime Only:
+  http://www.slproweb.com/download/Win32OpenSSL_Light-0_9_8j.exe
 
-  As it can take some time to install everything from boost here is a 
+Boost 1.35:
+  http://www.boostpro.com/download/boost_1_35_0_setup.exe
+
+  As it can take some time to install everything from boost here is a
   complete list of libraries which have to be installed in order to build anytun:
-   
+
    * Serialization
-   * Thread 
+   * Thread
    * date_time
    * System
    * regex
 
 Microsoft Visual C++ 2008 Redistributable Package (x86):
-	http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
+  http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
 
 
 
@@ -98,7 +101,7 @@ using ssl crypto library:
  # make
 
 
-Notes: 
+Notes:
   - try './configure --help' for further information
   - if using openssl pre 0.9.8 you have to disable passphrase
     because openssl had no SHA256 implementation prior to this
@@ -132,26 +135,26 @@ Usage:
 init.d script
 -------------
 
-The init.d script can be used to start anytun at boot time. It searches for 
+The init.d script can be used to start anytun at boot time. It searches for
 configuration files which reside at $CONFIG_DIR. For each instance of anytun
 which should be started there must be a directory containing at least a file
 named config. This file must contain all command line parameter which should
 be used when starting the daemon. One line for each parameter. Empty lines and
 lines starting with # are ignored. Besides the config file there may be a script
-named post-up.sh which will be called when the tun/tap device comes up. 
-Furthermore there may be a directory called conf.d containing config files for 
-anytun-config. The syntax of this files is quite the same as those for anytun. 
-These files are used to configure a multi connection setup using anytun-config 
+named post-up.sh which will be called when the tun/tap device comes up.
+Furthermore there may be a directory called conf.d containing config files for
+anytun-config. The syntax of this files is quite the same as those for anytun.
+These files are used to configure a multi connection setup using anytun-config
 and anytun-controld
 This is an example of how the script can be used to start anytun:
 
 # /etc/init.d/anytun start client1 p2p-a
 
 In this case the script will start 2 instances of anytun using the config files
-$CONFIG_DIR/client1/config and $CONFIG_DIR/p2p-a/config. 
+$CONFIG_DIR/client1/config and $CONFIG_DIR/p2p-a/config.
 If no instance name is specified the script will use the file $CONFIG_DIR/autostart
-to determine which instances to start or stop. This file must contain a list 
-of instance names which should be used when no names are specified at the command 
+to determine which instances to start or stop. This file must contain a list
+of instance names which should be used when no names are specified at the command
 line. One line for each name. Empty lines and lines starting with # are ignored.
 
 

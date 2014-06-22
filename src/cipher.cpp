@@ -39,6 +39,10 @@
 #include "endian.h"
 
 #include "cipher.h"
+#if defined(USE_NETTLE)
+#include <nettle/ctr.h>
+#endif
+
 #include "log.h"
 #include "anytunError.h"
 
@@ -87,7 +91,11 @@ AesIcmCipher::AesIcmCipher(kd_dir_t d, uint16_t key_length) : Cipher(d), key_(ui
 
 void AesIcmCipher::init(uint16_t key_length)
 {
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
+    // nothing here
+#elif defined(USE_NETTLE)
+    // nothing here
+#else  // USE_GCRYPT is the default
   handle_ = NULL;
   int algo;
   switch(key_length) {
@@ -116,7 +124,11 @@ void AesIcmCipher::init(uint16_t key_length)
 
 AesIcmCipher::~AesIcmCipher()
 {
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
+    // nothing here
+#elif defined(USE_NETTLE)
+    // nothing here
+#else  // USE_GCRYPT is the default
   if(handle_) {
     gcry_cipher_close(handle_);
   }
@@ -150,20 +162,22 @@ void AesIcmCipher::calcCtr(KeyDerivation& kd, seq_nr_t seq_nr, sender_id_t sende
 
 void AesIcmCipher::calc(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_GCRYPT)
   if(!handle_) {
     return;
   }
 #endif
 
   kd.generate(dir_, LABEL_ENC, seq_nr, key_);
-#ifdef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
   int ret = AES_set_encrypt_key(key_.getBuf(), key_.getLength()*8, &aes_key_);
   if(ret) {
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher ssl key (code: " << ret << ")";
     return;
   }
-#else
+#elif defined(USE_NETTLE)
+  aes_set_encrypt_key(&ctx_, key_.getLength(), key_.getBuf());
+#else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_cipher_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher key: " << AnytunGpgError(err);
@@ -173,7 +187,21 @@ void AesIcmCipher::calc(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* 
 
   calcCtr(kd, seq_nr, sender_id, mux);
 
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
+  if(CTR_LENGTH != AES_BLOCK_SIZE) {
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";
+    return;
+  }
+  unsigned int num = 0;
+  std::memset(ecount_buf_, 0, AES_BLOCK_SIZE);
+  AES_ctr128_encrypt(in, out, (ilen < olen) ? ilen : olen, &aes_key_, ctr_.buf_, ecount_buf_, &num);
+#elif defined(USE_NETTLE)
+  if(CTR_LENGTH != AES_BLOCK_SIZE) {
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";
+    return;
+  }
+  ctr_crypt(&ctx_, (nettle_crypt_func *)(aes_encrypt), AES_BLOCK_SIZE, ctr_.buf_, (ilen < olen) ? ilen : olen, out, in);
+#else  // USE_GCRYPT is the default
   err = gcry_cipher_setctr(handle_, ctr_.buf_, CTR_LENGTH);
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: " << AnytunGpgError(err);
@@ -185,14 +213,6 @@ void AesIcmCipher::calc(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* 
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to de/encrypt packet: " << AnytunGpgError(err);
     return;
   }
-#else
-  if(CTR_LENGTH != AES_BLOCK_SIZE) {
-    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
-    return;
-  }
-  unsigned int num = 0;
-  std::memset(ecount_buf_, 0, AES_BLOCK_SIZE);
-  AES_ctr128_encrypt(in, out, (ilen < olen) ? ilen : olen, &aes_key_, ctr_.buf_, ecount_buf_, &num);
 #endif
 }
 #endif

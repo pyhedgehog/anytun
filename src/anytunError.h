@@ -40,7 +40,8 @@
 #define STERROR_TEXT_MAX 200
 
 #ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
+
+#if defined(USE_GCRYPT)
 #include <gcrypt.h>
 
 class AnytunGpgError
@@ -51,6 +52,7 @@ public:
 };
 std::ostream& operator<<(std::ostream& stream, AnytunGpgError const& value);
 #endif
+
 #endif
 
 class AnytunErrno

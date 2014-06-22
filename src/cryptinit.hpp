@@ -34,7 +34,8 @@
 #define ANYTUN_cryptinit_hpp_INCLUDED
 
 #ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
+
+#if defined(USE_GCRYPT)
 #include <gcrypt.h>
 
 // boost thread callbacks for libgcrypt
@@ -104,16 +105,21 @@ bool initLibGCrypt()
   return true;
 }
 #endif
+
 #endif
 
 bool initCrypto()
 {
 #ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
-  return initLibGCrypt();
-#else
+
+#if defined(USE_SSL_CRYPTO)
   return true;
+#elif defined(USE_NETTLE)
+  return true;
+#else  // USE_GCRYPT is the default
+  return initLibGCrypt();
 #endif
+
 #else
   return true;
 #endif
