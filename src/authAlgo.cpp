@@ -54,32 +54,32 @@ bool NullAuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 
 Sha1AuthAlgo::Sha1AuthAlgo(kd_dir_t d) : AuthAlgo(d), key_(DIGEST_LENGTH)
 {
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
+  HMAC_CTX_init(&ctx_);
+  HMAC_Init_ex(&ctx_, NULL, 0, EVP_sha1(), NULL);
+#else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_md_open(&handle_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC);
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to open message digest algo";
     return;
   }
-#else
-  HMAC_CTX_init(&ctx_);
-  HMAC_Init_ex(&ctx_, NULL, 0, EVP_sha1(), NULL);
 #endif
 }
 
 Sha1AuthAlgo::~Sha1AuthAlgo()
 {
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
+  HMAC_CTX_cleanup(&ctx_);
+#else  // USE_GCRYPT is the default
   if(handle_) {
     gcry_md_close(handle_);
   }
-#else
-  HMAC_CTX_cleanup(&ctx_);
 #endif
 }
 
 void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 {
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_GCRYPT)
   if(!handle_) {
     return;
   }
@@ -91,7 +91,13 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
   }
 
   kd.generate(dir_, LABEL_AUTH, packet.getSeqNr(), key_);
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
+  HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
+
+  uint8_t hmac[DIGEST_LENGTH];
+  HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
+  HMAC_Final(&ctx_, hmac, NULL);
+#else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
@@ -102,12 +108,6 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
   gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   gcry_md_final(handle_);
   uint8_t* hmac = gcry_md_read(handle_, 0);
-#else
-  HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
-
-  uint8_t hmac[DIGEST_LENGTH];
-  HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
-  HMAC_Final(&ctx_, hmac, NULL);
 #endif
 
   uint8_t* tag = packet.getAuthTag();
@@ -122,7 +122,7 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 
 bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 {
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_GCRYPT)
   if(!handle_) {
     return false;
   }
@@ -134,7 +134,13 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
   }
 
   kd.generate(dir_, LABEL_AUTH, packet.getSeqNr(), key_);
-#ifndef USE_SSL_CRYPTO
+#if defined(USE_SSL_CRYPTO)
+  HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
+
+  uint8_t hmac[DIGEST_LENGTH];
+  HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
+  HMAC_Final(&ctx_, hmac, NULL);
+#else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::setKey: Failed to set hmac key: " << AnytunGpgError(err);
@@ -145,12 +151,6 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
   gcry_md_write(handle_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   gcry_md_final(handle_);
   uint8_t* hmac = gcry_md_read(handle_, 0);
-#else
-  HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
-
-  uint8_t hmac[DIGEST_LENGTH];
-  HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
-  HMAC_Final(&ctx_, hmac, NULL);
 #endif
 
   uint8_t* tag = packet.getAuthTag();

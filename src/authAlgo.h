@@ -37,11 +37,13 @@
 #include "encryptedPacket.h"
 
 #ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
-#include <gcrypt.h>
-#else
+
+#if defined(USE_SSL_CRYPTO)
 #include <openssl/hmac.h>
+#else  // USE_GCRYPT is the default
+#include <gcrypt.h>
 #endif
+
 #endif
 #include "keyDerivation.h"
 
@@ -95,10 +97,10 @@ public:
   static const uint32_t DIGEST_LENGTH = 20;
 
 private:
-#ifndef USE_SSL_CRYPTO
-  gcry_md_hd_t handle_;
-#else
+#if defined(USE_SSL_CRYPTO)
   HMAC_CTX ctx_;
+#else  // USE_GCRYPT is the default
+  gcry_md_hd_t handle_;
 #endif
 
   Buffer key_;

@@ -40,11 +40,13 @@
 #include "options.h"
 
 #ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
-#include <gcrypt.h>
-#else
+
+#if defined(USE_SSL_CRYPTO)
 #include <openssl/aes.h>
+#else  // USE_GCRYPT is the default
+#include <gcrypt.h>
 #endif
+
 #endif
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -168,11 +170,11 @@ private:
     ar& boost::serialization::base_object<KeyDerivation>(*this);
   }
 
-#ifndef USE_SSL_CRYPTO
-  gcry_cipher_hd_t handle_[2];
-#else
+#if defined(USE_SSL_CRYPTO)
   AES_KEY aes_key_[2];
   uint8_t ecount_buf_[2][AES_BLOCK_SIZE];
+#else  // USE_GCRYPT is the default
+  gcry_cipher_hd_t handle_[2];
 #endif
 
 #ifdef _MSC_VER

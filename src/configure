@@ -218,6 +218,7 @@ fi
 
 case $CRYPTO_LIB in
   gcrypt)
+    CXXFLAGS=$CXXFLAGS' -DUSE_GCRYPT'
     LDFLAGS=$LDFLAGS' -lgcrypt -lgpg-error'
     if [ -n "$GCRYPT_PREFIX" ]; then
       CXXFLAGS="$CXXFLAGS -I\"$GCRYPT_PREFIX/include\""

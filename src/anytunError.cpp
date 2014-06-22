@@ -36,7 +36,8 @@
 #include <boost/system/system_error.hpp>
 
 #ifndef NO_CRYPT
-#ifndef USE_SSL_CRYPTO
+
+#if defined(USE_GCRYPT)
 std::ostream& operator<<(std::ostream& stream, AnytunGpgError const& value)
 {
   char buf[STERROR_TEXT_MAX];
@@ -45,6 +46,7 @@ std::ostream& operator<<(std::ostream& stream, AnytunGpgError const& value)
   return stream << buf;
 }
 #endif
+
 #endif
 
 std::ostream& operator<<(std::ostream& stream, AnytunErrno const& value)
