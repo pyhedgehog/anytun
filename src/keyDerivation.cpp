@@ -52,6 +52,7 @@
 #elif defined(USE_NETTLE)
 #include <nettle/sha1.h>
 #include <nettle/sha2.h>
+#include <nettle/ctr.h>
 #endif
 
 #endif
@@ -89,9 +90,11 @@ void KeyDerivation::calcMasterKey(std::string passphrase, uint16_t length)
   Buffer digest(uint32_t(SHA256_DIGEST_LENGTH));
   SHA256(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
 #elif defined(USE_NETTLE)
-        // TODO: nettle
   Buffer digest(uint32_t(SHA256_DIGEST_SIZE));
-
+  struct sha256_ctx ctx;
+  sha256_init(&ctx);
+  sha256_update(&ctx, passphrase.length(), reinterpret_cast<const unsigned char*>(passphrase.c_str()));
+  sha256_digest(&ctx, digest.getLength(), digest.getBuf());
 #else  // USE_GCRYPT is the default
   Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA256)));
   gcry_md_hash_buffer(GCRY_MD_SHA256, digest.getBuf(), passphrase.c_str(), passphrase.length());
@@ -124,9 +127,11 @@ void KeyDerivation::calcMasterSalt(std::string passphrase, uint16_t length)
   Buffer digest(uint32_t(SHA_DIGEST_LENGTH));
   SHA1(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
 #elif defined(USE_NETTLE)
-        // TODO: nettle
   Buffer digest(uint32_t(SHA1_DIGEST_SIZE));
-
+  struct sha1_ctx ctx;
+  sha1_init(&ctx);
+  sha1_update(&ctx, passphrase.length(), reinterpret_cast<const unsigned char*>(passphrase.c_str()));
+  sha1_digest(&ctx, digest.getLength(), digest.getBuf());
 #else  // USE_GCRYPT is the default
   Buffer digest(static_cast<uint32_t>(gcry_md_get_algo_dlen(GCRY_MD_SHA1)));
   gcry_md_hash_buffer(GCRY_MD_SHA1, digest.getBuf(), passphrase.c_str(), passphrase.length());
@@ -262,8 +267,9 @@ void AesIcmKeyDerivation::updateMasterKey()
     }
   }
 #elif defined(USE_NETTLE)
-        // TODO: nettle
-
+  for(int i=0; i<2; i++) {
+    aes_set_encrypt_key(&(ctx_[i]), master_key_.getLength(), master_key_.getBuf());
+  }
 #else  // USE_GCRYPT is the default
   int algo;
   switch(key_length_) {
@@ -340,7 +346,7 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
 
 #if defined(USE_SSL_CRYPTO)
   if(CTR_LENGTH != AES_BLOCK_SIZE) {
-    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size don't fits";
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";
     return false;
   }
   unsigned int num = 0;
@@ -348,8 +354,12 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
   std::memset(key.getBuf(), 0, key.getLength());
   AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);
 #elif defined(USE_NETTLE)
-        // TODO: nettle
-
+  if(CTR_LENGTH != AES_BLOCK_SIZE) {
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";
+    return false;
+  }
+  std::memset(key.getBuf(), 0, key.getLength());
+  ctr_crypt(&(ctx_[dir]), (nettle_crypt_func *)(aes_encrypt), AES_BLOCK_SIZE, ctr_[dir].buf_, key.getLength(), key.getBuf(), key.getBuf());
 #else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_cipher_reset(handle_[dir]);
   if(err) {
