@@ -35,9 +35,9 @@ TARGET=`uname -s`
 
 EBUILD_COMPAT=0
 
-CXXFLAGS='-g -Wall -O2'
-LDFLAGS='-g -Wall -O2'
 CROSS_PREFIX=''
+
+USE_CLANG=0
 
 CRYPTO_LIB='gcrypt'
 PASSPHRASE=1
@@ -81,6 +81,7 @@ print_usage() {
   echo "          --with-gcrypt=<PREFIX>    don't use systemwide gcrypt"
   echo "          --with-nettle=<PREFIX>    don't use systemwide nettle"
   echo "          --with-openssl=<PREFIX>   don't use systemwide openssl"
+  echo "          --use-clang               use clang/llvm as compiler/linker"
 }
 
 for arg
@@ -88,6 +89,9 @@ do
   case $arg in
   --target=*)
     TARGET=${arg#--target=}
+  ;;
+  --use-clang)
+    USE_CLANG=1
   ;;
   --prefix=*)
     PREFIX=${arg#--prefix=}
@@ -172,6 +176,16 @@ if [ -n "$ERRORS" ] && [ $EBUILD_COMPAT -ne 1 ]; then
 
   print_usage
   exit 1
+fi
+
+if [ $USE_CLANG -eq 0 ]; then
+  CXXFLAGS='-g -Wall -O2'
+  LDFLAGS='-g -Wall -O2'
+  COMPILER='g++'
+else
+  CXXFLAGS='-g -O2'
+  LDFLAGS='-g -O2'
+  COMPILER='clang++'
 fi
 
 rm -f include.mk
@@ -299,9 +313,9 @@ cat > include.mk <<EOF
 # use ./configure instead
 
 TARGET = $TARGET
-CXX = ${CROSS_PREFIX}g++
+CXX = ${CROSS_PREFIX}$COMPILER
 CXXFLAGS = $CXXFLAGS
-LD = ${CROSS_PREFIX}g++
+LD = ${CROSS_PREFIX}$COMPILER
 LDFLAGS = $LDFLAGS
 STRIP = ${CROSS_PREFIX}strip
 INSTALL = install

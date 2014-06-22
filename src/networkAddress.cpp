@@ -177,7 +177,7 @@ ethernet_bytes_type	NetworkAddress::to_bytes_ethernet() const
   boost::array<unsigned char,6> result;
   uint64_t ether=ethernet_address_;
   for(int i = 0; i < 6; i++) {
-    result[i] = (unsigned char)(ether && 0xff);
+    result[i] = (unsigned char)(ether & 0xff);
     ether >>= 8;
   }
   return result;
