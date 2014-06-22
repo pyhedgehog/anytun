@@ -51,7 +51,6 @@ public:
   bool operator<(const NetworkPrefix& s) const;
 
 private:
-  operator NetworkAddress();
   void operator=(const NetworkPrefix& s);
   uint8_t length_;
   friend class boost::serialization::access;
