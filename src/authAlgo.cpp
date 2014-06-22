@@ -58,8 +58,7 @@ Sha1AuthAlgo::Sha1AuthAlgo(kd_dir_t d) : AuthAlgo(d), key_(DIGEST_LENGTH)
   HMAC_CTX_init(&ctx_);
   HMAC_Init_ex(&ctx_, NULL, 0, EVP_sha1(), NULL);
 #elif defined(USE_NETTLE)
-      // TODO: nettle
-
+  // nothing here
 #else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_md_open(&handle_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC);
   if(err) {
@@ -74,8 +73,7 @@ Sha1AuthAlgo::~Sha1AuthAlgo()
 #if defined(USE_SSL_CRYPTO)
   HMAC_CTX_cleanup(&ctx_);
 #elif defined(USE_NETTLE)
-      // TODO: nettle
-
+  // nothing here
 #else  // USE_GCRYPT is the default
   if(handle_) {
     gcry_md_close(handle_);
@@ -104,9 +102,11 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
   HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   HMAC_Final(&ctx_, hmac, NULL);
 #elif defined(USE_NETTLE)
-      // TODO: nettle
-  uint8_t hmac[DIGEST_LENGTH];
+  hmac_sha1_set_key(&ctx_, key_.getLength(), key_.getBuf());
 
+  uint8_t hmac[DIGEST_LENGTH];
+  hmac_sha1_update(&ctx_, packet.getAuthenticatedPortionLength(), packet.getAuthenticatedPortion());
+  hmac_sha1_digest(&ctx_, DIGEST_LENGTH, hmac);
 #else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
@@ -151,9 +151,11 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
   HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
   HMAC_Final(&ctx_, hmac, NULL);
 #elif defined(USE_NETTLE)
-      // TODO: nettle
-  uint8_t hmac[DIGEST_LENGTH];
+  hmac_sha1_set_key(&ctx_, key_.getLength(), key_.getBuf());
 
+  uint8_t hmac[DIGEST_LENGTH];
+  hmac_sha1_update(&ctx_, packet.getAuthenticatedPortionLength(), packet.getAuthenticatedPortion());
+  hmac_sha1_digest(&ctx_, DIGEST_LENGTH, hmac);
 #else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_md_setkey(handle_, key_.getBuf(), key_.getLength());
   if(err) {
