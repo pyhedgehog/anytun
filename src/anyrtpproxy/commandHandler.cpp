@@ -81,7 +81,7 @@ void CommandHandler::run(void* s)
     proto::endpoint remote_end;
 
     int len;
-    while(1) {
+    for(;;) {
       buf.setLength(MAX_COMMAND_LENGTH);
 
       len = self->control_sock_.receive_from(boost::asio::buffer(buf.getBuf(), buf.getLength()), remote_end);

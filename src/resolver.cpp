@@ -117,7 +117,7 @@ void Resolver::run()
 {
   cLog.msg(Log::PRIO_DEBUG) << "Resolver Thread started";
 
-  while(1) {
+  for(;;) {
     try {
       io_service_.run();
       io_service_.reset();

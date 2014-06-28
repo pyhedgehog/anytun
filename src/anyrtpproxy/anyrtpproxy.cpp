@@ -70,7 +70,7 @@ void listener(RtpSession::proto::socket* sock1, RtpSession::proto::socket* sock2
     Buffer buf(uint32_t(MAX_PACKET_SIZE));
     RtpSession::proto::endpoint remote_end;
 
-    while(1) {
+    for(;;) {
       buf.setLength(MAX_PACKET_SIZE);
       uint32_t len=0;
       if(dir == 1) {
@@ -148,7 +148,7 @@ void listenerManager(void* p)
   SyncQueue* queue_ = reinterpret_cast<SyncQueue*>(p);
 
   std::map<std::string, ListenerData*> listenerMap;
-  while(1) {
+  for(;;) {
     try {
       std::string call_id = gCallIdQueue.front(); // waits for semaphor and returns next call_id
       gCallIdQueue.pop();

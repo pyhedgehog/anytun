@@ -95,7 +95,7 @@ int SignalController::run()
     }
 
   int ret = 0;
-  while(1) {
+  for(;;) {
     sigQueueSem.down();
     SigPair sig;
     {

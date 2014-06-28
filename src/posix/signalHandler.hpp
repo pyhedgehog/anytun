@@ -87,7 +87,7 @@ void handleSignal()
   struct timespec timeout;
   sigset_t signal_set;
   int sigNum;
-  while(1) {
+  for(;;) {
     sigemptyset(&signal_set);
     sigaddset(&signal_set, SIGINT);
     sigaddset(&signal_set, SIGQUIT);
