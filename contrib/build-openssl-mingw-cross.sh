@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-OPENSSL=openssl-1.0.1c
+OPENSSL=openssl-1.0.1h
 BASE=`pwd`
 
 wget http://openssl.org/source/$OPENSSL.tar.gz -O - | tar xz
