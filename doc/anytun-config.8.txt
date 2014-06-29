@@ -38,21 +38,21 @@ OPTIONS
 
 *-L, --log '<target>:<level>[,<param1>[,<param2>[..]]]'*::
    add log target to logging system. This can be invoked several times
-   in order to log to different targets at the same time. Every target 
+   in order to log to different targets at the same time. Every target
    hast its own log level which is a number between 0 and 5. Where 0 means
    disabling log and 5 means debug messages are enabled. +
    The file target can be used more the once with different levels.
-   If no target is provided at the command line a single target with the 
+   If no target is provided at the command line a single target with the
    config 'syslog:3,anytun-config,daemon' is added. +
    The following targets are supported:
 
    'syslog';; log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
    'file';; log to file, parameters <level>[,<path>]
    'stdout';; log to standard output, parameters <level>
-   'stderr';; log to standard error, parameters <level> 
+   'stderr';; log to standard error, parameters <level>
 
 *-U, --debug*::
-   This option instructs *Anytun* to run in debug mode. It implicits *-D* 
+   This option instructs *Anytun* to run in debug mode. It implicits *-D*
    (don't daemonize) and adds a log target with the configuration
    'stdout:5' (logging with maximum level). In future releases there might
    be additional output when this option is supplied.
@@ -100,7 +100,7 @@ OPTIONS
 
 *-k, --kd--prf '<kd-prf type>'*::
    key derivation pseudo random function +
-   The pseudo random function which is used for calculating the 
+   The pseudo random function which is used for calculating the
    session keys and session salt. +
    Possible values:
 
@@ -113,16 +113,16 @@ OPTIONS
 *-e, --role '<role>'*::
    SATP uses different session keys for inbound and outbound traffic. The
    role parameter is used to determine which keys to use for outbound or
-   inbound packets. On both sides of a vpn connection different roles have 
-   to be used. Possible values are *left* and *right*. You may also use 
-   *alice* or *server* as a replacement for *left* and *bob* or *client* as 
+   inbound packets. On both sides of a vpn connection different roles have
+   to be used. Possible values are *left* and *right*. You may also use
+   *alice* or *server* as a replacement for *left* and *bob* or *client* as
    a replacement for *right*. By default *left* is used.
 
 *-E, --passphrase '<pass phrase>'*::
    This passphrase is used to generate the master key and master salt.
-   For the master key the last n bits of the SHA256 digest of the 
-   passphrase (where n is the length of the master key in bits) is used. 
-   The master salt gets generated with the SHA1 digest. 
+   For the master key the last n bits of the SHA256 digest of the
+   passphrase (where n is the length of the master key in bits) is used.
+   The master salt gets generated with the SHA1 digest.
    You may force a specific key and or salt by using *--key* and *--salt*.
 
 *-K, --key '<master key>'*::
@@ -143,10 +143,10 @@ EXAMPLES
 
 Add a client with Connection ID (Mux) 12 and add 2 Routes to this client
 
------------------------------------------------------------------------------------------------- 
+------------------------------------------------------------------------------------------------
 # anytun-config -w 0 -m 12 -K 0123456789ABCDEFFEDCBA9876543210 -A 0123456789ABCDDCBA9876543210 \
                 -R 192.0.2.0/24 -R 192.168.1.1/32 -e server >> routingtable
------------------------------------------------------------------------------------------------- 
+------------------------------------------------------------------------------------------------
 
 BUGS
 ----
@@ -174,8 +174,8 @@ Main web site: http://www.anytun.org/
 COPYING
 -------
 
-Copyright \(C) 2007-2009 Othmar Gsenger, Erwin Nindl and Christian
-Pointner. This  program is  free software: you can redistribute it 
-and/or modify it under the terms of the GNU General Public License 
-as published by the Free Software Foundation, either version 3 of 
-the License, or any later version.
+Copyright \(C) 2007-2014 Markus Grüneis, Othmar Gsenger, Erwin Nindl
+and Christian Pointner. This  program is  free software: you can
+redistribute it and/or modify it under the terms of the GNU General
+Public License as published by the Free Software Foundation, either
+version 3 of the License, or any later version.
