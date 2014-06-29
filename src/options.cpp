@@ -150,19 +150,12 @@ std::istream& operator>>(std::istream& stream, OptionNetwork& network)
   return stream;
 }
 
-Options* Options::inst = NULL;
-Mutex Options::instMutex;
 Options& gOpt = Options::instance();
 
 Options& Options::instance()
 {
-  Lock lock(instMutex);
-  static instanceCleaner c;
-  if(!inst) {
-    inst = new Options();
-  }
-
-  return *inst;
+  static Options instance;
+  return instance;
 }
 
 Options::Options() : key_(uint32_t(0)), salt_(uint32_t(0))

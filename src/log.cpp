@@ -36,8 +36,6 @@
 
 #include "threadUtils.hpp"
 
-Log* Log::inst = NULL;
-Mutex Log::instMutex;
 Log& cLog = Log::instance();
 
 LogStringBuilder::LogStringBuilder(LogStringBuilder const& src) : log(src.log), prio(src.prio)
@@ -57,13 +55,8 @@ LogStringBuilder::~LogStringBuilder()
 
 Log& Log::instance()
 {
-  Lock lock(instMutex);
-  static instanceCleaner c;
-  if(!inst) {
-    inst = new Log();
-  }
-
-  return *inst;
+  static Log instance;
+  return instance;
 }
 
 void Log::addTarget(std::string conf)

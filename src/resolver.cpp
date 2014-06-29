@@ -80,19 +80,12 @@ void ResolveHandler<Proto>::operator()(const boost::system::error_code& e, boost
   }
 }
 
-Resolver* Resolver::inst = NULL;
-Mutex Resolver::instMutex;
 Resolver& gResolver = Resolver::instance();
 
 Resolver& Resolver::instance()
 {
-  Lock lock(instMutex);
-  static instanceCleaner c;
-  if(!inst) {
-    inst = new Resolver();
-  }
-
-  return *inst;
+  static Resolver instance;
+  return instance;
 }
 
 Resolver::Resolver() : udp_resolver_(io_service_), tcp_resolver_(io_service_), thread_(NULL)

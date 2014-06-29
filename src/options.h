@@ -174,21 +174,7 @@ private:
   Options(const Options& l);
   void operator=(const Options& l);
 
-  static Options* inst;
-  static ::Mutex instMutex;
-  class instanceCleaner
-  {
-  public:
-    ~instanceCleaner() {
-      if(Options::inst != 0) {
-        delete Options::inst;
-      }
-    }
-  };
-  friend class instanceCleaner;
-
   ::SharedMutex mutex;
-
 
   bool cluster_opts;
   bool connection_opts;

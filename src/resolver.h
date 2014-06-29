@@ -79,19 +79,6 @@ private:
   Resolver(const Resolver& r);
   void operator=(const Resolver& r);
 
-  static Resolver* inst;
-  static ::Mutex instMutex;
-  class instanceCleaner
-  {
-  public:
-    ~instanceCleaner() {
-      if(Resolver::inst != 0) {
-        delete Resolver::inst;
-      }
-    }
-  };
-  friend class instanceCleaner;
-
   boost::asio::io_service io_service_;
   boost::asio::ip::udp::resolver udp_resolver_;
   boost::asio::ip::tcp::resolver tcp_resolver_;

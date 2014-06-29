@@ -37,20 +37,12 @@
 #include "routingTable.h"
 #include "routingTree.hpp"
 
-RoutingTable* RoutingTable::inst = NULL;
-Mutex RoutingTable::instMutex;
 RoutingTable& gRoutingTable = RoutingTable::instance();
-
 
 RoutingTable& RoutingTable::instance()
 {
-  Lock lock(instMutex);
-  static instanceCleaner c;
-  if(!inst) {
-    inst = new RoutingTable();
-  }
-
-  return *inst;
+  static RoutingTable instance;
+  return instance;
 }
 
 RoutingTable::RoutingTable()

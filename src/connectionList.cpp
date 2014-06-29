@@ -38,20 +38,12 @@
 
 #include "connectionList.h"
 
-ConnectionList* ConnectionList::inst = NULL;
-Mutex ConnectionList::instMutex;
 ConnectionList& gConnectionList = ConnectionList::instance();
-
 
 ConnectionList& ConnectionList::instance()
 {
-  Lock lock(instMutex);
-  static instanceCleaner c;
-  if(!inst) {
-    inst = new ConnectionList();
-  }
-
-  return *inst;
+  static ConnectionList instance;
+  return instance;
 }
 
 ConnectionList::ConnectionList()

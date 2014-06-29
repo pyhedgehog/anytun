@@ -63,17 +63,6 @@ public:
   RoutingMap::iterator getEndUnlocked(network_address_type_t type);
 
 private:
-  static Mutex instMutex;
-  static RoutingTable* inst;
-  class instanceCleaner
-  {
-  public:
-    ~instanceCleaner() {
-      if(RoutingTable::inst != 0) {
-        delete RoutingTable::inst;
-      }
-    }
-  };
   RoutingTable(const RoutingTable& s);
   void operator=(const RoutingTable& s);
   boost::array<RoutingMap,3> routes_;

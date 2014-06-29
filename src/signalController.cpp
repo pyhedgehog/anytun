@@ -39,19 +39,13 @@
 #include "anytunError.h"
 #include "threadUtils.hpp"
 
-SignalController* SignalController::inst = NULL;
-Mutex SignalController::instMutex;
+
 SignalController& gSignalController = SignalController::instance();
 
 SignalController& SignalController::instance()
 {
-  Lock lock(instMutex);
-  static instanceCleaner c;
-  if(!inst) {
-    inst = new SignalController();
-  }
-
-  return *inst;
+  static SignalController instance;
+  return instance;
 }
 
 int SigErrorHandler(int /*sig*/, const std::string& msg)
