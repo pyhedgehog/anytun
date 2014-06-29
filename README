@@ -56,27 +56,46 @@ if you want to rebuild the manpage:
 
 Windows
 -------
-OpenSSL
- Developer:
-  http://www.slproweb.com/download/Win32OpenSSL-0_9_8j.exe
 
- Runtime Only:
-  http://www.slproweb.com/download/Win32OpenSSL_Light-0_9_8j.exe
+ Crosscompiling with MinGW under Debian/Ubuntu:
+ ----------------------------------------------
 
-Boost 1.35:
-  http://www.boostpro.com/download/boost_1_35_0_setup.exe
+  # sudo apt-get install mingw-w64
+  # cd contrib/
+  # ./build-boost-mingw-cross.sh
+  # ./build-openssl-mingw-cross.sh
+  # ./build-anytun-mingw-cross.sh
 
-  As it can take some time to install everything from boost here is a
-  complete list of libraries which have to be installed in order to build anytun:
+  The compiled binaries can be found in anytun-w32 and anytun-w64 (32 and 64Bit).
+  You can create a ZIP archive containing all needed files by calling:
 
-   * Serialization
-   * Thread
-   * date_time
-   * System
-   * regex
+  # ./make-mingw-release.sh
 
-Microsoft Visual C++ 2008 Redistributable Package (x86):
-  http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
+
+ Using MS Visual C++:
+ --------------------
+  OpenSSL
+   Developer:
+    http://www.slproweb.com/download/Win32OpenSSL-1_0_1h.exe
+
+   Runtime Only:
+    http://www.slproweb.com/download/Win32OpenSSL_Light-1_0_1h.exe
+
+  Boost
+    http://sourceforge.net/projects/boost/files/boost-binaries/
+
+    As it can take some time to install everything from boost here is a
+    complete list of libraries which have to be installed in order to build anytun:
+
+     * Serialization
+     * Thread
+     * date_time
+     * System
+     * regex
+
+  Microsoft Visual C++ 2008 Redistributable Package (x86):
+    http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
+
 
 
 
@@ -85,6 +104,7 @@ Installation
 
 Getting the source via subversion:
 ----------------------------------
+
 svn co http://svn.anytun.org/anytun/trunk anytun
 cd anytun
 
@@ -118,6 +138,7 @@ Installing
 # sudo make install
 
 This will install anytun under the --prefix defined with configure.
+
 
 Uninstalling
 ------------
