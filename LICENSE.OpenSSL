@@ -1,10 +1,6 @@
 /*
- *  uAnytun
+ *  anytun
  *
- *  uAnytun is a tiny implementation of SATP. Unlike Anytun which is a full
- *  featured implementation uAnytun has no support for multiple connections
- *  or synchronisation. It is a small single threaded implementation intended
- *  to act as a client on small platforms.
  *  The secure anycast tunneling protocol (satp) defines a protocol used
  *  for communication between any combination of unicast and anycast
  *  tunnel endpoints.  It has less protocol overhead than IPSec in Tunnel
@@ -15,22 +11,23 @@
  *  tunneling and relaying of packets of any protocol.
  *
  *
- *  Copyright (C) 2007-2014 Christian Pointner <equinox@anytun.org>
+ *  Copyright (C) 2007-2014 Markus Grüneis, Othmar Gsenger, Erwin Nindl,
+ *                          Christian Pointner <satp@wirdorange.org>
  *
- *  This file is part of uAnytun.
+ *  This file is part of Anytun.
  *
- *  uAnytun is free software: you can redistribute it and/or modify
+ *  Anytun is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
- *  uAnytun is distributed in the hope that it will be useful,
+ *  Anytun is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with uAnytun. If not, see <http://www.gnu.org/licenses/>.
+ *  along with Anytun.  If not, see <http://www.gnu.org/licenses/>.
  *
  *  In addition, as a special exception, the copyright holders give
  *  permission to link the code of portions of this program with the
@@ -44,7 +41,6 @@
  *  do not wish to do so, delete this exception statement from your
  *  version.  If you delete this exception statement from all source
  *  files in the program, then also delete it here.
- *
  */
 
 Certain source files in this program permit linking with the OpenSSL
