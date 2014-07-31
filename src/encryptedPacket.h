@@ -48,6 +48,7 @@
 
 #include "datatypes.h"
 #include "buffer.h"
+#include "packetSource.h"
 
 class Cipher;
 class EncryptedPacket : public Buffer
@@ -143,6 +144,9 @@ public:
   void removeAuthTag();
   uint8_t* getAuthTag();
   uint32_t getAuthTagLength();
+  
+  void setEndpoint(PacketSourceEndpoint & );
+  PacketSourceEndpoint getEndpoint() const;
 
 private:
   EncryptedPacket();
@@ -166,6 +170,7 @@ private:
   uint8_t* payload_;
   uint8_t* auth_tag_;
   uint32_t  auth_tag_length_;
+  PacketSourceEndpoint endpoint_;
 };
 
 #endif

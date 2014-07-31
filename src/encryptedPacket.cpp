@@ -249,3 +249,14 @@ uint32_t EncryptedPacket::getAuthTagLength()
 
   return 0;
 }
+
+void EncryptedPacket::setEndpoint(PacketSourceEndpoint & ep )
+{
+  endpoint_ = ep;
+}
+
+PacketSourceEndpoint EncryptedPacket::getEndpoint() const
+{
+  return endpoint_;
+}
+
