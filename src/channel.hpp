@@ -48,11 +48,23 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/circular_buffer.hpp>
+#include <boost/assert.hpp>
+#ifdef BOOST_NO_CXX11_DELETED_FUNCTIONS
+#include <boost/noncopyable.hpp>
+#endif
+#include <boost/static_assert.hpp>
+#include <boost/type_traits/has_trivial_assign.hpp>
 
 template<typename T>
 class Channel
+#ifdef BOOST_NO_CXX11_DELETED_FUNCTIONS
+  : boost::noncopyable
+#endif
 {
 private:
+#ifdef BOOST_HAS_TRIVIAL_ASSIGN
+    BOOST_STATIC_ASSERT((boost::has_trivial_assign<T>::value));
+#endif
   boost::mutex mtx_;
   boost::circular_buffer<T> cb_;
   Semaphore sem_read_, sem_write_;
@@ -68,9 +80,11 @@ private:
   }
   
 public:
+#ifndef BOOST_NO_CXX11_DELETED_FUNCTIONS
   Channel(Channel const &) = delete;
-//  Channel(Channel &&) = delete;
+  Channel(Channel &&) = delete;
   Channel& operator=(const Channel &) = delete;
+#endif
   Channel(unsigned int num_elements=10)
     :cb_(num_elements),sem_read_(0),sem_write_(num_elements) {};
   void push(T const & t ) {
