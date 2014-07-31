@@ -50,7 +50,7 @@
 #include <boost/circular_buffer.hpp>
 
 template<typename T>
-class channel
+class Channel
 {
 private:
   boost::mutex mtx_;
@@ -61,24 +61,24 @@ private:
     boost::lock_guard<boost::mutex> guard(mtx_);
     cb_.push_back(t);
   }
-  void pop_cb(T & ret) {
+  void pop_cb(T * ret) {
     boost::lock_guard<boost::mutex> guard(mtx_);
-    ret = cb_[0];
+    *ret = cb_[0];
     cb_.pop_front();
   }
   
 public:
-  channel(channel const &) = delete;
-//  channel(channel &&) = delete;
-  channel& operator=(const channel &) = delete;
-  channel(unsigned int num_elements=10)
+  Channel(Channel const &) = delete;
+//  Channel(Channel &&) = delete;
+  Channel& operator=(const Channel &) = delete;
+  Channel(unsigned int num_elements=10)
     :cb_(num_elements),sem_read_(0),sem_write_(num_elements) {};
   void push(T const & t ) {
     sem_write_.down();
     this->push_cb(t);
     sem_read_.up();
   }
-  void pop(T & ret) {
+  void pop(T * ret) {
     sem_read_.down();
     this->pop_cb(ret);
     sem_write_.up();
