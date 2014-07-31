@@ -91,6 +91,7 @@
 #endif
 
 #include "cryptinit.hpp"
+#include "channel.hpp"
 #include "sysExec.h"
 
 bool disableRouting = false;
@@ -339,7 +340,12 @@ void receiver(TunDevice* dev, PacketSource* src)
 void startSendRecvThreads(TunDevice* dev, PacketSource* src)
 {
   src->waitUntilReady();
-
+  //channel<int> a(1);
+  //a.push(23);
+  //a.push(23);
+  //int i=0;
+  //a.pop(i);
+  //std::cout << i << std::endl;
   boost::thread(boost::bind(sender, dev, src));
   boost::thread(boost::bind(receiver, dev, src));
 }
