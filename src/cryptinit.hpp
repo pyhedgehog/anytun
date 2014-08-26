@@ -51,48 +51,24 @@
 #if defined(USE_GCRYPT)
 #include <gcrypt.h>
 
+#if defined(BOOST_HAS_PTHREADS)
 // boost thread callbacks for libgcrypt
-static int boost_mutex_init(void** priv)
-{
-  boost::mutex* lock = new boost::mutex();
-  if(!lock) {
-    return ENOMEM;
-  }
-  *priv = lock;
-  return 0;
-}
-
-static int boost_mutex_destroy(void** lock)
-{
-  delete reinterpret_cast<boost::mutex*>(*lock);
-  return 0;
-}
-
-static int boost_mutex_lock(void** lock)
-{
-  reinterpret_cast<boost::mutex*>(*lock)->lock();
-  return 0;
-}
-
-static int boost_mutex_unlock(void** lock)
-{
-  reinterpret_cast<boost::mutex*>(*lock)->unlock();
-  return 0;
-}
-
-static struct gcry_thread_cbs gcry_threads_boost = {
-  GCRY_THREAD_OPTION_USER, NULL,
-  boost_mutex_init, boost_mutex_destroy,
-  boost_mutex_lock, boost_mutex_unlock
-};
+GCRY_THREAD_OPTION_PTHREAD_IMPL;
+#else
+#error You can not use gcrypt without pthreads - please configure Boost to use pthreads!
+#endif
 
 #define MIN_GCRYPT_VERSION "1.2.0"
 
 bool initLibGCrypt()
 {
+#if defined(BOOST_HAS_PTHREADS)
   // make libgcrypt thread safe
   // this must be called before any other libgcrypt call
-  gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_boost);
+  gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread);
+#else
+#error You can not use gcrypt without pthreads - please configure Boost to use pthreads!
+#endif
 
   // this must be called right after the GCRYCTL_SET_THREAD_CBS command
   // no other function must be called till now
