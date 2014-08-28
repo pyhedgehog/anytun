@@ -158,6 +158,7 @@ void threadReadTunDeviceAndWriteToPlainInQueue(TunDevice* dev, Channel<PlainPack
 //      cLog.msg(Log::PRIO_DEBUG) << "threadReadTunDeviceAndWriteToPlainInQueue loop";
       PlainPacket * plain_packet = NULL;
       plain_memory_pool->pop(&plain_packet);
+      plain_packet->setLength(MAX_PACKET_LENGTH);
 //      cLog.msg(Log::PRIO_DEBUG) << "threadReadTunDeviceAndWriteToPlainInQueue after pop";
 
       // read packet from device
@@ -310,6 +311,7 @@ void threadReadSocketAndWriteToEncryptedInQueue( PacketSource*src, Channel<Encry
     for(;;) {
       EncryptedPacket * encrypted_packet = NULL;
       encrypted_memory_pool->pop(&encrypted_packet);
+      encrypted_packet->setLength(MAX_PACKET_LENGTH);
       PacketSourceEndpoint remote_end;
 
       encrypted_packet->withAuthTag(false);
