@@ -64,6 +64,7 @@ MANDIR=''
 INSTALLMANPAGE=1
 EXAMPLESDIR=''
 INSTALLEXAMPLES=1
+MULTITHREAD=0
 
 BOOST_PREFIX=''
 GCRYPT_PREFIX=''
@@ -89,6 +90,8 @@ print_usage() {
   echo "          --enable-passphrase       enable master key and salt passphrase"
   echo "          --disable-routing         disable built-in routing capability"
   echo "          --enable-routing          enable built-in routing capability"
+  echo "          --enable-new-multithread  enable new experimental multithreading"
+  echo "          --disable-new-multithread disable new experimental multithreading"
   echo "          --cross-prefix=<PREFIX>   add PREFIX to compiler calls"
   echo "          --with-boost=<PREFIX>     don't use systemwide boost"
   echo "          --with-gcrypt=<PREFIX>    don't use systemwide gcrypt"
@@ -153,6 +156,12 @@ do
   ;;
   --disable-routing)
     ROUTING=0
+  ;;
+  --enable-new-multithread)
+    MULTITHREAD=1
+  ;;
+  --disable-new-multithread)
+    MULTITHREAD=0
   ;;
   --ebuild-compat)
     EBUILD_COMPAT=1
@@ -298,6 +307,11 @@ fi
 if [ $ROUTING -eq 0 ]; then
   CXXFLAGS=$CXXFLAGS' -DNO_ROUTING'
   echo "disabling built-in routing capability"
+fi
+
+if [ $MULTITHREAD -eq 1 ]; then
+  CXXFLAGS=$CXXFLAGS' -DANYTUN_MULTITHREAD'
+  echo "enabling new experimental mutlithread"
 fi
 
 if [ -z "$BINDIR" ]; then

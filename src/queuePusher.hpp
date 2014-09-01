@@ -43,56 +43,37 @@
  *  files in the program, then also delete it here.
  */
 
-#ifndef ANYTUN_channel_hpp_INCLUDED
-#define ANYTUN_channel_hpp_INCLUDED
+#ifndef ANYTUN_queue_pusher_hpp_INCLUDED
+#define ANYTUN_queue_pusher_hpp_INCLUDED
 
-#include <boost/thread/thread.hpp>
-#include <boost/circular_buffer.hpp>
-#include <boost/assert.hpp>
 #ifdef BOOST_NO_CXX11_DELETED_FUNCTIONS
 #include <boost/noncopyable.hpp>
 #endif
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/has_trivial_assign.hpp>
 
 template<typename T>
-class Channel
+class QueuePusher
 #ifdef BOOST_NO_CXX11_DELETED_FUNCTIONS
   : boost::noncopyable
 #endif
 {
 private:
-  boost::mutex mtx_;
-  boost::circular_buffer<T> cb_;
-  Semaphore sem_read_, sem_write_;
-
-  void push_cb(T const & t ) {
-    boost::lock_guard<boost::mutex> guard(mtx_);
-    cb_.push_back(t);
-  }
-  void pop_cb(T * ret) {
-    boost::lock_guard<boost::mutex> guard(mtx_);
-    *ret = cb_[0];
-    cb_.pop_front();
-  }
+  T * object_;
+  Channel<T *> * queue_;
   
 public:
 #ifndef BOOST_NO_CXX11_DELETED_FUNCTIONS
-  Channel(Channel const &) = delete;
-  Channel(Channel &&) = delete;
-  Channel& operator=(const Channel &) = delete;
+  QueuePusher(QueuePusher const &) = delete;
+  QueuePusher(QueuePusher &&) = delete;
+  QueuePusher& operator=(const QueuePusher &) = delete;
 #endif
-  Channel(unsigned int num_elements=10)
-    :cb_(num_elements),sem_read_(0),sem_write_(num_elements) {};
-  void push(T const & t ) {
-    sem_write_.down();
-    this->push_cb(t);
-    sem_read_.up();
+  void changeQueue( Channel<T *> * queue ) {
+    queue_=queue;
   }
-  void pop(T * ret) {
-    sem_read_.down();
-    this->pop_cb(ret);
-    sem_write_.up();
+  QueuePusher(T * object,Channel<T *> * queue)
+    :object_(object),queue_(queue) {};
+  ~QueuePusher() {
+    if(queue_ && object_)
+      queue_->push(object_);
   }
 };
 
