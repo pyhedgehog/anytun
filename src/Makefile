@@ -161,7 +161,7 @@ else
   EXE := .exe
 endif
 
-EXECUTABLES := anytun$(EXE) anytun-config$(EXE) anytun-controld$(EXE) anytun-showtables$(EXE) anytun-nosync$(EXE)
+EXECUTABLES := anytun$(EXE) anytun-config$(EXE) anytun-controld$(EXE) anytun-showtables$(EXE) anytun-nosync$(EXE) anytun-newthread$(EXE)
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
 
 ANYTUNSRCS := $(ANYTUNOBJS:%.o=%.cpp)
@@ -200,6 +200,12 @@ anytun-nosync$(EXE): $(ANYTUNOBJS) anytun-nosync.o
 
 anytun-nosync.o: anytun.cpp
 	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
+
+anytun-newthread$(EXE): $(ANYTUNOBJS) $(SYNCOBJS) anytun-newthread.o
+	$(LD) $(ANYTUNOBJS) $(SYNCOBJS) anytun-newthread.o -o $@ $(LDFLAGS)
+
+anytun-newthread.o: anytun.cpp
+	$(CXX) $(CXXFLAGS) -DANYTUN_MULTITHREAD $< -c -o anytun-newthread.o
 
 anytun-showtables$(EXE): $(ANYSHOWOBJS) $(SYNCOBJS) anytun-showtables.o
 	$(LD) $(ANYSHOWOBJS) $(SYNCOBJS) anytun-showtables.o -o $@ $(LDFLAGS)
@@ -259,6 +265,7 @@ clean:
 	rm -f $(EXECUTABLES)
 	rm -f *.exe
 	rm -f anytun-nosync
+	rm -f anytun-newthread
 	rm -f -r doc/html/*
 	rm -f -r doc/latex/*
 	rm -f libAnysync.a
