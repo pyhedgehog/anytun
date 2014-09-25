@@ -91,6 +91,7 @@
 #endif
 
 #include "cryptinit.hpp"
+#include "crypto/interface.h"
 #include "sysExec.h"
 
 bool disableRouting = false;
