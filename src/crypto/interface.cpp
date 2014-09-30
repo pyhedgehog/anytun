@@ -47,6 +47,22 @@
 
 namespace crypto {
 
+void Interface::encrypt(PlainPacket& in, EncryptedPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
+{
+  uint32_t len = cipher(in, in.getLength(), out.getPayload(), out.getPayloadLength(), masterkey, mastersalt, role, seq_nr, sender_id, mux);
+  out.setSenderId(sender_id);
+  out.setSeqNr(seq_nr);
+  out.setMux(mux);
+  out.setPayloadLength(len);
+}
+
+void Interface::decrypt(EncryptedPacket& in, PlainPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role)
+{
+  uint32_t len = decipher(in.getPayload() , in.getPayloadLength(), out, out.getLength(), masterkey, mastersalt, role, in.getSeqNr(), in.getSenderId(), in.getMux());
+  out.setLength(len);
+}
+
+
 satp_prf_label_t Interface::convertLabel(kd_dir_t dir, role_t role, satp_prf_label_t label)
 {
   switch(label) {

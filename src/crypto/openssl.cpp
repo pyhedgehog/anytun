@@ -44,28 +44,23 @@
  */
 
 #include "openssl.h"
+#include <openssl/aes.h>
 
 namespace crypto {
 
-bool Openssl::generatePacketKey( kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, const Buffer& masterkey , const Buffer& mastersalt, Buffer& key)
+void Openssl::calcMasterKeySalt(std::string passphrase, uint16_t length, Buffer& masterkey , Buffer& mastersalt)
 {
-  return true;
+
 }
 
-void Openssl::calcMasterKey(std::string passphrase, uint16_t length, Buffer& masterkey )
+uint32_t Openssl::cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
+  return ilen>olen ? ilen : olen;
 }
 
-void Openssl::calcMasterSalt(std::string passphrase, uint16_t length, Buffer& mastersalt )
+uint32_t Openssl::decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-}
-
-void Openssl::encrypt(const Buffer& key, PlainPacket& in, EncryptedPacket& out)
-{
-}
-
-void Openssl::decrypt(const Buffer& key, EncryptedPacket& in, PlainPacket& out)
-{
+  return ilen>olen ? ilen : olen;
 }
 
 std::string Openssl::printType()

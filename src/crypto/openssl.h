@@ -55,11 +55,10 @@ namespace crypto {
   public:
     virtual ~Openssl() {};
     // pure virtual
-    virtual bool generatePacketKey( kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, const Buffer& masterkey , const Buffer& mastersalt, Buffer& key);
-    virtual void calcMasterKey(std::string passphrase, uint16_t length, Buffer& masterkey );
-    virtual void calcMasterSalt(std::string passphrase, uint16_t length, Buffer& mastersalt );
-    virtual void encrypt(const Buffer& key, PlainPacket& in, EncryptedPacket& out);
-    virtual void decrypt(const Buffer& key, EncryptedPacket& in, PlainPacket& out);
+    virtual void calcMasterKeySalt(std::string passphrase, uint16_t length, Buffer& masterkey , Buffer& mastersalt);
+    virtual uint32_t cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+    virtual uint32_t decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+
     // virtual
     virtual std::string printType();
     //static

@@ -71,14 +71,18 @@ namespace crypto {
   {
   public:
     virtual ~Interface() {};
+    // implemented
+    void encrypt(PlainPacket& in, EncryptedPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
+    void decrypt(EncryptedPacket& in, PlainPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role);
+
     // pure virtual
-    virtual bool generatePacketKey( kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, const Buffer& masterkey , const Buffer& mastersalt, Buffer& key) = 0;
-    virtual void calcMasterKey(std::string passphrase, uint16_t length, Buffer& masterkey ) = 0;
-    virtual void calcMasterSalt(std::string passphrase, uint16_t length, Buffer& mastersalt ) = 0;
-    virtual void encrypt(const Buffer& key, PlainPacket& in, EncryptedPacket& out) = 0;
-    virtual void decrypt(const Buffer& key, EncryptedPacket& in, PlainPacket& out) = 0;
+    virtual void calcMasterKeySalt(std::string passphrase, uint16_t length, Buffer& masterkey , Buffer& mastersalt) = 0;
+    virtual uint32_t cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
+    virtual uint32_t decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
+
     // virtual
     virtual std::string printType();
+
     //static
     static satp_prf_label_t convertLabel(kd_dir_t dir,  role_t role, satp_prf_label_t label);
     static bool init();
