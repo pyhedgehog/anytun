@@ -43,46 +43,40 @@
  *  files in the program, then also delete it here.
  */
 
-#ifndef ANYTUN_crypto_interface_h_INCLUDED
-#define ANYTUN_crypto_interface_h_INCLUDED
-
-#include "../datatypes.h"
-#include "../options.h"
-#include "../buffer.h"
-#include "../plainPacket.h"
-#include "../encryptedPacket.h"
-
-#define LABEL_ENC 0
-#define LABEL_AUTH 1
-#define LABEL_SALT 2
-
-#define LABEL_LEFT_ENC 0x356A192B
-#define LABEL_RIGHT_ENC 0xDA4B9237
-#define LABEL_LEFT_SALT 0x77DE68DA
-#define LABEL_RIGHT_SALT 0x1B645389
-#define LABEL_LEFT_AUTH 0xAC3478D6
-#define LABEL_RIGHT_AUTH 0xC1DFD96E
+#include "openssl.h"
 
 namespace crypto {
 
-  typedef enum { KD_INBOUND, KD_OUTBOUND } kd_dir_t;
+bool Openssl::generatePacketKey( kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, const Buffer& masterkey , const Buffer& mastersalt, Buffer& key)
+{
+  return true;
+}
 
-  class Interface
-  {
-  public:
-    virtual ~Interface() {};
-    // pure virtual
-    virtual bool generatePacketKey( kd_dir_t dir, satp_prf_label_t label, seq_nr_t seq_nr, const Buffer& masterkey , const Buffer& mastersalt, Buffer& key) = 0;
-    virtual void calcMasterKey(std::string passphrase, uint16_t length, Buffer& masterkey ) = 0;
-    virtual void calcMasterSalt(std::string passphrase, uint16_t length, Buffer& mastersalt ) = 0;
-    virtual void encrypt(const Buffer& key, PlainPacket& in, EncryptedPacket& out) = 0;
-    virtual void decrypt(const Buffer& key, EncryptedPacket& in, PlainPacket& out) = 0;
-    // virtual
-    virtual std::string printType();
-    //static
-    static satp_prf_label_t convertLabel(kd_dir_t dir,  role_t role, satp_prf_label_t label);
-    static bool init();
-  };
-};
+void Openssl::calcMasterKey(std::string passphrase, uint16_t length, Buffer& masterkey )
+{
+}
 
-#endif
+void Openssl::calcMasterSalt(std::string passphrase, uint16_t length, Buffer& mastersalt )
+{
+}
+
+void Openssl::encrypt(const Buffer& key, PlainPacket& in, EncryptedPacket& out)
+{
+}
+
+void Openssl::decrypt(const Buffer& key, EncryptedPacket& in, PlainPacket& out)
+{
+}
+
+std::string Openssl::printType()
+{
+  return "Openssl";
+}
+
+//static
+bool Openssl::init()
+{
+  return true;
+}
+
+}

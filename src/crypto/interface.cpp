@@ -87,7 +87,7 @@ satp_prf_label_t Interface::convertLabel(kd_dir_t dir, role_t role, satp_prf_lab
 
 std::string Interface::printType()
 {
-  return "GenericKeyDerivation"; 
+  return ""; 
 }
 
 bool Interface::init()

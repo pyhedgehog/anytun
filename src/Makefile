@@ -53,6 +53,7 @@ ANYTUNOBJS := packetSource.o \
               cipher.o \
               cipherFactory.o \
               crypto/interface.o \
+              crypto/openssl.o \
               plainPacket.o \
               encryptedPacket.o \
               options.o \
