@@ -70,7 +70,6 @@ namespace crypto {
   class Interface
   {
   public:
-    virtual ~Interface() {};
     // implemented
     void encrypt(PlainPacket& in, EncryptedPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
     void decrypt(EncryptedPacket& in, PlainPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role);
@@ -81,6 +80,7 @@ namespace crypto {
     virtual uint32_t decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
 
     // virtual
+    virtual ~Interface();
     virtual std::string printType();
 
     //static

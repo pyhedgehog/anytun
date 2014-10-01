@@ -53,13 +53,13 @@ namespace crypto {
   class Openssl : Interface
   {
   public:
-    virtual ~Openssl() {};
     // pure virtual
     virtual void calcMasterKeySalt(std::string passphrase, uint16_t length, Buffer& masterkey , Buffer& mastersalt);
     virtual uint32_t cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
     virtual uint32_t decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
 
     // virtual
+    virtual ~Openssl();
     virtual std::string printType();
     //static
     static bool init();

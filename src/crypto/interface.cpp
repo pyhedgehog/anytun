@@ -47,6 +47,10 @@
 
 namespace crypto {
 
+Interface::~Interface()
+{
+}
+
 void Interface::encrypt(PlainPacket& in, EncryptedPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
   uint32_t len = cipher(in, in.getLength(), out.getPayload(), out.getPayloadLength(), masterkey, mastersalt, role, seq_nr, sender_id, mux);

@@ -48,6 +48,12 @@
 
 namespace crypto {
 
+Openssl::~Openssl()
+{
+
+}
+
+
 void Openssl::calcMasterKeySalt(std::string passphrase, uint16_t length, Buffer& masterkey , Buffer& mastersalt)
 {
 
