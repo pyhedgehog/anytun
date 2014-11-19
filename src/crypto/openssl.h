@@ -57,12 +57,14 @@ namespace crypto {
     virtual void calcMasterKeySalt(std::string passphrase, uint16_t length, Buffer& masterkey , Buffer& mastersalt);
     virtual uint32_t cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
     virtual uint32_t decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
-
+    virtual void deriveKey(kd_dir_t dir, satp_prf_label_t label, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, const Buffer& masterkey, const Buffer& mastersalt, Buffer& key);
     // virtual
     virtual ~Openssl();
     virtual std::string printType();
     //static
     static bool init();
+    //implemented
+    void calc(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& key, cipher_aesctr_ctr_t * ctr);
   };
 };
 

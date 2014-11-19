@@ -44,7 +44,9 @@
  */
 
 #include "openssl.h"
+#include "../log.h"
 #include <openssl/aes.h>
+#include "../anytunError.h"
 
 namespace crypto {
 
@@ -61,13 +63,60 @@ void Openssl::calcMasterKeySalt(std::string passphrase, uint16_t length, Buffer&
 
 uint32_t Openssl::cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
+  Buffer key(masterkey.getLength(), false);
+  cipher_aesctr_ctr_t ctr;
+  calcCryptCtr(masterkey, mastersalt, KD_OUTBOUND, role, LABEL_ENC, seq_nr, sender_id, mux, &ctr);
+  deriveKey(KD_OUTBOUND, LABEL_ENC, role, seq_nr, sender_id, mux, masterkey, mastersalt, key);
+  calc(in, ilen, out, olen, key, &ctr);
   return ilen>olen ? ilen : olen;
 }
 
 uint32_t Openssl::decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
+  Buffer key(masterkey.getLength(), false);
+  cipher_aesctr_ctr_t ctr;
+  calcCryptCtr(masterkey, mastersalt, KD_INBOUND, role, LABEL_ENC, seq_nr, sender_id, mux, &ctr);
+  deriveKey(KD_INBOUND, LABEL_ENC, role, seq_nr, sender_id, mux, masterkey, mastersalt, key);
+  calc(in, ilen, out, olen, key, &ctr);
   return ilen>olen ? ilen : olen;
 }
+
+
+void Openssl::calc(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& key, cipher_aesctr_ctr_t * ctr)
+{
+  AES_KEY aes_key;
+  int ret = AES_set_encrypt_key(key.getConstBuf(), key.getLength()*8, &aes_key);
+  if(ret) {
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher ssl key (code: " << ret << ")";
+    AnytunError::throwErr() << "AesIcmCipher: Failed to set cipher ssl key (code: " << ret << ")";
+  }
+
+  if(CTR_LENGTH != AES_BLOCK_SIZE) {
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";
+    AnytunError::throwErr() << ("AesIcmCipher: Failed to set cipher CTR: size doesn't fit");
+  }
+  unsigned int num = 0;
+  uint8_t ecount_buf[AES_BLOCK_SIZE];
+  std::memset(ecount_buf, 0, AES_BLOCK_SIZE);
+  AES_ctr128_encrypt(in, out, (ilen < olen) ? ilen : olen, &aes_key, ctr->buf_, ecount_buf, &num);
+}
+
+void Openssl::deriveKey(kd_dir_t dir, satp_prf_label_t label, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, const Buffer& masterkey, const Buffer& mastersalt, Buffer& key)
+{
+  uint8_t ecount_buf[AES_BLOCK_SIZE];
+  AES_KEY aes_key;
+  key_derivation_aesctr_ctr_t ctr;
+  calcKeyCtr(mastersalt, dir, role, label, seq_nr,  sender_id,  mux, &ctr);
+  if(CTR_LENGTH != AES_BLOCK_SIZE) {
+    cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";
+    AnytunError::throwErr() << ("AesIcmCipher: Failed to set cipher CTR: size doesn't fit");
+  }
+  unsigned int num = 0;
+  std::memset(ecount_buf, 0, AES_BLOCK_SIZE);
+  std::memset(key.getBuf(), 0, key.getLength());
+  AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key, ctr.buf_, ecount_buf, &num);
+}
+
 
 std::string Openssl::printType()
 {

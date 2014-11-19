@@ -222,6 +222,11 @@ uint8_t* Buffer::getBuf()
   return buf_;
 }
 
+const uint8_t* Buffer::getConstBuf() const
+{
+  return buf_;
+}
+
 uint8_t& Buffer::operator[](uint32_t index)
 {
   if(index >= length_) {

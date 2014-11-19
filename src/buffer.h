@@ -68,6 +68,7 @@ public:
   uint32_t getLength() const;
   virtual void setLength(uint32_t new_length);
   uint8_t* getBuf();
+  const uint8_t* getConstBuf() const;
   uint8_t& operator[](uint32_t index);
   uint8_t operator[](uint32_t index) const;
   std::string getHexDump() const;

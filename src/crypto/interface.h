@@ -64,8 +64,51 @@
 #define LABEL_RIGHT_AUTH 0xC1DFD96E
 
 namespace crypto {
+  static const uint16_t DEFAULT_KEY_LENGTH = 128;
+  static const uint16_t CTR_LENGTH = 16;
+  static const uint16_t SALT_LENGTH = 14;
 
   typedef enum { KD_INBOUND, KD_OUTBOUND } kd_dir_t;
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
+  typedef union ATTR_PACKED {
+    uint8_t buf_[CTR_LENGTH];
+    struct ATTR_PACKED {
+      uint8_t buf_[SALT_LENGTH];
+      uint16_t zero_;
+    } salt_;
+    struct ATTR_PACKED {
+      uint8_t fill_[SALT_LENGTH - sizeof(mux_t) - sizeof(sender_id_t) - 2*sizeof(uint8_t) - sizeof(seq_nr_t)];
+      mux_t mux_;
+      sender_id_t sender_id_;
+      uint8_t empty_[2];
+      seq_nr_t seq_nr_;
+      uint16_t zero_;
+    } params_;
+  } cipher_aesctr_ctr_t;
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
+  typedef union ATTR_PACKED {
+    uint8_t buf_[CTR_LENGTH];
+    struct ATTR_PACKED {
+      uint8_t buf_[SALT_LENGTH];
+      uint16_t zero_;
+    } salt_;
+    struct ATTR_PACKED {
+      uint8_t fill_[SALT_LENGTH - sizeof(satp_prf_label_t) - sizeof(seq_nr_t)];
+      satp_prf_label_t label_;
+      seq_nr_t seq_;
+      uint16_t zero_;
+    } params_;
+  } key_derivation_aesctr_ctr_t;
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
 
   class Interface
   {
@@ -73,11 +116,15 @@ namespace crypto {
     // implemented
     void encrypt(PlainPacket& in, EncryptedPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
     void decrypt(EncryptedPacket& in, PlainPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role);
+    void calcCryptCtr(const Buffer& masterkey, const Buffer& mastersalt, kd_dir_t dir, role_t role, satp_prf_label_t label, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, cipher_aesctr_ctr_t * ctr);
+    void calcKeyCtr(const Buffer& mastersalt, kd_dir_t dir, role_t role, satp_prf_label_t label, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, key_derivation_aesctr_ctr_t * ctr);
+
 
     // pure virtual
     virtual void calcMasterKeySalt(std::string passphrase, uint16_t length, Buffer& masterkey , Buffer& mastersalt) = 0;
     virtual uint32_t cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
     virtual uint32_t decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
+    virtual void deriveKey(kd_dir_t dir, satp_prf_label_t label, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, const Buffer& masterkey, const Buffer& mastersalt, Buffer& key) = 0;
 
     // virtual
     virtual ~Interface();

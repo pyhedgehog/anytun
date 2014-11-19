@@ -44,6 +44,8 @@
  */
 
 #include "interface.h"
+#include "../log.h"
+#include "../endian.h"
 
 namespace crypto {
 
@@ -114,5 +116,31 @@ bool Interface::init()
 {
   return true;
 };
+
+void Interface::calcCryptCtr(const Buffer& masterkey, const Buffer& mastersalt, kd_dir_t dir, role_t role, satp_prf_label_t label, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, cipher_aesctr_ctr_t * ctr)
+{
+  Buffer salt( (uint32_t) SALT_LENGTH, false);
+  deriveKey(dir, LABEL_SALT, role, seq_nr, sender_id, mux, masterkey, mastersalt, salt);
+  std::memcpy(ctr->salt_.buf_, salt.getConstBuf(), SALT_LENGTH);
+  ctr->salt_.zero_ = 0;
+  ctr->params_.mux_ ^= MUX_T_HTON(mux);
+  ctr->params_.sender_id_ ^= SENDER_ID_T_HTON(sender_id);
+  ctr->params_.seq_nr_ ^= SEQ_NR_T_HTON(seq_nr);
+
+  return;
+}
+
+void Interface::calcKeyCtr(const Buffer& mastersalt, kd_dir_t dir, role_t role, satp_prf_label_t label, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, key_derivation_aesctr_ctr_t * ctr)
+{
+  
+  if(mastersalt.getLength() != SALT_LENGTH) {
+    cLog.msg(Log::PRIO_ERROR) << "Interface::calcKeyCtr: salt lengths don't match";
+    throw std::runtime_error ("Interface::calcKeyCtr: salt lengths don't match");
+  }
+  std::memcpy(ctr->salt_.buf_, mastersalt.getConstBuf(), SALT_LENGTH);
+  ctr->salt_.zero_ = 0;
+  ctr->params_.label_ ^= SATP_PRF_LABEL_T_HTON(convertLabel(dir, role, label));
+  ctr->params_.seq_ ^= SEQ_NR_T_HTON(seq_nr);
+}
 
 }
