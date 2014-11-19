@@ -43,6 +43,10 @@
  *  files in the program, then also delete it here.
  */
 
+#define STR_ERROR "\x1b[31;1mError: "
+#define STR_PASSED "\x1b[32;1mTest PASSED: "
+#define STR_END "\x1b[0m\n"
+
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
 #include <boost/assign.hpp>
@@ -128,9 +132,19 @@ void testCrypt()
     // add authentication tag
     a->generate(*kd, encrypted_packet);
 
-//    kd->setRole(ROLE_RIGHT);
     encrypted_packet.withAuthTag(false);
     memset(plain_packet.getPayload(),0,MAX_PACKET_LENGTH);
+    kd->setRole(ROLE_RIGHT);
+
+    c->decrypt(*kd, encrypted_packet, plain_packet);
+    if (!memcmp(plain_packet.getPayload(), test, sizeof(test))) {
+      std::cerr << "role test error" << std::endl;
+      exit(-1);
+    }
+    std::cout << STR_PASSED << "role RIGHT and role LEFT are different"<< STR_END;
+
+    c = std::auto_ptr<Cipher>(CipherFactory::create("aes-ctr", KD_INBOUND));
+    a = std::auto_ptr<AuthAlgo>(AuthAlgoFactory::create("sha1", KD_INBOUND));
 
     // check whether auth tag is ok or not
     if(!a->checkTag(*kd, encrypted_packet)) {
@@ -147,6 +161,7 @@ void testCrypt()
         len++; // fix unused varable
       exit(-1);
     }
+    std::cout << STR_PASSED << "role RIGHT inbound can decrypt role LEFT's outbound packets"<< STR_END;
 }
 
 
