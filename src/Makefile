@@ -163,7 +163,7 @@ else
   EXE := .exe
 endif
 
-EXECUTABLES := anytun$(EXE) anytun-config$(EXE) anytun-controld$(EXE) anytun-showtables$(EXE) anytun-nosync$(EXE)
+EXECUTABLES := anytun$(EXE) anytun-config$(EXE) anytun-controld$(EXE) anytun-showtables$(EXE) anytun-nosync$(EXE) unittest$(EXE)
 EXEOBJS := anytun.o anytun-config.o anytun-controld.o anytun-showtables.o
 
 ANYTUNSRCS := $(ANYTUNOBJS:%.o=%.cpp)
@@ -199,6 +199,9 @@ anytun-static: $(ANYTUNOBJS) $(SYNCOBJS) anytun-noprivdrop.o
 
 anytun-nosync$(EXE): $(ANYTUNOBJS) anytun-nosync.o
 	$(LD) $(ANYTUNOBJS) anytun-nosync.o -o $@ $(LDFLAGS)
+
+unittest$(EXE): $(ANYTUNOBJS) $(SYNCOBJS) unittest.o
+	$(LD) $(ANYTUNOBJS) $(SYNCOBJS) unittest.o -o $@ $(LDFLAGS)
 
 anytun-nosync.o: anytun.cpp
 	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
