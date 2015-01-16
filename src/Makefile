@@ -313,8 +313,9 @@ install-systemd:
 	$(INSTALL) -d $(DESTDIR)/lib/systemd/system/
 	@ sed -e 's#/usr/bin/#$(DESTDIR)$(BINDIR)/#' ../usr/lib/systemd/system/anytun@.service > ../usr/lib/systemd/system/anytun@.service.bak
 	@ sed -e 's#/usr/bin/#$(DESTDIR)$(BINDIR)/#' ../usr/lib/systemd/system/anytun-control@.service > ../usr/lib/systemd/system/anytun-control@.service.bak
-	$(INSTALL) ../usr/lib/systemd/system/anytun@.service.bak $(DESTDIR)/lib/systemd/system/anytun@.service
-	$(INSTALL) ../usr/lib/systemd/system/anytun-control@.service.bak  $(DESTDIR)/anytun-control@.service
+	$(INSTALL) ../usr/lib/systemd/system/anytun@.service.bak $(DESTDIR)/usr/lib/systemd/system/anytun@.service
+	$(INSTALL) ../usr/lib/systemd/system/anytun-control@.service.bak  $(DESTDIR)/usr/anytun-control@.service
+	$(INSTALL) ../etc/tmpfiles.d/anytun.conf  $(DESTDIR)$(ETCDIR)/tmpfiles.d/anytun.conf
 
 install-examples:
 	$(INSTALL) -d $(DESTDIR)$(EXAMPLESDIR)/anytun
