@@ -1,0 +1,13 @@
+[Unit]
+Description=AnyTun Server Config Control Daemon
+After=syslog.target network.target
+Requires=anytun@%i.service
+
+[Service]
+Type=simple
+PIDFile=/run/anytun-controld/%i.pid
+Environment="NAME=%i" "DAEMONOPTS=-D -L stdout:3"
+ExecStart=/usr/bin/anytun-launcher.sh configd
+
+[Install]
+WantedBy=multi-user.target

@@ -171,7 +171,7 @@ ANYCTRSRCS := $(ANYCTROBJS:%.o=%.cpp)
 ANYCONFSRCS := $(ANYCONFOBJS:%.o=%.cpp)
 EXESRCS := $(EXEOBJS:%.o=%.cpp)
 
-.PHONY: distclean cleanall clean manpage install install-bin install-etc install-man uninstall remove purge
+.PHONY: distclean cleanall clean manpage install install-bin install-etc install-man uninstall remove purge remove-systemd install-systemd remove-bin remove-man remove-examples
 
 all: $(EXECUTABLES) #libAnysync.a
 
@@ -211,13 +211,13 @@ anytun-controld$(EXE): $(ANYCTROBJS) anytun-controld.o
 	$(LD) $(ANYCTROBJS) anytun-controld.o -o $@ $(LDFLAGS)
 
 
-options.o: options.cpp 
+options.o: options.cpp
 	$(CXX) $(CXXFLAGS) -DANYTUN_OPTIONS $< -c -o $@
 
-anyCtrOptions.o: options.cpp 
+anyCtrOptions.o: options.cpp
 	$(CXX) $(CXXFLAGS) -DANYCTR_OPTIONS $< -c -o $@
 
-anyConfOptions.o: options.cpp 
+anyConfOptions.o: options.cpp
 	$(CXX) $(CXXFLAGS) -DANYCONF_OPTIONS $< -c -o $@
 
 nullOptions.o: options.cpp
@@ -233,7 +233,6 @@ libAnysync.a: $(OBJS)
 
 anyrtpproxy: anytun
 	$(MAKE) --directory=$(CURDIR)/anyrtpproxy
-
 
 distclean: cleanall
 	find . -name *.o -exec rm -f {} \;
@@ -281,6 +280,11 @@ INSTALL_TARGETS += install-examples
 REMOVE_TARGETS += remove-examples
 endif
 
+ifdef SYSTEMD
+INSTALL_TARGETS += install-systemd
+REMOVE_TARGETS := remove-systemd
+endif
+
 install: all $(INSTALL_TARGETS)
 
 install-bin: $(EXECUTABLES)
@@ -290,17 +294,27 @@ install-bin: $(EXECUTABLES)
 	$(INSTALL) -m 755 anytun-config $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m 755 anytun-controld $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m 755 anytun-showtables $(DESTDIR)$(BINDIR)
+	@ sed -e 's#DAEMON=/usr/sbin/anytun#DAEMON=$(SBINDIR)/anytun#'                               \
+        -e 's#ANYTUNCONFIG=/usr/bin/anytun-config#ANYTUNCONFIG=$(BINDIR)/anytun-config#'       \
+        -e 's#CONTROLDAEMON=/usr/bin/anytun-controld#CONTROLDAEMON=$(BINDIR)/anytun-controld#' \
+        -e 's#CONFIG_DIR=/etc/anytun#CONFIG_DIR=$(ETCDIR)/anytun#' ../usr/bin/anytun-launcher.sh > ../usr/bin/anytun-launcher.sh.bak
+	$(INSTALL) -m 755 ../usr/bin/anytun-launcher.sh.bak $(DESTDIR)$(BINDIR)/anytun-launcher.sh
 
 install-etc:
 	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/anytun
 	@ echo "example configurations can be found at $(EXAMPLESDIR)/anytun" > $(DESTDIR)$(ETCDIR)/anytun/README
 	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/init.d
-	@ sed -e 's#DAEMON=/usr/sbin/anytun#DAEMON=$(SBINDIR)/anytun#'                               \
-        -e 's#ANYTUNCONFIG=/usr/bin/anytun-config#ANYTUNCONFIG=$(BINDIR)/anytun-config#'       \
-        -e 's#CONTROLDAEMON=/usr/bin/anytun-controld#CONTROLDAEMON=$(BINDIR)/anytun-controld#' \
+	@ sed -e 's#ANYTUNLAUNCHER=/usr/bin/anytun-launcher.sh#ANYTUNLAUNCHER=$(BINDIR)/anytun-launcher.sh#' \
         -e 's#CONFIG_DIR=/etc/anytun#CONFIG_DIR=$(ETCDIR)/anytun#' ../etc/init.d/anytun > ../etc/init.d/anytun.bak
 	$(INSTALL) -m 755 ../etc/init.d/anytun.bak $(DESTDIR)$(ETCDIR)/init.d/anytun
 	rm -f ../etc/init.d/anytun.bak
+
+install-systemd:
+	$(INSTALL) -d $(DESTDIR)/lib/systemd/system/
+	@ sed -e 's#/usr/bin/#$(DESTDIR)$(BINDIR)/#' ../usr/lib/systemd/system/anytun@.service > ../usr/lib/systemd/system/anytun@.service.bak
+	@ sed -e 's#/usr/bin/#$(DESTDIR)$(BINDIR)/#' ../usr/lib/systemd/system/anytun-control@.service > ../usr/lib/systemd/system/anytun-control@.service.bak
+	$(INSTALL) ../usr/lib/systemd/system/anytun@.service.bak $(DESTDIR)/lib/systemd/system/anytun@.service
+	$(INSTALL) ../usr/lib/systemd/system/anytun-control@.service.bak  $(DESTDIR)/anytun-control@.service
 
 install-examples:
 	$(INSTALL) -d $(DESTDIR)$(EXAMPLESDIR)/anytun
@@ -350,6 +364,10 @@ remove-bin:
 
 remove-etc:
 	rm -f $(DESTDIR)$(ETCDIR)/init.d/anytun
+
+remove-systemd:
+	rm -f $(DESTDIR)/lib/systemd/system/anytun@.service
+	rm -f $(DESTDIR)/anytun-control@.service
 
 remove-examples:
 	rm -rf $(DESTDIR)$(EXAMPLESDIR)/anytun/

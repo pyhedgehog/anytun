@@ -94,6 +94,7 @@ print_usage() {
   echo "          --with-gcrypt=<PREFIX>    don't use systemwide gcrypt"
   echo "          --with-nettle=<PREFIX>    don't use systemwide nettle"
   echo "          --with-openssl=<PREFIX>   don't use systemwide openssl"
+  echo "          --with-systemd            install systemd unit descriptions"
   echo "          --use-clang               use clang/llvm as compiler/linker"
 }
 
@@ -171,6 +172,9 @@ do
   ;;
   --with-openssl=*)
     OPENSSL_PREFIX=${arg#--with-openssl=}
+  ;;
+  --with-systemd=*)
+    SYSTEMD=1
   ;;
   --help)
     print_usage

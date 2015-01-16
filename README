@@ -182,6 +182,23 @@ of instance names which should be used when no names are specified at the comman
 line. One line for each name. Empty lines and lines starting with # are ignored.
 
 
+systemd usage
+-------------
+
+Using the provided service units, anytun can now be started and managed via Systemd.
+As with the init.d script, each VPN or anytun instance, identified by it's $vpnname,
+ needs it's own configuration subdirectory. E.g.:  ${PREFIX}/etc/anytun/${vpnname}/.
+For each such CLIENT instance, use the following command to enable it:
+
+# systemctl enable anytun@${vpnname}.service
+
+For each anytun SERVER instance, anytun-control must be enabled as well:
+
+# systemctl enable anytun@${vpnname}.service
+# systemctl enable anytun-control@${vpnname}.service
+
+Manually start and stop instances by replacing enable with start or stop.
+
 
 Errors:
 =======
