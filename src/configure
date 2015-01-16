@@ -71,31 +71,33 @@ NETTLE_PREFIX=''
 OPENSSL_PREFIX=''
 
 print_usage() {
-  echo "configure --help                    print this"
-  echo "          --target=<TARGET>         build target i.e. Linux (default: autodetect)"
-  echo "          --prefix=<PREFIX>         the installation prefix (default: /usr/local)"
-  echo "          --bindir=<DIR>            the path to the bin directory (default: $PREFIX/bin)"
-  echo "          --sbindir=<DIR>           the path to the sbin directory (default: $PREFIX/sbin)"
-  echo "          --sysconfdir=<DIR>        the path to the system configuration directory (default: $PREFIX/etc"
-  echo "          --mandir=<DIR>            the path to the system man pages (default: $PREFIX/share/man)"
-  echo "          --no-manpage              dont't install manpages"
-  echo "          --examplesdir=<DIR>       the path to the examples files (default: $PREFIX/share/examples)"
-  echo "          --no-examples             dont't install example files"
-  echo "          --use-gcrypt              use libgcrypt (this is the default)"
-  echo "          --use-nettle              use libnettle instead of libgcrypt"
-  echo "          --use-ssl-crypto          use openssl crypto library instead of libgcrypt"
-  echo "          --no-crypto               disable crypto at all (only NULL cipher)"
-  echo "          --disable-passphrase      disable master key and salt passphrase"
-  echo "          --enable-passphrase       enable master key and salt passphrase"
-  echo "          --disable-routing         disable built-in routing capability"
-  echo "          --enable-routing          enable built-in routing capability"
-  echo "          --cross-prefix=<PREFIX>   add PREFIX to compiler calls"
-  echo "          --with-boost=<PREFIX>     don't use systemwide boost"
-  echo "          --with-gcrypt=<PREFIX>    don't use systemwide gcrypt"
-  echo "          --with-nettle=<PREFIX>    don't use systemwide nettle"
-  echo "          --with-openssl=<PREFIX>   don't use systemwide openssl"
-  echo "          --with-systemd            install systemd unit descriptions"
-  echo "          --use-clang               use clang/llvm as compiler/linker"
+  echo "configure --help                             print this"
+  echo "          --target=<TARGET>                  build target i.e. Linux (default: autodetect)"
+  echo "          --prefix=<PREFIX>                  the installation prefix (default: /usr/local)"
+  echo "          --bindir=<DIR>                     the path to the bin directory (default: $PREFIX/bin)"
+  echo "          --sbindir=<DIR>                    the path to the sbin directory (default: $PREFIX/sbin)"
+  echo "          --sysconfdir=<DIR>                 the path to the system configuration directory (default: $PREFIX/etc"
+  echo "          --mandir=<DIR>                     the path to the system man pages (default: $PREFIX/share/man)"
+  echo "          --no-manpage                       dont't install manpages"
+  echo "          --examplesdir=<DIR>                the path to the examples files (default: $PREFIX/share/examples)"
+  echo "          --no-examples                      dont't install example files"
+  echo "          --use-gcrypt                       use libgcrypt (this is the default)"
+  echo "          --use-nettle                       use libnettle instead of libgcrypt"
+  echo "          --use-ssl-crypto                   use openssl crypto library instead of libgcrypt"
+  echo "          --no-crypto                        disable crypto at all (only NULL cipher)"
+  echo "          --disable-passphrase               disable master key and salt passphrase"
+  echo "          --enable-passphrase                enable master key and salt passphrase"
+  echo "          --disable-routing                  disable built-in routing capability"
+  echo "          --enable-routing                   enable built-in routing capability"
+  echo "          --cross-prefix=<PREFIX>            add pREFIX to compiler calls"
+  echo "          --with-boost=<PREFIX>              don't use systemwide boost"
+  echo "          --with-gcrypt=<PREFIX>             don't use systemwide gcrypt"
+  echo "          --with-nettle=<PREFIX>             don't use systemwide nettle"
+  echo "          --with-openssl=<PREFIX>            don't use systemwide openssl"
+  echo "          --use-clang                        use clang/llvm as compiler/linker"
+  echo "          --with-systemd                     install systemd unit descriptions"
+  echo "          --with-systemdsystemunitdir=<DIR>  target for unit files"
+  echo "          --with-systemdtmpfilesdir=<DIR>    target for tmpfile creation info"
 }
 
 for arg
@@ -173,8 +175,16 @@ do
   --with-openssl=*)
     OPENSSL_PREFIX=${arg#--with-openssl=}
   ;;
-  --with-systemd=*)
+  --with-systemd)
     SYSTEMD=1
+    [[ -z $SYSTEMD_SYSTEMUNITDIR ]] && SYSTEMD_SYSTEMUNITDIR="$(pkg-config systemd --variable=systemdsystemconfdir)"
+    [[ -z $SYSTEMD_TMPFILESDIR ]] && SYSTEMD_TMPFILESDIR="$(pkg-config systemd --variable=tmpfilesdir)"
+  ;;
+  --with-systemdsystemunitdir=*)
+    SYSTEMD_SYSTEMUNITDIR=${arg#--with-systemdsystemunitdir=}
+  ;;
+  --with-tmpfilesdir=*)
+    SYSTEMD_TMPFILESDIR=${arg#--with-tmpfilesdir=}
   ;;
   --help)
     print_usage
