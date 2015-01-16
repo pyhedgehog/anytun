@@ -366,8 +366,9 @@ remove-etc:
 	rm -f $(DESTDIR)$(ETCDIR)/init.d/anytun
 
 remove-systemd:
-	rm -f $(DESTDIR)/lib/systemd/system/anytun@.service
-	rm -f $(DESTDIR)/anytun-control@.service
+	rm -f $(DESTDIR)$(SYSTEMD_SYSTEMUNITDIR)/anytun@.service
+	rm -f $(DESTDIR)$(SYSTEMD_SYSTEMUNITDIR)/anytun-control@.service
+	rm -f $(DESTDIR)$(SYSTEMD_TMPFILESDIR)/anytun.conf
 
 remove-examples:
 	rm -rf $(DESTDIR)$(EXAMPLESDIR)/anytun/
