@@ -96,6 +96,7 @@
 
 #include "cryptinit.hpp"
 #include "crypto/interface.h"
+#include "crypto/openssl.h"
 #include "sysExec.h"
 
 
@@ -162,6 +163,22 @@ void testCrypt()
       exit(-1);
     }
     std::cout << STR_PASSED << "role RIGHT inbound can decrypt role LEFT's outbound packets"<< STR_END;
+
+    memset(plain_packet.getPayload(), 0, sizeof(test));
+    std::auto_ptr<crypto::Interface> cnew(new crypto::Openssl());
+    Buffer masterkey(crypto::SALT_LENGTH, false);
+    Buffer mastersalt(crypto::SALT_LENGTH, false);
+    cnew->calcMasterKeySalt("abc", crypto::SALT_LENGTH, masterkey , mastersalt);
+    cnew->decrypt(encrypted_packet, plain_packet, masterkey, mastersalt, ROLE_RIGHT );
+    if (memcmp(plain_packet.getPayload(), test, sizeof(test))) {
+      std::cerr << "crypto test failed" << std::endl;
+      std::cout << test << std::endl;
+      ssize_t len = write(0, plain_packet.getPayload(), plain_packet.getLength());
+      if (len)
+        len++; // fix unused varable
+      exit(-1);
+    }
+    std::cout << STR_PASSED << "new role RIGHT inbound can decrypt old role LEFT's outbound packets"<< STR_END;
 }
 
 

@@ -50,7 +50,7 @@
 
 namespace crypto {
 
-  class Openssl : Interface
+  class Openssl : public Interface
   {
   public:
     // pure virtual
