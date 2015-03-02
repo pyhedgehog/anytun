@@ -107,6 +107,7 @@ uint32_t Openssl::decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t ol
 
 void Openssl::calc(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& key, cipher_aesctr_ctr_t * ctr)
 {
+//  std::cout << "Packet key:" << key.getHexDump() << std::endl;
   AES_KEY aes_key;
   int ret = AES_set_encrypt_key(key.getConstBuf(), key.getLength()*8, &aes_key);
   if(ret) {
@@ -126,8 +127,16 @@ void Openssl::calc(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, cons
 
 void Openssl::deriveKey(kd_dir_t dir, satp_prf_label_t label, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, const Buffer& masterkey, const Buffer& mastersalt, Buffer& key)
 {
+//  std::cout << "Openssl::deriveKey :" << dir << " " << label << " " << seq_nr << " " << masterkey.getHexDump() << mastersalt.getHexDump() << std::endl;
+
   uint8_t ecount_buf[AES_BLOCK_SIZE];
   AES_KEY aes_key;
+  int ret = AES_set_encrypt_key(masterkey.getConstBuf(), masterkey.getLength()*8, &aes_key);
+  if(ret) {
+    cLog.msg(Log::PRIO_ERROR) << "Openssl::deriveKey: Failed to set ssl key (code: " << ret << ")";
+    return;
+  }
+
   key_derivation_aesctr_ctr_t ctr;
   calcKeyCtr(mastersalt, dir, role, label, seq_nr,  sender_id,  mux, &ctr);
   if(CTR_LENGTH != AES_BLOCK_SIZE) {
@@ -138,6 +147,7 @@ void Openssl::deriveKey(kd_dir_t dir, satp_prf_label_t label, role_t role, seq_n
   std::memset(ecount_buf, 0, AES_BLOCK_SIZE);
   std::memset(key.getBuf(), 0, key.getLength());
   AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key, ctr.buf_, ecount_buf, &num);
+//  std::cout << "Openssl::deriveKey :" <<  key.getHexDump() << std::endl;
 }
 
 
