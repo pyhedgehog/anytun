@@ -138,6 +138,9 @@ void testCrypt()
     kd->setRole(ROLE_RIGHT);
 
     c->decrypt(*kd, encrypted_packet, plain_packet);
+//    std::cout << "Master Key:" << kd->master_key_.getHexDump() << std::endl;
+//    std::cout << "Master Salt:" << kd->master_salt_.getHexDump() << std::endl;
+
     if (!memcmp(plain_packet.getPayload(), test, sizeof(test))) {
       std::cerr << "role test error" << std::endl;
       exit(-1);
@@ -166,9 +169,11 @@ void testCrypt()
 
     memset(plain_packet.getPayload(), 0, sizeof(test));
     std::auto_ptr<crypto::Interface> cnew(new crypto::Openssl());
-    Buffer masterkey(crypto::SALT_LENGTH, false);
+    Buffer masterkey(uint32_t(crypto::DEFAULT_KEY_LENGTH/8) , false);
     Buffer mastersalt(crypto::SALT_LENGTH, false);
-    cnew->calcMasterKeySalt("abc", crypto::SALT_LENGTH, masterkey , mastersalt);
+    cnew->calcMasterKeySalt("abc", uint32_t(crypto::DEFAULT_KEY_LENGTH/8), masterkey , mastersalt);
+    std::cout << "Master Key:" << masterkey.getHexDump() << std::endl;
+    std::cout << "Master Salt:" << mastersalt.getHexDump() << std::endl;
     cnew->decrypt(encrypted_packet, plain_packet, masterkey, mastersalt, ROLE_RIGHT );
     if (memcmp(plain_packet.getPayload(), test, sizeof(test))) {
       std::cerr << "crypto test failed" << std::endl;
@@ -184,6 +189,7 @@ void testCrypt()
 
 int main(int argc, char* argv[])
 { 
+  cLog.addTarget("stdout:5");
   try {
     testCrypt();
   } catch (std::exception& e) {

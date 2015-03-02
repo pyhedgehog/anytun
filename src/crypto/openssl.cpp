@@ -46,6 +46,7 @@
 #include "openssl.h"
 #include "../log.h"
 #include <openssl/aes.h>
+#include <openssl/sha.h>
 #include "../anytunError.h"
 
 namespace crypto {
@@ -58,7 +59,29 @@ Openssl::~Openssl()
 
 void Openssl::calcMasterKeySalt(std::string passphrase, uint16_t length, Buffer& masterkey , Buffer& mastersalt)
 {
+  cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation: calculating master key from passphrase";
+  if(!length) {
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation: bad master key length";
+    return;
+  }
 
+  if(length > SHA256_DIGEST_LENGTH) {
+    cLog.msg(Log::PRIO_ERROR) << "KeyDerivation: master key too long for passphrase algorithm";
+    return;
+  }
+  Buffer digest(uint32_t(SHA256_DIGEST_LENGTH));
+  SHA256(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digest.getBuf());
+  masterkey.setLength(length);
+
+  std::memcpy(masterkey.getBuf(), &digest.getBuf()[digest.getLength() - masterkey.getLength()], masterkey.getLength());
+
+  cLog.msg(Log::PRIO_NOTICE) << "KeyDerivation: calculating master salt from passphrase";
+
+  Buffer digestsalt(uint32_t(SHA_DIGEST_LENGTH));
+  SHA1(reinterpret_cast<const unsigned char*>(passphrase.c_str()), passphrase.length(), digestsalt.getBuf());
+  mastersalt.setLength(SALT_LENGTH);
+
+  std::memcpy(mastersalt.getBuf(), &digestsalt.getBuf()[digestsalt.getLength() - mastersalt.getLength()], mastersalt.getLength());
 }
 
 uint32_t Openssl::cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
