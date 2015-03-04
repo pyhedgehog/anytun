@@ -99,10 +99,10 @@
 #include "crypto/openssl.h"
 #include "sysExec.h"
 
+char test_text[] = "Anytun is an implementation of the secure anycast tunneling protocol. It uses an easy openvpn style interface and makes it possible to build redundant VPN clusters with load balancing between servers. VPN servers share a single IP address. Adding and removing VPN Servers is done by the routing protocol, so no client changes have to be made when additional VPN servers are added or removed. It is possible to realise global load balancing based on shortest BGP routes by simply announcing the address space of the tunnel servers at multiple locations. Currently ethernet, ipv4 and ipv6 tunnels are supported by the implementation. However the protocol allows one to tunnel every ETHERTYPE protocol.";
 
 void testCrypt()
 {
-    char test[] = "Anytun is an implementation of the secure anycast tunneling protocol. It uses an easy openvpn style interface and makes it possible to build redundant VPN clusters with load balancing between servers. VPN servers share a single IP address. Adding and removing VPN Servers is done by the routing protocol, so no client changes have to be made when additional VPN servers are added or removed. It is possible to realise global load balancing based on shortest BGP routes by simply announcing the address space of the tunnel servers at multiple locations. Currently ethernet, ipv4 and ipv6 tunnels are supported by the implementation. However the protocol allows one to tunnel every ETHERTYPE protocol.";
     std::auto_ptr<Cipher> c(CipherFactory::create("aes-ctr", KD_OUTBOUND));
     std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create("sha1", KD_OUTBOUND));
     KeyDerivation* kd = KeyDerivationFactory::create("aes-ctr");
@@ -115,10 +115,10 @@ void testCrypt()
     uint16_t mux = 1;
     plain_packet.setLength(MAX_PACKET_LENGTH);
 
-    memcpy(plain_packet.getPayload(),test,sizeof(test));
+    memcpy(plain_packet.getPayload(),test_text,sizeof(test_text));
 
     // read packet from device
-    int len = sizeof(test);
+    int len = sizeof(test_text);
 
     plain_packet.setPayloadLength(len);
     // set payload type
@@ -151,7 +151,7 @@ void testCrypt()
 //    std::cout << "Master Key:" << kd->master_key_.getHexDump() << std::endl;
 //    std::cout << "Master Salt:" << kd->master_salt_.getHexDump() << std::endl;
 
-    if (!memcmp(plain_packet.getPayload(), test, sizeof(test))) {
+    if (!memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
       std::cerr << "role test error" << std::endl;
       exit(-1);
     }
@@ -166,9 +166,9 @@ void testCrypt()
 
 
     c->decrypt(*kd, encrypted_packet, plain_packet);
-    if (memcmp(plain_packet.getPayload(), test, sizeof(test))) {
+    if (memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
       std::cerr << "crypto test failed" << std::endl;
-      std::cout << test << std::endl;
+      std::cout << test_text << std::endl;
       ssize_t len = write(0, plain_packet.getPayload(), plain_packet.getLength());
       if (len)
         len++; // fix unused varable
@@ -176,7 +176,7 @@ void testCrypt()
     }
     std::cout << STR_PASSED << "role RIGHT inbound can decrypt role LEFT's outbound packets"<< STR_END;
 
-    memset(plain_packet.getPayload(), 0, sizeof(test));
+    memset(plain_packet.getPayload(), 0, sizeof(test_text));
     std::cout << "Master Key:" << masterkey.getHexDump() << std::endl;
     std::cout << "Master Salt:" << mastersalt.getHexDump() << std::endl;
     cnew->addAuthTag(encrypted_packet, masterkey, mastersalt, ROLE_LEFT );
@@ -187,9 +187,9 @@ void testCrypt()
       //exit(-1);
     }
     cnew->decrypt(encrypted_packet, plain_packet, masterkey, mastersalt, ROLE_RIGHT );
-    if (memcmp(plain_packet.getPayload(), test, sizeof(test))) {
+    if (memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
       std::cerr << "crypto test failed" << std::endl;
-      std::cout << test << std::endl;
+      std::cout << test_text << std::endl;
       ssize_t len = write(0, plain_packet.getPayload(), plain_packet.getLength());
       if (len)
         len++; // fix unused varable
@@ -198,12 +198,117 @@ void testCrypt()
     std::cout << STR_PASSED << "new role RIGHT inbound can decrypt old role LEFT's outbound packets"<< STR_END;
 }
 
+void newCrypt()
+{
+  std::auto_ptr<crypto::Interface> cnew(new crypto::Openssl());
+  Buffer masterkey(uint32_t(crypto::DEFAULT_KEY_LENGTH/8) , false);
+  Buffer mastersalt(crypto::SALT_LENGTH, false);
+  cnew->calcMasterKeySalt("abc", uint32_t(crypto::DEFAULT_KEY_LENGTH/8), masterkey , mastersalt);
+  PlainPacket plain_packet(MAX_PACKET_LENGTH);
+  EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, 20);
+  for(uint32_t seq=0; seq < 1000000; seq++) {
+
+    memset(encrypted_packet.getPayload(), 0, MAX_PACKET_LENGTH);
+    uint16_t mux = 1;
+    plain_packet.setLength(MAX_PACKET_LENGTH);
+
+    memcpy(plain_packet.getPayload(),test_text,sizeof(test_text));
+
+    // read packet from device
+    int len = sizeof(test_text);
+
+    plain_packet.setPayloadLength(len);
+    // set payload type
+    plain_packet.setPayloadType(PAYLOAD_TYPE_TUN);
+    //write(0, plain_packet.getPayload(), plain_packet.getLength());
+
+    cnew->encrypt(plain_packet, encrypted_packet, masterkey, mastersalt, ROLE_LEFT, seq, 1, mux);
+
+    cnew->addAuthTag(encrypted_packet, masterkey, mastersalt, ROLE_LEFT );
+
+    memset(plain_packet.getPayload(), 0, sizeof(test_text));
+
+    if(!cnew->checkAndRemoveAuthTag(encrypted_packet, masterkey, mastersalt, ROLE_RIGHT )) {
+      std::cout << STR_ERROR << "wrong Authentication Tag!" << STR_END;
+      //exit(-1);
+    }
+
+    cnew->decrypt(encrypted_packet, plain_packet, masterkey, mastersalt, ROLE_RIGHT );
+    if (memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
+      std::cerr << "crypto test failed" << std::endl;
+      std::cout << test_text << std::endl;
+      ssize_t len = write(0, plain_packet.getPayload(), plain_packet.getLength());
+      if (len)
+        len++; // fix unused varable
+      exit(-1);
+    }
+  }
+}
+
+void oldCrypt()
+{
+    std::auto_ptr<Cipher> c(CipherFactory::create("aes-ctr", KD_OUTBOUND));
+    std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create("sha1", KD_OUTBOUND));
+    KeyDerivation* kd = KeyDerivationFactory::create("aes-ctr");
+    kd->init("", "", "abc" );
+    kd->setRole(ROLE_LEFT);
+
+    PlainPacket plain_packet(MAX_PACKET_LENGTH);
+    EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, 20);
+    for(uint32_t seq=0; seq < 1000000; seq++) {
+      memset(encrypted_packet.getPayload(), 0, MAX_PACKET_LENGTH);
+      uint16_t mux = 1;
+      plain_packet.setLength(MAX_PACKET_LENGTH);
+
+      memcpy(plain_packet.getPayload(),test_text,sizeof(test_text));
+
+      // read packet from device
+      int len = sizeof(test_text);
+
+      plain_packet.setPayloadLength(len);
+      // set payload type
+      plain_packet.setPayloadType(PAYLOAD_TYPE_TUN);
+      //write(0, plain_packet.getPayload(), plain_packet.getLength());
+
+      // encrypt packet
+      c->encrypt(*kd, plain_packet, encrypted_packet, seq, 1, mux);
+
+      encrypted_packet.setHeader(seq, 1, mux);
+
+      // add authentication tag
+      a->generate(*kd, encrypted_packet);
+
+      memset(plain_packet.getPayload(),0,MAX_PACKET_LENGTH);
+
+      if(!a->checkTag(*kd, encrypted_packet)) {
+        std::cout << STR_ERROR << "wrong Authentication Tag!" << STR_END;
+        //exit(-1);
+      }
+
+      c->decrypt(*kd, encrypted_packet, plain_packet);
+  //    std::cout << "Master Key:" << kd->master_key_.getHexDump() << std::endl;
+  //    std::cout << "Master Salt:" << kd->master_salt_.getHexDump() << std::endl;
+      if (memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
+        std::cerr << "test error" << std::endl;
+        exit(-1);
+      }
+   }
+}
 
 int main(int argc, char* argv[])
 { 
   cLog.addTarget("stdout:5");
   try {
     testCrypt();
+    std::cout << "oldCrypt" << std::endl;
+    clock_t begin_time = clock();
+    // do something
+    oldCrypt();
+    std::cout << float( clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
+    std::cout << "newCrypt" << std::endl;
+    begin_time = clock();
+    newCrypt();
+    std::cout << float( clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
   } catch (std::exception& e) {
     std::cerr << e.what();
     return 1;
