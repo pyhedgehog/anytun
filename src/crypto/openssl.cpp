@@ -47,6 +47,8 @@
 #include "../log.h"
 #include <openssl/aes.h>
 #include <openssl/sha.h>
+#include <openssl/hmac.h>
+
 #include "../anytunError.h"
 
 namespace crypto {
@@ -54,6 +56,26 @@ namespace crypto {
 Openssl::~Openssl()
 {
 
+}
+
+
+void Openssl::calcAuthKey(Buffer & key, Buffer & digest, uint8_t * payload, size_t payload_length )
+{
+  uint32_t digest_length = getDigestLength();
+  HMAC_CTX ctx;
+  HMAC_CTX_init(&ctx);
+  //HMAC_Init_ex(&ctx, NULL, 0, EVP_sha1(), NULL);
+
+  HMAC_Init_ex(&ctx, key.getBuf(), key.getLength(), EVP_sha1(), NULL);
+
+  uint8_t hmac[digest_length];
+  HMAC_Update(&ctx, payload, payload_length );
+  HMAC_Final(&ctx, hmac, NULL);
+
+  HMAC_CTX_cleanup(&ctx);
+  digest.setLength(digest_length);
+  
+  std::memcpy(digest.getBuf(), hmac, digest_length); 
 }
 
 
@@ -160,6 +182,11 @@ std::string Openssl::printType()
 bool Openssl::init()
 {
   return true;
+}
+
+uint32_t Openssl::getDigestLength()
+{
+  return 20;
 }
 
 }

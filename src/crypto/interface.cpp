@@ -68,6 +68,61 @@ void Interface::decrypt(EncryptedPacket& in, PlainPacket& out, const Buffer& mas
   out.setLength(len);
 }
 
+bool Interface::checkAndRemoveAuthTag(EncryptedPacket& packet, const Buffer& masterkey, const Buffer& mastersalt, role_t role)
+{
+  uint32_t digest_length = getDigestLength();
+  packet.withAuthTag(true);
+  if(!packet.getAuthTagLength()) {
+    return true;
+  }
+
+  Buffer digest(digest_length);
+  //Buffer key(masterkey.getLength(), false);
+  Buffer key(digest_length, false);
+  deriveKey(KD_INBOUND, LABEL_AUTH, role, packet.getSeqNr(), packet.getSeqNr(), packet.getMux(), masterkey, mastersalt, key);
+  //std::cout << "Interface::checkAndRemoveAuthTag: " << key.getHexDump() << std::endl;
+  calcAuthKey(key, digest,  packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength() );
+
+  uint8_t* tag = packet.getAuthTag();
+  uint32_t length = (packet.getAuthTagLength() < digest_length) ? packet.getAuthTagLength() : digest_length;
+
+  if(length > digest_length)
+    for(uint32_t i=0; i < (packet.getAuthTagLength() - digest_length); ++i)
+      if(tag[i]) { return false; }
+
+  int ret = std::memcmp(&tag[packet.getAuthTagLength() - length], digest.getBuf() + digest_length - length, length);
+  packet.removeAuthTag();
+
+  if(ret) {
+    return false;
+  }
+
+  return true;
+}
+
+void Interface::addAuthTag(EncryptedPacket& packet, const Buffer& masterkey, const Buffer& mastersalt, role_t role)
+{
+  uint32_t digest_length = getDigestLength();
+  packet.addAuthTag();
+  if(!packet.getAuthTagLength()) {
+    return;
+  }
+  Buffer digest(digest_length);
+  //Buffer key(masterkey.getLength(), false);
+  Buffer key(digest_length, false);
+  deriveKey(KD_OUTBOUND, LABEL_AUTH, role, packet.getSeqNr(), packet.getSeqNr(), packet.getMux(), masterkey, mastersalt, key);
+  //std::cout << "Interface::addAuthTag: " << key.getHexDump() << std::endl;
+  calcAuthKey(key, digest,  packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength() );
+  uint8_t* tag = packet.getAuthTag();
+  uint32_t length = (packet.getAuthTagLength() < digest_length) ? packet.getAuthTagLength() : digest_length;
+
+  if(length > digest_length) {
+    std::memset(tag, 0, packet.getAuthTagLength());
+  }
+
+  std::memcpy(&tag[packet.getAuthTagLength() - length], digest.getBuf() + digest_length - length, length);
+
+}
 
 satp_prf_label_t Interface::convertLabel(kd_dir_t dir, role_t role, satp_prf_label_t label)
 {

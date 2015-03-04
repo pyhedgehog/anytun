@@ -58,6 +58,9 @@ namespace crypto {
     virtual uint32_t cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
     virtual uint32_t decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux);
     virtual void deriveKey(kd_dir_t dir, satp_prf_label_t label, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, const Buffer& masterkey, const Buffer& mastersalt, Buffer& key);
+    virtual void calcAuthKey(Buffer & key, Buffer & digest, uint8_t * payload, size_t payload_length );
+    virtual uint32_t getDigestLength();
+
     // virtual
     virtual ~Openssl();
     virtual std::string printType();

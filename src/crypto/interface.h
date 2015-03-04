@@ -118,6 +118,8 @@ namespace crypto {
     void decrypt(EncryptedPacket& in, PlainPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role);
     void calcCryptCtr(const Buffer& masterkey, const Buffer& mastersalt, kd_dir_t dir, role_t role, satp_prf_label_t label, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, cipher_aesctr_ctr_t * ctr);
     void calcKeyCtr(const Buffer& mastersalt, kd_dir_t dir, role_t role, satp_prf_label_t label, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, key_derivation_aesctr_ctr_t * ctr);
+    bool checkAndRemoveAuthTag(EncryptedPacket& packet, const Buffer& masterkey, const Buffer& mastersalt, role_t role);
+    void addAuthTag(EncryptedPacket& packet, const Buffer& masterkey, const Buffer& mastersalt, role_t role);
 
 
     // pure virtual
@@ -125,6 +127,8 @@ namespace crypto {
     virtual uint32_t cipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
     virtual uint32_t decipher(uint8_t* in, uint32_t ilen, uint8_t* out, uint32_t olen, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux) = 0;
     virtual void deriveKey(kd_dir_t dir, satp_prf_label_t label, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux, const Buffer& masterkey, const Buffer& mastersalt, Buffer& key) = 0;
+    virtual void calcAuthKey(Buffer & key, Buffer & digest, uint8_t * payload, size_t payload_length ) = 0;
+    virtual uint32_t getDigestLength() = 0;
 
     // virtual
     virtual ~Interface();

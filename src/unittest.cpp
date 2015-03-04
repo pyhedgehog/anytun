@@ -110,7 +110,7 @@ void testCrypt()
     kd->setRole(ROLE_LEFT);
 
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
-    EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, 10);
+    EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, 20);
 
     uint16_t mux = 1;
     plain_packet.setLength(MAX_PACKET_LENGTH);
@@ -132,6 +132,16 @@ void testCrypt()
 
     // add authentication tag
     a->generate(*kd, encrypted_packet);
+    Buffer tag0( encrypted_packet.getAuthTag(), encrypted_packet.getAuthTagLength(), false);
+    std::cout << "Tag 0:" << tag0.getHexDump() << std::endl;
+    std::auto_ptr<crypto::Interface> cnew(new crypto::Openssl());
+    Buffer masterkey(uint32_t(crypto::DEFAULT_KEY_LENGTH/8) , false);
+    Buffer mastersalt(crypto::SALT_LENGTH, false);
+    cnew->calcMasterKeySalt("abc", uint32_t(crypto::DEFAULT_KEY_LENGTH/8), masterkey , mastersalt);
+    if(!cnew->checkAndRemoveAuthTag(encrypted_packet, masterkey, mastersalt, ROLE_RIGHT )) {
+      std::cout << STR_ERROR << "wrong Authentication Tag!" << STR_END;
+      //exit(-1);
+    }
 
     encrypted_packet.withAuthTag(false);
     memset(plain_packet.getPayload(),0,MAX_PACKET_LENGTH);
@@ -151,10 +161,9 @@ void testCrypt()
     a = std::auto_ptr<AuthAlgo>(AuthAlgoFactory::create("sha1", KD_INBOUND));
 
     // check whether auth tag is ok or not
-    if(!a->checkTag(*kd, encrypted_packet)) {
-      std::cerr << "wrong Authentication Tag!" << std::endl;
-      //exit(-1);
-    }
+//    Buffer tag1( encrypted_packet.getAuthTag(), encrypted_packet.getAuthTagLength(), false);
+//    std::cout << "Tag 1:" << tag1.getHexDump() << std::endl;
+
 
     c->decrypt(*kd, encrypted_packet, plain_packet);
     if (memcmp(plain_packet.getPayload(), test, sizeof(test))) {
@@ -168,12 +177,15 @@ void testCrypt()
     std::cout << STR_PASSED << "role RIGHT inbound can decrypt role LEFT's outbound packets"<< STR_END;
 
     memset(plain_packet.getPayload(), 0, sizeof(test));
-    std::auto_ptr<crypto::Interface> cnew(new crypto::Openssl());
-    Buffer masterkey(uint32_t(crypto::DEFAULT_KEY_LENGTH/8) , false);
-    Buffer mastersalt(crypto::SALT_LENGTH, false);
-    cnew->calcMasterKeySalt("abc", uint32_t(crypto::DEFAULT_KEY_LENGTH/8), masterkey , mastersalt);
     std::cout << "Master Key:" << masterkey.getHexDump() << std::endl;
     std::cout << "Master Salt:" << mastersalt.getHexDump() << std::endl;
+    cnew->addAuthTag(encrypted_packet, masterkey, mastersalt, ROLE_LEFT );
+    Buffer tag2( encrypted_packet.getAuthTag(), encrypted_packet.getAuthTagLength(), false);
+    std::cout << "Tag 2:" << tag2.getHexDump() << std::endl;
+    if(!a->checkTag(*kd, encrypted_packet)) {
+      std::cout << STR_ERROR << "wrong Authentication Tag!" << STR_END;
+      //exit(-1);
+    }
     cnew->decrypt(encrypted_packet, plain_packet, masterkey, mastersalt, ROLE_RIGHT );
     if (memcmp(plain_packet.getPayload(), test, sizeof(test))) {
       std::cerr << "crypto test failed" << std::endl;
