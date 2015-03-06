@@ -61,7 +61,7 @@
 
 void Cipher::encrypt(KeyDerivation& kd, PlainPacket& in, EncryptedPacket& out, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  uint32_t len = cipher(kd, in, in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
+  uint32_t len = cipher(kd, in.getPayload(), in.getLength(), out.getPayload(), out.getPayloadLength(), seq_nr, sender_id, mux);
   out.setSenderId(sender_id);
   out.setSeqNr(seq_nr);
   out.setMux(mux);
@@ -70,7 +70,7 @@ void Cipher::encrypt(KeyDerivation& kd, PlainPacket& in, EncryptedPacket& out, s
 
 void Cipher::decrypt(KeyDerivation& kd, EncryptedPacket& in, PlainPacket& out)
 {
-  uint32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out, out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
+  uint32_t len = decipher(kd, in.getPayload() , in.getPayloadLength(), out.getPayload(), out.getLength(), in.getSeqNr(), in.getSenderId(), in.getMux());
   out.setLength(len);
 }
 

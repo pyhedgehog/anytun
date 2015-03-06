@@ -166,8 +166,8 @@ void testCrypt()
 
 
     c->decrypt(*kd, encrypted_packet, plain_packet);
-    if (memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
-      std::cerr << "crypto test failed" << std::endl;
+    if (int pos = memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
+      std::cerr << "crypto test failed at position "<< pos << std::endl;
       std::cout << test_text << std::endl;
       ssize_t len = write(0, plain_packet.getPayload(), plain_packet.getLength());
       if (len)
@@ -187,8 +187,8 @@ void testCrypt()
       //exit(-1);
     }
     cnew->decrypt(encrypted_packet, plain_packet, masterkey, mastersalt, ROLE_RIGHT );
-    if (memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
-      std::cerr << "crypto test failed" << std::endl;
+    if (int pos = memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
+      std::cerr << "crypto test failed at position "<< pos << std::endl;
       std::cout << test_text << std::endl;
       ssize_t len = write(0, plain_packet.getPayload(), plain_packet.getLength());
       if (len)
@@ -234,8 +234,8 @@ void newCrypt()
     }
 
     cnew->decrypt(encrypted_packet, plain_packet, masterkey, mastersalt, ROLE_RIGHT );
-    if (memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
-      std::cerr << "crypto test failed" << std::endl;
+    if (int pos = memcmp(plain_packet.getPayload(), test_text, sizeof(test_text))) {
+      std::cerr << "crypto test failed at position "<< pos << std::endl;
       std::cout << test_text << std::endl;
       ssize_t len = write(0, plain_packet.getPayload(), plain_packet.getLength());
       if (len)

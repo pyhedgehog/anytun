@@ -55,7 +55,7 @@ Interface::~Interface()
 
 void Interface::encrypt(PlainPacket& in, EncryptedPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role, seq_nr_t seq_nr, sender_id_t sender_id, mux_t mux)
 {
-  uint32_t len = cipher(in, in.getLength(), out.getPayload(), out.getPayloadLength(), masterkey, mastersalt, role, seq_nr, sender_id, mux);
+  uint32_t len = cipher(in.getPayload(), in.getLength(), out.getPayload(), out.getPayloadLength(), masterkey, mastersalt, role, seq_nr, sender_id, mux);
   out.setSenderId(sender_id);
   out.setSeqNr(seq_nr);
   out.setMux(mux);
@@ -64,7 +64,7 @@ void Interface::encrypt(PlainPacket& in, EncryptedPacket& out, const Buffer& mas
 
 void Interface::decrypt(EncryptedPacket& in, PlainPacket& out, const Buffer& masterkey, const Buffer& mastersalt, role_t role)
 {
-  uint32_t len = decipher(in.getPayload() , in.getPayloadLength(), out, out.getLength(), masterkey, mastersalt, role, in.getSeqNr(), in.getSenderId(), in.getMux());
+  uint32_t len = decipher(in.getPayload() , in.getPayloadLength(), out.getPayload(), out.getLength(), masterkey, mastersalt, role, in.getSeqNr(), in.getSenderId(), in.getMux());
   out.setLength(len);
 }
 
