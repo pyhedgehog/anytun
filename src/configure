@@ -89,7 +89,7 @@ print_usage() {
   echo "          --enable-passphrase                enable master key and salt passphrase"
   echo "          --disable-routing                  disable built-in routing capability"
   echo "          --enable-routing                   enable built-in routing capability"
-  echo "          --cross-prefix=<PREFIX>            add pREFIX to compiler calls"
+  echo "          --cross-prefix=<PREFIX>            add PREFIX to compiler calls"
   echo "          --with-boost=<PREFIX>              don't use systemwide boost"
   echo "          --with-gcrypt=<PREFIX>             don't use systemwide gcrypt"
   echo "          --with-nettle=<PREFIX>             don't use systemwide nettle"
@@ -347,7 +347,7 @@ LDFLAGS = $LDFLAGS
 STRIP = ${CROSS_PREFIX}strip
 INSTALL = install
 
-PREFIX := $PREFIX
+prefix := $PREFIX
 BINDIR := $BINDIR
 SBINDIR := $SBINDIR
 ETCDIR := $ETCDIR
