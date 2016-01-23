@@ -48,6 +48,13 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/integer_traits.hpp>
+#include <boost/config.hpp>
+
+#ifndef BOOST_NO_NOEXCEPT
+#define NOEXCEPT(x) noexcept(x)
+#else
+#define NOEXCEPT(x)
+#endif
 
 // should not be necessary on GCC, #ifdef + #include <stdint.h> should do the job; still required on MS VC++9, though.
 using boost::int8_t;

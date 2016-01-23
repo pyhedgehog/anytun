@@ -81,7 +81,7 @@ class ErrorStringBuilder
 public:
   ErrorStringBuilder(ErrorStringBuilder const& src) { stream << src.stream.str(); };
   ErrorStringBuilder() {};
-  ~ErrorStringBuilder() { throw std::runtime_error(stream.str()); };
+  ~ErrorStringBuilder() NOEXCEPT(false) { throw std::runtime_error(stream.str()); };
 
   template<class T>
   std::ostream& operator<<(T const& value) { return stream << value; }
