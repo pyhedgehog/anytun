@@ -51,24 +51,28 @@
 #if defined(USE_GCRYPT)
 #include <gcrypt.h>
 
+#if GCRYPT_VERSION_NUMBER < 0x010600
 #if defined(BOOST_HAS_PTHREADS)
 // boost thread callbacks for libgcrypt
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
 #else
 #error You can not use gcrypt without pthreads - please configure Boost to use pthreads!
-#endif
+#endif // defined(BOOST_HAS_PTHREADS)
+#endif // GCRYPT_VERSION_NUMBER < 0x010600
 
 #define MIN_GCRYPT_VERSION "1.2.0"
 
 bool initLibGCrypt()
 {
+#if GCRYPT_VERSION_NUMBER < 0x010600
 #if defined(BOOST_HAS_PTHREADS)
   // make libgcrypt thread safe
   // this must be called before any other libgcrypt call
   gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread);
 #else
 #error You can not use gcrypt without pthreads - please configure Boost to use pthreads!
-#endif
+#endif // defined(BOOST_HAS_PTHREADS)
+#endif // GCRYPT_VERSION_NUMBER < 0x010600
 
   // this must be called right after the GCRYCTL_SET_THREAD_CBS command
   // no other function must be called till now
