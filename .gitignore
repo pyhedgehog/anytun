@@ -1,0 +1,44 @@
+lib
+vendor
+contrib/boost-w32
+contrib/openssl-w32
+contrib/anytun-w32
+contrib/boost-w64
+contrib/openssl-w64
+contrib/anytun-w64
+doc/anytun.8.xml
+doc/anyrtpproxy.8.xml
+doc/anytun-config.8.xml
+doc/anytun-showtables.8.xml
+doc/anytun-controld.8.xml
+src/*.o
+src/*.d
+src/*.d.*
+src/signalHandler.hpp
+src/sysExec.hpp
+src/daemonService.h
+src/daemonService.cpp
+src/version.h
+src/tunDevice.cpp
+src/include.mk
+src/anytun
+src/anytun-config
+src/anytun-controld
+src/anytun-nosync
+src/anytun-showtables
+src/anytun.suo
+src/anytun.ncb
+src/anytun.vcproj.*
+src/Debug
+src/Service Release with gcrypt
+src/Debug with gcrypt
+src/Release
+src/Release with gcrypt
+src/Service Debug
+src/Service Debug with gcrypt
+src/Service Release
+src/x64
+src/*.exe
+src/win32/*.o
+src/win32/*.d
+src/win32/*.d.*
