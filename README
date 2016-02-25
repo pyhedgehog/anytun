@@ -102,10 +102,10 @@ Windows
 Installation
 ============
 
-Getting the source via subversion:
-----------------------------------
+Getting the source via GIT:
+---------------------------
 
-svn co http://svn.anytun.org/anytun/trunk anytun
+git clone https://git.spreadspace.org/anytun/anytun.git
 cd anytun
 
 Building from source
