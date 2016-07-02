@@ -139,10 +139,10 @@ int main(int argc, char* argv[])
   int ret = 0;
   UDPPacketSource::proto::endpoint endpoint;
   // allow emtpy endpoint!!!
-  gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(),
-                       boost::bind(createConnectionResolver, _1, boost::ref(cl), gOpt.getSeqWindowSize(), boost::ref(queue), gOpt.getMux(), boost::ref(sem)),
-                       boost::bind(createConnectionError, _1, boost::ref(sem), boost::ref(ret)),
-                       gOpt.getResolvAddrType());
+//  gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(),
+//                       boost::bind(createConnectionResolver, _1, boost::ref(cl), gOpt.getSeqWindowSize(), boost::ref(queue), gOpt.getMux(), boost::ref(sem)),
+//                       boost::bind(createConnectionError, _1, boost::ref(sem), boost::ref(ret)),
+//                       gOpt.getResolvAddrType());
   sem.down();
   return ret;
 }

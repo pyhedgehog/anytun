@@ -206,8 +206,8 @@ if [ -n "$ERRORS" ] && [ $EBUILD_COMPAT -ne 1 ]; then
 fi
 
 if [ $USE_CLANG -eq 0 ]; then
-  CXXFLAGS='-g -Wall -O2'
-  LDFLAGS='-g -Wall -O2'
+  CXXFLAGS='-g -Wall -Werror -O2'
+  LDFLAGS='-g -Wall -Werror -O2'
   COMPILER='g++'
 else
   CXXFLAGS='-g -O2'

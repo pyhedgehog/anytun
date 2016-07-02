@@ -62,7 +62,7 @@ void PacketSource::waitUntilReady()
 
 UDPPacketSource::UDPPacketSource(std::string localaddr, std::string port)
 {
-  gResolver.resolveUdp(localaddr, port, boost::bind(&UDPPacketSource::onResolve, this, _1), boost::bind(&UDPPacketSource::onError, this, _1), gOpt.getResolvAddrType());
+//  gResolver.resolveUdp(localaddr, port, boost::bind(&UDPPacketSource::onResolve, this, _1), boost::bind(&UDPPacketSource::onError, this, _1), gOpt.getResolvAddrType());
 }
 
 UDPPacketSource::~UDPPacketSource()

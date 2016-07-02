@@ -141,29 +141,29 @@ void Resolver::resolveUdp(const std::string& addr, const std::string& port, UdpR
 {
   cLog.msg(Log::PRIO_DEBUG) << "trying to resolv UDP: '" << addr << "' '" << port << "'";
 
-  std::auto_ptr<udp::resolver::query> query;
+  boost::shared_ptr<udp::resolver::query> query;
   if(addr != "") {
     switch(r) {
     case IPV4_ONLY:
-      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), addr, port));
+      query = boost::shared_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), addr, port));
       break;
     case IPV6_ONLY:
-      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), addr, port));
+      query = boost::shared_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), addr, port));
       break;
     default:
-      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(addr, port));
+      query = boost::shared_ptr<udp::resolver::query>(new udp::resolver::query(addr, port));
       break;
     }
   } else {
     switch(r) {
     case IPV4_ONLY:
-      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), port));
+      query = boost::shared_ptr<udp::resolver::query>(new udp::resolver::query(udp::v4(), port));
       break;
     case IPV6_ONLY:
-      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), port));
+      query = boost::shared_ptr<udp::resolver::query>(new udp::resolver::query(udp::v6(), port));
       break;
     default:
-      query = std::auto_ptr<udp::resolver::query>(new udp::resolver::query(port));
+      query = boost::shared_ptr<udp::resolver::query>(new udp::resolver::query(port));
       break;
     }
   }
@@ -175,29 +175,29 @@ void Resolver::resolveTcp(const std::string& addr, const std::string& port, TcpR
 {
   cLog.msg(Log::PRIO_DEBUG) << "trying to resolv TCP: '" << addr << "' '" << port << "'";
 
-  std::auto_ptr<tcp::resolver::query> query;
+  boost::shared_ptr<tcp::resolver::query> query;
   if(addr != "") {
     switch(r) {
     case IPV4_ONLY:
-      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), addr, port));
+      query = boost::shared_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), addr, port));
       break;
     case IPV6_ONLY:
-      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), addr, port));
+      query = boost::shared_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), addr, port));
       break;
     default:
-      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(addr, port));
+      query = boost::shared_ptr<tcp::resolver::query>(new tcp::resolver::query(addr, port));
       break;
     }
   } else {
     switch(r) {
     case IPV4_ONLY:
-      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), port));
+      query = boost::shared_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v4(), port));
       break;
     case IPV6_ONLY:
-      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), port));
+      query = boost::shared_ptr<tcp::resolver::query>(new tcp::resolver::query(tcp::v6(), port));
       break;
     default:
-      query = std::auto_ptr<tcp::resolver::query>(new tcp::resolver::query(port));
+      query = boost::shared_ptr<tcp::resolver::query>(new tcp::resolver::query(port));
       break;
     }
   }

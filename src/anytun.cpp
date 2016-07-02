@@ -46,6 +46,7 @@
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
 #include <boost/assign.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <iostream>
 #include <fstream>
 
@@ -151,8 +152,8 @@ void sender(TunDevice* dev, PacketSource* src)
   }
 
   try {
-    std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_OUTBOUND));
-    std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_OUTBOUND));
+    boost::scoped_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_OUTBOUND));
+    boost::scoped_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_OUTBOUND));
 
     PlainPacket plain_packet(MAX_PACKET_LENGTH);
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, gOpt.getAuthTagLength());
@@ -243,8 +244,8 @@ void receiver(TunDevice* dev, PacketSource* src)
   }
 
   try {
-    std::auto_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_INBOUND));
-    std::auto_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_INBOUND));
+    boost::scoped_ptr<Cipher> c(CipherFactory::create(gOpt.getCipher(), KD_INBOUND));
+    boost::scoped_ptr<AuthAlgo> a(AuthAlgoFactory::create(gOpt.getAuthAlgo(), KD_INBOUND));
 
     uint32_t auth_tag_length = gOpt.getAuthTagLength();
     EncryptedPacket encrypted_packet(MAX_PACKET_LENGTH, auth_tag_length);
@@ -433,7 +434,7 @@ int main(int argc, char* argv[])
     PacketSource* src = new UDPPacketSource(gOpt.getLocalAddr(), gOpt.getLocalPort());
 
     if(gOpt.getRemoteAddr() != "") {
-      gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnectionResolver, _1, gOpt.getSeqWindowSize(), gOpt.getMux()), boost::bind(createConnectionError, _1), gOpt.getResolvAddrType());
+      //gResolver.resolveUdp(gOpt.getRemoteAddr(), gOpt.getRemotePort(), boost::bind(createConnectionResolver, _1, gOpt.getSeqWindowSize(), gOpt.getMux()), boost::bind(createConnectionError, _1), gOpt.getResolvAddrType());
     }
 
     HostList connect_to = gOpt.getRemoteSyncHosts();
