@@ -53,7 +53,7 @@
 SyncServer::SyncServer(std::string localaddr, std::string port, ConnectCallback onConnect)
   : onConnect_(onConnect)
 {
-//  gResolver.resolveTcp(localaddr, port, boost::bind(&SyncServer::onResolve, this, _1), boost::bind(&SyncServer::onResolvError, this, _1));
+  gResolver.resolveTcp(localaddr, port, boost::bind(&SyncServer::onResolve, this, _1), boost::bind(&SyncServer::onResolvError, this, _1));
 }
 
 SyncServer::~SyncServer()
@@ -65,7 +65,7 @@ SyncServer::~SyncServer()
   }
 }
 
-void SyncServer::onResolve(SyncTcpConnection::proto::resolver::iterator& it)
+void SyncServer::onResolve(SyncTcpConnection::proto::resolver::iterator it)
 {
   while(it != SyncTcpConnection::proto::resolver::iterator()) {
     SyncTcpConnection::proto::endpoint e = *it;

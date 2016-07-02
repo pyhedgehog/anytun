@@ -64,7 +64,7 @@ class SyncServer
 public:
   SyncServer(std::string localaddr, std::string port, ConnectCallback onConnect);
   ~SyncServer();
-  void onResolve(SyncTcpConnection::proto::resolver::iterator& it);
+  void onResolve(SyncTcpConnection::proto::resolver::iterator it);
   void onResolvError(const std::runtime_error& e);
 
   void run();

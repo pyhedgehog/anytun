@@ -83,7 +83,7 @@ public:
   uint32_t recv(uint8_t* buf, uint32_t len, PacketSourceEndpoint& remote);
   void send(uint8_t* buf, uint32_t len, PacketSourceEndpoint remote);
 
-  void onResolve(PacketSourceResolverIt& it);
+  void onResolve(PacketSourceResolverIt it);
   void onError(const std::runtime_error& e);
 
 private:
