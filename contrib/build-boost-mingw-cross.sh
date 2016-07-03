@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-BOOST=1.55.0
+BOOST=1.58.0
 
 BOOST_DASH=`echo $BOOST | perl -ne 's/\./_/g; print'`
 echo $BOOST_DASH

@@ -4,11 +4,11 @@ VER=`cat ../version`
 
 for target in w32 w64; do
   if [ "$target" = "w32" ]; then
-    LIBGCC_DLL=/usr/lib/gcc/i686-w64-mingw32/`i686-w64-mingw32-g++ -dumpversion`/libgcc_s_sjlj-1.dll
-    LIBSTDCPP_DLL=/usr/lib/gcc/i686-w64-mingw32/`i686-w64-mingw32-g++ -dumpversion`/libstdc++-6.dll
+    LIBGCC_DLL=/usr/lib/gcc/i686-w64-mingw32/`i686-w64-mingw32-g++ -dumpversion | sed 's/^\([0-9]*\.[0-9]*\).*/\1-win32/'`/libgcc_s_sjlj-1.dll
+    LIBSTDCPP_DLL=/usr/lib/gcc/i686-w64-mingw32/`i686-w64-mingw32-g++ -dumpversion | sed 's/^\([0-9]*\.[0-9]*\).*/\1-win32/'`/libstdc++-6.dll
   else
-    LIBGCC_DLL=/usr/lib/gcc/i686-w64-mingw32/`i686-w64-mingw32-g++ -dumpversion`/libgcc_s_sjlj-1.dll
-    LIBSTDCPP_DLL=/usr/lib/gcc/i686-w64-mingw32/`i686-w64-mingw32-g++ -dumpversion`/libstdc++-6.dll
+    LIBGCC_DLL=/usr/lib/gcc/x86_64-w64-mingw32/`x86_64-w64-mingw32-g++ -dumpversion | sed 's/^\([0-9]*\.[0-9]*\).*/\1-win32/'`/libgcc_s_seh-1.dll
+    LIBSTDCPP_DLL=/usr/lib/gcc/x86_64-w64-mingw32/`x86_64-w64-mingw32-g++ -dumpversion | sed 's/^\([0-9]*\.[0-9]*\).*/\1-win32/'`/libstdc++-6.dll
   fi
   mkdir anytun-$VER-$target
   cp anytun-$target/*.exe anytun-$VER-$target
