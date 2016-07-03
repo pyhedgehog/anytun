@@ -3,9 +3,11 @@ vendor
 contrib/boost-w32
 contrib/openssl-w32
 contrib/anytun-w32
+contrib/anytun-*-w32.zip
 contrib/boost-w64
 contrib/openssl-w64
 contrib/anytun-w64
+contrib/anytun-*-w64.zip
 doc/anytun.8.xml
 doc/anyrtpproxy.8.xml
 doc/anytun-config.8.xml
