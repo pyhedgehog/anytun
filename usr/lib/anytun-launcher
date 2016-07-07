@@ -43,9 +43,6 @@ start_configd () {
     CONTROLHOST=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e 'control-host' | sed  's/^/ --/' | xargs echo`
     $CONTROLDAEMON -f $VARCONTROL_DIR/$NAME $DAEMONOPTS $CONTROLHOST \
       --write-pid $VARCONTROL_DIR/$NAME.pid
-  else
-    echo "no conf.d directory found (maybe $NAME is an anytun client not a server?)" >&2
-    return 1
   fi
 }
 
