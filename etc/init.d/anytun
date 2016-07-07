@@ -11,7 +11,7 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=anytun
 LAUNCHER=/usr/local/lib/$DAEMON-launcher
-DESC=secure anycast tunneling daemon
+DESC="secure anycast tunneling daemon"
 CONFIG_DIR=/usr/local/etc/$DAEMON
 VARCONTROL_DIR=/var/run/$DAEMON-controld
 VARRUN_DIR=/var/run/$DAEMON/
@@ -28,15 +28,15 @@ start_vpn () {
   if [ -f $CONFIG_DIR/$1/config ] ; then
     $LAUNCHER vpn $1 || STATUS="FAILED"
   else
-    STATUS="no config found"
+    STATUS=" no config found"
   fi
-  start_configd
+  start_configd $1
   echo -n "($STATUS)"
 }
 stop_vpn () {
   kill `cat $PIDFILE` || true
   rm $PIDFILE
-  stop_configd
+  stop_configd $1
 }
 
 start_configd () {
