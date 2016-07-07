@@ -294,9 +294,10 @@ install-bin: $(EXECUTABLES)
 	$(INSTALL) -m 755 anytun-config $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m 755 anytun-controld $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m 755 anytun-showtables $(DESTDIR)$(BINDIR)
+	$(INSTALL) -d $(DESTDIR)$(LIBDIR)
 	@ sed -e 's#/usr/local/sbin#$(SBINDIR)#' -e 's#/usr/local/bin#$(BINDIR)#' \
         -e 's#/usr/local/etc#$(ETCDIR)#' ../usr/lib/anytun-launcher > ../usr/lib/anytun-launcher.bak
-	$(INSTALL) -m 755 ../usr/lib/anytun-launcher.bak $(DESTDIR)$(BINDIR)/anytun-launcher
+	$(INSTALL) -m 755 ../usr/lib/anytun-launcher.bak $(DESTDIR)$(LIBDIR)/anytun-launcher
 	rm -f ../usr/lib/anytun-launcher.bak
 
 install-etc:
