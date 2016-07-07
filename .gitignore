@@ -1,5 +1,3 @@
-lib
-vendor
 contrib/boost-w32
 contrib/openssl-w32
 contrib/anytun-w32

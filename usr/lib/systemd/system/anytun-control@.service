@@ -1,7 +1,9 @@
 [Unit]
-Description=secure anycast tunneling config daemon
-After=syslog.target network.target
+Description=secure anycast tunneling config daemon for %i
+PartOf=anytun.service
+ReloadPropagatedFrom=anytun.service
 Requires=anytun@%i.service
+Documentation=man:anytun-controld(8)
 
 [Service]
 Type=simple

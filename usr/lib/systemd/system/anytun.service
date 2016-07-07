@@ -1,0 +1,13 @@
+[Unit]
+Description=Anytun Service
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecReload=/bin/true
+WorkingDirectory=/etc/anytun
+
+[Install]
+WantedBy=multi-user.target

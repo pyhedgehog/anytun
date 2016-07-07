@@ -1,6 +1,8 @@
 [Unit]
-Description=secure anycast tunneling daemon
-After=syslog.target network.target
+Description=secure anycast tunneling daemon for %i
+PartOf=anytun.service
+ReloadPropagatedFrom=anytun.service
+Documentation=man:anytun(8)
 
 [Service]
 Type=simple
@@ -9,9 +11,10 @@ Environment="NAME=%i" "DAEMONOPTS=-D -L stdout:3 --username anytun"
 ExecStart=/usr/local/lib/anytun-launcher vpn
 Restart=on-failure
 PrivateTmp=yes
-PrivateDevices=yes
 ProtectSystem=full
 ProtectHome=yes
+DeviceAllow=/dev/net/tun rw
+DevicePolicy=closed
 
 [Install]
 WantedBy=multi-user.target
