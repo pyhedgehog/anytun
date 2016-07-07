@@ -1,5 +1,5 @@
 [Unit]
-Description=AnyTun Server Config Control Daemon
+Description=secure anycast tunneling config daemon
 After=syslog.target network.target
 Requires=anytun@%i.service
 
@@ -7,7 +7,7 @@ Requires=anytun@%i.service
 Type=simple
 PIDFile=/run/anytun-controld/%i.pid
 Environment="NAME=%i" "DAEMONOPTS=-D -L stdout:3"
-ExecStart=/usr/bin/anytun-launcher.sh configd
+ExecStart=/usr/local/bin/anytun-launcher.sh configd
 Restart=on-failure
 PrivateTmp=yes
 PrivateDevices=yes

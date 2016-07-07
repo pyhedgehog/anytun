@@ -186,7 +186,7 @@ ifneq ($(MAKECMDGOALS),distclean)
 endif
 
 strip: $(EXECUTABLES)
-	$(STRIP) -s $(EXECUTABLES) 
+	$(STRIP) -s $(EXECUTABLES)
 
 anytun$(EXE): $(ANYTUNOBJS) $(SYNCOBJS) anytun.o
 	$(LD) $(ANYTUNOBJS) $(SYNCOBJS) anytun.o -o $@ $(LDFLAGS)
@@ -280,7 +280,7 @@ INSTALL_TARGETS += install-examples
 REMOVE_TARGETS += remove-examples
 endif
 
-ifdef SYSTEMD
+ifdef SYSTEMDDIR
 INSTALL_TARGETS += install-systemd
 REMOVE_TARGETS := remove-systemd
 endif
@@ -294,27 +294,29 @@ install-bin: $(EXECUTABLES)
 	$(INSTALL) -m 755 anytun-config $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m 755 anytun-controld $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m 755 anytun-showtables $(DESTDIR)$(BINDIR)
-	@ sed -e 's#DAEMON=/usr/sbin/anytun#DAEMON=$(SBINDIR)/anytun#'                               \
-        -e 's#ANYTUNCONFIG=/usr/bin/anytun-config#ANYTUNCONFIG=$(BINDIR)/anytun-config#'       \
-        -e 's#CONTROLDAEMON=/usr/bin/anytun-controld#CONTROLDAEMON=$(BINDIR)/anytun-controld#' \
-        -e 's#CONFIG_DIR=/etc/anytun#CONFIG_DIR=$(ETCDIR)/anytun#' ../usr/bin/anytun-launcher.sh > ../usr/bin/anytun-launcher.sh.bak
+	@ sed -e 's#/usr/local/sbin#$(SBINDIR)#' -e 's#/usr/local/bin#$(BINDIR)#' \
+        -e 's#/usr/local/etc#$(ETCDIR)#' ../usr/bin/anytun-launcher.sh > ../usr/bin/anytun-launcher.sh.bak
 	$(INSTALL) -m 755 ../usr/bin/anytun-launcher.sh.bak $(DESTDIR)$(BINDIR)/anytun-launcher.sh
+	rm -f ../usr/bin/anytun-launcher.sh.bak
 
 install-etc:
 	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/anytun
 	@ echo "example configurations can be found at $(EXAMPLESDIR)/anytun" > $(DESTDIR)$(ETCDIR)/anytun/README
 	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/init.d
-	@ sed -e 's#ANYTUNLAUNCHER=/usr/bin/anytun-launcher.sh#ANYTUNLAUNCHER=$(BINDIR)/anytun-launcher.sh#' \
-        -e 's#CONFIG_DIR=/etc/anytun#CONFIG_DIR=$(ETCDIR)/anytun#' ../etc/init.d/anytun > ../etc/init.d/anytun.bak
+	@ sed -e 's#/usr/local/bin#$(BINDIR)#' -e 's#/usr/local/etc#$(ETCDIR)#' ../etc/init.d/anytun > ../etc/init.d/anytun.bak
 	$(INSTALL) -m 755 ../etc/init.d/anytun.bak $(DESTDIR)$(ETCDIR)/init.d/anytun
 	rm -f ../etc/init.d/anytun.bak
 
 install-systemd:
-	@ sed -e 's#/usr/bin/#$(DESTDIR)$(BINDIR)/#' ../usr/lib/systemd/system/anytun@.service > ../usr/lib/systemd/system/anytun@.service.bak
-	@ sed -e 's#/usr/bin/#$(DESTDIR)$(BINDIR)/#' ../usr/lib/systemd/system/anytun-control@.service > ../usr/lib/systemd/system/anytun-control@.service.bak
-	$(INSTALL) ../usr/lib/systemd/system/anytun@.service.bak $(DESTDIR)$(SYSTEMD_SYSTEMUNITDIR)/anytun@.service
-	$(INSTALL) ../usr/lib/systemd/system/anytun-control@.service.bak  $(DESTDIR)$(SYSTEMD_SYSTEMUNITDIR)/anytun-control@.service
-	$(INSTALL) ../etc/tmpfiles.d/anytun.conf  $(DESTDIR)$(SYSTEMD_TMPFILESDIR)/anytun.conf
+	$(INSTALL) -d $(DESTDIR)$(SYSTEMDDIR)
+	$(INSTALL) -d $(DESTDIR)$(TMPFILESDDIR)
+	@ sed -e 's#/usr/local/bin/#$(BINDIR)/#' ../usr/lib/systemd/system/anytun@.service > ../usr/lib/systemd/system/anytun@.service.bak
+	@ sed -e 's#/usr/local/bin/#$(BINDIR)/#' ../usr/lib/systemd/system/anytun-control@.service > ../usr/lib/systemd/system/anytun-control@.service.bak
+	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun@.service.bak $(DESTDIR)$(SYSTEMDDIR)/anytun@.service
+	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun-control@.service.bak $(DESTDIR)$(SYSTEMDDIR)/anytun-control@.service
+	$(INSTALL) -m 644 ../usr/lib/tmpfiles.d/anytun.conf $(DESTDIR)$(TMPFILESDDIR)/anytun.conf
+	rm -f ../usr/lib/systemd/system/anytun@.service.bak
+	rm -f ../usr/lib/systemd/system/anytun-control@.service.bak
 
 install-examples:
 	$(INSTALL) -d $(DESTDIR)$(EXAMPLESDIR)/anytun
@@ -366,9 +368,9 @@ remove-etc:
 	rm -f $(DESTDIR)$(ETCDIR)/init.d/anytun
 
 remove-systemd:
-	rm -f $(DESTDIR)$(SYSTEMD_SYSTEMUNITDIR)/anytun@.service
-	rm -f $(DESTDIR)$(SYSTEMD_SYSTEMUNITDIR)/anytun-control@.service
-	rm -f $(DESTDIR)$(SYSTEMD_TMPFILESDIR)/anytun.conf
+	rm -f $(DESTDIR)$(SYSTEMDDIR)/anytun@.service
+	rm -f $(DESTDIR)$(SYSTEMDDIR)/anytun-control@.service
+	rm -f $(DESTDIR)$(TMPFILESDDIR)/anytun.conf
 
 remove-examples:
 	rm -rf $(DESTDIR)$(EXAMPLESDIR)/anytun/

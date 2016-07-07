@@ -1,12 +1,12 @@
 [Unit]
-Description=AnyTun secure anycast tunneling
+Description=secure anycast tunneling daemon
 After=syslog.target network.target
 
 [Service]
 Type=simple
 PIDFile=/run/anytun/%i.pid
 Environment="NAME=%i" "DAEMONOPTS=-D -L stdout:3"
-ExecStart=/usr/bin/anytun-launcher.sh vpn
+ExecStart=/usr/local/bin/anytun-launcher.sh vpn
 Restart=on-failure
 PrivateTmp=yes
 PrivateDevices=yes
