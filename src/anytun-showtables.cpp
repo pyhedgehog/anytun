@@ -53,6 +53,7 @@
 #include "routingTable.h"
 #include "networkAddress.h"
 #include "syncCommand.h"
+#include "cryptinit.hpp"
 
 #include <sstream>
 #include <iostream>
@@ -127,8 +128,9 @@ void readAndProcessOne()
 
 int main(int argc, char* argv[])
 {
-  int ret = 0;
+  initCrypto();
 
+  int ret = 0;
   while(std::cin.good()) {
     try {
       readAndProcessOne();
