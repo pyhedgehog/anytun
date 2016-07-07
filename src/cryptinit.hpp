@@ -48,6 +48,8 @@
 
 #ifndef NO_CRYPT
 
+#include "anytunError.h"
+
 #if defined(USE_GCRYPT)
 #include <gcrypt.h>
 

@@ -57,6 +57,7 @@
 #include "networkAddress.h"
 #include "packetSource.h"
 #include "resolver.h"
+#include "cryptinit.hpp"
 
 #include "syncQueue.h"
 #include "syncCommand.h"
@@ -131,6 +132,8 @@ int main(int argc, char* argv[])
   gOpt.parse_post(); // print warnings
 
   gResolver.init();
+
+  initCrypto();
 
   ConnectionList cl;
   SyncQueue queue;
