@@ -295,23 +295,23 @@ install-bin: $(EXECUTABLES)
 	$(INSTALL) -m 755 anytun-controld $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m 755 anytun-showtables $(DESTDIR)$(BINDIR)
 	@ sed -e 's#/usr/local/sbin#$(SBINDIR)#' -e 's#/usr/local/bin#$(BINDIR)#' \
-        -e 's#/usr/local/etc#$(ETCDIR)#' ../usr/bin/anytun-launcher.sh > ../usr/bin/anytun-launcher.sh.bak
-	$(INSTALL) -m 755 ../usr/bin/anytun-launcher.sh.bak $(DESTDIR)$(BINDIR)/anytun-launcher.sh
-	rm -f ../usr/bin/anytun-launcher.sh.bak
+        -e 's#/usr/local/etc#$(ETCDIR)#' ../usr/lib/anytun-launcher > ../usr/lib/anytun-launcher.bak
+	$(INSTALL) -m 755 ../usr/lib/anytun-launcher.bak $(DESTDIR)$(BINDIR)/anytun-launcher
+	rm -f ../usr/lib/anytun-launcher.bak
 
 install-etc:
 	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/anytun
 	@ echo "example configurations can be found at $(EXAMPLESDIR)/anytun" > $(DESTDIR)$(ETCDIR)/anytun/README
 	$(INSTALL) -d $(DESTDIR)$(ETCDIR)/init.d
-	@ sed -e 's#/usr/local/bin#$(BINDIR)#' -e 's#/usr/local/etc#$(ETCDIR)#' ../etc/init.d/anytun > ../etc/init.d/anytun.bak
+	@ sed -e 's#/usr/local/bin#$(BINDIR)#' -e 's#/usr/local/lib#$(LIBDIR)#' -e 's#/usr/local/etc#$(ETCDIR)#' ../etc/init.d/anytun > ../etc/init.d/anytun.bak
 	$(INSTALL) -m 755 ../etc/init.d/anytun.bak $(DESTDIR)$(ETCDIR)/init.d/anytun
 	rm -f ../etc/init.d/anytun.bak
 
 install-systemd:
 	$(INSTALL) -d $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -d $(DESTDIR)$(TMPFILESDDIR)
-	@ sed -e 's#/usr/local/bin/#$(BINDIR)/#' ../usr/lib/systemd/system/anytun@.service > ../usr/lib/systemd/system/anytun@.service.bak
-	@ sed -e 's#/usr/local/bin/#$(BINDIR)/#' ../usr/lib/systemd/system/anytun-control@.service > ../usr/lib/systemd/system/anytun-control@.service.bak
+	@ sed -e 's#/usr/local/lib/#$(LIBDIR)/#' ../usr/lib/systemd/system/anytun@.service > ../usr/lib/systemd/system/anytun@.service.bak
+	@ sed -e 's#/usr/local/lib/#$(LIBDIR)/#' ../usr/lib/systemd/system/anytun-control@.service > ../usr/lib/systemd/system/anytun-control@.service.bak
 	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun@.service.bak $(DESTDIR)$(SYSTEMDDIR)/anytun@.service
 	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun-control@.service.bak $(DESTDIR)$(SYSTEMDDIR)/anytun-control@.service
 	$(INSTALL) -m 644 ../usr/lib/tmpfiles.d/anytun.conf $(DESTDIR)$(TMPFILESDDIR)/anytun.conf

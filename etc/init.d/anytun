@@ -10,7 +10,7 @@
 ### END INIT INFO
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=anytun
-LAUNCHER=/usr/local/bin/$DAEMON-launcher.sh
+LAUNCHER=/usr/local/lib/$DAEMON-launcher
 DESC=secure anycast tunneling daemon
 CONFIG_DIR=/usr/local/etc/$DAEMON
 VARCONTROL_DIR=/var/run/$DAEMON-controld

@@ -7,7 +7,7 @@ Requires=anytun@%i.service
 Type=simple
 PIDFile=/run/anytun-controld/%i.pid
 Environment="NAME=%i" "DAEMONOPTS=-D -L stdout:3 --username anytun"
-ExecStart=/usr/local/bin/anytun-launcher.sh configd
+ExecStart=/usr/local/lib/anytun-launcher configd
 Restart=on-failure
 PrivateTmp=yes
 PrivateDevices=yes

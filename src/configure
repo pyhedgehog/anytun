@@ -59,6 +59,7 @@ ROUTING=1
 PREFIX='/usr/local'
 BINDIR=''
 SBINDIR=''
+LIBDIR=''
 ETCDIR=''
 MANDIR=''
 INSTALLMANPAGE=1
@@ -79,6 +80,7 @@ print_usage() {
   echo "          --prefix=<PREFIX>                  the installation prefix (default: /usr/local)"
   echo "          --bindir=<DIR>                     the path to the bin directory (default: $PREFIX/bin)"
   echo "          --sbindir=<DIR>                    the path to the sbin directory (default: $PREFIX/sbin)"
+  echo "          --libdir=<DIR>                     the path to the lib directory (default: $PREFIX/lib)"
   echo "          --sysconfdir=<DIR>                 the path to the system configuration directory (default: $PREFIX/etc"
   echo "          --mandir=<DIR>                     the path to the system man pages (default: $PREFIX/share/man)"
   echo "          --no-manpage                       don't install manpages"
@@ -120,6 +122,9 @@ do
   ;;
   --sbindir=*)
     SBINDIR=${arg#--sbindir=}
+  ;;
+  --libdir=*)
+    LIBDIR=${arg#--libdir=}
   ;;
   --sysconfdir=*)
     ETCDIR=${arg#--sysconfdir=}
@@ -325,6 +330,10 @@ if [ -z "$SBINDIR" ]; then
   SBINDIR=$PREFIX/sbin
 fi
 
+if [ -z "$LIBDIR" ]; then
+  LIBDIR=$PREFIX/lib
+fi
+
 if [ -z "$ETCDIR" ]; then
   ETCDIR=$PREFIX/etc
 fi
@@ -362,6 +371,7 @@ INSTALL = install
 prefix := $PREFIX
 BINDIR := $BINDIR
 SBINDIR := $SBINDIR
+LIBDIR := $LIBDIR
 ETCDIR := $ETCDIR
 EOF
 

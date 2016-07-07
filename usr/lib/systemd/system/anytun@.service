@@ -6,7 +6,7 @@ After=syslog.target network.target
 Type=simple
 PIDFile=/run/anytun/%i.pid
 Environment="NAME=%i" "DAEMONOPTS=-D -L stdout:3 --username anytun"
-ExecStart=/usr/local/bin/anytun-launcher.sh vpn
+ExecStart=/usr/local/lib/anytun-launcher vpn
 Restart=on-failure
 PrivateTmp=yes
 PrivateDevices=yes
