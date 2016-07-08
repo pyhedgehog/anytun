@@ -192,11 +192,6 @@ For each such CLIENT instance, use the following command to enable it:
 
 # systemctl enable anytun@${vpnname}.service
 
-For each anytun SERVER instance, anytun-control must be enabled as well:
-
-# systemctl enable anytun@${vpnname}.service
-# systemctl enable anytun-control@${vpnname}.service
-
 Manually start and stop instances by replacing enable with start or stop.
 
 

@@ -1,7 +1,6 @@
 [Unit]
 Description=secure anycast tunneling config daemon for %i
 PartOf=anytun.service
-ReloadPropagatedFrom=anytun.service
 Requires=anytun@%i.service
 After=anytun@%i.service
 Documentation=man:anytun-controld(8)
@@ -19,3 +18,4 @@ ProtectHome=yes
 
 [Install]
 WantedBy=multi-user.target
+Also=anytun@%i.service

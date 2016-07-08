@@ -312,11 +312,11 @@ install-systemd:
 	$(INSTALL) -d $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun.service $(DESTDIR)$(SYSTEMDDIR)/anytun.service
 	@ sed -e 's#/usr/local/lib/#$(LIBDIR)/#' ../usr/lib/systemd/system/anytun@.service > ../usr/lib/systemd/system/anytun@.service.bak
-	@ sed -e 's#/usr/local/lib/#$(LIBDIR)/#' ../usr/lib/systemd/system/anytun-control@.service > ../usr/lib/systemd/system/anytun-control@.service.bak
+	@ sed -e 's#/usr/local/lib/#$(LIBDIR)/#' ../usr/lib/systemd/system/anytun-controld@.service > ../usr/lib/systemd/system/anytun-controld@.service.bak
 	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun@.service.bak $(DESTDIR)$(SYSTEMDDIR)/anytun@.service
-	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun-control@.service.bak $(DESTDIR)$(SYSTEMDDIR)/anytun-control@.service
+	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun-controld@.service.bak $(DESTDIR)$(SYSTEMDDIR)/anytun-controld@.service
 	rm -f ../usr/lib/systemd/system/anytun@.service.bak
-	rm -f ../usr/lib/systemd/system/anytun-control@.service.bak
+	rm -f ../usr/lib/systemd/system/anytun-controld@.service.bak
 	$(INSTALL) -d $(DESTDIR)$(TMPFILESDDIR)
 	$(INSTALL) -m 644 ../usr/lib/tmpfiles.d/anytun.conf $(DESTDIR)$(TMPFILESDDIR)/anytun.conf
 
@@ -372,7 +372,7 @@ remove-etc:
 remove-systemd:
 	rm -f $(DESTDIR)$(SYSTEMDDIR)/anytun.service
 	rm -f $(DESTDIR)$(SYSTEMDDIR)/anytun@.service
-	rm -f $(DESTDIR)$(SYSTEMDDIR)/anytun-control@.service
+	rm -f $(DESTDIR)$(SYSTEMDDIR)/anytun-controld@.service
 	rm -f $(DESTDIR)$(TMPFILESDDIR)/anytun.conf
 
 remove-examples:

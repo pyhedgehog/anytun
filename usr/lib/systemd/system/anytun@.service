@@ -1,7 +1,6 @@
 [Unit]
 Description=secure anycast tunneling daemon for %i
 PartOf=anytun.service
-ReloadPropagatedFrom=anytun.service
 Wants=anytun-controld@%i.service
 Documentation=man:anytun(8)
 
