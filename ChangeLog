@@ -1,6 +1,8 @@
-2016.07.03 -- Version 0.3.6
+2016.07.08 -- Version 0.3.6
 
 * fixed build for GCC-6 and C++0x
+* fixed some libgcrypt warnings @ anytun-showtables and anytun-config
+* added systemd unit files and gernator
 
 2014.08.26 -- Version 0.3.5
 
