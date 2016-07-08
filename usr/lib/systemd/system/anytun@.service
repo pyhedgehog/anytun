@@ -1,7 +1,7 @@
 [Unit]
 Description=secure anycast tunneling daemon for %i
 PartOf=anytun.service
-Wants=anytun-controld@%i.service
+Requires=anytun-controld@%i.service
 Documentation=man:anytun(8)
 
 [Service]
@@ -18,4 +18,3 @@ DevicePolicy=closed
 
 [Install]
 WantedBy=multi-user.target
-Also=anytun-controld@%i.service
