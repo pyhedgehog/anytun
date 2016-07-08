@@ -19,3 +19,4 @@ DevicePolicy=closed
 
 [Install]
 WantedBy=multi-user.target
+Also=anytun-controld@%i.service

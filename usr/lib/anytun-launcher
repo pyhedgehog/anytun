@@ -22,7 +22,7 @@ start_vpn () {
     fi
     test -d $VARRUN_DIR || mkdir -p $VARRUN_DIR
     DAEMONARG=`sed 's/#.*//' < $CONFIG_DIR/$NAME/config | grep -e '\w' | sed  's/^/--/' | tr '\n' ' '`
-    $DAEMON --write-pid $VARRUN_DIR/$NAME.pid $POSTUP $DAEMONOPTS $DAEMONARG
+    exec $DAEMON --write-pid $VARRUN_DIR/$NAME.pid $POSTUP $DAEMONOPTS $DAEMONARG
   else
     echo "no config found" >&2
     return 1
@@ -41,7 +41,7 @@ start_configd () {
       $ANYTUNCONFIG $DAEMONARG $CIPHER $AUTHALGO $KDPRF >> $VARCONTROL_DIR/$NAME
     done
     CONTROLHOST=`sed 's/#.*//'  <  $CONFIG_DIR/$NAME/config | grep -e 'control-host' | sed  's/^/ --/' | xargs echo`
-    $CONTROLDAEMON -f $VARCONTROL_DIR/$NAME $DAEMONOPTS $CONTROLHOST \
+    exec $CONTROLDAEMON -f $VARCONTROL_DIR/$NAME $DAEMONOPTS $CONTROLHOST \
       --write-pid $VARCONTROL_DIR/$NAME.pid
   fi
 }
