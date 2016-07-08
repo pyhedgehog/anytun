@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# This systemd generator creates dependency symlinks that make all anytun
+# tunnels listed in /etc/anytun/autostart be started/stopped/reloaded
+# when anytun.service is started/stopped/reloaded.
+
+set -eu
+
+GENDIR="$1"
+WANTDIR="$1/anytun.service.wants"
+SERVICEFILE="/lib/systemd/system/anytun@.service"
+AUTOSTART="all"
+CONFIG_DIR=/usr/local/etc/anytun
+
+mkdir -p "$WANTDIR"
+
+if [ -f $CONFIG_DIR/autostart ] ; then
+	for NAME in `sed 's/#.*//'  <  $CONFIG_DIR/autostart | grep -e '\w'`; do
+		ln -s "$SERVICEFILE" "$WANTDIR/anytun@$NAME.service"
+        done
+fi
+
+exit 0

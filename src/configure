@@ -66,6 +66,7 @@ INSTALLMANPAGE=1
 EXAMPLESDIR=''
 INSTALLEXAMPLES=1
 SYSTEMDDIR=''
+SYSTEMDGENERATORDIR=''
 TMPFILESDDIR=''
 INSTALLSYSTEMD=1
 
@@ -87,6 +88,7 @@ print_usage() {
   echo "          --examplesdir=<DIR>                the path to the examples files (default: $PREFIX/share/examples)"
   echo "          --no-examples                      don't install example files"
   echo "          --systemddir=<DIR>                 the path to the systemd service unit directory (default: from pkg-config)"
+  echo "          --systemdgeneratordir=<DIR>        the path to the systemd generator directory (default: from pkg-config)"
   echo "          --tmpfilesddir=<DIR>               the path to the systemd tmpfiles.d configuration file (default: from pkg-config)"
   echo "          --no-systemd                       don't install systemd units"
   echo "          --use-gcrypt                       use libgcrypt (this is the default)"
@@ -143,6 +145,9 @@ do
   ;;
   --systemddir=*)
     SYSTEMDDIR=${arg#--systemddir=}
+  ;;
+  --systemdgeneratordir=*)
+    SYSTEMDGENERATORDIR=${arg#--systemdgeneratordir=}
   ;;
   --tmpfilesddir=*)
     TMPFILESDDIR=${arg#--tmpfilesddir=}
@@ -350,6 +355,9 @@ if [ $INSTALLSYSTEMD -eq 1 ]; then
   if [ -z "$SYSTEMDDIR" ]; then
     SYSTEMDDIR=`pkg-config systemd --variable=systemdsystemunitdir`
   fi
+  if [ -z "$SYSTEMDGENERATORDIR" ]; then
+    SYSTEMDGENERATORDIR=`pkg-config systemd --variable=systemdsystemgeneratordir`
+  fi
   if [ -z "$TMPFILESDDIR" ]; then
     TMPFILESDDIR=`pkg-config systemd --variable=tmpfilesdir`
   fi
@@ -395,6 +403,7 @@ fi
 
 if [ $INSTALLSYSTEMD -eq 1 ]; then
   echo "SYSTEMDDIR := $SYSTEMDDIR" >> include.mk
+  echo "SYSTEMDGENERATORDIR := $SYSTEMDGENERATORDIR" >> include.mk
   echo "TMPFILESDDIR := $TMPFILESDDIR" >> include.mk
   echo "installing systemd units"
 else

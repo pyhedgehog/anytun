@@ -311,12 +311,16 @@ install-etc:
 install-systemd:
 	$(INSTALL) -d $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun.service $(DESTDIR)$(SYSTEMDDIR)/anytun.service
-	@ sed -e 's#/usr/local/lib/#$(LIBDIR)/#' ../usr/lib/systemd/system/anytun@.service > ../usr/lib/systemd/system/anytun@.service.bak
-	@ sed -e 's#/usr/local/lib/#$(LIBDIR)/#' ../usr/lib/systemd/system/anytun-controld@.service > ../usr/lib/systemd/system/anytun-controld@.service.bak
+	@ sed -e 's#/usr/local/lib#$(LIBDIR)#' ../usr/lib/systemd/system/anytun@.service > ../usr/lib/systemd/system/anytun@.service.bak
+	@ sed -e 's#/usr/local/lib#$(LIBDIR)#' ../usr/lib/systemd/system/anytun-controld@.service > ../usr/lib/systemd/system/anytun-controld@.service.bak
 	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun@.service.bak $(DESTDIR)$(SYSTEMDDIR)/anytun@.service
 	$(INSTALL) -m 644 ../usr/lib/systemd/system/anytun-controld@.service.bak $(DESTDIR)$(SYSTEMDDIR)/anytun-controld@.service
 	rm -f ../usr/lib/systemd/system/anytun@.service.bak
 	rm -f ../usr/lib/systemd/system/anytun-controld@.service.bak
+	$(INSTALL) -d $(DESTDIR)$(SYSTEMDGENERATORDIR)
+	@ sed -e 's#/usr/local/etc#$(ETCDIR)#' ../usr/lib/systemd/system-generator/anytun-generator > ../usr/lib/systemd/system-generator/anytun-generator.bak
+	$(INSTALL) -m 755 ../usr/lib/systemd/system-generator/anytun-generator.bak $(DESTDIR)$(SYSTEMDGENERATORDIR)/anytun-generator
+	rm -f ../usr/lib/systemd/system-generator/anytun-generator.bak
 	$(INSTALL) -d $(DESTDIR)$(TMPFILESDDIR)
 	$(INSTALL) -m 644 ../usr/lib/tmpfiles.d/anytun.conf $(DESTDIR)$(TMPFILESDDIR)/anytun.conf
 
@@ -373,6 +377,7 @@ remove-systemd:
 	rm -f $(DESTDIR)$(SYSTEMDDIR)/anytun.service
 	rm -f $(DESTDIR)$(SYSTEMDDIR)/anytun@.service
 	rm -f $(DESTDIR)$(SYSTEMDDIR)/anytun-controld@.service
+	rm -f $(DESTDIR)$(SYSTEMDGENERATORDIR)/anytun-generator
 	rm -f $(DESTDIR)$(TMPFILESDDIR)/anytun.conf
 
 remove-examples:
