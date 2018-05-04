@@ -79,7 +79,7 @@ TunDevice::TunDevice(std::string dev_name, std::string dev_type, std::string ifc
   }
 
   if(dev_name != "") {
-    strncpy(ifr.ifr_name, dev_name.c_str(), IFNAMSIZ);
+    strncpy(ifr.ifr_name, dev_name.c_str(), IFNAMSIZ-1);
   }
 
   fd_ = ::open(DEFAULT_DEVICE, O_RDWR);
