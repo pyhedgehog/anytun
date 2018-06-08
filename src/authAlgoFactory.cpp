@@ -48,6 +48,7 @@
 
 #include "authAlgoFactory.h"
 #include "authAlgo.h"
+#include "anytunError.h"
 
 
 AuthAlgo* AuthAlgoFactory::create(std::string const& type, kd_dir_t dir)
@@ -57,7 +58,13 @@ AuthAlgo* AuthAlgoFactory::create(std::string const& type, kd_dir_t dir)
   }
 #ifndef NO_CRYPT
   else if(type == "sha1") {
-    return new Sha1AuthAlgo(dir);
+    Sha1AuthAlgo* a = new Sha1AuthAlgo(dir);
+    if(!a || !(a->Init())) {
+      if(a)
+        delete a;
+      AnytunError::throwErr() << "failed to initialize SHA1 auth algo";
+    }
+    return a;
   }
 #endif
   else {

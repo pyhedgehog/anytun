@@ -207,7 +207,7 @@ void AesIcmCipher::calc(KeyDerivation& kd, uint8_t* in, uint32_t ilen, uint8_t* 
   }
   unsigned int num = 0;
   std::memset(ecount_buf_, 0, AES_BLOCK_SIZE);
-  AES_ctr128_encrypt(in, out, (ilen < olen) ? ilen : olen, &aes_key_, ctr_.buf_, ecount_buf_, &num);
+  CRYPTO_ctr128_encrypt(in, out, (ilen < olen) ? ilen : olen, &aes_key_, ctr_.buf_, ecount_buf_, &num, (block128_f)AES_encrypt);
 #elif defined(USE_NETTLE)
   if(CTR_LENGTH != AES_BLOCK_SIZE) {
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";

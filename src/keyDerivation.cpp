@@ -61,7 +61,9 @@
 #ifndef NO_PASSPHRASE
 
 #if defined(USE_SSL_CRYPTO)
+#include <openssl/crypto.h>
 #include <openssl/sha.h>
+#include <openssl/modes.h>
 #elif defined(USE_NETTLE)
 #include <nettle/sha1.h>
 #include <nettle/sha2.h>
@@ -363,9 +365,9 @@ bool AesIcmKeyDerivation::generate(kd_dir_t dir, satp_prf_label_t label, seq_nr_
     return false;
   }
   unsigned int num = 0;
-  std::memset(ecount_buf_[dir], 0, AES_BLOCK_SIZE);
   std::memset(key.getBuf(), 0, key.getLength());
-  AES_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num);
+  std::memset(ecount_buf_[dir], 0, AES_BLOCK_SIZE);
+  CRYPTO_ctr128_encrypt(key.getBuf(), key.getBuf(), key.getLength(), &aes_key_[dir], ctr_[dir].buf_, ecount_buf_[dir], &num, (block128_f)AES_encrypt);
 #elif defined(USE_NETTLE)
   if(CTR_LENGTH != AES_BLOCK_SIZE) {
     cLog.msg(Log::PRIO_ERROR) << "AesIcmCipher: Failed to set cipher CTR: size doesn't fit";

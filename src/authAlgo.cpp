@@ -68,23 +68,51 @@ bool NullAuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 Sha1AuthAlgo::Sha1AuthAlgo(kd_dir_t d) : AuthAlgo(d), key_(DIGEST_LENGTH)
 {
 #if defined(USE_SSL_CRYPTO)
-  HMAC_CTX_init(&ctx_);
-  HMAC_Init_ex(&ctx_, NULL, 0, EVP_sha1(), NULL);
+  ctx_ = NULL;
+#elif defined(USE_NETTLE)
+  // nothing here
+#else  // USE_GCRYPT is the default
+  handle_ = 0;
+#endif
+}
+
+bool Sha1AuthAlgo::Init()
+{
+#if defined(USE_SSL_CRYPTO)
+# if OPENSSL_VERSION_NUMBER >= 0x10100000L
+  if ((ctx_ = HMAC_CTX_new()) == NULL) {
+    return false;
+  }
+# else
+  if ((ctx_ = (HMAC_CTX*)calloc(1, sizeof(HMAC_CTX))) == NULL) {
+    return false;
+  }
+  HMAC_CTX_init(ctx_);
+# endif
+  HMAC_Init_ex(ctx_, NULL, 0, EVP_sha1(), NULL);
 #elif defined(USE_NETTLE)
   // nothing here
 #else  // USE_GCRYPT is the default
   gcry_error_t err = gcry_md_open(&handle_, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC);
   if(err) {
     cLog.msg(Log::PRIO_ERROR) << "Sha1AuthAlgo::Sha1AuthAlgo: Failed to open message digest algo";
-    return;
+    return false;
   }
 #endif
+  return true;
 }
 
 Sha1AuthAlgo::~Sha1AuthAlgo()
 {
 #if defined(USE_SSL_CRYPTO)
-  HMAC_CTX_cleanup(&ctx_);
+  if(ctx_) {
+# if OPENSSL_VERSION_NUMBER >= 0x10100000L
+    HMAC_CTX_free(ctx_);
+# else
+    HMAC_CTX_cleanup(ctx_);
+    free(ctx_);
+# endif
+  }
 #elif defined(USE_NETTLE)
   // nothing here
 #else  // USE_GCRYPT is the default
@@ -109,11 +137,11 @@ void Sha1AuthAlgo::generate(KeyDerivation& kd, EncryptedPacket& packet)
 
   kd.generate(dir_, LABEL_AUTH, packet.getSeqNr(), key_);
 #if defined(USE_SSL_CRYPTO)
-  HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
+  HMAC_Init_ex(ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
 
   uint8_t hmac[DIGEST_LENGTH];
-  HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
-  HMAC_Final(&ctx_, hmac, NULL);
+  HMAC_Update(ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
+  HMAC_Final(ctx_, hmac, NULL);
 #elif defined(USE_NETTLE)
   hmac_sha1_set_key(&ctx_, key_.getLength(), key_.getBuf());
 
@@ -158,11 +186,11 @@ bool Sha1AuthAlgo::checkTag(KeyDerivation& kd, EncryptedPacket& packet)
 
   kd.generate(dir_, LABEL_AUTH, packet.getSeqNr(), key_);
 #if defined(USE_SSL_CRYPTO)
-  HMAC_Init_ex(&ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
+  HMAC_Init_ex(ctx_, key_.getBuf(), key_.getLength(), EVP_sha1(), NULL);
 
   uint8_t hmac[DIGEST_LENGTH];
-  HMAC_Update(&ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
-  HMAC_Final(&ctx_, hmac, NULL);
+  HMAC_Update(ctx_, packet.getAuthenticatedPortion(), packet.getAuthenticatedPortionLength());
+  HMAC_Final(ctx_, hmac, NULL);
 #elif defined(USE_NETTLE)
   hmac_sha1_set_key(&ctx_, key_.getLength(), key_.getBuf());
 

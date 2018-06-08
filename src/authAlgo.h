@@ -101,10 +101,13 @@ public:
 //****** Sha1AuthAlgo ******
 //* HMAC SHA1 Auth Tag Generator Class
 
+class AuthAlgoFactory;
+
 class Sha1AuthAlgo : public AuthAlgo
 {
+  friend class AuthAlgoFactory;
+
 public:
-  Sha1AuthAlgo(kd_dir_t d);
   ~Sha1AuthAlgo();
 
   void generate(KeyDerivation& kd, EncryptedPacket& packet);
@@ -113,8 +116,11 @@ public:
   static const uint32_t DIGEST_LENGTH = 20;
 
 private:
+  Sha1AuthAlgo(kd_dir_t d);
+  bool Init();
+
 #if defined(USE_SSL_CRYPTO)
-  HMAC_CTX ctx_;
+  HMAC_CTX *ctx_;
 #elif defined(USE_NETTLE)
   struct hmac_sha1_ctx ctx_;
 #else  // USE_GCRYPT is the default
