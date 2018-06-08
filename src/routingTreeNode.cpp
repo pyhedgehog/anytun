@@ -43,6 +43,8 @@
  *  files in the program, then also delete it here.
  */
 
+#include <iostream>
+
 #include "routingTreeNode.h"
 
 RoutingTreeNode::RoutingTreeNode():mux_(0),valid_(false)
