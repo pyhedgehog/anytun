@@ -1,3 +1,8 @@
+2018.06.08 -- version 0.3.7
+
+* fix build for new versions of GCC and Boost
+* add support for OpenSSL 1.1
+
 2016.07.08 -- Version 0.3.6
 
 * fixed build for GCC-6 and C++0x
