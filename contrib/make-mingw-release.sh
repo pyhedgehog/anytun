@@ -14,7 +14,7 @@ for target in w32 w64; do
   cp anytun-$target/*.exe anytun-$VER-$target
   cp $LIBGCC_DLL $LIBSTDCPP_DLL anytun-$VER-$target
   cp boost-$target/lib/libboost_{date_time,serialization,system,thread_win32,chrono}.dll anytun-$VER-$target
-  cp openssl-$target/bin/libeay32.dll anytun-$VER-$target
+  cp openssl-$target/bin/{libeay32.dll,libcrypto*.dll} anytun-$VER-$target
   cp anytun-example.bat anytun-$VER-$target
   cp ../{AUTHORS,ChangeLog,LICENSE,README,version} anytun-$VER-$target
   cp -r tap?? anytun-$VER-$target

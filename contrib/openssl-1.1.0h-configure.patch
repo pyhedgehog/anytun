@@ -1,0 +1,32 @@
+diff -Nur openssl-1.1.0h.orig/config openssl-1.1.0h/config
+--- openssl-1.1.0h.orig/config	2018-06-09 01:39:38.845245228 +0200
++++ openssl-1.1.0h/config	2018-06-09 01:43:01.715723809 +0200
+@@ -843,11 +843,11 @@
+   options="$options $CONFIG_OPTIONS"
+ fi
+ 
+-if expr "$options" : '.*no\-asm' > /dev/null; then :; else
+-  sh -c "$CROSS_COMPILE${CC:-gcc} -Wa,--help -c -o /tmp/null.$$.o -x assembler /dev/null && rm /tmp/null.$$.o" 2>&1 | \
+-  grep \\--noexecstack >/dev/null && \
+-  options="$options -Wa,--noexecstack"
+-fi
++#if expr "$options" : '.*no\-asm' > /dev/null; then :; else
++#  sh -c "$CROSS_COMPILE${CC:-gcc} -Wa,--help -c -o /tmp/null.$$.o -x assembler /dev/null && rm /tmp/null.$$.o" 2>&1 | \
++#  grep \\--noexecstack >/dev/null && \
++#  options="$options -Wa,--noexecstack"
++#fi
+ 
+ # gcc < 2.8 does not support -march=ultrasparc
+ if [ "$OUT" = solaris-sparcv9-gcc -a $GCCVER -lt 28 ]
+diff -Nur openssl-1.1.0h.orig/Configure openssl-1.1.0h/Configure
+--- openssl-1.1.0h.orig/Configure	2018-06-09 01:39:38.845245228 +0200
++++ openssl-1.1.0h/Configure	2018-06-09 01:47:30.473859795 +0200
+@@ -741,7 +741,7 @@
+ 		}
+ 	else
+ 		{
+-		die "target already defined - $target (offending arg: $_)\n" if ($target ne "");
++		# die "target already defined - $target (offending arg: $_)\n" if ($target ne "");
+ 		$target=$_;
+ 		}
+ 	unless ($_ eq $target || /^no-/ || /^disable-/)
