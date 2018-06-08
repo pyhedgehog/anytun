@@ -283,6 +283,7 @@ if [ -n "$BOOST_PREFIX" ]; then
   LDFLAGS="$LDFLAGS -L\"$BOOST_PREFIX/lib\""
 fi
 
+CRYPTO_LIB_NAME=""
 case $CRYPTO_LIB in
   gcrypt)
     CXXFLAGS=$CXXFLAGS' -DUSE_GCRYPT'
@@ -291,6 +292,7 @@ case $CRYPTO_LIB in
       CXXFLAGS="$CXXFLAGS -I\"$GCRYPT_PREFIX/include\""
       LDFLAGS="$LDFLAGS -L\"$GCRYPT_PREFIX/lib\""
     fi
+    CRYPTO_LIB_NAME="libgcrypt"
     echo "using gcrypt library"
   ;;
   nettle)
@@ -300,6 +302,7 @@ case $CRYPTO_LIB in
       CXXFLAGS="$CXXFLAGS -I\"$NETTLE_PREFIX/include\""
       LDFLAGS="$LDFLAGS -L\"$NETTLE_PREFIX/lib\""
     fi
+    CRYPTO_LIB_NAME="Nettle"
     echo "using nettle library"
   ;;
   ssl)
@@ -309,10 +312,12 @@ case $CRYPTO_LIB in
       CXXFLAGS="$CXXFLAGS -I\"$OPENSSL_PREFIX/include\""
       LDFLAGS="$LDFLAGS -L\"$OPENSSL_PREFIX/lib\""
     fi
+    CRYPTO_LIB_NAME="OpenSSL"
     echo "using openssl crypto library"
   ;;
   none)
     CXXFLAGS=$CXXFLAGS' -DNO_CRYPT'
+    CRYPTO_LIB_NAME="none"
     echo "disabling crypto"
   ;;
 esac
@@ -417,8 +422,6 @@ if which git >/dev/null; then
         VERSION="$VERSION (git $GIT_HASH)"
     fi
 fi
-HOSTNAME=`hostname`
-DATE=`date +"%d.%m.%Y %H:%M:%S %Z"`
 
 cat > version.h <<EOF
 /*
@@ -432,8 +435,8 @@ cat > version.h <<EOF
 #ifndef ANYTUN_version_h_INCLUDED
 #define ANYTUN_version_h_INCLUDED
 
-#define VERSION_STRING_0 " version $VERSION"
-#define VERSION_STRING_1 "built on $HOSTNAME, $DATE"
+#define VERSION_STRING " version $VERSION"
+#define CRYPTO_LIB_NAME "$CRYPTO_LIB_NAME"
 
 #endif
 EOF

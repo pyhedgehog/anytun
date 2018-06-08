@@ -558,17 +558,16 @@ void Options::printVersion()
 #else
   std::cout << "anytun";
 #endif
-  std::cout << VERSION_STRING_0 << std::endl;
+  std::cout << VERSION_STRING << std::endl;
 
 #if defined(__clang__)
-  std::cout << VERSION_STRING_1 << ", using CLANG " << __clang_version__ << std::endl;
+  std::cout << "built using CLANG " << __clang_version__ << " with " << CRYPTO_LIB_NAME << " crypto library." << std::endl;
 #elif defined(__GNUC__)
-  std::cout << VERSION_STRING_1 << ", using GCC " << __GNUC__ << '.' << __GNUC_MINOR__
-            << '.' << __GNUC_PATCHLEVEL__ << std::endl;
+  std::cout << "built using GCC " << __GNUC__ << '.' << __GNUC_MINOR__ << '.' << __GNUC_PATCHLEVEL__
+            << " with " << CRYPTO_LIB_NAME << " crypto library." << std::endl;
 #else
-  std::cout << VERSION_STRING_1 << std::endl;
+  std::cout << "built using an unknown compiler " << CRYPTO_LIB_NAME << " crypto library." << std::endl;
 #endif
-
 }
 
 void Options::printUsage()
