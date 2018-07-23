@@ -177,7 +177,7 @@ all: $(EXECUTABLES) #libAnysync.a
 
 %.d: %.cpp
 	@set -e; rm -f $@;                                    \
-   $(CXX) -MM $(CXXFLAGS) $< > $@.$$$$;                 \
+   $(CXX) -MM $(CPPFLAGS) $< > $@.$$$$;                 \
    sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@;  \
    rm -f $@.$$$$; echo '(re)building $@'
 
@@ -199,7 +199,7 @@ anytun-nosync$(EXE): $(ANYTUNOBJS) anytun-nosync.o
 	$(LD) $(ANYTUNOBJS) anytun-nosync.o -o $@ $(LDFLAGS)
 
 anytun-nosync.o: anytun.cpp
-	$(CXX) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DANYTUN_NOSYNC $< -c -o anytun-nosync.o
 
 anytun-showtables$(EXE): $(ANYSHOWOBJS) $(SYNCOBJS) anytun-showtables.o
 	$(LD) $(ANYSHOWOBJS) $(SYNCOBJS) anytun-showtables.o -o $@ $(LDFLAGS)
@@ -212,19 +212,19 @@ anytun-controld$(EXE): $(ANYCTROBJS) anytun-controld.o
 
 
 options.o: options.cpp
-	$(CXX) $(CXXFLAGS) -DANYTUN_OPTIONS $< -c -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DANYTUN_OPTIONS $< -c -o $@
 
 anyCtrOptions.o: options.cpp
-	$(CXX) $(CXXFLAGS) -DANYCTR_OPTIONS $< -c -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DANYCTR_OPTIONS $< -c -o $@
 
 anyConfOptions.o: options.cpp
-	$(CXX) $(CXXFLAGS) -DANYCONF_OPTIONS $< -c -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DANYCONF_OPTIONS $< -c -o $@
 
 nullOptions.o: options.cpp
-	$(CXX) $(CXXFLAGS) $< -c -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -c -o $@
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $< -c -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -c -o $@
 
 
 libAnysync.a: $(OBJS)
