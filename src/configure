@@ -217,12 +217,12 @@ if [ -n "$ERRORS" ] && [ $EBUILD_COMPAT -ne 1 ]; then
 fi
 
 if [ $USE_CLANG -eq 0 ]; then
-  CXXFLAGS='-g -Wall -Werror -Wno-error=unused-variable -O2'
-  LDFLAGS='-g -Wall -Werror -O2'
+  CXXFLAGS=$CXXFLAGS' -g -Wall -Werror -Wno-error=unused-variable -O2'
+  LDFLAGS=$LDFLAGS' -g -Wall -Werror -O2'
   COMPILER='g++'
 else
-  CXXFLAGS='-g -O2'
-  LDFLAGS='-g -O2'
+  CXXFLAGS=$CXXFLAGS' -g -O2'
+  LDFLAGS=$LDFLAGS' -g -O2'
   COMPILER='clang++'
 fi
 
