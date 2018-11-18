@@ -47,6 +47,7 @@
 #define ANYTUN_anytunError_h_INCLUDED
 
 #include <sstream>
+#define BOOST_SYSTEM_ENABLE_DEPRECATED
 #include <boost/system/system_error.hpp>
 #include "datatypes.h"
 

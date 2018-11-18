@@ -44,6 +44,7 @@
  */
 
 #include <boost/bind.hpp>
+#define BOOST_SYSTEM_ENABLE_DEPRECATED
 #include <boost/system/error_code.hpp>
 
 #include "resolver.h"
