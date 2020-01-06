@@ -66,10 +66,18 @@ void SyncTcpConnection::Send(std::string message)
                                        boost::asio::placeholders::error,
                                        boost::asio::placeholders::bytes_transferred));
 }
+
+#if BOOST_VERSION >= 107000
+SyncTcpConnection::SyncTcpConnection(const boost::asio::executor& executor)
+  : socket_(executor)
+{
+}
+#else
 SyncTcpConnection::SyncTcpConnection(boost::asio::io_service& io_service)
   : socket_(io_service)
 {
 }
+#endif
 
 void SyncTcpConnection::handle_write(const boost::system::error_code& /*error*/,
                                      size_t /*bytes_transferred*/)

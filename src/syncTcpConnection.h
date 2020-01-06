@@ -60,9 +60,15 @@ public:
   typedef boost::shared_ptr<SyncTcpConnection> pointer;
   typedef boost::asio::ip::tcp proto;
 
+#if BOOST_VERSION >= 107000
+  static pointer create(const boost::asio::executor& executor) {
+    return pointer(new SyncTcpConnection(executor));
+  };
+#else
   static pointer create(boost::asio::io_service& io_service) {
     return pointer(new SyncTcpConnection(io_service));
   };
+#endif
 
   boost::function<void(SyncTcpConnection*)> onConnect;
   proto::socket& socket();
@@ -70,7 +76,11 @@ public:
   void start();
   void Send(std::string message);
 private:
+#if BOOST_VERSION >= 107000
+  SyncTcpConnection(const boost::asio::executor& executor);
+#else
   SyncTcpConnection(boost::asio::io_service& io_service);
+#endif
 
   void handle_write(const boost::system::error_code & /*error*/,
                     size_t /*bytes_transferred*/);
