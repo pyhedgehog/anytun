@@ -150,7 +150,7 @@ to run in debug mode\&. It implicits
 .PP
 \fB\-i, \-\-interface \fR\fB\fI<ip address>\fR\fR
 .RS 4
-This IP address is used as the sender address for outgoing packets\&. In case of anycast tunnel endpoints, the anycast IP has to be used\&. In case of unicast endpoints, the address is usually derived correctly from the routing table\&. The default is to not use a special inteface and just bind on all interfaces\&.
+This IP address is used as the sender address for outgoing packets\&. In case of anycast tunnel endpoints, the anycast IP has to be used\&. In case of unicast endpoints, the address is usually derived correctly from the routing table\&. The default is to not use a special interface and just bind on all interfaces\&.
 .RE
 .PP
 \fB\-p, \-\-port \fR\fB\fI<port>\fR\fR
@@ -182,7 +182,7 @@ Resolv to IPv6 addresses only\&. The default is to resolv both IPv4 and IPv6 add
 .RS 4
 local unicast(sync) ip address to bind to
 
-This option is only needed for tunnel endpoints consisting of multiple anycast hosts\&. The unicast IP address of the anycast host can be used here\&. This is needed for communication with the other anycast hosts\&. The default is to not use a special inteface and just bind on all interfaces\&. However this is only the case if synchronisation is active see
+This option is only needed for tunnel endpoints consisting of multiple anycast hosts\&. The unicast IP address of the anycast host can be used here\&. This is needed for communication with the other anycast hosts\&. The default is to not use a special interface and just bind on all interfaces\&. However this is only the case if synchronisation is active see
 \fB\-\-sync\-port\fR\&.
 .RE
 .PP
@@ -255,7 +255,7 @@ the multiplex id to use\&. default: 0
 .PP
 \fB\-s, \-\-sender\-id \fR\fB\fI<sender id>\fR\fR
 .RS 4
-Each anycast tunnel endpoint needs a uniqe sender id (1, 2, 3, \&...)\&. It is needed to distinguish the senders in case of replay attacks\&. This option can be ignored on unicast endpoints\&. default: 0
+Each anycast tunnel endpoint needs a unique sender id (1, 2, 3, \&...)\&. It is needed to distinguish the senders in case of replay attacks\&. This option can be ignored on unicast endpoints\&. default: 0
 .RE
 .PP
 \fB\-w, \-\-window\-size \fR\fB\fI<window size>\fR\fR

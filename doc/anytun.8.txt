@@ -109,7 +109,7 @@ passed to the daemon:
    packets. In case of anycast tunnel endpoints, the anycast
    IP has to be used. In case of unicast endpoints, the
    address is usually derived correctly from the routing
-   table. The default is to not use a special inteface and just
+   table. The default is to not use a special interface and just
    bind on all interfaces.
 
 *-p, --port '<port>'*::
@@ -145,7 +145,7 @@ passed to the daemon:
    of multiple anycast hosts. The unicast IP address of
    the anycast host can be used here. This is needed for
    communication with the other anycast hosts. The default is to
-   not use a special inteface and just bind on all interfaces. However
+   not use a special interface and just bind on all interfaces. However
    this is only the case if synchronisation is active see *--sync-port*.
 
 *-S, --sync-port '<port>'*::
@@ -210,7 +210,7 @@ passed to the daemon:
    the multiplex id to use. default: 0
 
 *-s, --sender-id  '<sender id>'*::
-   Each anycast tunnel endpoint needs a uniqe sender id
+   Each anycast tunnel endpoint needs a unique sender id
    (1, 2, 3, ...). It is needed to distinguish the senders
    in case of replay attacks. This option can be ignored on
    unicast endpoints. default: 0
